@@ -1,0 +1,1 @@
+export default {"theme":"theme-dark","endpoint":"","embedded":"false"}
