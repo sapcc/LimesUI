@@ -36,7 +36,7 @@ const App = (props = {}) => {
     <QueryClientProvider client={queryClient}>
       <AppShell
         pageHeader="Converged Cloud | App limesUI"
-        contentHeading="App limesUI page title"
+        contentHeading={URL_STATE_KEY}
         embedded={props.embedded === "true" || props.embedded === true}
       >
         <AppContent props={props} />
