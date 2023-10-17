@@ -2,6 +2,15 @@
 
 This is the standard app limesUI for microfrontends. Use this as a basis for new juno microfrontend apps.
 
+## How to build
+
+```sh
+npm install
+APP_PORT=8180 npm run start
+```
+
+Then navigate to <http://localhost:8180/>.
+
 ## Instructions
 
 1. Copy the `limesUI` folder, rename to name of your app
