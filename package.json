@@ -55,7 +55,27 @@
     "endpoint": {
       "value": "",
       "type": "required",
-      "description": "Endpoint URL of the API"
+      "description": "Base URL of the Limes API as stored in the Keystone catalog"
+    },
+    "projectID": {
+      "value": "",
+      "type": "required",
+      "description": "Project ID (if scoped to a project)"
+    },
+    "domainID": {
+      "value": "",
+      "type": "required",
+      "description": "Domain ID (if scoped to a project or domain)"
+    },
+    "token": {
+      "value": "",
+      "type": "required",
+      "description": "Keystone token for the scope specified by domain_id and project_id"
+    },
+    "canEdit": {
+      "value": "false",
+      "type": "required",
+      "description": "Whether the user has edit permissions in the token's scope"
     },
     "embedded": {
       "value": "false",

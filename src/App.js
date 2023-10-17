@@ -20,6 +20,9 @@ const App = (props = {}) => {
       queries: {
         meta: {
           endpoint: props.endpoint || props.currentHost || "",
+          token: props.token || "",
+          projectID: props.projectID || "",
+          domainID: props.domainID || "",
         },
       },
     },

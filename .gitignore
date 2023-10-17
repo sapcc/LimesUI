@@ -2,3 +2,4 @@
 .envrc
 node_modules
 /public/build/
+secretProps.json
