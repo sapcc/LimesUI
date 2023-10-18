@@ -1,4 +1,4 @@
-import React, { useEffect } from "react"
+import React from "react"
 import { Link, useParams } from 'react-router-dom'
 
 const Overview = (props) => {
@@ -9,6 +9,7 @@ const Overview = (props) => {
         const render = allAreas.map((area) => {
             return area
         }).filter((area) => area.area == currentArea)
+
         return JSON.stringify(render, null, 2)
     }
 
