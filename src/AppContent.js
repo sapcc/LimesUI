@@ -10,7 +10,10 @@ const AppContent = (props) => {
 
   return (
     <Container>
-      <Areas api={projectData}/>
+      {
+        projectData?.data &&
+        <Areas api={projectData} />
+      }
     </Container>
   )
 }

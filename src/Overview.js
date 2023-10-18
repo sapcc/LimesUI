@@ -1,13 +1,23 @@
-import React from "react"
-import { Link } from 'react-router-dom'
+import React, { useEffect } from "react"
+import { Link, useParams } from 'react-router-dom'
 
 const Overview = (props) => {
-    console.log(props.api?.project?.services)
+    const [allAreas, setAllAreas] = React.useState(props.api.services)
+    const {currentArea = allAreas[0].area} = useParams()
+
+    function renderArea() {
+        const render = allAreas.map((area) => {
+            return area
+        }).filter((area) => area.area == currentArea)
+        return JSON.stringify(render, null, 2)
+    }
+
     return (
         <>
-            {props.api?.project?.services.map((service, index) => {
-                return <Link key={`/${index}`} to={`/${service.area}`}> {service.area}</Link>
+            {allAreas.map((services, index) => {
+                return <Link key={`/${index}`} to={`/${services.area}`}> {services.area}</Link>
             })}
+            { currentArea && <pre>{renderArea()}</pre>}
         </>
     )
 }
