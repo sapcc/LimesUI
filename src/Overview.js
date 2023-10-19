@@ -1,6 +1,8 @@
 import React from "react"
 import moment from "moment"
 import { Link, useParams } from 'react-router-dom'
+import Category from "./Category"
+import { byUIString } from "./utils"
 
 const Overview = (props) => {
     const [allAreas, setAllAreas] = React.useState(Object.keys(props.overview.areas))
@@ -32,10 +34,14 @@ const Overview = (props) => {
 
         return (
             <>
-                {currentServices.map((serviceType) =>
+                {currentServices.sort(byUIString).map((serviceType) =>
                     categories[serviceType]
                         .map((categoryName, index) => (
-                            <div key={categoryName}>{categoryName}</div>
+                            <Category
+                             key={categoryName}
+                             categoryName={categoryName}
+                             canEdit={props.canEdit}
+                            />
                         ))
                 )}
             </>
