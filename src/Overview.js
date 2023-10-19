@@ -1,23 +1,54 @@
-import React, { useEffect } from "react"
+import React from "react"
+import moment from "moment"
 import { Link, useParams } from 'react-router-dom'
 
 const Overview = (props) => {
-    const [allAreas, setAllAreas] = React.useState(props.api.services)
-    const {currentArea = allAreas[0].area} = useParams()
+    const [allAreas, setAllAreas] = React.useState(Object.keys(props.overview.areas))
+    const { currentArea = allAreas[0] } = useParams()
 
     function renderArea() {
-        const render = allAreas.map((area) => {
-            return area
-        }).filter((area) => area.area == currentArea)
-        return JSON.stringify(render, null, 2)
+        const { areas, categories, scrapedAt, minScrapedAt, maxScrapedAt } = props.overview
+        const currentServices = areas[currentArea]
+
+        const currMinScrapedAt = currentServices
+            .map((serviceType) => minScrapedAt[serviceType])
+            .filter((x) => x !== undefined)
+        const currMaxScrapedAt = currentServices
+            .map((serviceType) => maxScrapedAt[serviceType])
+            .filter((x) => x !== undefined)
+        const currScrapedAt = currentServices
+            .map((serviceType) => scrapedAt[serviceType])
+            .filter((x) => x !== undefined)
+        const minScrapedStr = moment
+            .unix(Math.min(...currMinScrapedAt, ...currScrapedAt))
+            .fromNow(true)
+        const maxScrapedStr = moment
+            .unix(Math.max(...currMaxScrapedAt, ...currScrapedAt))
+            .fromNow(true)
+        const ageDisplay =
+            minScrapedStr == maxScrapedStr
+                ? minScrapedStr
+                : `between ${minScrapedStr} and ${maxScrapedStr}`
+
+        return (
+            <>
+                {currentServices.map((serviceType) =>
+                    categories[serviceType]
+                        .map((categoryName, index) => (
+                            <div key={categoryName}>{categoryName}</div>
+                        ))
+                )}
+            </>
+        )
+
     }
 
     return (
         <>
-            {allAreas.map((services, index) => {
-                return <Link key={`/${index}`} to={`/${services.area}`}> {services.area}</Link>
+            {allAreas.map((area, index) => {
+                return <Link key={`/${area}`} to={`/${area}`}> {area}</Link>
             })}
-            { currentArea && <pre>{renderArea()}</pre>}
+            {renderArea()}
         </>
     )
 }

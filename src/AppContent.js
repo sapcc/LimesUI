@@ -1,18 +1,27 @@
-import React from "react"
+import React, { useEffect } from "react"
+import useLimesStore from "./lib/store/store"
+import Overview from "./Overview"
 import { useQuery } from "@tanstack/react-query"
 import { Container } from "juno-ui-components"
 import { fetchProjectData } from "./lib/apiClient"
-import Areas from "./Areas"
+import { HashRouter, Routes, Route } from "react-router-dom"
 
 // This is your starting point of tour application
 const AppContent = (props) => {
   const projectData = useQuery({ queryKey: ['projectData'], queryFn: fetchProjectData })
+  const formatData = useLimesStore((state) => state.restructureReport)
 
   return (
     <Container>
       {
-        projectData?.data &&
-        <Areas api={projectData} />
+        projectData?.data && (
+          console.log(formatData(projectData)) ||
+          <HashRouter>
+            <Routes>
+              <Route exact path="/" element={<Overview {...formatData(projectData)} />}> </Route>
+              <Route path="/:currentArea" element={<Overview {...formatData(projectData)} />}> </Route>
+            </Routes>
+          </HashRouter>)
       }
     </Container>
   )
