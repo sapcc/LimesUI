@@ -35,14 +35,14 @@ const Overview = (props) => {
         return (
             <>
                 {currentServices.sort(byUIString).map((serviceType) =>
-                    categories[serviceType]
-                        .map((categoryName, index) => (
-                            <Category
-                             key={categoryName}
-                             categoryName={categoryName}
-                             canEdit={props.canEdit}
-                            />
-                        ))
+                    categories[serviceType].map((categoryName) => (
+                        <Category
+                            key={categoryName}
+                            categoryName={categoryName}
+                            category={props.categories[categoryName]}
+                            canEdit={props.canEdit}
+                        />
+                    ))
                 )}
             </>
         )
