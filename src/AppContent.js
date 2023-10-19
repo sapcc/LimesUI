@@ -18,8 +18,8 @@ const AppContent = (props) => {
           console.log(formatData(projectData)) ||
           <HashRouter>
             <Routes>
-              <Route exact path="/" element={<Overview {...formatData(projectData)} />}> </Route>
-              <Route path="/:currentArea" element={<Overview {...formatData(projectData)} />}> </Route>
+              <Route exact path="/" element={<Overview {...formatData(projectData)} canEdit={props.canEdit}/>}> </Route>
+              <Route path="/:currentArea" element={<Overview {...formatData(projectData)} canEdit={props.canEdit}/>}> </Route>
             </Routes>
           </HashRouter>)
       }
