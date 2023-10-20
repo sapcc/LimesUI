@@ -1,5 +1,5 @@
 import React from "react";
-import { t } from "./utils"
+import { t, sortByLogicalOrderAndName} from "./utils"
 import ProjectResource from "./project/resource";
 
 // TODO: for domain/cluster level add tracksQuota which skips resource that do not track quota.
@@ -23,10 +23,12 @@ const Category = (props) => {
         return res
     }
 
+    console.log(resources)
+
     return (
         <>
             <h1 className="mb-4 mt-4 text-2xl">{t(props.categoryName)}</h1>
-            {resources.map((res) => 
+            {sortByLogicalOrderAndName(resources).map((res) => 
                 <ProjectResource
                     key={res.name}
                     resource={res}
