@@ -13,8 +13,6 @@ const Category = (props) => {
         canEdit
     }
 
-    console.log(props)
-
     //for usage-only resources with no quota of their own, this finds
     //the resource they're ultimately "contained_in"
     function getContainingResourceFor(resName) {

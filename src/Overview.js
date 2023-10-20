@@ -3,6 +3,7 @@ import moment from "moment"
 import { Link, useParams } from 'react-router-dom'
 import Category from "./Category"
 import { byUIString } from "./utils"
+import { TopNavigation, TopNavigationItem } from "juno-ui-components"
 
 const Overview = (props) => {
     const [allAreas, setAllAreas] = React.useState(Object.keys(props.overview.areas))
@@ -51,15 +52,16 @@ const Overview = (props) => {
 
     return (
         <>
-            <ul className="flex">
+            <TopNavigation>
                 {allAreas.map((area) =>
-                    <li key={area}
-                        className={`${area === currentArea ? "border-b-[2px]" : ""} text-xl mr-1 inline-block px-4 font-semibold`}
+                    <TopNavigationItem
+                        key={area}
+                        active={area === currentArea}
                     >
-                        <Link key={`/${area}`} to={`/${area}`}> {area}</Link>
-                    </li>
+                        <Link key={`/${area}`} to={`/${area}`}>{area}</Link>
+                    </TopNavigationItem>
                 )}
-            </ul>
+            </TopNavigation>
             {renderArea()}
         </>
     )
