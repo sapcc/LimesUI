@@ -39,7 +39,7 @@ const Overview = (props) => {
                         <Category
                             key={categoryName}
                             categoryName={categoryName}
-                            category={props.categories[serviceType]}
+                            category={props.categories[categoryName]}
                             canEdit={props.canEdit}
                         />
                     ))
