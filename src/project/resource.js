@@ -1,5 +1,6 @@
 import React from 'react'
 import { t } from '../utils'
+import ResourceBar from '../ResourceBar'
 
 const ProjectResource = (props) => {
     const displayName = t(props.resource.name)
@@ -7,8 +8,9 @@ const ProjectResource = (props) => {
     return (
         <>
             <div className="text-base">
-                <div>
+                <div >
                     {displayName}
+                    <ResourceBar />
                 </div>
                 <div>
                     Usage: {props.resource.usage}

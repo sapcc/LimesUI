@@ -1,7 +1,7 @@
 import React from "react";
 import { t, sortByLogicalOrderAndName } from "./utils"
 import ProjectResource from "./project/resource";
-import UsageOnlyResource from "./usageOnlyResource";
+import UsageOnlyResource from "./UsageOnlyResource";
 
 // TODO: for domain/cluster level add tracksQuota which skips resource that do not track quota.
 
