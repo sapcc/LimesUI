@@ -51,10 +51,10 @@ const Overview = (props) => {
 
     return (
         <>
-            <ul className="flex border-b">
+            <ul className="flex">
                 {allAreas.map((area) =>
                     <li key={area}
-                        className="-mb-px mr-1 inline-block py-2 px-4 text-blue-500 hover:text-blue-800 font-semibold"
+                        className={`${area === currentArea ? "border-b-[2px]" : ""} text-xl mr-1 inline-block px-4 font-semibold`}
                     >
                         <Link key={`/${area}`} to={`/${area}`}> {area}</Link>
                     </li>
