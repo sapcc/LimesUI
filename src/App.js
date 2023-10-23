@@ -42,7 +42,7 @@ const App = (props = {}) => {
         contentHeading={URL_STATE_KEY}
         embedded={props.embedded === "true" || props.embedded === true}
       >
-        <AppContent props={props} />
+        <AppContent {...props} />
       </AppShell>
     </QueryClientProvider>
   )

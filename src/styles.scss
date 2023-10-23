@@ -6,8 +6,8 @@
 
 /* If necessary, app styles can be added below */
 
-.svg-bg-test {
-  background: url('assets/juno-danger.svg')
+.btn {
+  @apply font-bold bg-juno-blue-5 text-white py-2 px-4 rounded;
 }
 
 .progress {
