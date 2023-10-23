@@ -2,7 +2,7 @@ import React from "react";
 import { t, sortByLogicalOrderAndName } from "./utils"
 import ProjectResource from "./project/resource";
 import UsageOnlyResource from "./UsageOnlyResource";
-import { Button } from "juno-ui-components"
+import { Button, Grid, GridColumn, GridRow } from "juno-ui-components"
 import EditModal from "./EditModal";
 
 // TODO: for domain/cluster level add tracksQuota which skips resource that do not track quota.
@@ -37,15 +37,25 @@ const Category = (props) => {
 
     return (
         <>
-            <h1 className="mb-4 mt-4 text-2xl font-bold">{t(props.categoryName)}</h1>
-            {canEdit &&
-                <Button className="btn" label="Edit" onClick={() => { setShowModal(true) }} />
-            }
-            {showModal &&
-                <EditModal
-                    {...props}
-                    setShowModal={setShowModal}
-                />}
+            <Grid auto>
+                <GridRow>
+                    <GridColumn>
+                        <h1 className="mb-4 mt-4 text-2xl font-bold">{t(props.categoryName)}</h1>
+                    </GridColumn>
+                    {canEdit &&
+                        <GridColumn>
+                            <Button className="btn" label="Edit" onClick={() => { setShowModal(true) }} />
+                        </GridColumn>
+                    }
+                </GridRow>
+                {showModal &&
+                    <EditModal
+                        {...props}
+                        setShowModal={setShowModal}
+                    />
+                }
+            </Grid>
+
             {
                 sortByLogicalOrderAndName(resources).map((res) =>
                     tracksQuota(res) ?
