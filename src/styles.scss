@@ -6,12 +6,68 @@
 
 /* If necessary, app styles can be added below */
 
-.svg-bg-test {
-  background: url('assets/juno-danger.svg')
+.btn {
+  @apply font-bold bg-juno-blue-5 text-white py-2 px-4 rounded;
+}
+
+.progress {
+  position: relative; /* required for position:absolute on children */
+
+  .progress-bar-before-overcommit {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    background: transparent;
+  }
+
+  .progress-bar-after-overcommit {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 50;
+    background: rgba(255, 255, 255, 0.5);
+  }
+
+  .progress-bar {
+    &.progress-bar-empty {
+      background: none;
+      box-shadow: none;
+      color: black;
+      white-space: nowrap;
+      overflow-x: visible;
+    }
+
+    &.progress-bar-disabled {
+      background: repeating-linear-gradient(
+        -55deg,
+        transparent,
+        transparent 3px,
+        #dcdcdc 3px,
+        #dcdcdc 5px
+      );
+      box-shadow: none;
+      color: black;
+    }
+
+    &.has-label,
+    &.has-label-if-fits,
+    &.has-label-unless-fits {
+      text-align: left;
+      .progress-bar-label {
+        padding-left: 0.5em;
+      }
+    }
+  }
+
+  &.label-fits .has-label-unless-fits .progress-bar-label {
+    display: none;
+  }
+  &:not(.label-fits) .has-label-if-fits .progress-bar-label {
+    display: none;
+  }
 }
 
 // .svg-bg-test-big-file {
 //   background: left 80px no-repeat url('assets/map.svg')
 // }
-
-

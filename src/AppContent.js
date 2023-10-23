@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query"
 import { Container } from "juno-ui-components"
 import { fetchProjectData } from "./lib/apiClient"
 import { HashRouter, Routes, Route } from "react-router-dom"
+import EditModal from "./EditModal"
 
 // This is your starting point of tour application
 const AppContent = (props) => {
@@ -18,8 +19,8 @@ const AppContent = (props) => {
           console.log(formatData(projectData)) ||
           <HashRouter>
             <Routes>
-              <Route exact path="/" element={<Overview {...formatData(projectData)} canEdit={props.canEdit}/>}> </Route>
-              <Route path="/:currentArea" element={<Overview {...formatData(projectData)} canEdit={props.canEdit}/>}> </Route>
+              <Route exact path="/" element={<Overview {...formatData(projectData)} canEdit={props.canEdit} />}> </Route>
+              <Route path="/:currentArea" element={<Overview {...formatData(projectData)} canEdit={props.canEdit} />}> </Route>
             </Routes>
           </HashRouter>)
       }
