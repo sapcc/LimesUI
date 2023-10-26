@@ -5,11 +5,12 @@ import { useQuery } from "@tanstack/react-query"
 import { Container } from "juno-ui-components"
 import { fetchProjectData } from "./lib/apiClient"
 import { HashRouter, Routes, Route } from "react-router-dom"
-import EditModal from "./EditModal"
+import data from "./lib/limes_data.json"
 
 // This is your starting point of tour application
 const AppContent = (props) => {
-  const projectData = useQuery({ queryKey: ['projectData'], queryFn: fetchProjectData })
+  //const projectData = useQuery({ queryKey: ['projectData'], queryFn: fetchProjectData })
+  const projectData = {data: data}
   const formatData = useLimesStore((state) => state.restructureReport)
 
   return (

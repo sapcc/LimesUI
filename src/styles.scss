@@ -12,6 +12,7 @@
 
 .progress {
   position: relative; /* required for position:absolute on children */
+  font-weight: bold;
 
   .progress-bar-before-overcommit {
     position: absolute;
@@ -30,24 +31,27 @@
   }
 
   .progress-bar {
-    &.progress-bar-empty {
-      background: none;
-      box-shadow: none;
-      color: black;
-      white-space: nowrap;
-      overflow-x: visible;
-    }
+    font-size: 13px;
+    border-radius: 5px;
 
     &.progress-bar-disabled {
       background: repeating-linear-gradient(
         -55deg,
         transparent,
         transparent 3px,
-        #dcdcdc 3px,
-        #dcdcdc 5px
+        #7d7d7d 5px,
+        #7d7d7d 5px
       );
-      box-shadow: none;
-      color: black;
+    }
+
+    &.progress-bar-striped {
+      background: repeating-linear-gradient(
+        -55deg,
+        transparent,
+        transparent 3px,
+        red 5px,
+        red 5px
+      );
     }
 
     &.has-label,
@@ -65,6 +69,24 @@
   }
   &:not(.label-fits) .has-label-if-fits .progress-bar-label {
     display: none;
+  }
+}
+
+.row.usage-only {
+  /* group with the previous resource (probably the one that this one is "contained_in") */
+  position: relative;
+  top: -0.5rem;
+
+  .progress {
+    /* 12px less than normal (20px) to compensate the displacement above */
+    margin-bottom: 6px;
+
+    /* smaller fontsizes and dimensions inside the bar */
+    height: 14px;
+    .progress-bar {
+      line-height: 14px;
+      font-size: 12px;
+    }
   }
 }
 

@@ -1,6 +1,8 @@
 import { create } from "zustand"
 
 const useLimesStore = create((set) => ({
+    theme: null,
+    setTheme: (theme) => set((state) => ({theme: theme})),
 
     ////////////////////////////////////////////////////////////////////////////////
     // helper that need to restructure a Limes JSON into a triplet of

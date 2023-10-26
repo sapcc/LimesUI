@@ -12,7 +12,7 @@ const EditModal = (props) => {
                 onConfirm={null}
                 open={true}
             >
-                {props.category.resources.map((resource) => <p key={resource.name}>{resource.name}</p>)}
+                {props.resource.name}
             </Modal>
         </>
     )

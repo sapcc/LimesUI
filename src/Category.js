@@ -1,14 +1,12 @@
 import React from "react";
 import { t, sortByLogicalOrderAndName } from "./utils"
-import ProjectResource from "./project/resource";
+import ProjectResource from "./project/ProjectResource";
 import UsageOnlyResource from "./UsageOnlyResource";
-import { Button, Grid, GridColumn, GridRow } from "juno-ui-components"
-import EditModal from "./EditModal";
+import { Grid, GridColumn, GridRow } from "juno-ui-components"
 
 // TODO: for domain/cluster level add tracksQuota which skips resource that do not track quota.
 
 const Category = (props) => {
-    const [showModal, setShowModal] = React.useState(false)
     const { categoryName, canEdit } = props
     const { area, resources } = props.category
     const forwardProps = {
@@ -37,32 +35,21 @@ const Category = (props) => {
 
     return (
         <>
-            <Grid auto>
+            <Grid>
                 <GridRow>
-                    <GridColumn>
+                    <GridColumn auto>
                         <h1 className="mb-4 mt-4 text-2xl font-bold">{t(props.categoryName)}</h1>
                     </GridColumn>
-                    {canEdit &&
-                        <GridColumn>
-                            <Button className="btn" label="Edit" onClick={() => { setShowModal(true) }} />
-                        </GridColumn>
-                    }
                 </GridRow>
-                {showModal &&
-                    <EditModal
-                        {...props}
-                        setShowModal={setShowModal}
-                    />
+                {
+                    sortByLogicalOrderAndName(resources).map((res) =>
+                        tracksQuota(res) ?
+                        <ProjectResource key={res.name} resource={res} {...forwardProps} />
+                        :
+                        <UsageOnlyResource key={res.name} resource={res} parentResource={getContainingResourceFor(res.name)}{...forwardProps}/>
+                     )
                 }
             </Grid>
-
-            {
-                sortByLogicalOrderAndName(resources).map((res) =>
-                    tracksQuota(res) ?
-                        <ProjectResource key={res.name} resource={res} {...forwardProps} /> :
-                        <UsageOnlyResource key={res.name} resource={res} {...forwardProps} />
-                )
-            }
         </>
     )
 }
