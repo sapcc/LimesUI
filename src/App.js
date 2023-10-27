@@ -50,12 +50,6 @@ const App = (props = {}) => {
 }
 
 const StyledApp = (props) => {
-  const setTheme = useLimesStore((state) => state.setTheme)
-
-  React.useEffect(() => {
-    setTheme(props.theme ? props.theme : "theme-dark")
-  }, [])
-
   return (
     <AppShellProvider theme={`${props.theme ? props.theme : "theme-dark"}`}>
       {/* load styles inside the shadow dom */}
