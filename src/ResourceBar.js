@@ -2,6 +2,12 @@ import React from 'react'
 import useLimesStore from './lib/store/store'
 import { Unit, valueWithUnit } from './lib/unit'
 
+
+const resourceBarWrapper = "bg-theme-highest progress"
+const emptyResourceBar = "bg-theme-background-lvl-3 progress-bar shadow-inner inline-flex"
+const filledResourceBar = "text-juno-grey-light-1 bg-theme-accent has-label-if-fits shadow-md"
+const stripedResourceBar = "progress-bar progress-bar-disabled has-label shadow-inner"
+
 const ResourceBar = (props) => {
     const theme = useLimesStore((state) => state.theme)
     const outerDivRef = React.useRef(null)
@@ -56,7 +62,7 @@ const ResourceBar = (props) => {
             return (
                 <div
                     key="filled"
-                    className="progress-bar progress-bar-disabled has-label"
+                    className={stripedResourceBar}
                     style={{ width: "100%" }}
                 >
                     <span className="progress-bar-label">
@@ -101,10 +107,10 @@ const ResourceBar = (props) => {
         }
 
         const resourceBar = (
-            <div className={`${theme === "theme-dark" ? "bg-theme-box-default" : "bg-sap-grey-2"} progress-bar inline-flex`} style={{ width: "100%" }}>
+            <div className={emptyResourceBar} style={{ width: "100%" }}>
                 <div
                     key="filled"
-                    className={`${filled} ${theme === "theme-dark" ? "bg-juno-blue-8" : "bg-juno-blue-4"} has-label-if-fits text-juno-grey-light-1`}
+                    className={`${filled} ${filledResourceBar}`}
                     style={fill > 0 ? barStyleFilled : { width: "0%" }}
                 >
                     {label}
@@ -124,7 +130,7 @@ const ResourceBar = (props) => {
 
     return (
         <>
-            <div className={`${theme === "theme-dark" ? 'text-juno-grey-light-1' : 'text-juno-grey-blue-11'} progress`} ref={outerDivRef}>
+            <div className={resourceBarWrapper} ref={outerDivRef}>
                 {buildResourceBar()}
             </div >
         </>

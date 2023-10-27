@@ -44,10 +44,10 @@ const Category = (props) => {
                 {
                     sortByLogicalOrderAndName(resources).map((res) =>
                         tracksQuota(res) ?
-                        <ProjectResource key={res.name} resource={res} {...forwardProps} />
-                        :
-                        <UsageOnlyResource key={res.name} resource={res} parentResource={getContainingResourceFor(res.name)}{...forwardProps}/>
-                     )
+                            <ProjectResource key={res.name} resource={res} {...forwardProps} />
+                            :
+                            <UsageOnlyResource key={res.name} resource={res} parentResource={getContainingResourceFor(res.name)}{...forwardProps} />
+                    )
                 }
             </Grid>
         </>
