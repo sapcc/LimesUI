@@ -40,6 +40,7 @@ const Category = (props) => {
             resource={res}
             {...forwardProps}
             tracksQuota={tracksQuota(res)}
+            parentResoure={getContainingResourceFor(res.name)}
           />
         ))}
       </Grid>

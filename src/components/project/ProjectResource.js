@@ -50,7 +50,7 @@ const ProjectResource = (props) => {
       </GridColumn>
       <GridColumn cols={isEditing ? 5 : 4}>
         <ResourceBar
-          capacity={originalQuota}
+          capacity={props.tracksQuota ? originalQuota : props.parentResoure.quota}
           capacityLabel={valueWithUnit(originalQuota, unit)}
           fill={usage}
           fillLabel={valueWithUnit(usage, unit)}
