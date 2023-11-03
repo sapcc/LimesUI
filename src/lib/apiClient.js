@@ -3,15 +3,19 @@ export const fetchProjectData = async ({ queryKey, meta }) => {
   const response = await fetch(url, {
     method: "GET",
     headers: {
-      "Accept": "application/json",
+      Accept: "application/json",
       "X-Auth-Token": meta.token,
     },
   });
   if (!response.ok) {
-    throw new Error(`Network error while fetching project data for ${meta.projectID}`);
+    throw new Error(
+      `Network error while fetching project data for ${meta.projectID}`
+    );
   }
   if (response.statusCode >= 400) {
-    throw new Error(`${response.statusText} while fetching project data for ${meta.projectID}`);
+    throw new Error(
+      `${response.statusText} while fetching project data for ${meta.projectID}`
+    );
   }
   return response.json();
 };

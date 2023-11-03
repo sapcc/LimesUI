@@ -1,145 +1,141 @@
-import React from 'react'
-import useLimesStore from '../lib/store/store'
-import { Unit, valueWithUnit } from '../lib/unit'
+import React from "react";
 
-const LABEL_MARGIN = 10
-const resourceBarWrapper = "bg-theme-highest progress"
-const emptyResourceBar = "bg-theme-background-lvl-3 progress-bar shadow-inner inline-flex"
-const filledResourceBar = "text-juno-grey-light-1 bg-theme-accent has-label-if-fits shadow-md"
-const stripedResourceBar = "progress-bar progress-bar-disabled has-label shadow-inner"
-
+const LABEL_MARGIN = 10;
+const resourceBarWrapper = "bg-theme-highest progress";
+const emptyResourceBar =
+  "bg-theme-background-lvl-3 progress-bar shadow-inner inline-flex";
+const filledResourceBar =
+  "text-juno-grey-light-1 bg-theme-accent has-label-if-fits shadow-md";
+const stripedResourceBar =
+  "progress-bar progress-bar-disabled has-label shadow-inner";
 
 // TODO: Move Unit calculation to parent component.
 // TODO: Hardocde commitment data if necesary -> Restructure the component accordingly.
 
 const ResourceBar = (props) => {
-    const outerDivRef = React.useRef(null)
-    const {
-        capacity,
-        fill,
-        commitment,
-        isDanger,
-        unit: unitName,
-        showsCapacity,
-        labelIsUsageOnly,
-    } = props
-    const disabled = false
-    const unit = new Unit(unitName || '')
+  const outerDivRef = React.useRef(null);
+  const {
+    capacity,
+    capacityLabel,
+    fill,
+    fillLabel,
+    commitment,
+    isDanger,
+    showsCapacity,
+    labelIsUsageOnly,
+  } = props;
+  const disabled = false;
 
+  React.useLayoutEffect(() => {
+    checkIfLabelFits();
+  });
 
-    React.useLayoutEffect(() => {
-        checkIfLabelFits()
-    })
-
-    function checkIfLabelFits(opts = {}) {
-        const bar = outerDivRef.current //this is the <div class="progress"/>
-        if (!bar) {
-            return
-        }
-
-        //measure the width of the filled portion of the bar
-        const filledBar = bar.querySelector(".has-label-if-fits")
-        if (!filledBar) {
-            //bar is completely full or empty, so we don't have to measure anything
-            return
-        }
-        const barWidth = filledBar.getBoundingClientRect().width
-
-        //measure the width of the label (one of them might be display:none and report width=0)
-        const labelWidths = [...bar.querySelectorAll(".progress-bar-label")].map(
-            (span) => span.getBoundingClientRect().width
-        )
-        const labelWidth = Math.max(...labelWidths)
-
-        //require some extra wiggle room (in px) around the label to account for UI
-        //margins, and because labels that fit too tightly look dumb
-        bar.classList.toggle("label-fits", labelWidth + LABEL_MARGIN < barWidth)
-
-        //re-run this method after animations have completed
-        if (!opts.delayed) {
-            window.setTimeout(() => checkIfLabelFits({ delayed: true }), 500)
-        }
+  function checkIfLabelFits(opts = {}) {
+    const bar = outerDivRef.current; //this is the <div class="progress"/>
+    if (!bar) {
+      return;
     }
 
-    function buildResourceBar() {
-        // First handle the creation of an empty bar.
-        if (capacity == 0 && fill == 0) {
-            return (
-                <div
-                    key="filled"
-                    className={stripedResourceBar}
-                    style={{ width: "100%" }}
-                >
-                    <span className="progress-bar-label">
-                        {showsCapacity ? "No capacity" : "No quota"}
-                    </span>
-                </div>
-            )
-        }
+    //measure the width of the filled portion of the bar
+    const filledBar = bar.querySelector(".has-label-if-fits");
+    if (!filledBar) {
+      //bar is completely full or empty, so we don't have to measure anything
+      return;
+    }
+    const barWidth = filledBar.getBoundingClientRect().width;
 
-        let widthPercent = Math.round(1000 * (fill / capacity)) / 10
-        // ensure that a non-zero-wide bar is at least somewhat visible
-        if (fill > 0 && widthPercent < 0.5) {
-            widthPercent = 0.5
-        }
+    //measure the width of the label (one of them might be display:none and report width=0)
+    const labelWidths = [...bar.querySelectorAll(".progress-bar-label")].map(
+      (span) => span.getBoundingClientRect().width
+    );
+    const labelWidth = Math.max(...labelWidths);
 
-        //special cases: yellow and red bars
-        let className = "progress-bar"
-        if (isDanger) {
-            className = "progress-bar progress-bar-striped bg-theme-danger"
-        } else if (fill > capacity) {
-            className = "progress-bar bg-theme-danger"
-        } else if (fill == capacity) {
-            className = "progress-bar bg-theme-warning"
-        }
+    //require some extra wiggle room (in px) around the label to account for UI
+    //margins, and because labels that fit too tightly look dumb
+    bar.classList.toggle("label-fits", labelWidth + LABEL_MARGIN < barWidth);
 
-        const label = labelIsUsageOnly ?
-            <span className="progress-bar-label">
-                {valueWithUnit(fill, unit)}
-            </span>
-            :
-            <span className="progress-bar-label">
-                {valueWithUnit(fill, unit)}/{valueWithUnit(capacity, unit)}
-            </span>
+    //re-run this method after animations have completed
+    if (!opts.delayed) {
+      window.setTimeout(() => checkIfLabelFits({ delayed: true }), 500);
+    }
+  }
 
-        let filled = className
-        let barStyleFilled = { width: widthPercent + "%" }
-        let barStyleEmpty = {}
-        if (disabled) {
-            filled = "progress-bar progress-bar-disabled has-label"
-            barStyleFilled["opacity"] = 0.6
-            barStyleEmpty["opacity"] = 0.6
-        }
-
-        const resourceBar = (
-            <div className={emptyResourceBar} style={{ width: "100%" }}>
-                <div
-                    key="filled"
-                    className={`${filled} ${filledResourceBar}`}
-                    style={fill > 0 ? barStyleFilled : { width: "0%" }}
-                >
-                    {label}
-                </div>
-                <div
-                    key="empty"
-                    className="progress-bar has-label-unless-fits"
-                    style={barStyleEmpty}
-                >
-                    {label}
-                </div>
-            </div>
-        )
-
-        return resourceBar
+  function buildResourceBar() {
+    // First handle the creation of an empty bar.
+    if (capacity == 0 && fill == 0) {
+      return (
+        <div
+          key="filled"
+          className={stripedResourceBar}
+          style={{ width: "100%" }}
+        >
+          <span className="progress-bar-label">
+            {showsCapacity ? "No capacity" : "No quota"}
+          </span>
+        </div>
+      );
     }
 
-    return (
-        <>
-            <div className={resourceBarWrapper} ref={outerDivRef}>
-                {buildResourceBar()}
-            </div >
-        </>
-    )
-}
+    let widthPercent = Math.round(1000 * (fill / capacity)) / 10;
+    // ensure that a non-zero-wide bar is at least somewhat visible
+    if (fill > 0 && widthPercent < 0.5) {
+      widthPercent = 0.5;
+    }
 
-export default ResourceBar
+    //special cases: yellow and red bars
+    let className = "progress-bar";
+    if (isDanger) {
+      className = "progress-bar progress-bar-striped bg-theme-danger";
+    } else if (fill > capacity) {
+      className = "progress-bar bg-theme-danger";
+    } else if (fill == capacity) {
+      className = "progress-bar bg-theme-warning";
+    }
+
+    const label = labelIsUsageOnly ? (
+      <span className="progress-bar-label">{fillLabel}</span>
+    ) : (
+      <span className="progress-bar-label">{fillLabel}/{capacityLabel}</span>
+    );
+
+    let filled = className;
+    let barStyleFilled = { width: widthPercent + "%" };
+    let barStyleEmpty = {};
+    if (disabled) {
+      filled = "progress-bar progress-bar-disabled has-label";
+      barStyleFilled["opacity"] = 0.6;
+      barStyleEmpty["opacity"] = 0.6;
+    }
+
+    const resourceBar = (
+      <div className={emptyResourceBar} style={{ width: "100%" }}>
+        <div
+          key="filled"
+          className={`${filled} ${filledResourceBar}`}
+          style={fill > 0 ? barStyleFilled : { width: "0%" }}
+        >
+          {label}
+        </div>
+        <div
+          key="empty"
+          className="progress-bar has-label-unless-fits"
+          style={barStyleEmpty}
+        >
+          {label}
+        </div>
+      </div>
+    );
+
+    return resourceBar;
+  }
+
+  return (
+    <>
+      <div className={resourceBarWrapper} ref={outerDivRef}>
+        {buildResourceBar()}
+      </div>
+    </>
+  );
+};
+
+export default ResourceBar;
