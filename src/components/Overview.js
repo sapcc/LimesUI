@@ -2,8 +2,10 @@ import React from "react"
 import moment from "moment"
 import { Link, useParams } from 'react-router-dom'
 import Category from "./Category"
-import { byUIString } from "../lib/utils"
+import { byUIString } from "../utils"
 import { TopNavigation, TopNavigationItem } from "juno-ui-components"
+
+// TODO: Replace Navigation with Tab, TabList, TabPanel and Panels. Every Panel needs one TabPanel as parent.
 
 const Overview = (props) => {
     const [allAreas, setAllAreas] = React.useState(Object.keys(props.overview.areas))
