@@ -1,5 +1,5 @@
 import React from "react";
-import { t, sortByLogicalOrderAndName, tracksQuota } from "./utils"
+import { t, sortByLogicalOrderAndName, tracksQuota } from "../lib/utils"
 import ProjectResource from "./project/ProjectResource";
 import UsageOnlyResource from "./UsageOnlyResource";
 import { Grid, GridColumn, GridRow } from "juno-ui-components"

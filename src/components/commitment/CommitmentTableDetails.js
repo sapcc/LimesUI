@@ -2,7 +2,7 @@ import React from "react";
 import moment from "moment";
 import { DataGridRow, DataGridCell } from "juno-ui-components"
 import EditCommitment from "./EditCommitment";
-import { valueWithUnit, Unit } from "../lib/unit";
+import { valueWithUnit, Unit } from "../../lib/unit";
 
 const CommitmentTableDetails = (props) => {
     const unit = new Unit(props.unit)

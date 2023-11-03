@@ -1,16 +1,17 @@
 import React from "react";
 import { Panel, PanelBody } from "juno-ui-components";
 import { useParams, useNavigate } from "react-router-dom";
-import { t } from "../utils"
-import { Unit } from "../lib/unit";
+import { t } from "../../lib/utils"
+import { Unit } from "../../lib/unit";
 import ProjectResource from "./ProjectResource";
 import AvailabilityZoneNav from "./AvailabilityZoneNav";
 import CommitmentTable from "../commitment/CommitmentTable";
 
-import data from '../lib/limes_commitment_api.json'
+import data from '../../lib/limes_commitment_api.json'
 
 // TODO: Replace hardcoded API data vs API-call. Get them via useEffect,[]
 // TODO: Move API call and useEffect to parent component. API fetches all commitments for a project.
+// TODO: OnClose and Edit case => Warning on Close modal should be added.
 
 const EditPanel = (props) => {
 

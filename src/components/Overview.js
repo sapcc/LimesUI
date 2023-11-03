@@ -2,7 +2,7 @@ import React from "react"
 import moment from "moment"
 import { Link, useParams } from 'react-router-dom'
 import Category from "./Category"
-import { byUIString } from "./utils"
+import { byUIString } from "../lib/utils"
 import { TopNavigation, TopNavigationItem } from "juno-ui-components"
 
 const Overview = (props) => {

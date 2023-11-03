@@ -1,5 +1,5 @@
 import React from "react"
-import { t } from './utils'
+import { t } from '../lib/utils'
 import ResourceBar from './ResourceBar'
 import { GridRow, GridColumn, Button } from 'juno-ui-components'
 

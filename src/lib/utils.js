@@ -1,4 +1,4 @@
-import { STRINGS } from "./lib/constants"
+import { STRINGS } from "./constants"
 
 const perFlavorRx = /^instances_(.+)$/
 

@@ -1,6 +1,6 @@
 import React from 'react'
-import useLimesStore from './lib/store/store'
-import { Unit, valueWithUnit } from './lib/unit'
+import useLimesStore from '../lib/store/store'
+import { Unit, valueWithUnit } from '../lib/unit'
 
 const LABEL_MARGIN = 10
 const resourceBarWrapper = "bg-theme-highest progress"
@@ -8,12 +8,16 @@ const emptyResourceBar = "bg-theme-background-lvl-3 progress-bar shadow-inner in
 const filledResourceBar = "text-juno-grey-light-1 bg-theme-accent has-label-if-fits shadow-md"
 const stripedResourceBar = "progress-bar progress-bar-disabled has-label shadow-inner"
 
+
+// TODO: Move Unit calculation to parent component.
+// TODO: Hardocde commitment data if necesary -> Restructure the component accordingly.
+
 const ResourceBar = (props) => {
-    const theme = useLimesStore((state) => state.theme)
     const outerDivRef = React.useRef(null)
     const {
         capacity,
         fill,
+        commitment,
         isDanger,
         unit: unitName,
         showsCapacity,
@@ -22,7 +26,8 @@ const ResourceBar = (props) => {
     const disabled = false
     const unit = new Unit(unitName || '')
 
-    React.useEffect(() => {
+
+    React.useLayoutEffect(() => {
         checkIfLabelFits()
     })
 
@@ -46,7 +51,7 @@ const ResourceBar = (props) => {
         )
         const labelWidth = Math.max(...labelWidths)
 
-        //require some extra wiggle room (20px) around the label to account for UI
+        //require some extra wiggle room (in px) around the label to account for UI
         //margins, and because labels that fit too tightly look dumb
         bar.classList.toggle("label-fits", labelWidth + LABEL_MARGIN < barWidth)
 
