@@ -4,14 +4,16 @@ import Overview from "./Overview"
 import { useQuery } from "@tanstack/react-query"
 import { Container } from "juno-ui-components"
 import { fetchProjectData } from "./lib/apiClient"
-import { HashRouter, Routes, Route } from "react-router-dom"
-import data from "./lib/limes_data.json"
+import { HashRouter, Routes, Route, useNavigate } from "react-router-dom"
+import data from "./lib/limes_data_newApi.json"
+import EditModal from "./project/EditPanel"
 
 // This is your starting point of tour application
 const AppContent = (props) => {
   //const projectData = useQuery({ queryKey: ['projectData'], queryFn: fetchProjectData })
-  const projectData = {data: data}
+  const projectData = { data: data }
   const formatData = useLimesStore((state) => state.restructureReport)
+  const formattedData = formatData(projectData)
 
   return (
     <Container>
@@ -20,8 +22,16 @@ const AppContent = (props) => {
           console.log(formatData(projectData)) ||
           <HashRouter>
             <Routes>
-              <Route exact path="/" element={<Overview {...formatData(projectData)} canEdit={props.canEdit} />}> </Route>
-              <Route path="/:currentArea" element={<Overview {...formatData(projectData)} canEdit={props.canEdit} />}> </Route>
+              <Route path="/" element={<Overview {...formattedData} canEdit={props.canEdit} />}> </Route>
+              <Route path="/:currentArea/*" element={<Overview {...formattedData} canEdit={props.canEdit} />}> </Route>
+              {props.canEdit && (
+                <Route path="/:currentArea/edit/:categoryName/:resourceName" element={
+                  <>
+                    <Overview {...formattedData} canEdit={props.canEdit} />
+                    <EditModal {...formattedData} />
+                  </>
+                } />
+              )}
             </Routes>
           </HashRouter>)
       }

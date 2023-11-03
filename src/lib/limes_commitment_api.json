@@ -1,0 +1,82 @@
+{
+    "commitments": [
+        {
+            "id": 42023,
+            "service_type": "compute",
+            "resource_name": "cores",
+            "availability_zone": "any",
+            "amount": 100,
+            "duration": "2 years",
+            "requested_at": 1696604400,
+            "confirmed_at": 1696636800,
+            "expires_at": 1759795200
+        },
+        {
+            "id": 42022,
+            "service_type": "compute",
+            "resource_name": "cores",
+            "availability_zone": "az1",
+            "amount": 50,
+            "duration": "1 year",
+            "requested_at": 1696604400,
+            "confirmed_at": 1696636800,
+            "expires_at": 1759795200
+        },
+        {
+            "id": 42021,
+            "service_type": "compute",
+            "resource_name": "cores",
+            "availability_zone": "west-1",
+            "amount": 50,
+            "duration": "1 year",
+            "requested_at": 1696604400,
+            "confirmed_at": 1696636800,
+            "expires_at": 1759795200
+        },
+        {
+            "id": 42022,
+            "service_type": "compute",
+            "resource_name": "instances",
+            "availability_zone": "az2",
+            "amount": 7,
+            "duration": "1 year",
+            "requested_at": 1696604400,
+            "confirmed_at": "",
+            "expires_at": ""
+        },
+        {
+            "id": 42012,
+            "service_type": "compute",
+            "resource_name": "instances",
+            "availability_zone": "az2",
+            "amount": 1,
+            "duration": "1 year",
+            "requested_at": 1696604400,
+            "confirmed_at": 1696636800,
+            "expires_at": 1759795200
+        },
+        {
+            "id": 42021,
+            "service_type": "compute",
+            "resource_name": "instances",
+            "availability_zone": "any",
+            "amount": 50,
+            "duration": "1 year",
+            "requested_at": 1696604400,
+            "confirmed_at": 1696636800,
+            "expires_at": 1759795200
+        },
+        {
+            "id": 42021,
+            "service_type": "compute",
+            "resource_name": "ram",
+            "availability_zone": "any",
+            "amount": 50000,
+            "unit": "MiB",
+            "duration": "1 year",
+            "requested_at": 1696604400,
+            "confirmed_at": 1696636800,
+            "expires_at": 1759795200
+        }
+    ]
+}

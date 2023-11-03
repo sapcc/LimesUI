@@ -1,5 +1,5 @@
 import React from "react";
-import { t, sortByLogicalOrderAndName } from "./utils"
+import { t, sortByLogicalOrderAndName, tracksQuota } from "./utils"
 import ProjectResource from "./project/ProjectResource";
 import UsageOnlyResource from "./UsageOnlyResource";
 import { Grid, GridColumn, GridRow } from "juno-ui-components"
@@ -23,14 +23,6 @@ const Category = (props) => {
             return getContainingResourceFor(res.contained_in)
         }
         return res
-    }
-
-    function tracksQuota(res) {
-        return (
-            res.quota !== undefined ||
-            res.domains_quota !== undefined ||
-            res.projects_quota !== undefined
-        )
     }
 
     return (

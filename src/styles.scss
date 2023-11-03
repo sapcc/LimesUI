@@ -7,7 +7,7 @@
 /* If necessary, app styles can be added below */
 
 .btn {
-  @apply font-bold bg-juno-blue-5 text-white py-2 px-4 rounded;
+  @apply font-bold bg-theme-background-lvl-4 text-theme-default py-2 px-3 flex-initial justify-center rounded;
 }
 
 .progress {

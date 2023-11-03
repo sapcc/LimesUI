@@ -2,10 +2,10 @@ import React from 'react'
 import { t } from '../utils'
 import ResourceBar from '../ResourceBar'
 import { GridRow, GridColumn, Button } from 'juno-ui-components'
-import EditModal from '../EditModal'
+import { Link } from 'react-router-dom'
+import ResourceEditor from './ResourceEditor'
 
 const ProjectResource = (props) => {
-    const [showModal, setShowModal] = React.useState(false)
     const displayName = t(props.resource.name)
     const {
         quota: originalQuota,
@@ -16,14 +16,15 @@ const ProjectResource = (props) => {
     } = props.resource
     const actualBackendQuota = backendQuota == null ? usableQuota : backendQuota
     const isDanger = usage > usableQuota || usableQuota != actualBackendQuota
+    const isEditing = props.edit ? true : false
 
     return (
         <>
             <GridRow className={"mb-1 items-center"}>
                 <GridColumn cols={2}>
-                    <div className="text-base">{displayName}</div>
+                    <div className="text-base break-words">{displayName}</div>
                 </GridColumn>
-                <GridColumn cols={4}>
+                <GridColumn cols={isEditing ? 5 : 4}>
                     <ResourceBar
                         capacity={originalQuota}
                         fill={usage}
@@ -35,14 +36,11 @@ const ProjectResource = (props) => {
                 </GridColumn>
                 {props.canEdit &&
                     <GridColumn cols={1}>
-                        <Button label="Edit" onClick={() => { setShowModal(true) }} />
+                        <Link to={`/${props.area}/edit/${props.categoryName}/${props.resource.name}`}
+                            state={props}>
+                            <Button>Edit</Button>
+                        </Link>
                     </GridColumn>
-                }
-                {showModal &&
-                    <EditModal
-                        {...props}
-                        setShowModal={setShowModal}
-                    />
                 }
             </GridRow>
         </>

@@ -2,7 +2,7 @@ import React from 'react'
 import useLimesStore from './lib/store/store'
 import { Unit, valueWithUnit } from './lib/unit'
 
-
+const LABEL_MARGIN = 10
 const resourceBarWrapper = "bg-theme-highest progress"
 const emptyResourceBar = "bg-theme-background-lvl-3 progress-bar shadow-inner inline-flex"
 const filledResourceBar = "text-juno-grey-light-1 bg-theme-accent has-label-if-fits shadow-md"
@@ -48,7 +48,7 @@ const ResourceBar = (props) => {
 
         //require some extra wiggle room (20px) around the label to account for UI
         //margins, and because labels that fit too tightly look dumb
-        bar.classList.toggle("label-fits", labelWidth + 20 < barWidth)
+        bar.classList.toggle("label-fits", labelWidth + LABEL_MARGIN < barWidth)
 
         //re-run this method after animations have completed
         if (!opts.delayed) {

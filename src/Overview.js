@@ -45,9 +45,9 @@ const Overview = (props) => {
                         />
                     ))
                 )}
+                <div>Usage last updated {ageDisplay} ago.</div>
             </>
         )
-
     }
 
     return (
