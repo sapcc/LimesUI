@@ -1,9 +1,9 @@
 import React from "react";
 import moment from "moment";
-import { Link, useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import Category from "./Category";
 import { byUIString } from "../lib/utils";
-import { TopNavigation, TopNavigationItem } from "juno-ui-components";
+import { Tabs, Tab, TabList, TabPanel } from "juno-ui-components";
 
 // TODO: Replace Navigation with Tab, TabList, TabPanel and Panels. Every Panel needs one TabPanel as parent.
 
@@ -12,6 +12,7 @@ const Overview = (props) => {
     Object.keys(props.overview.areas)
   );
   const { currentArea = allAreas[0] } = useParams();
+  const navigate = useNavigate();
 
   function renderArea() {
     const { areas, categories, scrapedAt, minScrapedAt, maxScrapedAt } =
@@ -57,17 +58,23 @@ const Overview = (props) => {
     );
   }
 
+  //active={area === currentArea}
   return (
     <>
-      <TopNavigation>
-        {allAreas.map((area) => (
-          <TopNavigationItem key={area} active={area === currentArea}>
-            <Link key={`/${area}`} to={`/${area}`}>
+      <Tabs>
+        <TabList>
+          {allAreas.map((area) => (
+            <Tab onClick={() => navigate(`/${area}`)} key={area}>
               {area}
-            </Link>
-          </TopNavigationItem>
-        ))}
-      </TopNavigation>
+            </Tab>
+          ))}
+          </TabList>
+          {allAreas.map((area) => (
+            <TabPanel key={area} className={"m-4"}>
+            </TabPanel>
+          ))}
+        
+      </Tabs>
       {renderArea()}
     </>
   );

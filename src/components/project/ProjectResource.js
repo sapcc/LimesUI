@@ -121,47 +121,9 @@ const ProjectResource = (props) => {
         commitment={projectCommitmentSum}
         showsCapacity={false}
         labelIsUsageOnly={props.tracksQuota ? false : true}
-        canEdit={showEdit}
+        canEdit={showEdit || props.isPanelView}
       />
     </div>
-
-    // <GridRow
-    //   className={`${
-    //     props.tracksQuota ? "mb-1" : "row usage-only"
-    //   } items-center`}
-    // >
-    //   <GridColumn cols={2}>
-    //     <div
-    //       className={`${
-    //         props.tracksQuota ? "text-base break-words" : "text-xs"
-    //       }`}
-    //     >
-    //       {displayName}
-    //     </div>
-    //   </GridColumn>
-    //   <GridColumn cols={isEditing ? 5 : 4}>
-    //     <ResourceBar
-    //       capacity={props.tracksQuota ? originalQuota : props.parentResoure.quota}
-    //       capacityLabel={valueWithUnit(originalQuota, unit)}
-    //       fill={usage}
-    //       fillLabel={valueWithUnit(usage, unit)}
-    //       commitment={projectCommitmentSum}
-    //       isDanger={isDanger}
-    //       showsCapacity={false}
-    //       labelIsUsageOnly={props.tracksQuota ? false : true}
-    //     />
-    //   </GridColumn>
-    //   {props.canEdit && props.tracksQuota && (
-    //     <GridColumn cols={1}>
-    //       <Link
-    //         to={`/${props.area}/edit/${props.categoryName}/${props.resource.name}`}
-    //         state={props}
-    //       >
-    //         <Button>Edit</Button>
-    //       </Link>
-    //     </GridColumn>
-    //   )}
-    // </GridRow>
   );
 };
 
