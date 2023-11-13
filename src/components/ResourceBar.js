@@ -1,15 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from "react";
 import { Stack } from "juno-ui-components";
 
-
-const LABEL_MARGIN = 10
-const resourceBarWrapper = ``
+const LABEL_MARGIN = 10;
+const resourceBarWrapper = ``;
 
 const barConainer = `
   mb-2 
   min-w-full 
   gap-1
-`
+`;
 
 const baseResourceBar = `
   rounded 
@@ -18,27 +17,27 @@ const baseResourceBar = `
   flex 
   p-0.5
   h-8
-`
+`;
 const emptyResourceBar = `
   bg-theme-background-lvl-2 
-  `
-const filledResourceBar =`
+  `;
+const filledResourceBar = `
   text-white 
   bg-sap-blue-3 
   has-label-if-fits 
   rounded-sm 
-  `
-const emptyExtraResourceBar =`
+  `;
+const emptyExtraResourceBar = `
   bg-theme-background-lvl-4 
 
-  `
-const filledExtraResourceBar =`
+  `;
+const filledExtraResourceBar = `
   text-white 
   bg-sap-purple-2 
   has-label-if-fits 
   rounded-sm  
-  `
-const noneResourceBar =`
+  `;
+const noneResourceBar = `
   rounded 
   border 
   border-theme-background-lvl-4 
@@ -46,12 +45,11 @@ const noneResourceBar =`
   font-bold 
   text-theme-light 
   italic
-  `
-const barLable =`
+  `;
+const barLable = `
   px-1
-`
-  
-  
+`;
+
 // TODO: Move Unit calculation to parent component.
 // TODO: Hardocde commitment data if necesary -> Restructure the component accordingly.
 const ResourceBar = (props) => {
@@ -95,7 +93,9 @@ const ResourceBar = (props) => {
 
     //require some extra wiggle room (in px) around the label to account for UI
     //margins, and because labels that fit too tightly look dumb
-    bar.querySelector('.progress-bar-label').classList.toggle('label-fits', labelWidth + LABEL_MARGIN < barWidth);
+    bar
+      .querySelector(".progress-bar-label")
+      .classList.toggle("label-fits", labelWidth + LABEL_MARGIN < barWidth);
 
     //re-run this method after animations have completed
     if (!opts.delayed) {
@@ -103,16 +103,11 @@ const ResourceBar = (props) => {
     }
   }
 
-
   function buildResourceBar() {
     // First handle the creation of an empty bar.
     if (capacity == 0 && fill == 0) {
       return (
-        <div
-          key="filled"
-          className={noneResourceBar}
-          style={{ width: "100%" }}
-        >
+        <div key="filled" className={noneResourceBar} style={{ width: "100%" }}>
           <span className="progress-bar-label">
             {showsCapacity ? "No capacity" : "No quota"}
           </span>
@@ -125,7 +120,7 @@ const ResourceBar = (props) => {
     if (fill > 0 && widthPercent < 0.5) {
       widthPercent = 0.5;
     }
-    let widthCommitment = (widthPercent * 0.2)
+    let widthCommitment = widthPercent * 0.2;
     //special cases: purple
     let className = "progress-bar";
     if (fill == capacity) {
@@ -135,10 +130,16 @@ const ResourceBar = (props) => {
     const label = labelIsUsageOnly ? (
       <span className={`progress-bar-label ${barLable}`}>{fillLabel}</span>
     ) : (
-      <span className={`progress-bar-label ${barLable}`}>{fillLabel}/{capacityLabel} committed</span>
+      <span className={`progress-bar-label ${barLable}`}>
+        {fillLabel}/{capacityLabel} committed
+      </span>
     );
     const extraFillLable = fill > capacity ? fill - capacity : "0";
-    const extraLable = <span className={`progress-bar-label ${barLable}`}>{extraFillLable}/{extraCapacityLabel}</span>;
+    const extraLable = (
+      <span className={`progress-bar-label ${barLable}`}>
+        {extraFillLable}/{extraCapacityLabel}
+      </span>
+    );
 
     let filled = className;
     let barStyleFilled = { width: widthPercent + "%" };
@@ -150,55 +151,65 @@ const ResourceBar = (props) => {
       // barStyleEmpty["opacity"] = 0.6;
     }
 
-
-    const resourceBar = 
-
-      <Stack distribution="between" className={`process-bar-container ${barConainer}`}>
-                <div className={`main-bar ${baseResourceBar} ${emptyResourceBar}`} style={{ width: "100%" }}>
-                  <div
-                    key="filled"
-                    className={`main-fill ${filled} ${filledResourceBar}`}
-                    style={fill > 0 ? barStyleFilled : { width: "0%" }}
-                  >
-                    {/* {label} */}
-                  </div>
-                  {/* <div
+    const resourceBar = (
+      <Stack
+        distribution="between"
+        className={`process-bar-container ${barConainer}`}
+      >
+        <div
+          className={`main-bar ${baseResourceBar} ${emptyResourceBar}`}
+          style={{ width: "100%" }}
+        >
+          <div
+            key="filled"
+            className={`main-fill ${filled} ${filledResourceBar}`}
+            style={fill > 0 ? barStyleFilled : { width: "0%" }}
+          >
+            {/* {label} */}
+          </div>
+          {/* <div
                     key="empty"
                     className="progress-bar has-label-unless-fits"
                     style={barStyleEmpty}
                   >
                     {label}
                   </div> */}
-                  {label}
-                </div>
+          {label}
+        </div>
 
-          {commitment ? [
-                <div className={`extra-bar ${baseResourceBar} ${emptyExtraResourceBar}`} style={{ width: "30%" }}>
-                    <div
-                      key="extra-filled"
-                      className={`extra-fill ${filled} ${filledExtraResourceBar}`}
-                      style={fill > capacity ? barStyleCommitment : { width: "0%" }}
-                    >
-                      
-                    </div>
-                    {extraLable}
-                    {/* <div
+        {commitment ? (
+          <>
+            <div
+              className={`extra-bar ${baseResourceBar} ${emptyExtraResourceBar}`}
+              style={{ width: "30%" }}
+            >
+              <div
+                key="extra-filled"
+                className={`extra-fill ${filled} ${filledExtraResourceBar}`}
+                style={fill > capacity ? barStyleCommitment : { width: "0%" }}
+              ></div>
+              {extraLable}
+              {/* <div
                       key="extra-mpty"
                       className="progress-bar has-label-unless-fits"
                       style={barStyleEmpty}
                     >
                       {extraLable}
                     </div> */}
-              </div>
-          ]:""}
-    </Stack>
+            </div>
+          </>
+        ) : (
+          ""
+        )}
+      </Stack>
+    );
 
     return resourceBar;
   }
 
   return (
     <>
-    <style>
+      <style>
         {`
           .label-fits {
             color:white;
@@ -207,9 +218,9 @@ const ResourceBar = (props) => {
         `}
       </style>
       <div className={resourceBarWrapper} ref={outerDivRef}>
-        {buildResourceBar()}  
+        {buildResourceBar()}
       </div>
-      </>
+    </>
   );
 };
 
