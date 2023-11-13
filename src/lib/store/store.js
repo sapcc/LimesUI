@@ -10,6 +10,15 @@ const limesStore = (set) => ({
     set((state) => ({ commitments: commitments })),
   addCommitment: (commitment) =>
     set((state) => ({ commitments: [...state.commitments, commitment] })),
+  removeCommitment: (commitmentID) =>
+    set((state) => {
+      let newCommitments = state.commitments;
+      newCommitments = newCommitments.filter(
+        (commitment) => commitment.id !== commitmentID
+      );
+      console.log(newCommitments);
+      return { ...state, commitments: newCommitments };
+    }),
 
   ////////////////////////////////////////////////////////////////////////////////
   // helper that need to restructure a Limes JSON into a triplet of

@@ -1,7 +1,7 @@
 // Requeues are caused by window focus refetching.
 // More details: https://tanstack.com/query/v4/docs/react/guides/window-focus-refetching
 
-function responseHandler(response, meta) {
+function responseHandler(response, meta, commitmentID = null) {
   if (!response.ok) {
     throw new Error(
       `Network error while fetching project data for ${meta.projectID}`
@@ -11,6 +11,9 @@ function responseHandler(response, meta) {
     throw new Error(
       `${response.statusText} while fetching project data for ${meta.projectID}`
     );
+  }
+  if (commitmentID) {
+    return commitmentID
   }
   return response.json();
 }
@@ -45,7 +48,7 @@ export const postCommitments = async ({ payload, meta }) => {
   return responseHandler(response, meta);
 };
 
-export const deleteCommitments = async ({commitmentID, meta}) => {
+export const deleteCommitments = async ({ commitmentID, meta }) => {
   const url = `${meta.endpoint}/v1/domains/${meta.domainID}/projects/${meta.projectID}/commitments/${commitmentID}`;
   const response = await fetch(url, {
     method: "DELETE",
@@ -54,5 +57,5 @@ export const deleteCommitments = async ({commitmentID, meta}) => {
       "X-Auth-Token": meta.token,
     },
   });
-  return responseHandler(response, meta);
+  return responseHandler(response, meta, commitmentID);
 };

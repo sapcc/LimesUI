@@ -20,6 +20,7 @@ const EditPanel = (props) => {
   const newCommitment = useStore((state) => state.commitment);
   const setCommitment = useStore((state) => state.setCommitment);
   const addCommitment = useStore((state) => state.addCommitment);
+  const removeCommitment = useStore((state) => state.removeCommitment);
   const postCommitmentQuery = useMutation({
     mutationFn: postCommitments,
     onSuccess: (data) => {
@@ -28,6 +29,9 @@ const EditPanel = (props) => {
   });
   const deleteCommitmentQuery = useMutation({
     mutationFn: deleteCommitments,
+    onSuccess: (data) => {
+      removeCommitment(data);
+    },
   });
   const isSubmitting = useStore((state) => state.isSubmitting);
   const setIsSubmitting = useStore((state) => state.setIsSubmitting);
@@ -74,7 +78,7 @@ const EditPanel = (props) => {
       commitmentID: newCommitment.id,
       meta: { ...queryMeta },
     });
-    console.log("DELETING: ", newCommitment.id)
+    console.log("DELETING: ", newCommitment.id);
     setCommitment(initialCommitmentObject);
     setIsDeleting(false);
   }
