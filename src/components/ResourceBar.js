@@ -63,6 +63,7 @@ const ResourceBar = (props) => {
     showsCapacity,
     labelIsUsageOnly,
     extraCapacityLabel,
+    canEdit,
   } = props;
 
   const disabled = false;
@@ -115,14 +116,17 @@ const ResourceBar = (props) => {
       );
     }
 
+    console.log(fill, capacity, commitment, labelIsUsageOnly)
+
     let widthPercent = Math.round(1000 * (fill / capacity)) / 10;
+    console.log(widthPercent)
     // ensure that a non-zero-wide bar is at least somewhat visible
     if (fill > 0 && widthPercent < 0.5) {
       widthPercent = 0.5;
     }
     let widthCommitment = widthPercent * 0.2;
     //special cases: purple
-    let className = "progress-bar";
+    let className = commitment > 0 || labelIsUsageOnly || !canEdit ? "progress-bar" : "progress-bar bg-sap-purple-2";
     if (fill == capacity) {
       className = "progress-bar bg-sap-purple-2";
     }
@@ -131,10 +135,10 @@ const ResourceBar = (props) => {
       <span className={`progress-bar-label ${barLable}`}>{fillLabel}</span>
     ) : (
       <span className={`progress-bar-label ${barLable}`}>
-        {fillLabel}/{capacityLabel} committed
+        {fillLabel}/{capacityLabel} {commitment > 0 ? "committed" : "quota used"}
       </span>
     );
-    const extraFillLable = fill > capacity ? fill - capacity : "0";
+    const extraFillLable = fill >= capacity ? fill - capacity : "0";
     const extraLable = (
       <span className={`progress-bar-label ${barLable}`}>
         {extraFillLable}/{extraCapacityLabel}
@@ -178,7 +182,6 @@ const ResourceBar = (props) => {
         </div>
 
         {commitment ? (
-          <>
             <div
               className={`extra-bar ${baseResourceBar} ${emptyExtraResourceBar}`}
               style={{ width: "30%" }}
@@ -197,7 +200,6 @@ const ResourceBar = (props) => {
                       {extraLable}
                     </div> */}
             </div>
-          </>
         ) : (
           ""
         )}

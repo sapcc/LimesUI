@@ -49,6 +49,7 @@ const ProjectResource = (props) => {
   } = props.resource;
   const unit = new Unit(unitName || "");
   const actualBackendQuota = backendQuota == null ? usableQuota : backendQuota;
+  const showEdit = props.canEdit && props.tracksQuota && hasDurations && hasAZs;
   const isDanger = usage > usableQuota || usableQuota != actualBackendQuota;
   const isEditing = props.edit ? true : false;
 
@@ -74,7 +75,7 @@ const ProjectResource = (props) => {
         >
           {displayName}
         </div>
-        {props.canEdit && props.tracksQuota && hasDurations && hasAZs && (
+        {showEdit && (
           <Link
             to={`/${props.area}/edit/${props.categoryName}/${props.resource.name}`}
             state={props}
@@ -95,14 +96,32 @@ const ProjectResource = (props) => {
         )}
       </Stack>
       <ResourceBar
-        capacity={props.tracksQuota ? originalQuota : props.parentResoure.quota}
-        capacityLabel={valueWithUnit(originalQuota, unit)}
-        extraCapacityLabel={valueWithUnit(originalQuota * 0.2, unit)}
+        capacity={
+          props.tracksQuota
+            ? projectCommitmentSum > 0
+              ? projectCommitmentSum
+              : originalQuota
+            : props.parentResoure.quota
+        }
+        capacityLabel={valueWithUnit(
+          projectCommitmentSum > 0 ? projectCommitmentSum : originalQuota,
+          unit
+        )}
+        extraCapacityLabel={valueWithUnit(
+          originalQuota - projectCommitmentSum,
+          unit
+        )}
         fill={usage}
-        fillLabel={valueWithUnit(usage, unit)}
+        fillLabel={valueWithUnit(
+          usage > projectCommitmentSum && projectCommitmentSum > 0
+            ? projectCommitmentSum
+            : usage,
+          unit
+        )}
         commitment={projectCommitmentSum}
         showsCapacity={false}
         labelIsUsageOnly={props.tracksQuota ? false : true}
+        canEdit={showEdit}
       />
     </div>
 
