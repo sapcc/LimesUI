@@ -116,10 +116,7 @@ const ResourceBar = (props) => {
       );
     }
 
-    console.log(fill, capacity, commitment, labelIsUsageOnly)
-
     let widthPercent = Math.round(1000 * (fill / capacity)) / 10;
-    console.log(widthPercent)
     // ensure that a non-zero-wide bar is at least somewhat visible
     if (fill > 0 && widthPercent < 0.5) {
       widthPercent = 0.5;
