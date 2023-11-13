@@ -81,7 +81,7 @@
               },
               "quota": 800,
               "usable_quota": 800,
-              "usage": 58,
+              "usage": 850,
               "annotations": {
                 "can_autoscale": "true"
               }

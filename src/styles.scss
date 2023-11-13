@@ -3,92 +3,91 @@
 @tailwind components;
 @tailwind utilities;
 
-
 /* If necessary, app styles can be added below */
 
-.btn {
-  @apply font-bold bg-theme-background-lvl-4 text-theme-default py-2 px-3 flex-initial justify-center rounded;
-}
+// .btn {
+//   @apply font-bold bg-theme-background-lvl-4 text-theme-default py-2 px-3 flex-initial justify-center rounded;
+// }
 
-.progress {
-  position: relative; /* required for position:absolute on children */
-  font-weight: bold;
+// .progress {
+  // position: relative; /* required for position:absolute on children */
+  // font-weight: bold;
 
-  .progress-bar-before-overcommit {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    background: transparent;
-  }
+  // .progress-bar-before-overcommit {
+  //   position: absolute;
+  //   top: 0;
+  //   bottom: 0;
+  //   left: 0;
+  //   background: transparent;
+  // }
 
-  .progress-bar-after-overcommit {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    right: 50;
-    background: rgba(255, 255, 255, 0.5);
-  }
+  // .progress-bar-after-overcommit {
+  //   position: absolute;
+  //   top: 0;
+  //   bottom: 0;
+  //   right: 50;
+  //   background: rgba(255, 255, 255, 0.5);
+  // }
 
-  .progress-bar {
-    font-size: 13px;
-    border-radius: 5px;
+  // .progress-bar {
+  //   font-size: 13px;
+  //   border-radius: 5px;
 
-    &.progress-bar-disabled {
-      background: repeating-linear-gradient(
-        -55deg,
-        transparent,
-        transparent 3px,
-        #7d7d7d 5px,
-        #7d7d7d 5px
-      );
-    }
+  //   &.progress-bar-disabled {
+  //     background: repeating-linear-gradient(
+  //       -55deg,
+  //       transparent,
+  //       transparent 3px,
+  //       #7d7d7d 5px,
+  //       #7d7d7d 5px
+  //     );
+  //   }
 
-    &.progress-bar-striped {
-      background: repeating-linear-gradient(
-        -55deg,
-        transparent,
-        transparent 3px,
-        red 5px,
-        red 5px
-      );
-    }
+  //   &.progress-bar-striped {
+  //     background: repeating-linear-gradient(
+  //       -55deg,
+  //       transparent,
+  //       transparent 3px,
+  //       red 5px,
+  //       red 5px
+  //     );
+  //   }
 
-    &.has-label,
-    &.has-label-if-fits,
-    &.has-label-unless-fits {
-      text-align: left;
-      .progress-bar-label {
-        padding-left: 0.5em;
-      }
-    }
-  }
+  //   &.has-label,
+  //   &.has-label-if-fits,
+  //   &.has-label-unless-fits {
+  //     text-align: left;
+  //     .progress-bar-label {
+  //       padding-left: 0.5em;
+  //     }
+  //   }
+  // }
 
-  &.label-fits .has-label-unless-fits .progress-bar-label {
-    display: none;
-  }
-  &:not(.label-fits) .has-label-if-fits .progress-bar-label {
-    display: none;
-  }
-}
+//   &.label-fits .has-label-unless-fits .progress-bar-label {
+//     display: none;
+//   }
+//   &:not(.label-fits) .has-label-if-fits .progress-bar-label {
+//     display: none;
+//   }
+// }
 
-.row.usage-only {
-  /* group with the previous resource (probably the one that this one is "contained_in") */
-  position: relative;
-  top: -0.5rem;
+// .row.usage-only {
+//   /* group with the previous resource (probably the one that this one is "contained_in") */
+//   position: relative;
+//   top: -0.5rem;
 
-  .progress {
-    /* 12px less than normal (20px) to compensate the displacement above */
-    margin-bottom: 6px;
+//   .progress {
+//     /* 12px less than normal (20px) to compensate the displacement above */
+//     margin-bottom: 6px;
 
-    /* smaller fontsizes and dimensions inside the bar */
-    height: 14px;
-    .progress-bar {
-      line-height: 14px;
-      font-size: 12px;
-    }
-  }
-}
+//     /* smaller fontsizes and dimensions inside the bar */
+//     height: 14px;
+//     .progress-bar {
+//       line-height: 14px;
+//       font-size: 12px;
+//     }
+//   }
+// }
 
 // .svg-bg-test-big-file {
 //   background: left 80px no-repeat url('assets/map.svg')
