@@ -16,29 +16,32 @@ const barGroupContainer = `
     border-theme-background-lvl-5 
     hover:shadow 
     transition-all
-`
+`;
 const barHeader = `
     mb-2 
     min-w-full
-`
-const barTitle =`
+`;
+const barTitle = `
     font-bold 
     text-theme-default
-`
-const azTitle =`
+`;
+const azTitle = `
     text-theme-default 
     text-sm
-`
+`;
 
 const ProjectResource = (props) => {
   const commitments = useStore((state) => state.commitments);
   const isCommitting = useStore((state) => state.isCommitting);
   const setIsCommitting = useStore((state) => state.setIsCommitting);
-  const hasAZs = Object.keys(props.resource.per_az || {}).length > 0 ? true : false
-  const hasDurations = props.resource?.commitment_config?.durations ? true : false
+  const hasAZs =
+    Object.keys(props.resource.per_az || {}).length > 0 ? true : false;
+  const hasDurations = props.resource?.commitment_config?.durations
+    ? true
+    : false;
   const displayName = t(props.resource.name);
   const {
-    quota: originalQuota,  //commitment + right
+    quota: originalQuota, //commitment + right
     usage,
     usable_quota: usableQuota,
     backend_quota: backendQuota,
@@ -63,36 +66,45 @@ const ProjectResource = (props) => {
   // TODO: commitment is a hardcoded value. Replace it with the real value when available.
   return (
     <div className={`bar-card ${barGroupContainer}`}>
-    <Stack distribution="between" className={`bar-header ${barHeader}`}>
+      <Stack distribution="between" className={`bar-header ${barHeader}`}>
         <div
           className={
-            props.tracksQuota ?  `bar-title ${barTitle}` : `az-title ${azTitle}`
+            props.tracksQuota ? `bar-title ${barTitle}` : `az-title ${azTitle}`
           }
         >
           {displayName}
         </div>
-        {props.canEdit && props.tracksQuota && (
+        {props.canEdit && props.tracksQuota && hasDurations && hasAZs && (
           <Link
             to={`/${props.area}/edit/${props.categoryName}/${props.resource.name}`}
             state={props}
           >
-              <Button size="small" variant="subdued">
+            <Button size="small" variant="subdued">
               Edit
-              </Button>
+            </Button>
           </Link>
         )}
-    </Stack>
-    <ResourceBar
-          capacity={props.tracksQuota ? originalQuota : props.parentResoure.quota}
-          capacityLabel={valueWithUnit(originalQuota, unit)}
-          extraCapacityLabel={valueWithUnit(originalQuota*0.2, unit)}
-          fill={usage}
-          fillLabel={valueWithUnit(usage, unit)}
-          commitment={projectCommitmentSum}
-          showsCapacity={false}
-          labelIsUsageOnly={props.tracksQuota ? false : true}
-        />
-  </div>
+        {props.isPanelView && (
+          <Button
+            onClick={() => setIsCommitting(true)}
+            variant="primary"
+            disabled={isCommitting}
+          >
+            Add Commitment
+          </Button>
+        )}
+      </Stack>
+      <ResourceBar
+        capacity={props.tracksQuota ? originalQuota : props.parentResoure.quota}
+        capacityLabel={valueWithUnit(originalQuota, unit)}
+        extraCapacityLabel={valueWithUnit(originalQuota * 0.2, unit)}
+        fill={usage}
+        fillLabel={valueWithUnit(usage, unit)}
+        commitment={projectCommitmentSum}
+        showsCapacity={false}
+        labelIsUsageOnly={props.tracksQuota ? false : true}
+      />
+    </div>
 
     // <GridRow
     //   className={`${
