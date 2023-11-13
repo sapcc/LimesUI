@@ -1,9 +1,15 @@
 import { create } from "zustand";
+import { COMMITMENTID } from "../constants";
 
 const limesStore = (set) => ({
+  projectData: null,
+  setProjectData: (projectData) =>
+    set((state) => ({ projectData: projectData })),
   commitments: null,
   setCommitments: (commitments) =>
     set((state) => ({ commitments: commitments })),
+  addCommitment: (commitment) =>
+    set((state) => ({ commitments: [...state.commitments, commitment] })),
 
   ////////////////////////////////////////////////////////////////////////////////
   // helper that need to restructure a Limes JSON into a triplet of
@@ -23,7 +29,7 @@ const limesStore = (set) => ({
     // matching resources are removed from the result.)
 
     // `metadata` is what multiple levels need (e.g. bursting multiplier).
-    var { services: serviceList, ...metadata } = data.data.project;
+    var { services: serviceList, ...metadata } = data.project;
 
     //apply `resourceFilter`
     if (resourceFilter !== null) {
@@ -54,7 +60,9 @@ const limesStore = (set) => ({
           resources: [],
         };
       }
+
       for (let res of resourceList) {
+        filterAZs(res);
         categories[res.category || serviceType].resources.push(res);
       }
     }
@@ -104,6 +112,19 @@ const limesStore = (set) => ({
   },
 });
 
+// when per_AZ contains "unknown" oder "any": do not show it as an editable AZ.
+function filterAZs(res) {
+  let validAZs;
+  if (res?.per_az !== undefined) {
+    validAZs = Object.entries(res.per_az).filter(
+      (az) => az[0] !== "unknown" && az[0] !== "any"
+    );
+    const filteredAZs = Object.fromEntries(validAZs);
+    res.per_az = filteredAZs;
+  }
+  return;
+}
+
 const objectFromEntries = (entries) => {
   const result = {};
   for (let [k, v] of entries) {
@@ -112,8 +133,38 @@ const objectFromEntries = (entries) => {
   return result;
 };
 
+//used to reset the last commitment to default values.
+export const initialCommitmentObject = {
+  id: COMMITMENTID,
+  service_type: null,
+  resource_name: null,
+  availability_zone: null,
+  amount: 0,
+  unit: "",
+  duration: "",
+};
+const createCommitmentStore = (set) => ({
+  //Used to toggle the edit mode and the commitment button.
+  isCommitting: false,
+  setIsCommitting: (setIsCommitting) =>
+    set((state) => ({ isCommitting: setIsCommitting })),
+  //Used to open the submit modal
+  isSubmitting: false,
+  setIsSubmitting: (isSubmitting) =>
+    set((state) => ({ isSubmitting: isSubmitting })),
+  //Used to open the delete modal
+  isDeleting: false,
+  setIsDeleting: (isDeleting) => set((state) => ({ isDeleting: isDeleting })),
+  commitment: { ...initialCommitmentObject },
+  setCommitment: (commitment) =>
+    set((state) => ({ commitment: { ...commitment } })),
+  toast: { message: null },
+  setToast: (toast) => set((state) => ({ toast: { message: toast } })),
+});
+
 const useStore = create((...a) => ({
   ...limesStore(...a),
+  ...createCommitmentStore(...a),
 }));
 
 export default useStore;

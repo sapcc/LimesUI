@@ -75,6 +75,17 @@
             "unit": "MiB",
             "duration": "1 year",
             "requested_at": 1696604400,
+            "confirmed_at": "",
+            "expires_at": ""
+        },
+        {
+            "id": 42021,
+            "service_type": "compute",
+            "resource_name": "server_groups",
+            "availability_zone": "any",
+            "amount": 6,
+            "duration": "1 year",
+            "requested_at": 1696604400,
             "confirmed_at": 1696636800,
             "expires_at": 1759795200
         }

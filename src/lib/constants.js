@@ -1,3 +1,5 @@
+export const COMMITMENTID = "AddCommitment"
+
 export const STRINGS = {
   autoscaling: "Autoscaling",
   availability_zones: "Availability Zones",

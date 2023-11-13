@@ -22,11 +22,7 @@
                   "3 years"
                 ]
               },
-              "per_az": {
-                "any": {
-                  "usage": 160
-                }
-              },
+              "per_az": "",
               "quota": 4000,
               "usable_quota": 4000,
               "usage": 160,

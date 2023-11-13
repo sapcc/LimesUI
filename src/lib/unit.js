@@ -113,6 +113,10 @@ export class Unit {
       return { error: "syntax" };
     }
 
+    if(baseMatch[1] == 0) {
+      return {error: "cannot create empty commitments."}
+    }
+
     //strip base unit if provided (e.g. "KiB" -> "Ki", e.g. "B" => "")
     const unitMatch = new RegExp(`^(.*)${this.unitData.base}$`, "i").exec(
       baseMatch[2]
