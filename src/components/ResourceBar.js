@@ -156,7 +156,7 @@ const ResourceBar = (props) => {
       >
         <div
           className={`main-bar ${baseResourceBar} ${emptyResourceBar}`}
-          style={{ width: "100%" }}
+          style={commitment > 0 ? { width: "50%" } : {width: "100%"}}
         >
           <div
             key="filled"
