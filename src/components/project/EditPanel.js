@@ -65,7 +65,6 @@ const EditPanel = (props) => {
     }
   });
   const [currentAZ, setCurrentAZ] = React.useState(currentResource.per_az[0][0]);
-  console.log(currentAZ)
 
   function postCommitment() {
     setCommitmentIsLoading(true);
