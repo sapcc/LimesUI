@@ -2,6 +2,10 @@ import { create } from "zustand";
 import { COMMITMENTID } from "../constants";
 
 const limesStore = (set) => ({
+  //requery API after commit POST to get fresh commitment data for the resource bars.
+  refetchProjectAPI: false,
+  setRefetchProjectAPI: (refetchProjectAPI) =>
+    set((state) => ({ refetchProjectAPI: refetchProjectAPI })),
   projectData: null,
   setProjectData: (projectData) =>
     set((state) => ({ projectData: projectData })),
@@ -142,7 +146,7 @@ function filterAZs(res) {
     validAZs = Object.entries(res.per_az).filter(
       (az) => az[0] !== "unknown" && az[0] !== "any"
     );
-    const filteredAZs = Object.fromEntries(validAZs);
+    const filteredAZs = validAZs;
     res.per_az = filteredAZs;
   }
   return;

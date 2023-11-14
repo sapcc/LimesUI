@@ -9,16 +9,16 @@ const AvailabilityZoneNav = (props) => {
   return (
     <Tabs>
       <TabList>
-        {Object.keys(props.az).map((az) => (
+        {props.az.map((az) => (
           <Tab
             key={az}
             onClick={() => {
-              props.setCurrentAZ(az);
+              props.setCurrentAZ(az[0]);
               setIsCommitting(false);
               setCommitment(initialCommitmentObject);
             }}
           >
-            {az}
+            {az[0]}
           </Tab>
         ))}
       </TabList>

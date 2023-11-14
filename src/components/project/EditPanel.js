@@ -22,9 +22,11 @@ const EditPanel = (props) => {
   const setCommitmentIsLoading = useStore(
     (state) => state.setCommitmentIsLoading
   );
+  const setRefetchProjectAPI = useStore((state) => state.setRefetchProjectAPI);
   const postCommitmentQuery = useMutation({
     mutationFn: postCommitments,
     onSuccess: (data) => {
+      setRefetchProjectAPI(true);
       setCommitmentIsLoading(false);
       addCommitment(data.commitment);
     },
@@ -62,10 +64,10 @@ const EditPanel = (props) => {
       return res;
     }
   });
-  const [currentAZ, setCurrentAZ] = React.useState(Object.keys(res.per_az)[0]);
+  const [currentAZ, setCurrentAZ] = React.useState(res.per_az[0][0]);
 
   React.useEffect(() => {
-    setCurrentAZ(Object.keys(res.per_az)[0]);
+    setCurrentAZ(res.per_az[0][0]);
   }, [res]);
 
   function postCommitment() {

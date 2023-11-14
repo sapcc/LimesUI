@@ -31,7 +31,6 @@ const azTitle = `
 `;
 
 const ProjectResource = (props) => {
-  const commitments = useStore((state) => state.commitments);
   const isCommitting = useStore((state) => state.isCommitting);
   const setIsCommitting = useStore((state) => state.setIsCommitting);
   const hasAZs =
@@ -47,20 +46,22 @@ const ProjectResource = (props) => {
     usable_quota: usableQuota,
     backend_quota: backendQuota,
     unit: unitName,
+    per_az: availabilityZones,
   } = props.resource;
   const unit = new Unit(unitName || "");
   const showEdit = props.canEdit && props.tracksQuota && hasDurations && hasAZs;
 
-  //commitmentCalculation
+  //commitmentCalculation for the main status bar.
   const projectCommitmentSum = React.useMemo(() => {
-    let commitmentSum = 0;
-    commitments.forEach((commitment) => {
-      if (commitment.resource_name === props.resource.name) {
-        commitmentSum += commitment.amount;
-      }
+    let totalCommitmentSum = 0;
+    availabilityZones.forEach((az) => {
+      const commitments = Object.values(az[1].committed || {});
+      commitments.forEach((commitmentValue) => {
+        totalCommitmentSum += commitmentValue;
+      });
     });
-    return commitmentSum;
-  }, [commitments]);
+    return totalCommitmentSum;
+  }, [availabilityZones]);
 
   //Define values that should be shown on the UI as label text
   const commitmentOrQuota =

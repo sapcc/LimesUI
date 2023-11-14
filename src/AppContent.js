@@ -12,6 +12,8 @@ import useStore from "./lib/store/store";
 
 // This is your starting point of tour application
 const AppContent = (props) => {
+  const refetchProjectAPI = useStore((state) => state.refetchProjectAPI);
+  const setRefetchProjectAPI = useStore((state) => state.setRefetchProjectAPI);
   const projectQueryResult = useQuery({
     queryKey: ["projectData"],
     queryFn: fetchProjectData,
@@ -31,6 +33,12 @@ const AppContent = (props) => {
   const projectData = useStore((state) => state.projectData);
 
   React.useEffect(() => {
+    if (!refetchProjectAPI) return;
+    projectQueryResult.refetch();
+    setRefetchProjectAPI(false);
+  }, [refetchProjectAPI]);
+
+  React.useEffect(() => {
     // Initial Commitment-API data fetch.
     if (!projectAPIData) return;
     setProjectData(formatData(projectAPIData));
@@ -43,7 +51,10 @@ const AppContent = (props) => {
 
   return (
     <Container>
-      {projectData && commitments && !projectIsLoading && !commitmenIsLoading ? (
+      {projectData &&
+      commitments &&
+      !projectIsLoading &&
+      !commitmenIsLoading ? (
         console.log(projectData) ||
         console.log(commitments) || (
           <HashRouter>
