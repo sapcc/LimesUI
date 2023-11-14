@@ -7,16 +7,30 @@ const limesStore = (set) => ({
     set((state) => ({ projectData: projectData })),
   commitments: null,
   setCommitments: (commitments) =>
-    set((state) => ({ commitments: commitments })),
+    set((state) => {
+      commitments.sort((a, b) => {
+        if (a.requested_at < b.requested_at) {
+          return 1;
+        }
+        if (a.requested_at > b.requested_at) {
+          return -1;
+        }
+        return 0;
+      });
+      return { ...state, commitments: commitments };
+    }),
   addCommitment: (commitment) =>
-    set((state) => ({ commitments: [...state.commitments, commitment] })),
+    set((state) => {
+      const commitments = [...state.commitments];
+      commitments.unshift(commitment);
+      return { ...state, commitments: commitments };
+    }),
   removeCommitment: (commitmentID) =>
     set((state) => {
       let newCommitments = state.commitments;
       newCommitments = newCommitments.filter(
         (commitment) => commitment.id !== commitmentID
       );
-      console.log(newCommitments);
       return { ...state, commitments: newCommitments };
     }),
 
@@ -164,9 +178,15 @@ const createCommitmentStore = (set) => ({
   //Used to open the delete modal
   isDeleting: false,
   setIsDeleting: (isDeleting) => set((state) => ({ isDeleting: isDeleting })),
+  deleteIsLoading: false,
+  setDeleteIsLoading: (loading) =>
+    set((state) => ({ deleteIsLoading: loading })),
   commitment: { ...initialCommitmentObject },
   setCommitment: (commitment) =>
     set((state) => ({ commitment: { ...commitment } })),
+  commitmentIsLoading: false,
+  setCommitmentIsLoading: (loading) =>
+    set((state) => ({ commitmentIsLoading: loading })),
   toast: { message: null },
   setToast: (toast) => set((state) => ({ toast: { message: toast } })),
 });

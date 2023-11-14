@@ -50,16 +50,16 @@ const barLable = `
   px-1
 `;
 
-// TODO: Move Unit calculation to parent component.
-// TODO: Hardocde commitment data if necesary -> Restructure the component accordingly.
 const ResourceBar = (props) => {
   const outerDivRef = React.useRef(null);
   const {
     capacity,
     capacityLabel,
+    extraFillLabel,
     fill,
     fillLabel,
     commitment,
+    extraBarValue,
     showsCapacity,
     labelIsUsageOnly,
     extraCapacityLabel,
@@ -121,35 +121,32 @@ const ResourceBar = (props) => {
     if (fill > 0 && widthPercent < 0.5) {
       widthPercent = 0.5;
     }
-    let widthCommitment = widthPercent * 0.2;
+    let widthCommitment =
+      Math.round((1000 * (fill - capacity)) / extraBarValue) / 10;
     //special cases: purple
-    let className = commitment > 0 || labelIsUsageOnly || !canEdit ? "progress-bar" : "progress-bar bg-sap-purple-2";
-    if (fill == capacity) {
-      className = "progress-bar bg-sap-purple-2";
-    }
+    let className =
+      commitment > 0 || labelIsUsageOnly || !canEdit
+        ? "progress-bar"
+        : "progress-bar bg-sap-purple-2";
 
-    const label = labelIsUsageOnly ? (
-      <span className={`progress-bar-label ${barLable}`}>{fillLabel}</span>
-    ) : (
+    const label = (
       <span className={`progress-bar-label ${barLable}`}>
-        {fillLabel}/{capacityLabel} {commitment > 0 ? "committed" : "quota used"}
+        {fillLabel}/{capacityLabel}{" "}
+        {commitment > 0 ? "committed" : "quota used"}
       </span>
     );
-    const extraFillLable = fill >= capacity ? fill - capacity : "0";
+
     const extraLable = (
       <span className={`progress-bar-label ${barLable}`}>
-        {extraFillLable}/{extraCapacityLabel}
+        {extraFillLabel}/{extraCapacityLabel}
       </span>
     );
 
     let filled = className;
     let barStyleFilled = { width: widthPercent + "%" };
     let barStyleCommitment = { width: widthCommitment + "%" };
-    let barStyleEmpty = {};
     if (disabled) {
       filled = "progress-bar progress-bar-disabled has-label";
-      // barStyleFilled["opacity"] = 0.6;
-      // barStyleEmpty["opacity"] = 0.6;
     }
 
     const resourceBar = (
@@ -165,38 +162,22 @@ const ResourceBar = (props) => {
             key="filled"
             className={`main-fill ${filled} ${filledResourceBar}`}
             style={fill > 0 ? barStyleFilled : { width: "0%" }}
-          >
-            {/* {label} */}
-          </div>
-          {/* <div
-                    key="empty"
-                    className="progress-bar has-label-unless-fits"
-                    style={barStyleEmpty}
-                  >
-                    {label}
-                  </div> */}
+          ></div>
           {label}
         </div>
 
         {commitment ? (
+          <div
+            className={`extra-bar ${baseResourceBar} ${emptyExtraResourceBar}`}
+            style={{ width: "50%" }}
+          >
             <div
-              className={`extra-bar ${baseResourceBar} ${emptyExtraResourceBar}`}
-              style={{ width: "30%" }}
-            >
-              <div
-                key="extra-filled"
-                className={`extra-fill ${filled} ${filledExtraResourceBar}`}
-                style={fill > capacity ? barStyleCommitment : { width: "0%" }}
-              ></div>
-              {extraLable}
-              {/* <div
-                      key="extra-mpty"
-                      className="progress-bar has-label-unless-fits"
-                      style={barStyleEmpty}
-                    >
-                      {extraLable}
-                    </div> */}
-            </div>
+              key="extra-filled"
+              className={`extra-fill ${filled} ${filledExtraResourceBar}`}
+              style={fill > capacity ? barStyleCommitment : { width: "0%" }}
+            ></div>
+            {extraLable}
+          </div>
         ) : (
           ""
         )}

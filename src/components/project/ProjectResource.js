@@ -40,6 +40,7 @@ const ProjectResource = (props) => {
     ? true
     : false;
   const displayName = t(props.resource.name);
+  const { tracksQuota, parentResoure } = { ...props };
   const {
     quota: originalQuota, //commitment + right
     usage,
@@ -48,10 +49,7 @@ const ProjectResource = (props) => {
     unit: unitName,
   } = props.resource;
   const unit = new Unit(unitName || "");
-  const actualBackendQuota = backendQuota == null ? usableQuota : backendQuota;
   const showEdit = props.canEdit && props.tracksQuota && hasDurations && hasAZs;
-  const isDanger = usage > usableQuota || usableQuota != actualBackendQuota;
-  const isEditing = props.edit ? true : false;
 
   //commitmentCalculation
   const projectCommitmentSum = React.useMemo(() => {
@@ -64,7 +62,20 @@ const ProjectResource = (props) => {
     return commitmentSum;
   }, [commitments]);
 
-  // TODO: commitment is a hardcoded value. Replace it with the real value when available.
+  //Define values that should be shown on the UI as label text
+  const commitmentOrQuota =
+    projectCommitmentSum > 0 ? projectCommitmentSum : originalQuota;
+
+  const showCommitmentOrUsage =
+    usage > projectCommitmentSum && projectCommitmentSum > 0
+      ? projectCommitmentSum
+      : usage;
+
+  const extraBarValue = originalQuota - projectCommitmentSum;
+
+  const extraFillLabel =
+    usage >= projectCommitmentSum ? usage - projectCommitmentSum : "0";
+
   return (
     <div className={`bar-card ${barGroupContainer}`}>
       <Stack distribution="between" className={`bar-header ${barHeader}`}>
@@ -96,29 +107,17 @@ const ProjectResource = (props) => {
         )}
       </Stack>
       <ResourceBar
-        capacity={
-          props.tracksQuota
-            ? projectCommitmentSum > 0
-              ? projectCommitmentSum
-              : originalQuota
-            : props.parentResoure.quota
-        }
+        capacity={tracksQuota ? commitmentOrQuota : parentResoure.quota}
         capacityLabel={valueWithUnit(
-          projectCommitmentSum > 0 ? projectCommitmentSum : originalQuota,
+          commitmentOrQuota ? commitmentOrQuota : parentResoure.quota,
           unit
         )}
-        extraCapacityLabel={valueWithUnit(
-          originalQuota - projectCommitmentSum,
-          unit
-        )}
+        extraFillLabel={valueWithUnit(extraFillLabel, unit)}
+        extraCapacityLabel={valueWithUnit(extraBarValue, unit)}
         fill={usage}
-        fillLabel={valueWithUnit(
-          usage > projectCommitmentSum && projectCommitmentSum > 0
-            ? projectCommitmentSum
-            : usage,
-          unit
-        )}
+        fillLabel={valueWithUnit(showCommitmentOrUsage, unit)}
         commitment={projectCommitmentSum}
+        extraBarValue={extraBarValue}
         showsCapacity={false}
         labelIsUsageOnly={props.tracksQuota ? false : true}
         canEdit={showEdit || props.isPanelView}

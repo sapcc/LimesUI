@@ -12,8 +12,6 @@ import CommitmentTable from "../commitment/CommitmentTable";
 import CommitmentModal from "../commitment/CommitmentModal";
 import { initialCommitmentObject } from "../../lib/store/store";
 
-// TODO: Replace hardcoded API data vs API-call. Get them via useEffect,[]
-
 const EditPanel = (props) => {
   // Variables and State.
   const commitments = useStore((state) => state.commitments);
@@ -21,16 +19,30 @@ const EditPanel = (props) => {
   const setCommitment = useStore((state) => state.setCommitment);
   const addCommitment = useStore((state) => state.addCommitment);
   const removeCommitment = useStore((state) => state.removeCommitment);
+  const setCommitmentIsLoading = useStore(
+    (state) => state.setCommitmentIsLoading
+  );
   const postCommitmentQuery = useMutation({
     mutationFn: postCommitments,
     onSuccess: (data) => {
+      setCommitmentIsLoading(false);
       addCommitment(data.commitment);
     },
+    onError: () => {
+      setCommitmentIsLoading(false);
+      setToast("Network error: Could not post commitment.");
+    },
   });
+  const setDeleteIsLoading = useStore((state) => state.setDeleteIsLoading);
   const deleteCommitmentQuery = useMutation({
     mutationFn: deleteCommitments,
     onSuccess: (data) => {
+      setDeleteIsLoading(false);
       removeCommitment(data);
+    },
+    onError: () => {
+      setDeleteIsLoading(false);
+      setToast("Network error: Could not delete commitment.");
     },
   });
   const isSubmitting = useStore((state) => state.isSubmitting);
@@ -57,7 +69,7 @@ const EditPanel = (props) => {
   }, [res]);
 
   function postCommitment() {
-    // TODO: Create API post request here.
+    setCommitmentIsLoading(true);
     const result = postCommitmentQuery.mutate({
       payload: {
         commitment: { ...newCommitment, id: "" },
@@ -74,6 +86,7 @@ const EditPanel = (props) => {
   }
 
   function deleteCommitment() {
+    setDeleteIsLoading(true);
     deleteCommitmentQuery.mutate({
       commitmentID: newCommitment.id,
       meta: { ...queryMeta },

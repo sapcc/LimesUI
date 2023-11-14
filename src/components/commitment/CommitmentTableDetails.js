@@ -35,8 +35,10 @@ const CommitmentTableDetails = (props) => {
   const newCommitment = useStore((state) => state.commitment);
   const setCommitment = useStore((state) => state.setCommitment);
   const setIsCommitting = useStore((state) => state.setIsCommitting);
+  const commitmentIsLoading = useStore((state) => state.commitmentIsLoading);
   const setIsSubmitting = useStore((state) => state.setIsSubmitting);
   const setIsDeleting = useStore((state) => state.setIsDeleting);
+  const deleteIsLoading = useStore((state) => state.deleteIsLoading);
   const setToast = useStore((state) => state.setToast);
   const [invalidDuration, setInValidDuration] = React.useState(false);
   const [invalidInput, setInvalidInput] = React.useState(false);
@@ -152,7 +154,11 @@ const CommitmentTableDetails = (props) => {
       <DataGridCell>
         {isAddingCommitment ? (
           <ButtonRow>
-            <Button variant="primary" onClick={() => handleSave()}>
+            <Button
+              variant="primary"
+              onClick={() => handleSave()}
+              progress={commitmentIsLoading}
+            >
               Save
             </Button>
             <Button onClick={() => stopEditing()}>Cancel</Button>
@@ -162,6 +168,7 @@ const CommitmentTableDetails = (props) => {
             onClick={() => {
               handleDeletion();
             }}
+            progress={deleteIsLoading}
           >
             Delete
           </Button>

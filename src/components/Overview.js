@@ -5,8 +5,6 @@ import Category from "./Category";
 import { byUIString } from "../lib/utils";
 import { Tabs, Tab, TabList, TabPanel } from "juno-ui-components";
 
-// TODO: Replace Navigation with Tab, TabList, TabPanel and Panels. Every Panel needs one TabPanel as parent.
-
 const Overview = (props) => {
   const [allAreas, setAllAreas] = React.useState(
     Object.keys(props.overview.areas)

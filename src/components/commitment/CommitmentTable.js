@@ -1,5 +1,5 @@
 import React from "react";
-import { DataGrid, DataGridHeadCell, DataGridRow } from "juno-ui-components";
+import { DataGrid, DataGridHeadCell, DataGridRow, IntroBox } from "juno-ui-components";
 import CommitmentTableDetails from "./CommitmentTableDetails";
 import useStore from "../../lib/store/store";
 
@@ -53,26 +53,33 @@ const CommitmentTable = (props) => {
   }, [commitmentData, currentAZ, currentResource, isCommitting]);
 
   return (
-    <DataGrid columnMaxSize="1fr" columns={commitmentHeadCells.length}>
-      <DataGridRow>
-        {commitmentHeadCells.map((headCell) => (
-          <DataGridHeadCell key={headCell.key}>
-            {headCell.label}
-          </DataGridHeadCell>
-        ))}
-      </DataGridRow>
+    <>
+      {filteredCommitments.length > 0 ? (
+        <DataGrid columnMaxSize="1fr" columns={commitmentHeadCells.length}>
+          <DataGridRow>
+            {commitmentHeadCells.map((headCell) => (
+              <DataGridHeadCell key={headCell.key}>
+                {headCell.label}
+              </DataGridHeadCell>
+            ))}
+          </DataGridRow>
 
-      {filteredCommitments.map((commitment) => (
-        <CommitmentTableDetails
-          key={commitment.id}
-          commitment={commitment}
-          durations={durations}
-          currentArea={currentArea}
-          currentResource={currentResource}
-          currentAZ={currentAZ}
-        />
-      ))}
-    </DataGrid>
+          {filteredCommitments.map((commitment) => (
+            <CommitmentTableDetails
+              key={commitment.id}
+              commitment={commitment}
+              durations={durations}
+              currentArea={currentArea}
+              currentResource={currentResource}
+              currentAZ={currentAZ}
+            />
+          ))}
+        </DataGrid>
+      ) : 
+      <IntroBox 
+      text="No commitments found in this availability zone."
+      />}
+    </>
   );
 };
 
