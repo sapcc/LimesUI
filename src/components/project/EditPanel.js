@@ -59,16 +59,13 @@ const EditPanel = (props) => {
   const params = useParams();
   const navigate = useNavigate();
   const { currentArea, categoryName, resourceName } = { ...params };
-  const res = props.categories[categoryName].resources.find((res) => {
+  const currentResource = props.categories[categoryName].resources.find((res) => {
     if (res.name === resourceName) {
       return res;
     }
   });
-  const [currentAZ, setCurrentAZ] = React.useState(res.per_az[0][0]);
-
-  React.useEffect(() => {
-    setCurrentAZ(res.per_az[0][0]);
-  }, [res]);
+  const [currentAZ, setCurrentAZ] = React.useState(currentResource.per_az[0][0]);
+  console.log(currentAZ)
 
   function postCommitment() {
     setCommitmentIsLoading(true);
@@ -136,12 +133,12 @@ const EditPanel = (props) => {
         >
           <PanelBody>
             <ProjectResource
-              resource={res}
-              tracksQuota={tracksQuota(res)}
+              resource={currentResource}
+              tracksQuota={tracksQuota(currentResource)}
               isPanelView={true}
             />
             <AvailabilityZoneNav
-              az={res.per_az}
+              az={currentResource.per_az}
               currentAZ={currentAZ}
               setCurrentAZ={setCurrentAZ}
             />
@@ -156,8 +153,8 @@ const EditPanel = (props) => {
             {commitments && (
               <CommitmentTable
                 currentArea={currentArea}
-                currentResource={res.name}
-                resource={res}
+                currentResource={currentResource.name}
+                resource={currentResource}
                 currentAZ={currentAZ}
                 commitmentData={commitments}
               />
