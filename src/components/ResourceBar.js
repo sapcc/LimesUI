@@ -16,7 +16,6 @@ const baseResourceBar = `
   border-theme-background-lvl-5 
   flex 
   p-0.5
-  h-8
 `
 const emptyResourceBar = `
   bg-theme-background-lvl-2 
@@ -29,7 +28,6 @@ const filledResourceBar = `
   `
 const emptyExtraResourceBar = `
   bg-theme-background-lvl-4 
-
   `
 const filledExtraResourceBar = `
   text-white 
@@ -43,9 +41,9 @@ const noneResourceBar = `
   border-theme-background-lvl-4
   flex 
   p-0.5
-  h-8
   text-theme-light 
   italic
+  h-8
   `
 const barLable = `
   px-1
@@ -74,45 +72,46 @@ const ResourceBar = (props) => {
     labelIsUsageOnly,
     canEdit,
     showsCapacity,
+    isAZ,
   } = props
 
   const disabled = false
 
-  React.useLayoutEffect(() => {
-    checkIfLabelFits()
-  })
+  // React.useLayoutEffect(() => {
+  //   checkIfLabelFits()
+  // })
 
-  function checkIfLabelFits(opts = {}) {
-    const bar = outerDivRef.current //this is the <div class="progress"/>
-    if (!bar) {
-      return
-    }
+  // function checkIfLabelFits(opts = {}) {
+  //   const bar = outerDivRef.current //this is the <div class="progress"/>
+  //   if (!bar) {
+  //     return
+  //   }
 
-    //measure the width of the filled portion of the bar
-    const filledBar = bar.querySelector(".has-label-if-fits")
-    if (!filledBar) {
-      //bar is completely full or empty, so we don't have to measure anything
-      return
-    }
-    const barWidth = filledBar.getBoundingClientRect().width
+  //   //measure the width of the filled portion of the bar
+  //   const filledBar = bar.querySelector(".has-label-if-fits")
+  //   if (!filledBar) {
+  //     //bar is completely full or empty, so we don't have to measure anything
+  //     return
+  //   }
+  //   const barWidth = filledBar.getBoundingClientRect().width
 
-    //measure the width of the label (one of them might be display:none and report width=0)
-    const labelWidths = [...bar.querySelectorAll(".progress-bar-label")].map(
-      (span) => span.getBoundingClientRect().width
-    )
-    const labelWidth = Math.max(...labelWidths)
+  //   //measure the width of the label (one of them might be display:none and report width=0)
+  //   const labelWidths = [...bar.querySelectorAll(".progress-bar-label")].map(
+  //     (span) => span.getBoundingClientRect().width
+  //   )
+  //   const labelWidth = Math.max(...labelWidths)
 
-    //require some extra wiggle room (in px) around the label to account for UI
-    //margins, and because labels that fit too tightly look dumb
-    bar
-      .querySelector(".progress-bar-label")
-      .classList.toggle("label-fits", labelWidth + LABEL_MARGIN < barWidth)
+  //   //require some extra wiggle room (in px) around the label to account for UI
+  //   //margins, and because labels that fit too tightly look dumb
+  //   bar
+  //     .querySelector(".progress-bar-label")
+  //     .classList.toggle("label-fits", labelWidth + LABEL_MARGIN < barWidth)
 
-    //re-run this method after animations have completed
-    if (!opts.delayed) {
-      window.setTimeout(() => checkIfLabelFits({ delayed: true }), 500)
-    }
-  }
+  //   //re-run this method after animations have completed
+  //   if (!opts.delayed) {
+  //     window.setTimeout(() => checkIfLabelFits({ delayed: true }), 500)
+  //   }
+  // }
 
   function buildResourceBar() {
     // First handle the creation of an empty bar.
@@ -172,7 +171,6 @@ const ResourceBar = (props) => {
     if (disabled) {
       filled = "progress-bar progress-bar-disabled has-label"
     }
-
     const resourceBar = (
       <Stack
         distribution="between"
@@ -184,7 +182,11 @@ const ResourceBar = (props) => {
           style={commitment > 0 ? { width: "70%" } : { width: "100%" }}
         >
           {label}
-          <div className={`main-bar ${baseResourceBar} ${emptyResourceBar}`}>
+          <div
+            className={`main-bar ${baseResourceBar} ${emptyResourceBar} ${
+              isAZ ? "h-5" : "h-8"
+            }`}
+          >
             <div
               key="filled"
               className={`main-fill ${filled} ${filledResourceBar}`}
@@ -201,7 +203,9 @@ const ResourceBar = (props) => {
           >
             {extraLable}
             <div
-              className={`extra-bar ${baseResourceBar} ${emptyExtraResourceBar}`}
+              className={`extra-bar ${baseResourceBar} ${emptyExtraResourceBar} ${
+                props.isAZ ? "h-5" : "h-8"
+              }`}
             >
               <div
                 key="extra-filled"
@@ -215,24 +219,13 @@ const ResourceBar = (props) => {
         )}
       </Stack>
     )
-
     return resourceBar
   }
 
   return (
-    <>
-      <style>
-        {`
-          .label-fits {
-            color:white;
-            position:absolute;
-          }  
-        `}
-      </style>
-      <div className={resourceBarWrapper} ref={outerDivRef}>
-        {buildResourceBar()}
-      </div>
-    </>
+    <div className={resourceBarWrapper} ref={outerDivRef}>
+      {buildResourceBar()}
+    </div>
   )
 }
 

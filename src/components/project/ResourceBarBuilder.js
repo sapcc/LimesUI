@@ -1,6 +1,6 @@
-import React from "react";
-import ResourceBar from "../ResourceBar";
-import { Unit, valueWithUnit } from "../../lib/unit";
+import React from "react"
+import ResourceBar from "../ResourceBar"
+import { Unit, valueWithUnit } from "../../lib/unit"
 
 const ResourceBarBuilder = (props) => {
   const {
@@ -12,14 +12,15 @@ const ResourceBarBuilder = (props) => {
     tracksQuota,
     isPanelView,
     showEdit,
-  } = { ...props };
-  const unit = new Unit(unitName || "");
-  const commitmentOrQuota = commitment > 0 ? commitment : quota;
-  const capacity = tracksQuota ? commitmentOrQuota : parentQuota;
+    isAZ,
+  } = { ...props }
+  const unit = new Unit(unitName || "")
+  const commitmentOrQuota = commitment > 0 ? commitment : quota
+  const capacity = tracksQuota ? commitmentOrQuota : parentQuota
   const showCommitmentOrUsage =
-    usage > commitment && commitment > 0 ? commitment : usage;
-  const extraFillLabel = usage >= commitment ? usage - commitment : "0";
-  const extraCapacityValue = quota - commitment;
+    usage > commitment && commitment > 0 ? commitment : usage
+  const extraFillLabel = usage >= commitment ? usage - commitment : "0"
+  const extraCapacityValue = quota - commitment
 
   return (
     <ResourceBar
@@ -34,8 +35,9 @@ const ResourceBarBuilder = (props) => {
       labelIsUsageOnly={tracksQuota}
       canEdit={showEdit || isPanelView}
       showsCapacity={false}
+      isAZ={props.isAZ}
     />
-  );
-};
+  )
+}
 
-export default ResourceBarBuilder;
+export default ResourceBarBuilder
