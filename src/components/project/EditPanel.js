@@ -133,6 +133,7 @@ const EditPanel = (props) => {
           <PanelBody>
             <ProjectResource
               resource={currentResource}
+              currentAZ={currentAZ}
               tracksQuota={tracksQuota(currentResource)}
               isPanelView={true}
             />

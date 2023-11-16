@@ -1,13 +1,14 @@
 import React from "react";
 import { t } from "../../lib/utils";
 import ResourceBar from "../ResourceBar";
-import { Stack, Button } from "juno-ui-components";
+import { Stack, Button, Icon } from "juno-ui-components";
 import { Link } from "react-router-dom";
 import useStore from "../../lib/store/store";
-import { Unit, valueWithUnit } from "../../lib/unit";
+import { Unit } from "../../lib/unit";
+import ResourceBarBuilder from "./ResourceBarBuilder";
 
 const barGroupContainer = `
-    self-stretch 
+    self-stretch  
     px-4 
     pt-2 
     pb-4 
@@ -39,7 +40,7 @@ const ProjectResource = (props) => {
     ? true
     : false;
   const displayName = t(props.resource.name);
-  const { tracksQuota, parentResoure } = { ...props };
+  const { tracksQuota, parentResource } = { ...props };
   const {
     quota: originalQuota, //commitment + right
     usage,
@@ -48,8 +49,16 @@ const ProjectResource = (props) => {
     unit: unitName,
     per_az: availabilityZones,
   } = props.resource;
-  const unit = new Unit(unitName || "");
   const showEdit = props.canEdit && props.tracksQuota && hasDurations && hasAZs;
+
+  function azCommitmentSum(az) {
+    let commitmentSum = 0;
+    const commitments = Object.values(az[1].committed || {});
+    commitments.forEach((commitmentValue) => {
+      commitmentSum += commitmentValue;
+    });
+    return commitmentSum;
+  }
 
   //commitmentCalculation for the main status bar.
   const projectCommitmentSum = React.useMemo(() => {
@@ -62,20 +71,6 @@ const ProjectResource = (props) => {
     });
     return totalCommitmentSum;
   }, [availabilityZones]);
-
-  //Define values that should be shown on the UI as label text
-  const commitmentOrQuota =
-    projectCommitmentSum > 0 ? projectCommitmentSum : originalQuota;
-
-  const showCommitmentOrUsage =
-    usage > projectCommitmentSum && projectCommitmentSum > 0
-      ? projectCommitmentSum
-      : usage;
-
-  const extraBarValue = originalQuota - projectCommitmentSum;
-
-  const extraFillLabel =
-    usage >= projectCommitmentSum ? usage - projectCommitmentSum : "0";
 
   return (
     <div className={`bar-card ${barGroupContainer}`}>
@@ -107,22 +102,32 @@ const ProjectResource = (props) => {
           </Button>
         )}
       </Stack>
-      <ResourceBar
-        capacity={tracksQuota ? commitmentOrQuota : parentResoure.quota}
-        capacityLabel={valueWithUnit(
-          commitmentOrQuota ? commitmentOrQuota : parentResoure.quota,
-          unit
-        )}
-        extraFillLabel={valueWithUnit(extraFillLabel, unit)}
-        extraCapacityLabel={valueWithUnit(extraBarValue, unit)}
-        fill={usage}
-        fillLabel={valueWithUnit(showCommitmentOrUsage, unit)}
+      <ResourceBarBuilder
+        unit={unitName}
+        usage={usage}
         commitment={projectCommitmentSum}
-        extraBarValue={extraBarValue}
-        showsCapacity={false}
-        labelIsUsageOnly={props.tracksQuota ? false : true}
-        canEdit={showEdit || props.isPanelView}
+        quota={originalQuota}
+        parentQuota={parentResource?.quota}
+        tracksQuota={tracksQuota}
+        isPanelView={props.isPanelView}
+        showEdit={showEdit}
       />
+      {props.isPanelView &&
+        props.resource.per_az.map((az) => (
+          <div key={az[0]}>
+            {az[0]}: Usage: {az[1].usage} Commitments: {azCommitmentSum(az)}{" "}
+            Quota: {originalQuota}
+            <ResourceBarBuilder
+              unit={unitName}
+              usage={az[1].usage}
+              commitment={azCommitmentSum(az)}
+              quota={originalQuota}
+              tracksQuota={tracksQuota}
+              isPanelView={props.isPanelView}
+              showEdit={showEdit}
+            />
+          </div>
+        ))}
     </div>
   );
 };

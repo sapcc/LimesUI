@@ -15,17 +15,20 @@ const AppContent = (props) => {
   const refetchProjectAPI = useStore((state) => state.refetchProjectAPI);
   const setRefetchProjectAPI = useStore((state) => state.setRefetchProjectAPI);
   const projectQueryResult = useQuery({
-    queryKey: ["projectData"],
+    queryKey: ["projectData", props.mockAPI],
     queryFn: fetchProjectData,
   });
   const commitQueryResult = useQuery({
-    queryKey: ["commitmentData"],
+    queryKey: ["commitmentData", props.mockAPI],
     queryFn: fetchProjectData,
   });
-  const projectAPIData = projectQueryResult.data;
-  const projectIsLoading = projectQueryResult.isLoading;
-  const commitmentAPIData = commitQueryResult.data;
-  const commitmenIsLoading = commitQueryResult.isLoading;
+  const {
+    data: projectAPIData,
+    isLoading: projectIsLoading,
+    isError: projectIsError,
+  } = projectQueryResult;
+  const { data: commitmentAPIData, isLoading: commitmenIsLoading } =
+    commitQueryResult;
   const setCommitments = useStore((state) => state.setCommitments);
   const commitments = useStore((state) => state.commitments);
   const formatData = useStore((state) => state.restructureReport);
@@ -34,8 +37,8 @@ const AppContent = (props) => {
 
   React.useEffect(() => {
     if (!refetchProjectAPI) return;
-    projectQueryResult.refetch();
     setRefetchProjectAPI(false);
+    projectQueryResult.refetch();
   }, [refetchProjectAPI]);
 
   React.useEffect(() => {
@@ -50,45 +53,55 @@ const AppContent = (props) => {
   }, [commitmentAPIData]);
 
   return (
-    <Container>
-      {projectData &&
-      commitments &&
-      !projectIsLoading &&
-      !commitmenIsLoading ? (
-        console.log(projectData) ||
-        console.log(commitments) || (
-          <HashRouter>
-            <Routes>
-              <Route
-                path="/"
-                element={<Overview {...projectData} canEdit={props.canEdit} />}
-              >
-                {" "}
-              </Route>
-              <Route
-                path="/:currentArea/*"
-                element={<Overview {...projectData} canEdit={props.canEdit} />}
-              >
-                {" "}
-              </Route>
-              {props.canEdit && (
-                <Route
-                  path="/:currentArea/edit/:categoryName/:resourceName"
-                  element={
-                    <>
-                      <Overview {...projectData} canEdit={props.canEdit} />
-                      <EditPanel {...projectData} />
-                    </>
-                  }
-                />
-              )}
-            </Routes>
-          </HashRouter>
-        )
+    <>
+      {projectIsError ? (
+        "Network error!"
       ) : (
-        <LoadingIndicator />
+        <Container>
+          {projectData &&
+          commitments &&
+          !projectIsLoading &&
+          !commitmenIsLoading ? (
+            console.log(projectData) ||
+            console.log(commitments) || (
+              <HashRouter>
+                <Routes>
+                  <Route
+                    path="/"
+                    element={
+                      <Overview {...projectData} canEdit={props.canEdit} />
+                    }
+                  >
+                    {" "}
+                  </Route>
+                  <Route
+                    path="/:currentArea/*"
+                    element={
+                      <Overview {...projectData} canEdit={props.canEdit} />
+                    }
+                  >
+                    {" "}
+                  </Route>
+                  {props.canEdit && (
+                    <Route
+                      path="/:currentArea/edit/:categoryName/:resourceName"
+                      element={
+                        <>
+                          <Overview {...projectData} canEdit={props.canEdit} />
+                          <EditPanel {...projectData} />
+                        </>
+                      }
+                    />
+                  )}
+                </Routes>
+              </HashRouter>
+            )
+          ) : (
+            <LoadingIndicator />
+          )}
+        </Container>
       )}
-    </Container>
+    </>
   );
 };
 

@@ -10,8 +10,8 @@ const categoryTitle = `
     text-theme-hig
     `;
 const categoryContent = `
-    grid 
-    auto-rows-fr 
+    grid
+    auto-rows-fr
     gap-5 
     grid-cols-[repeat(auto-fit,_minmax(31rem,_1fr))]
     `;
@@ -49,7 +49,7 @@ const Category = (props) => {
             resource={res}
             {...forwardProps}
             tracksQuota={tracksQuota(res)}
-            parentResoure={getContainingResourceFor(res.name)}
+            parentResource={getContainingResourceFor(res.name)}
           />
         ))}
       </div>

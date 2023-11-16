@@ -53,17 +53,17 @@ const barLable = `
 const ResourceBar = (props) => {
   const outerDivRef = React.useRef(null);
   const {
-    capacity,
+    fillLabel,
     capacityLabel,
     extraFillLabel,
-    fill,
-    fillLabel,
-    commitment,
-    extraBarValue,
-    showsCapacity,
-    labelIsUsageOnly,
     extraCapacityLabel,
+    fill,
+    capacity,
+    commitment,
+    extraCapacityValue,
+    labelIsUsageOnly,
     canEdit,
+    showsCapacity,
   } = props;
 
   const disabled = false;
@@ -122,7 +122,7 @@ const ResourceBar = (props) => {
       widthPercent = 0.5;
     }
     let widthCommitment =
-      Math.round((1000 * (fill - capacity)) / extraBarValue) / 10;
+      Math.round((1000 * (fill - capacity)) / extraCapacityValue) / 10;
     //special cases: purple
     let className =
       commitment > 0 || labelIsUsageOnly || !canEdit
@@ -156,7 +156,7 @@ const ResourceBar = (props) => {
       >
         <div
           className={`main-bar ${baseResourceBar} ${emptyResourceBar}`}
-          style={commitment > 0 ? { width: "50%" } : {width: "100%"}}
+          style={commitment > 0 ? { width: "50%" } : { width: "100%" }}
         >
           <div
             key="filled"
