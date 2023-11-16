@@ -1,4 +1,4 @@
-import projectAPIData from "../lib/limes_data_newApi2.json";
+import projectAPIData from "../lib/limes_project_api.json";
 import commitmentAPIDAta from "../lib/limes_commitment_api.json";
 
 // Requeues are caused by window focus refetching.
