@@ -98,7 +98,8 @@
                 "committed": {
                   "1 year": 59
                 },
-                "usage": 32
+                "usage": 32,
+                "quota": 400
               },
               "qa-de-1b": {
                 "committed": {
@@ -108,11 +109,19 @@
               },
               "qa-de-1d": {
                 "usage": 18
-              }
+              },
+              "unknown": {
+                "committed": {
+                  "1 year": 1
+                },
+                "usage": 18,
+                "quota": 400
+              },
+              "any": {}
             },
-            "quota": 800,
             "usable_quota": 800,
             "usage": 58,
+            "quota": 800,
             "annotations": {
               "can_autoscale": "true"
             }

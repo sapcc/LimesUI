@@ -143,9 +143,7 @@ const limesStore = (set) => ({
 function filterAZs(res) {
   let validAZs;
   if (res?.per_az !== undefined) {
-    validAZs = Object.entries(res.per_az).filter(
-      (az) => az[0] !== "unknown" && az[0] !== "any"
-    );
+    validAZs = Object.entries(res.per_az)
     const filteredAZs = validAZs;
     res.per_az = filteredAZs;
   }
