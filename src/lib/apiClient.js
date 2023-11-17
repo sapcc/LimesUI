@@ -1,15 +1,5 @@
-import projectAPIData from "../lib/limes_project_api.json";
-import commitmentAPIDAta from "../lib/limes_commitment_api.json";
-
 // Requeues are caused by window focus refetching.
 // More details: https://tanstack.com/query/v4/docs/react/guides/window-focus-refetching
-
-function mockAPIData(queryKey, url) {
-  if (queryKey === "commitmentData") {
-    return commitmentAPIDAta;
-  }
-  return projectAPIData;
-}
 
 function responseHandler(response, meta, commitmentID = null) {
   if (!response.ok) {
@@ -34,10 +24,6 @@ export const fetchProjectData = async ({ queryKey, meta }) => {
     url = url + "/commitments";
   }
 
-  if (queryKey[1]) {
-    return mockAPIData(queryKey[0], url);
-  }
-
   const response = await fetch(url, {
     method: "GET",
     headers: {
@@ -46,6 +32,8 @@ export const fetchProjectData = async ({ queryKey, meta }) => {
       "X-Auth-Token": meta.token,
     },
   });
+
+  console.log("fetch", response)
 
   return responseHandler(response, meta);
 };

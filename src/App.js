@@ -5,7 +5,9 @@ import StoreProvider, { useGlobalsActions } from "./components/StoreProvider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import AppContent from "./AppContent";
 import styles from "./styles.scss";
-import useLimesStore from "./lib/store/store";
+import { fetchProxyInitDB } from "utils";
+import projectApiDB from "./lib/limes_project_api.json";
+import commitmentApiDB from "./lib/limes_commitment_api.json";
 
 /* IMPORTANT: Replace this with your app's name */
 const URL_STATE_KEY = "limesUI";
@@ -35,6 +37,25 @@ const App = (props = {}) => {
     // set to empty string to fetch local test data in dev mode
     setUrlStateKey(URL_STATE_KEY);
   }, []);
+
+  React.useEffect(() => {
+    if (props.mockAPI) {
+      fetchProxyInitDB(
+        {
+          projects: [projectApiDB],
+          projectCommitments: commitmentApiDB.projectCommitments,
+        },
+        {
+          debug: true,
+          rewriteRoutes: {
+            "/v1/domains/(.*)/projects/(.*)/commitments":
+              "/projectCommitments/$2/commitments",
+            "/v1/domains/(.*)/projects/(.*)": "/projects/$2",
+          },
+        }
+      );
+    }
+  }, [props.mockAPI]);
 
   return (
     <QueryClientProvider client={queryClient}>
