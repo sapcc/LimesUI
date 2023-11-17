@@ -4,13 +4,13 @@ import { Tooltip, TooltipTrigger, TooltipContent } from "juno-ui-components";
 const CommitmentTooltip = (props) => {
   const { displayText, toolTipContent, emptyText } = { ...props };
 
-  return (
+  return displayText ? (
     <Tooltip triggerEvent="hover">
-      <TooltipTrigger>
-        {displayText ? displayText : emptyText}
-      </TooltipTrigger>
+      <TooltipTrigger>{displayText}</TooltipTrigger>
       <TooltipContent>{toolTipContent}</TooltipContent>
     </Tooltip>
+  ) : (
+    emptyText
   );
 };
 
