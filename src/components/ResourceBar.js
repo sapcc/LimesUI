@@ -1,14 +1,14 @@
-import React, { useState, useEffect, useRef } from "react"
-import { Stack } from "juno-ui-components"
+import React, { useState, useEffect, useRef } from "react";
+import { Stack } from "juno-ui-components";
 
-const LABEL_MARGIN = 10
-const resourceBarWrapper = ``
+const LABEL_MARGIN = 10;
+const resourceBarWrapper = ``;
 
 const barConainer = `
   mb-2 
   min-w-full 
   gap-1
-`
+`;
 
 const baseResourceBar = `
   rounded-sm 
@@ -16,25 +16,24 @@ const baseResourceBar = `
   border-theme-background-lvl-5 
   flex 
   p-0.5
-`
+`;
 const emptyResourceBar = `
   bg-theme-background-lvl-2 
-  `
+  `;
 const filledResourceBar = `
   text-white 
   bg-sap-blue-3 
   has-label-if-fits 
   rounded-sm 
-  `
+  `;
 const emptyExtraResourceBar = `
   bg-theme-background-lvl-4 
-  `
+  `;
 const filledExtraResourceBar = `
-  text-white 
-  bg-sap-purple-2 
+  text-white
   has-label-if-fits 
   rounded-sm  
-  `
+  `;
 const noneResourceBar = `
   rounded-sm 
   border 
@@ -44,21 +43,21 @@ const noneResourceBar = `
   text-theme-light 
   italic
   h-8
-  `
+  `;
 const barLable = `
   text-sm
   font-bold
-`
+`;
 const disabledLable = `
   text-theme-light 
   italic
   px-1
   text-sm
   font-bold
-`
+`;
 
 const ResourceBar = (props) => {
-  const outerDivRef = React.useRef(null)
+  const outerDivRef = React.useRef(null);
   const {
     fillLabel,
     capacityLabel,
@@ -72,9 +71,9 @@ const ResourceBar = (props) => {
     canEdit,
     showsCapacity,
     isAZ,
-  } = props
+  } = props;
 
-  const disabled = false
+  const disabled = false;
 
   // React.useLayoutEffect(() => {
   //   checkIfLabelFits()
@@ -130,22 +129,22 @@ const ResourceBar = (props) => {
             style={{ width: "100%" }}
           ></div>
         </Stack>
-      )
+      );
     }
 
-    let widthPercent = Math.round(1000 * (fill / capacity)) / 10
+    let widthPercent = Math.round(1000 * (fill / capacity)) / 10;
     // ensure that a non-zero-wide bar is at least somewhat visible
     if (fill > 0 && widthPercent < 0.5) {
-      widthPercent = 0.5
+      widthPercent = 0.5;
     }
     let widthCommitment =
-      Math.round((1000 * (fill - capacity)) / extraCapacityValue) / 10
+      Math.round((1000 * (fill - capacity)) / extraCapacityValue) / 10;
 
     //special cases: purple
     let className =
       commitment > 0 || labelIsUsageOnly || !canEdit
         ? "progress-bar"
-        : "progress-bar bg-sap-purple-2"
+        : "progress-bar bg-sap-purple-2";
 
     const label = (
       <span className={`progress-bar-label ${barLable}`}>
@@ -156,19 +155,19 @@ const ResourceBar = (props) => {
           <span className="font-normal">quota used</span>
         )}
       </span>
-    )
+    );
 
     const extraLable = (
       <span className={`progress-bar-label ${barLable}`}>
         {extraFillLabel}/{extraCapacityLabel}
       </span>
-    )
+    );
 
-    let filled = className
-    let barStyleFilled = { width: widthPercent + "%" }
-    let barStyleCommitment = { width: widthCommitment + "%" }
+    let filled = className;
+    let barStyleFilled = { width: widthPercent + "%" };
+    let barStyleCommitment = { width: widthCommitment + "%" };
     if (disabled) {
-      filled = "progress-bar progress-bar-disabled has-label"
+      filled = "progress-bar progress-bar-disabled has-label";
     }
     const resourceBar = (
       <Stack
@@ -208,7 +207,9 @@ const ResourceBar = (props) => {
             >
               <div
                 key="extra-filled"
-                className={`extra-fill ${filled} ${filledExtraResourceBar}`}
+                className={`extra-fill ${filled} ${filledExtraResourceBar} ${
+                  isAZ ? "bg-sap-blue-3" : "bg-sap-purple-2"
+                }`}
                 style={fill > capacity ? barStyleCommitment : { width: "0%" }}
               ></div>
             </div>
@@ -217,15 +218,15 @@ const ResourceBar = (props) => {
           ""
         )}
       </Stack>
-    )
-    return resourceBar
+    );
+    return resourceBar;
   }
 
   return (
     <div className={resourceBarWrapper} ref={outerDivRef}>
       {buildResourceBar()}
     </div>
-  )
-}
+  );
+};
 
-export default ResourceBar
+export default ResourceBar;
