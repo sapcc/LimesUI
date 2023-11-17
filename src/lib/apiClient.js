@@ -1,3 +1,4 @@
+import { fetchProxy } from "utils";
 // Requeues are caused by window focus refetching.
 // More details: https://tanstack.com/query/v4/docs/react/guides/window-focus-refetching
 
@@ -24,13 +25,14 @@ export const fetchProjectData = async ({ queryKey, meta }) => {
     url = url + "/commitments";
   }
 
-  const response = await fetch(url, {
+  const response = await fetchProxy(url, {
     method: "GET",
     headers: {
       Accept: "application/json",
       "X-Limes-V2-API-Preview": "per-az",
       "X-Auth-Token": meta.token,
     },
+    ...{mock: queryKey[1]}
   });
 
   console.log("fetch", response)
