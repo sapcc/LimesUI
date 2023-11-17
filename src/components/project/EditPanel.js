@@ -59,12 +59,22 @@ const EditPanel = (props) => {
   const params = useParams();
   const navigate = useNavigate();
   const { currentArea, categoryName, resourceName } = { ...params };
-  const currentResource = props.categories[categoryName].resources.find((res) => {
-    if (res.name === resourceName) {
-      return res;
+  const currentResource = props.categories[categoryName].resources.find(
+    (res) => {
+      if (res.name === resourceName) {
+        return res;
+      }
     }
-  });
-  const [currentAZ, setCurrentAZ] = React.useState(currentResource.per_az[0][0]);
+  );
+  const currentAZ = useStore((state) => state.currentAZ);
+  const setCurrentAZ = useStore((state) => state.setCurrentAZ);
+
+  React.useEffect(() => {
+    if (!currentAZ) {
+      setCurrentAZ(currentResource.per_az[0][0]);
+    }
+    return () => setCurrentAZ(null);
+  }, []);
 
   function postCommitment() {
     setCommitmentIsLoading(true);

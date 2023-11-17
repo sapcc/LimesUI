@@ -204,6 +204,8 @@ const createCommitmentStore = (set) => ({
     set((state) => ({ commitmentIsLoading: loading })),
   toast: { message: null },
   setToast: (toast) => set((state) => ({ toast: { message: toast } })),
+  currentAZ: null,
+  setCurrentAZ: (currentAZ) => set((state) => ({ currentAZ: currentAZ })),
 });
 
 const useStore = create((...a) => ({

@@ -56,7 +56,6 @@ const Overview = (props) => {
     )
   }
 
-  //active={area === currentArea}
   return (
     <Container className="mb-11 py-6">
       <Tabs>
