@@ -9,8 +9,6 @@ const AvailabilityZoneNav = (props) => {
   const azIndex = props.az.findIndex((az) => az[0] === props.currentAZ)
   const [selectedIndex, setSelectedIndex] = React.useState(azIndex)
 
-  console.log(selectedIndex)
-
   function handleTabSelect (index) {
     setSelectedIndex(index)
   }
