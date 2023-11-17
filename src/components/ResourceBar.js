@@ -11,7 +11,7 @@ const barConainer = `
 `
 
 const baseResourceBar = `
-  rounded 
+  rounded-sm 
   border 
   border-theme-background-lvl-5 
   flex 
@@ -36,7 +36,7 @@ const filledExtraResourceBar = `
   rounded-sm  
   `
 const noneResourceBar = `
-  rounded 
+  rounded-sm 
   border 
   border-theme-background-lvl-4
   flex 
@@ -46,7 +46,6 @@ const noneResourceBar = `
   h-8
   `
 const barLable = `
-  px-1
   text-sm
   font-bold
 `
@@ -184,7 +183,7 @@ const ResourceBar = (props) => {
           {label}
           <div
             className={`main-bar ${baseResourceBar} ${emptyResourceBar} ${
-              isAZ ? "h-5" : "h-8"
+              isAZ ? "h-4" : "h-8"
             }`}
           >
             <div
@@ -204,7 +203,7 @@ const ResourceBar = (props) => {
             {extraLable}
             <div
               className={`extra-bar ${baseResourceBar} ${emptyExtraResourceBar} ${
-                props.isAZ ? "h-5" : "h-8"
+                props.isAZ ? "h-4" : "h-8"
               }`}
             >
               <div

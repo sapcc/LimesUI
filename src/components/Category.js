@@ -11,8 +11,7 @@ const categoryTitle = `
     `
 const categoryContent = `
     grid
-    auto-rows-fr
-    gap-5 
+    gap-4 
     grid-cols-[repeat(auto-fit,_minmax(37rem,_1fr))]
     `
 
