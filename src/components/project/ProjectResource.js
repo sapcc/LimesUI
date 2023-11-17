@@ -174,6 +174,7 @@ const ProjectResource = (props) => {
                   isAZ={true}
                   commitment={azCommitmentSum(az)}
                   quota={originalQuota}
+                  parentQuota={parentResource?.quota}
                   tracksQuota={tracksQuota}
                   isPanelView={props.isPanelView}
                   showEdit={showEdit}

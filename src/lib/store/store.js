@@ -90,6 +90,7 @@ const limesStore = (set) => ({
 
       for (let res of resourceList) {
         filterAZs(res);
+        getQuotaNewOrOldModel(res);
         categories[res.category || serviceType].resources.push(res);
       }
     }
@@ -139,15 +140,27 @@ const limesStore = (set) => ({
   },
 });
 
-// when per_AZ contains "unknown" oder "any": do not show it as an editable AZ.
+// Availability Zones will be received as objects. It is easier to handle them as an Array.
 function filterAZs(res) {
   let validAZs;
   if (res?.per_az !== undefined) {
-    validAZs = Object.entries(res.per_az)
+    validAZs = Object.entries(res.per_az);
     const filteredAZs = validAZs;
     res.per_az = filteredAZs;
   }
   return;
+}
+
+// old model: Resources have a quota attribute attached to them.
+// new model: quota gets calculated after the quota of all availability zones.
+function getQuotaNewOrOldModel(res) {
+  if ("contained_in" in res) return;
+  if ("quota" in res) return;
+  let quotaSum = 0;
+  res.per_az.forEach((az) => {
+    return (quotaSum += az[1].quota || 0);
+  });
+  res.quota = quotaSum;
 }
 
 const objectFromEntries = (entries) => {
