@@ -6,14 +6,12 @@ import { initialCommitmentObject } from "../../lib/store/store";
 const AvailabilityZoneNav = (props) => {
   const setIsCommitting = useStore((state) => state.setIsCommitting);
   const setCommitment = useStore((state) => state.setCommitment);
-  const azIndex = props.az.findIndex(
-    (az) => az[0] === props.currentAZ && az[0] !== "unknown"
-  );
+  const azIndex = props.az.findIndex((az) => az[0] === props.currentAZ);
 
   console.log(azIndex);
   return (
     <Container px={false} className="py-6">
-      <Tabs selectedIndex={azIndex < 0 ? 0 : azIndex} onSelect={() => {}}>
+      <Tabs selectedIndex={azIndex} onSelect={() => {}}>
         <TabList>
           {props.az.map(
             (az) =>

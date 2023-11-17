@@ -205,7 +205,11 @@ const createCommitmentStore = (set) => ({
   toast: { message: null },
   setToast: (toast) => set((state) => ({ toast: { message: toast } })),
   currentAZ: null,
-  setCurrentAZ: (currentAZ) => set((state) => ({ currentAZ: currentAZ })),
+  setCurrentAZ: (currentAZ) =>
+    set((state) => {
+      if (currentAZ === "unknown") return { ...state };
+      return { ...state, currentAZ: currentAZ };
+    }),
 });
 
 const useStore = create((...a) => ({
