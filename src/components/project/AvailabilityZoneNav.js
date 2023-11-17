@@ -8,7 +8,6 @@ const AvailabilityZoneNav = (props) => {
   const setCommitment = useStore((state) => state.setCommitment);
   const azIndex = props.az.findIndex((az) => az[0] === props.currentAZ);
 
-  console.log(azIndex);
   return (
     <Container px={false} className="py-6">
       <Tabs selectedIndex={azIndex} onSelect={() => {}}>
