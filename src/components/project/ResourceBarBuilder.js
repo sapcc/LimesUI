@@ -22,6 +22,8 @@ const ResourceBarBuilder = (props) => {
   const extraFillLabel = usage >= commitment ? usage - commitment : "0"
   const extraCapacityValue = quota - commitment
 
+  //console.log(usage, (showEdit || isPanelView))
+
   return (
     <ResourceBar
       fillLabel={valueWithUnit(showCommitmentOrUsage, unit)}
@@ -32,10 +34,9 @@ const ResourceBarBuilder = (props) => {
       capacity={capacity}
       commitment={commitment}
       extraCapacityValue={extraCapacityValue}
-      labelIsUsageOnly={tracksQuota}
       canEdit={showEdit || isPanelView}
       showsCapacity={false}
-      isAZ={props.isAZ}
+      isAZ={isAZ}
     />
   )
 }

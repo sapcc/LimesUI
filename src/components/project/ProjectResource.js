@@ -151,7 +151,7 @@ const ProjectResource = (props) => {
                 key={az[0]}
                 className={`az-bar ${
                   props.isPanelView
-                    ? `az-bar ${barGroupContainer} ${azContentHover}`
+                    ? `az-bar ${barGroupContainer} ${az[0] !== "unknown" && azContentHover}`
                     : `az-bar ${azOverviewBar}`
                 }`}
                 onClick={() => setCurrentAZ(az[0])}

@@ -31,6 +31,7 @@ const emptyExtraResourceBar = `
   `;
 const filledExtraResourceBar = `
   text-white
+  bg-sap-purple-2
   has-label-if-fits 
   rounded-sm  
   `;
@@ -67,7 +68,6 @@ const ResourceBar = (props) => {
     capacity,
     commitment,
     extraCapacityValue,
-    labelIsUsageOnly,
     canEdit,
     showsCapacity,
     isAZ,
@@ -142,7 +142,7 @@ const ResourceBar = (props) => {
 
     //special cases: purple
     let className =
-      commitment > 0 || labelIsUsageOnly || !canEdit
+     commitment > 0 || !canEdit
         ? "progress-bar"
         : "progress-bar bg-sap-purple-2";
 
@@ -207,9 +207,7 @@ const ResourceBar = (props) => {
             >
               <div
                 key="extra-filled"
-                className={`extra-fill ${filled} ${filledExtraResourceBar} ${
-                  isAZ ? "bg-sap-blue-3" : "bg-sap-purple-2"
-                }`}
+                className={`extra-fill ${filled} ${filledExtraResourceBar}`}
                 style={fill > capacity ? barStyleCommitment : { width: "0%" }}
               ></div>
             </div>
