@@ -130,9 +130,10 @@ const EditPanel = (props) => {
     setToast(null);
   }
 
+  //Durations get checked to avoid route call to uneditable resource.
   return (
     <>
-      {currentAZ && (
+      {currentAZ && currentResource.commitment_config?.durations && (
         <Panel
           size="large"
           opened={true}

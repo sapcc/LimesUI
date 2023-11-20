@@ -6,6 +6,7 @@ import { initialCommitmentObject } from "../../lib/store/store";
 const AvailabilityZoneNav = (props) => {
   const setIsCommitting = useStore((state) => state.setIsCommitting);
   const setCommitment = useStore((state) => state.setCommitment);
+  const setToast = useStore((state) => state.setToast);
   const azIndex = props.az.findIndex((az) => az[0] === props.currentAZ);
 
   return (
@@ -22,6 +23,7 @@ const AvailabilityZoneNav = (props) => {
                     props.setCurrentAZ(az[0]);
                     setIsCommitting(false);
                     setCommitment(initialCommitmentObject);
+                    setToast(null);
                   }}
                 >
                   {az[0]}
