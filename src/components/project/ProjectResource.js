@@ -74,7 +74,7 @@ const ProjectResource = (props) => {
     unit: unitName,
     per_az: availabilityZones,
   } = props.resource;
-  const showEdit = props.canEdit && props.tracksQuota && hasDurations && hasAZs;
+  const showEdit = props.canEdit && tracksQuota && hasDurations && hasAZs;
 
   function azCommitmentSum(az) {
     let commitmentSum = 0;
@@ -140,7 +140,7 @@ const ProjectResource = (props) => {
         quota={originalQuota}
         parentQuota={parentResource?.quota}
         tracksQuota={tracksQuota}
-        isPanelView={props.isPanelView}
+        isPanelView={isPanelView}
         showEdit={showEdit}
       />
       <div className={`az-container ${azPanelContent}`}>
@@ -165,7 +165,7 @@ const ProjectResource = (props) => {
                   quota={originalQuota}
                   parentQuota={parentResource?.quota}
                   tracksQuota={tracksQuota}
-                  isPanelView={props.isPanelView}
+                  isPanelView={isPanelView}
                   showEdit={showEdit}
                 />
               </div>

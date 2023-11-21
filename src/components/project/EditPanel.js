@@ -86,7 +86,6 @@ const EditPanel = (props) => {
         ...queryMeta,
       },
     });
-    console.log(postCommitmentQuery);
 
     setCommitment(initialCommitmentObject);
     setIsSubmitting(false);
@@ -99,7 +98,6 @@ const EditPanel = (props) => {
       commitmentID: newCommitment.id,
       meta: { ...queryMeta },
     });
-    console.log("DELETING: ", newCommitment.id);
     setCommitment(initialCommitmentObject);
     setIsDeleting(false);
   }
@@ -172,7 +170,9 @@ const EditPanel = (props) => {
             )}
             {isSubmitting && (
               <CommitmentModal
-                title="Confirm Commitment creation"
+                title="Confirm commitment creation"
+                subText="Commit"
+                az={currentAZ}
                 commitment={newCommitment}
                 onConfirm={postCommitment}
                 onModalClose={onPostModalClose}
@@ -181,7 +181,9 @@ const EditPanel = (props) => {
             )}
             {isDeleting && (
               <CommitmentModal
-                title="Confirm Commitment deletion"
+                title="Confirm commitment deletion"
+                subText="Delete"
+                az={currentAZ}
                 commitment={newCommitment}
                 onConfirm={deleteCommitment}
                 onModalClose={onDeleteModalClose}

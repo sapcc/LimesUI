@@ -15,15 +15,20 @@ const ResourceBarBuilder = (props) => {
     isAZ,
   } = { ...props }
   const unit = new Unit(unitName || "")
+
+  // capacityLabel: displays commitments, quota or parentQuota (on usageOnly resources)
   const commitmentOrQuota = commitment > 0 ? commitment : quota
   const capacity = tracksQuota ? commitmentOrQuota : parentQuota
+
+  // fillLabel: displays commitment or current usage.
   const showCommitmentOrUsage =
     usage > commitment && commitment > 0 ? commitment : usage
+  
+  // ExtraBar: displays values that the commitment does not cover.
   const extraFillLabel = usage >= commitment ? usage - commitment : "0"
   const extraCapacityValue = quota - commitment
 
-  //console.log(usage, (showEdit || isPanelView))
-
+  // isPanelView is used, because tracksQuota check is not accessible from EditPanel (gets prop passed from Category)
   return (
     <ResourceBar
       fillLabel={valueWithUnit(showCommitmentOrUsage, unit)}

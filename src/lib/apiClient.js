@@ -35,8 +35,6 @@ export const fetchProjectData = async ({ queryKey, meta }) => {
     ...{mock: queryKey[1]}
   });
 
-  console.log("fetch", response)
-
   return responseHandler(response, meta);
 };
 
