@@ -44,13 +44,22 @@ const CommitmentModal = (props) => {
           variant={subText === "Delete" ? "primary-danger" : "primary"}
           onClick={() => confirm()}
         />
-        <Button label="Cancel" variant="subdued" onClick={() => onModalClose()} />
+        <Button
+          label="Cancel"
+          variant="subdued"
+          onClick={() => onModalClose()}
+        />
       </ButtonRow>
     </ModalFooter>
   );
 
   return (
-    <Modal title={title} open={showModal} modalFooter={modalFooter}>
+    <Modal
+      title={title}
+      open={showModal}
+      modalFooter={modalFooter}
+      onCancel={() => onModalClose()}
+    >
       <DataGrid columns={2} className={"mb-6"}>
         <DataGridRow>
           <DataGridCell className={label}>Availability Zone:</DataGridCell>
@@ -74,7 +83,9 @@ const CommitmentModal = (props) => {
           <TextInput
             width="auto"
             autoFocus
-            errortext={invalidInput ? "Please enter the highlighted term above." : ""}
+            errortext={
+              invalidInput ? "Please enter the highlighted term above." : ""
+            }
             onChange={(e) => onInput(e)}
           />
         </Stack>
