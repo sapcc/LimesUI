@@ -5,7 +5,7 @@ import { fetchProxy } from "utils";
 function responseHandler(response, meta, commitmentID = null) {
   if (!response.ok) {
     throw new Error(
-      `Network error while fetching project data for ${meta.projectID}`
+      `Network error while fetching project data for ${meta.projectID} Code: ${response.status}`
     );
   }
   if (response.statusCode >= 400) {

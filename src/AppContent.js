@@ -1,16 +1,12 @@
 import React from "react";
 import Overview from "./components/Overview";
 import { useQuery } from "@tanstack/react-query";
-import { Container, LoadingIndicator } from "juno-ui-components";
+import { Container, LoadingIndicator, Message } from "juno-ui-components";
 import { fetchProjectData } from "./lib/apiClient";
 import { HashRouter, Routes, Route } from "react-router-dom";
 import EditPanel from "./components/project/EditPanel";
 import useStore from "./lib/store/store";
 
-//import projectAPIData from "./lib/limes_data_newApi.json";
-//import commitmentData from "./lib/limes_commitment_api.json";
-
-// This is your starting point of tour application
 const AppContent = (props) => {
   const refetchProjectAPI = useStore((state) => state.refetchProjectAPI);
   const setRefetchProjectAPI = useStore((state) => state.setRefetchProjectAPI);
@@ -26,6 +22,7 @@ const AppContent = (props) => {
     data: projectAPIData,
     isLoading: projectIsLoading,
     isError: projectIsError,
+    error
   } = projectQueryResult;
   const { data: commitmentAPIData, isLoading: commitmenIsLoading } =
     commitQueryResult;
@@ -52,50 +49,48 @@ const AppContent = (props) => {
     setCommitments(commitmentAPIData.commitments);
   }, [commitmentAPIData]);
 
+  console.log(error)
   return (
     <>
       {projectIsError ? (
-        "Network error!"
+        <Message>{error.message}</Message>
       ) : (
         <Container>
           {projectData &&
           commitments &&
           !projectIsLoading &&
           !commitmenIsLoading ? (
-            console.log(projectData) ||
-            console.log(commitments) || (
-              <HashRouter>
-                <Routes>
+            <HashRouter>
+              <Routes>
+                <Route
+                  path="/"
+                  element={
+                    <Overview {...projectData} canEdit={props.canEdit} />
+                  }
+                >
+                  {" "}
+                </Route>
+                <Route
+                  path="/:currentArea/*"
+                  element={
+                    <Overview {...projectData} canEdit={props.canEdit} />
+                  }
+                >
+                  {" "}
+                </Route>
+                {props.canEdit && (
                   <Route
-                    path="/"
+                    path="/:currentArea/edit/:categoryName/:resourceName"
                     element={
-                      <Overview {...projectData} canEdit={props.canEdit} />
+                      <>
+                        <Overview {...projectData} canEdit={props.canEdit} />
+                        <EditPanel {...projectData} />
+                      </>
                     }
-                  >
-                    {" "}
-                  </Route>
-                  <Route
-                    path="/:currentArea/*"
-                    element={
-                      <Overview {...projectData} canEdit={props.canEdit} />
-                    }
-                  >
-                    {" "}
-                  </Route>
-                  {props.canEdit && (
-                    <Route
-                      path="/:currentArea/edit/:categoryName/:resourceName"
-                      element={
-                        <>
-                          <Overview {...projectData} canEdit={props.canEdit} />
-                          <EditPanel {...projectData} />
-                        </>
-                      }
-                    />
-                  )}
-                </Routes>
-              </HashRouter>
-            )
+                  />
+                )}
+              </Routes>
+            </HashRouter>
           ) : (
             <LoadingIndicator />
           )}
