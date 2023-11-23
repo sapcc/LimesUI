@@ -76,8 +76,9 @@ const CommitmentTableDetails = (props) => {
   }
 
   function handleSave() {
+    let parsedInput;
     try {
-      const parsedInput = unit.parse(inputRef.current);
+      parsedInput = unit.parse(inputRef.current);
     } catch (error) {
       setInvalidInput(true);
       setToast(error.message);
