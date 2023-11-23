@@ -114,7 +114,7 @@ export class Unit {
     }
 
     if(baseMatch[1] == 0) {
-      return {error: "cannot create empty commitments."}
+      throw new Error("cannot create empty commitments.")
     }
 
     //strip base unit if provided (e.g. "KiB" -> "Ki", e.g. "B" => "")
