@@ -1,6 +1,6 @@
 import React from "react";
 
-import { AppShell, AppShellProvider } from "juno-ui-components";
+import { AppShell, AppShellProvider, Message } from "juno-ui-components";
 import StoreProvider, { useGlobalsActions } from "./components/StoreProvider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import AppContent from "./AppContent";
@@ -15,7 +15,8 @@ const URL_STATE_KEY = "limesUI";
 
 const App = (props = {}) => {
   const { setUrlStateKey } = useGlobalsActions();
-  const [token, setToken] = React.useState(null)
+  const [token, setToken] = React.useState(null);
+  const [tokenError, setTokenError] = React.useState(true);
 
   // Create query client which it can be used from overall in the app
   // set default endpoint to fetch data
@@ -36,11 +37,22 @@ const App = (props = {}) => {
   // used from overall in the application
   React.useEffect(() => {
     // set to empty string to fetch local test data in dev mode
+    if (!window[props.getTokenFuncName])
+      console.warn("Please provide a function to get the token");
     setUrlStateKey(URL_STATE_KEY);
     window[props.getTokenFuncName]().then((token) => {
-      setToken(token.authToken)
-    })
+      setToken(token.authToken);
+    });
   }, []);
+
+  React.useEffect(() => {
+    if (!token) {
+      setTokenError(true);
+    }
+    if (token) {
+      setTokenError(false);
+    }
+  }, [token]);
 
   React.useEffect(() => {
     if (props.mockAPI) {
@@ -61,18 +73,22 @@ const App = (props = {}) => {
     }
   }, [props.mockAPI]);
 
-  if (!token) return "Loading..."
-
   return (
-    <QueryClientProvider client={queryClient}>
-      <AppShell
-        pageHeader="Converged Cloud | App limesUI"
-        contentHeading={URL_STATE_KEY}
-        embedded={props.embedded === "true" || props.embedded === true}
-      >
-        <AppContent {...props} />
-      </AppShell>
-    </QueryClientProvider>
+    <>
+      {!tokenError ? (
+        <QueryClientProvider client={queryClient}>
+          <AppShell
+            pageHeader="Converged Cloud | App limesUI"
+            contentHeading={URL_STATE_KEY}
+            embedded={props.embedded === "true" || props.embedded === true}
+          >
+            <AppContent {...props} />
+          </AppShell>
+        </QueryClientProvider>
+      ) : (
+        <Message>Failed to fetch a token.</Message>
+      )}
+    </>
   );
 };
 
