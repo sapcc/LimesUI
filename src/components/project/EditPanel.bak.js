@@ -1,7 +1,9 @@
+/*
 import React from "react";
 import { fireEvent, render, screen, renderHook } from "@testing-library/react";
 import EditPanel from "./EditPanel";
 import useStore, { initialCommitmentObject } from "../../lib/store/store";
+*/
 
 // TODO: use Cypress for this testsuite.
 
