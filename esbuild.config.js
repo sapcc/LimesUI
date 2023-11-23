@@ -14,7 +14,7 @@ if (!/.+\/.+\.js/.test(pkg.module))
   )
 
 const isProduction = process.env.NODE_ENV === "production"
-// If the jspm server fails and we cannot use external packages
+// If the jspm server fails and we cannfot use external packages
 // in our import map then IGNORE_EXTERNALS (global env variable)
 // should be set to true
 const IGNORE_EXTERNALS = process.env.IGNORE_EXTERNALS === "true"

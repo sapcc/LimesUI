@@ -15,6 +15,7 @@ const URL_STATE_KEY = "limesUI";
 
 const App = (props = {}) => {
   const { setUrlStateKey } = useGlobalsActions();
+  const [token, setToken] = React.useState(null)
 
   // Create query client which it can be used from overall in the app
   // set default endpoint to fetch data
@@ -23,7 +24,7 @@ const App = (props = {}) => {
       queries: {
         meta: {
           endpoint: props.endpoint || props.currentHost || "",
-          token: props.token || "",
+          token: token || "",
           projectID: props.projectID || "",
           domainID: props.domainID || "",
         },
@@ -36,6 +37,9 @@ const App = (props = {}) => {
   React.useEffect(() => {
     // set to empty string to fetch local test data in dev mode
     setUrlStateKey(URL_STATE_KEY);
+    window[props.getTokenFuncName]().then((token) => {
+      setToken(token.authToken)
+    })
   }, []);
 
   React.useEffect(() => {
@@ -56,6 +60,8 @@ const App = (props = {}) => {
       );
     }
   }, [props.mockAPI]);
+
+  if (!token) return "Loading..."
 
   return (
     <QueryClientProvider client={queryClient}>
