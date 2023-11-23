@@ -19,6 +19,7 @@ const barGroupContainer = `
 const barHeader = `
     mb-2 
     min-w-full
+    h-7
 `;
 const barTitle = `
     font-bold 
@@ -43,8 +44,8 @@ const azContent = `
     `;
 const azPanelContent = `  
     grid
-    gap-2
-    grid-cols-[repeat(auto-fit,_minmax(25rem,_1fr))]
+    gap-0
+    grid-cols-[repeat(auto-fit,_minmax(35rem,_1fr))]
     pt-2
     `;
 
@@ -143,7 +144,11 @@ const ProjectResource = (props) => {
         isPanelView={isPanelView}
         showEdit={showEdit}
       />
-      <div className={`az-container ${azPanelContent}`}>
+      <div
+        className={`az-container ${azPanelContent} ${
+          props.isPanelView && "gap-2"
+        }`}
+      >
         {props.resource.per_az.map(
           (az) =>
             az[0] !== "any" && (
@@ -151,12 +156,14 @@ const ProjectResource = (props) => {
                 key={az[0]}
                 className={`az-bar ${
                   props.isPanelView
-                    ? `az-bar ${barGroupContainer} ${az[0] !== "unknown" && azContentHover}`
+                    ? `az-bar ${barGroupContainer} ${
+                        az[0] !== "unknown" && azContentHover
+                      }`
                     : `az-bar ${azOverviewBar}`
                 }`}
                 onClick={() => setCurrentAZ(az[0])}
               >
-                <div className={`az-title pb-2 ${azTitle}`}>{az[0]}</div>
+                <div className={`az-title ${azTitle}`}>{az[0]}</div>
                 <ResourceBarBuilder
                   unit={unitName}
                   usage={az[1].usage}

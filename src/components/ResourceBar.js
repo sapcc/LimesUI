@@ -15,8 +15,7 @@ const baseResourceBar = `
   border 
   border-theme-background-lvl-5 
   flex 
-  p-0.5
-`;
+`
 const emptyResourceBar = `
   bg-theme-background-lvl-2 
   `;
@@ -46,7 +45,6 @@ const noneResourceBar = `
   h-8
   `;
 const barLable = `
-  text-sm
   font-bold
 `;
 const disabledLable = `
@@ -120,7 +118,11 @@ const ResourceBar = (props) => {
           distribution="between"
           style={commitment > 0 ? { width: "70%" } : { width: "100%" }}
         >
-          <span className={`progress-bar-label ${disabledLable}`}>
+          <span
+            className={`progress-bar-label ${disabledLable} ${
+              props.isAz ? "text-xs" : "text-sm"
+            }`}
+          >
             {showsCapacity ? "No capacity" : "No quota"}
           </span>
           <div
@@ -147,7 +149,9 @@ const ResourceBar = (props) => {
         : "progress-bar bg-sap-purple-2";
 
     const label = (
-      <span className={`progress-bar-label ${barLable}`}>
+      <span
+        className={`progress-bar-label ${barLable} ${props.isAZ && "text-xs"}`}
+      >
         {fillLabel}/{capacityLabel}{" "}
         {commitment > 0 ? (
           <span className="font-normal">committed</span>
@@ -158,7 +162,9 @@ const ResourceBar = (props) => {
     );
 
     const extraLable = (
-      <span className={`progress-bar-label ${barLable}`}>
+      <span
+        className={`progress-bar-label ${barLable} ${props.isAZ && "text-xs"}`}
+      >
         {extraFillLabel}/{extraCapacityLabel}
       </span>
     );
@@ -182,7 +188,7 @@ const ResourceBar = (props) => {
           {label}
           <div
             className={`main-bar ${baseResourceBar} ${emptyResourceBar} ${
-              isAZ ? "h-4" : "h-8"
+              isAZ ? "h-4 p-0" : "h-8 p-0.5"
             }`}
           >
             <div
@@ -202,7 +208,7 @@ const ResourceBar = (props) => {
             {extraLable}
             <div
               className={`extra-bar ${baseResourceBar} ${emptyExtraResourceBar} ${
-                props.isAZ ? "h-4" : "h-8"
+                props.isAZ ? "h-4 p-0" : "h-8 p-0.5"
               }`}
             >
               <div

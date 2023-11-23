@@ -1,7 +1,7 @@
-import React from "react";
-import { Tabs, Tab, TabList, TabPanel, Container } from "juno-ui-components";
-import useStore from "../../lib/store/store";
-import { initialCommitmentObject } from "../../lib/store/store";
+import React from "react"
+import { Tabs, Tab, TabList, TabPanel, Container } from "juno-ui-components"
+import useStore from "../../lib/store/store"
+import { initialCommitmentObject } from "../../lib/store/store"
 
 const AvailabilityZoneNav = (props) => {
   const setIsCommitting = useStore((state) => state.setIsCommitting);
@@ -38,7 +38,7 @@ const AvailabilityZoneNav = (props) => {
         )}
       </Tabs>
     </Container>
-  );
-};
+  )
+}
 
-export default AvailabilityZoneNav;
+export default AvailabilityZoneNav

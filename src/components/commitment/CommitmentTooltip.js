@@ -1,12 +1,14 @@
-import React from "react";
-import { Tooltip, TooltipTrigger, TooltipContent } from "juno-ui-components";
+import React from "react"
+import { Tooltip, TooltipTrigger, TooltipContent } from "juno-ui-components"
 
 const CommitmentTooltip = (props) => {
   const { displayText, toolTipContent, emptyText } = { ...props };
 
   return displayText ? (
     <Tooltip triggerEvent="hover">
-      <TooltipTrigger>{displayText}</TooltipTrigger>
+      <TooltipTrigger asChild>
+        <span>{displayText}</span>
+      </TooltipTrigger>
       <TooltipContent>{toolTipContent}</TooltipContent>
     </Tooltip>
   ) : (
@@ -14,4 +16,4 @@ const CommitmentTooltip = (props) => {
   );
 };
 
-export default CommitmentTooltip;
+export default CommitmentTooltip
