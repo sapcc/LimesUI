@@ -37,8 +37,10 @@ const App = (props = {}) => {
   // used from overall in the application
   React.useEffect(() => {
     // set to empty string to fetch local test data in dev mode
-    if (!window[props.getTokenFuncName])
+    if (!window[props.getTokenFuncName]) {
       console.warn("Please provide a function to get the token");
+      return
+    }
     setUrlStateKey(URL_STATE_KEY);
     window[props.getTokenFuncName]().then((token) => {
       setToken(token.authToken);
