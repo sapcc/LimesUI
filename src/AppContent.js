@@ -49,7 +49,6 @@ const AppContent = (props) => {
     setCommitments(commitmentAPIData.commitments);
   }, [commitmentAPIData]);
 
-  console.log(error)
   return (
     <>
       {projectIsError ? (
