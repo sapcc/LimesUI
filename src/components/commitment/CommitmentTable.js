@@ -60,7 +60,7 @@ const CommitmentTable = (props) => {
   return (
     <>
       {filteredCommitments.length > 0 ? (
-        <DataGrid columns={commitmentHeadCells.length}>
+        <DataGrid columns={commitmentHeadCells.length} columnMaxSize="1fr">
           <DataGridRow>
             {commitmentHeadCells.map((headCell) => (
               <DataGridHeadCell key={headCell.key}>
