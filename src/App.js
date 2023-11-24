@@ -39,7 +39,8 @@ const App = (props = {}) => {
     // set to empty string to fetch local test data in dev mode
     if (!window[props.getTokenFuncName]) {
       console.warn("Please provide a function to get the token");
-      return
+      setToken(props.token);
+      return;
     }
     setUrlStateKey(URL_STATE_KEY);
     window[props.getTokenFuncName]().then((token) => {
@@ -88,7 +89,7 @@ const App = (props = {}) => {
           </AppShell>
         </QueryClientProvider>
       ) : (
-        <Message>Failed to fetch a token.</Message>
+        <Message>Failed to fetch a token. Please provide a token as property or provide a getTokenFunc.</Message>
       )}
     </>
   );
