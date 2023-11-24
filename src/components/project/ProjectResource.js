@@ -4,6 +4,7 @@ import { Stack, Button } from "juno-ui-components";
 import { Link } from "react-router-dom";
 import useStore from "../../lib/store/store";
 import ResourceBarBuilder from "./ResourceBarBuilder";
+import { initialCommitmentObject } from "../../lib/store/store";
 
 const barGroupContainer = `
     self-stretch  
@@ -59,6 +60,8 @@ const azContentHover = `
 const ProjectResource = (props) => {
   const isCommitting = useStore((state) => state.isCommitting);
   const setIsCommitting = useStore((state) => state.setIsCommitting);
+  const setToast = useStore((state) => state.setToast);
+  const setCommitment = useStore((state) => state.setCommitment);
   const setCurrentAZ = useStore((state) => state.setCurrentAZ);
   const hasAZs =
     Object.keys(props.resource.per_az || {}).length > 0 ? true : false;
@@ -161,7 +164,12 @@ const ProjectResource = (props) => {
                       }`
                     : `az-bar ${azOverviewBar}`
                 }`}
-                onClick={() => setCurrentAZ(az[0])}
+                onClick={() => {
+                  setCurrentAZ(az[0]);
+                  setIsCommitting(false);
+                  setCommitment(initialCommitmentObject);
+                  setToast(null);
+                }}
               >
                 <div className={`az-title ${azTitle}`}>{az[0]}</div>
                 <ResourceBarBuilder

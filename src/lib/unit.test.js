@@ -46,9 +46,10 @@ describe("Unit", () => {
 
     it("accepts non-negative integers only for data type number", () => {
       const u = new Unit("")
+      const err = { error: "cannot create empty commitments." };
 
       expect(u.parse("52")).toEqual(52)
-      expect(() => {u.parse("0");}).toThrow(Error)
+      expect(u.parse("0")).toEqual(err)
       expect(u.parse("1234567890")).toEqual(1234567890)
 
       expect(u.parse("    0004  ")).toEqual(4)
