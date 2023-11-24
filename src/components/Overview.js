@@ -11,6 +11,7 @@ const Overview = (props) => {
   )
   const { currentArea = allAreas[0] } = useParams()
   const navigate = useNavigate()
+  const currentTabIdx = allAreas.findIndex((area) => area === currentArea);
 
   function renderArea() {
     const { areas, categories, scrapedAt, minScrapedAt, maxScrapedAt } =
@@ -58,7 +59,7 @@ const Overview = (props) => {
 
   return (
     <Container className="mb-11 py-6">
-      <Tabs>
+      <Tabs selectedIndex={currentTabIdx} onSelect={() => {}}>
         <TabList>
           {allAreas.map((area) => (
             <Tab onClick={() => navigate(`/${area}`)} key={area}>
