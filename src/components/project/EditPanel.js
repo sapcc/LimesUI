@@ -130,71 +130,70 @@ const EditPanel = (props) => {
 
   //Durations get checked to avoid route call to uneditable resource.
   return (
-    <>
-      {currentAZ && currentResource.commitment_config?.durations && (
-        <Panel
-          className="tw-z-[1050]"
-          size="large"
-          opened={true}
-          onClose={() => onPanelClose()}
-          closeable={true}
-          heading={`Edit Commitment: ${t(categoryName)} - ${t(resourceName)}`}
-        >
-          <PanelBody>
-            <ProjectResource
+    currentAZ &&
+    currentResource.commitment_config?.durations && (
+      <Panel
+        className="tw-z-[1050]"
+        size="large"
+        opened={true}
+        onClose={() => onPanelClose()}
+        closeable={true}
+        heading={`Edit Commitment: ${t(categoryName)} - ${t(resourceName)}`}
+      >
+        <PanelBody>
+          <ProjectResource
+            resource={currentResource}
+            currentAZ={currentAZ}
+            tracksQuota={tracksQuota(currentResource)}
+            isPanelView={true}
+          />
+          <AvailabilityZoneNav
+            az={currentResource.per_az}
+            currentAZ={currentAZ}
+            setCurrentAZ={setCurrentAZ}
+          />
+          {toast.message && (
+            <Toast
+              text={toast.message}
+              autoDismiss={true}
+              variant="danger"
+              onDismiss={() => dismissToast()}
+            />
+          )}
+          {commitments && (
+            <CommitmentTable
+              currentArea={currentArea}
+              currentResource={currentResource.name}
               resource={currentResource}
               currentAZ={currentAZ}
-              tracksQuota={tracksQuota(currentResource)}
-              isPanelView={true}
+              commitmentData={commitments}
             />
-            <AvailabilityZoneNav
-              az={currentResource.per_az}
-              currentAZ={currentAZ}
-              setCurrentAZ={setCurrentAZ}
+          )}
+          {isSubmitting && (
+            <CommitmentModal
+              title="Confirm commitment creation"
+              subText="Commit"
+              az={currentAZ}
+              commitment={newCommitment}
+              onConfirm={postCommitment}
+              onModalClose={onPostModalClose}
+              showModal={isSubmitting}
             />
-            {toast.message && (
-              <Toast
-                text={toast.message}
-                autoDismiss={true}
-                variant="danger"
-                onDismiss={() => dismissToast()}
-              />
-            )}
-            {commitments && (
-              <CommitmentTable
-                currentArea={currentArea}
-                currentResource={currentResource.name}
-                resource={currentResource}
-                currentAZ={currentAZ}
-                commitmentData={commitments}
-              />
-            )}
-            {isSubmitting && (
-              <CommitmentModal
-                title="Confirm commitment creation"
-                subText="Commit"
-                az={currentAZ}
-                commitment={newCommitment}
-                onConfirm={postCommitment}
-                onModalClose={onPostModalClose}
-                showModal={isSubmitting}
-              />
-            )}
-            {isDeleting && (
-              <CommitmentModal
-                title="Confirm commitment deletion"
-                subText="Delete"
-                az={currentAZ}
-                commitment={newCommitment}
-                onConfirm={deleteCommitment}
-                onModalClose={onDeleteModalClose}
-                showModal={isDeleting}
-              />
-            )}
-          </PanelBody>
-        </Panel>
-      )}
-    </>
+          )}
+          {isDeleting && (
+            <CommitmentModal
+              title="Confirm commitment deletion"
+              subText="Delete"
+              az={currentAZ}
+              commitment={newCommitment}
+              onConfirm={deleteCommitment}
+              onModalClose={onDeleteModalClose}
+              showModal={isDeleting}
+            />
+          )}
+        </PanelBody>
+      </Panel>
+    )
   );
 };
 
