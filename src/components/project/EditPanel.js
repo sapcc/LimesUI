@@ -133,7 +133,7 @@ const EditPanel = (props) => {
     currentAZ &&
     currentResource.commitment_config?.durations && (
       <Panel
-        className="tw-z-[1050]"
+        style={{zIndex: "1050"}}
         size="large"
         opened={true}
         onClose={() => onPanelClose()}
