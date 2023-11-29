@@ -23,6 +23,13 @@ const CommitmentModal = (props) => {
   const [invalidInput, setInvalidInput] = React.useState(false);
   const inputRef = React.useRef("");
 
+  TODO: "This is an emergency fix to show the modal ontop of panel in electra. This bricks very easily and needs to be fixed ASAP.";
+  React.useLayoutEffect(() => {
+    const x = document.getElementById("root");
+    x.firstElementChild.shadowRoot.lastChild.lastChild.lastChild.style =
+      "z-index: 1060";
+  }, []);
+
   function confirm() {
     if (inputRef.current !== subText) {
       setInvalidInput(true);
