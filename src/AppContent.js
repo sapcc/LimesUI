@@ -54,7 +54,7 @@ const AppContent = (props) => {
       {projectIsError ? (
         <Message>{error.message}</Message>
       ) : (
-        <Container>
+        <div>
           {projectData &&
           commitments &&
           !projectIsLoading &&
@@ -93,7 +93,7 @@ const AppContent = (props) => {
           ) : (
             <LoadingIndicator />
           )}
-        </Container>
+        </div>
       )}
     </>
   );

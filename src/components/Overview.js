@@ -58,7 +58,7 @@ const Overview = (props) => {
   }
 
   return (
-    <Container className="mb-11 py-6">
+    <div className="mb-11 py-6">
       <Tabs selectedIndex={currentTabIdx} onSelect={() => {}}>
         <TabList>
           {allAreas.map((area) => (
@@ -72,7 +72,7 @@ const Overview = (props) => {
         ))}
       </Tabs>
       {renderArea()}
-    </Container>
+    </div>
   )
 }
 
