@@ -38,7 +38,7 @@ const App = (props = {}) => {
   React.useEffect(() => {
     // set to empty string to fetch local test data in dev mode
     if (!window[props.getTokenFuncName]) {
-      console.warn("Please provide a function to get the token");
+      setTokenError(true);
       setToken(props.token);
       return;
     }
@@ -49,9 +49,6 @@ const App = (props = {}) => {
   }, []);
 
   React.useEffect(() => {
-    if (!token) {
-      setTokenError(true);
-    }
     if (token) {
       setTokenError(false);
     }
@@ -76,22 +73,23 @@ const App = (props = {}) => {
     }
   }, [props.mockAPI]);
 
-  return (
-    <>
-      {!tokenError ? (
-        <QueryClientProvider client={queryClient}>
-          <AppShell
-            pageHeader="Converged Cloud | App limesUI"
-            contentHeading={URL_STATE_KEY}
-            embedded={props.embedded === "true" || props.embedded === true}
-          >
-            <AppContent {...props} />
-          </AppShell>
-        </QueryClientProvider>
-      ) : (
-        <Message>Failed to fetch a token. Please provide a token as property or provide a getTokenFunc.</Message>
-      )}
-    </>
+  return tokenError ? (
+    <Message>
+      Failed to fetch a token. Please provide a token as property or provide a
+      getTokenFunc.
+    </Message>
+  ) : (
+    token && (
+      <QueryClientProvider client={queryClient}>
+        <AppShell
+          pageHeader="Converged Cloud | App limesUI"
+          contentHeading={URL_STATE_KEY}
+          embedded={props.embedded === "true" || props.embedded === true}
+        >
+          <AppContent {...props} />
+        </AppShell>
+      </QueryClientProvider>
+    )
   );
 };
 
