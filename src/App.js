@@ -16,7 +16,7 @@ const URL_STATE_KEY = "limesUI";
 const App = (props = {}) => {
   const { setUrlStateKey } = useGlobalsActions();
   const [token, setToken] = React.useState(null);
-  const [tokenError, setTokenError] = React.useState(true);
+  const [tokenError, setTokenError] = React.useState(false);
 
   // Create query client which it can be used from overall in the app
   // set default endpoint to fetch data
