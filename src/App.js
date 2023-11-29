@@ -44,6 +44,7 @@ const App = (props = {}) => {
     }
     setUrlStateKey(URL_STATE_KEY);
     window[props.getTokenFuncName]().then((token) => {
+      console.log(token)
       setToken(token.authToken);
     });
   }, []);
