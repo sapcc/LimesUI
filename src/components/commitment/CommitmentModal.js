@@ -24,7 +24,7 @@ const CommitmentModal = (props) => {
   const inputRef = React.useRef("");
 
   function confirm() {
-    if (inputRef.current !== subText) {
+    if (inputRef.current.toLowerCase() !== subText.toLowerCase()) {
       setInvalidInput(true);
       return;
     }

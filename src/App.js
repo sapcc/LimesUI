@@ -1,6 +1,11 @@
 import React from "react";
 
-import { AppShell, AppShellProvider, Message } from "juno-ui-components";
+import {
+  AppShell,
+  AppShellProvider,
+  Message,
+  LoadingIndicator,
+} from "juno-ui-components";
 import StoreProvider, { useGlobalsActions } from "./components/StoreProvider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import AppContent from "./AppContent";
@@ -33,6 +38,24 @@ const App = (props = {}) => {
     },
   });
 
+  async function getToken() {
+    const token = await window[props.getTokenFuncName]();
+    const expirationDate = token.expires_at;
+    const expirationMillis = Date.parse(expirationDate);
+    // Renew token request 10 seconds before expiration to avoid an token error.
+    let timeout;
+    if (expirationMillis) {
+      timeout = expirationMillis - Date.now() - 10000;
+    } else {
+      timeout = 3610000;
+    }
+    setTimeout(() => {
+      getToken();
+    }, timeout);
+    console.log("renew token");
+    setToken(token.authToken);
+  }
+
   // on app initial load save Endpoint and URL_STATE_KEY so it can be
   // used from overall in the application
   React.useEffect(() => {
@@ -43,10 +66,7 @@ const App = (props = {}) => {
       return;
     }
     setUrlStateKey(URL_STATE_KEY);
-    window[props.getTokenFuncName]().then((token) => {
-      console.log(token)
-      setToken(token.authToken);
-    });
+    getToken();
   }, []);
 
   React.useEffect(() => {
@@ -79,18 +99,18 @@ const App = (props = {}) => {
       Failed to fetch a token. Please provide a token as property or provide a
       getTokenFunc.
     </Message>
+  ) : token ? (
+    <QueryClientProvider client={queryClient}>
+      <AppShell
+        pageHeader="Converged Cloud | App limesUI"
+        contentHeading={URL_STATE_KEY}
+        embedded={props.embedded === "true" || props.embedded === true}
+      >
+        <AppContent {...props} />
+      </AppShell>
+    </QueryClientProvider>
   ) : (
-    token && (
-      <QueryClientProvider client={queryClient}>
-        <AppShell
-          pageHeader="Converged Cloud | App limesUI"
-          contentHeading={URL_STATE_KEY}
-          embedded={props.embedded === "true" || props.embedded === true}
-        >
-          <AppContent {...props} />
-        </AppShell>
-      </QueryClientProvider>
-    )
+    <LoadingIndicator />
   );
 };
 
