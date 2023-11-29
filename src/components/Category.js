@@ -12,7 +12,7 @@ const categoryTitle = `
 const categoryContent = `
     grid
     gap-4 
-    grid-cols-[repeat(auto-fit,_minmax(37rem,_1fr))]
+    grid-cols-[repeat(auto-fit,_minmax(34rem,_1fr))]
     `
 
 // TODO: for domain/cluster level add tracksQuota which skips resource that do not track quota.

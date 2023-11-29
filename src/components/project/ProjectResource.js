@@ -46,7 +46,7 @@ const azContent = `
 const azPanelContent = `  
     grid
     gap-0
-    grid-cols-[repeat(auto-fit,_minmax(35rem,_1fr))]
+    grid-cols-[repeat(auto-fit,_minmax(30rem,_1fr))]
     pt-2
     `;
 
