@@ -53,6 +53,7 @@ const App = (props = {}) => {
       getToken();
     }, timeout);
     console.log("renew token");
+    console.log(token);
     setToken(token.authToken);
   }
 
