@@ -45,7 +45,9 @@ const App = (props = {}) => {
     // Renew token request 10 seconds before expiration to avoid an token error.
     let timeout;
     if (expirationMillis) {
-      timeout = expirationMillis - Date.now() - 10000;
+      //timeout = expirationMillis - Date.now() - 10000;
+      // debug purpose 1 minute requeue.
+      timeout = 60000
     } else {
       timeout = 3610000;
     }
