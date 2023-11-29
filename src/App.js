@@ -110,7 +110,7 @@ const App = (props = {}) => {
       </AppShell>
     </QueryClientProvider>
   ) : (
-    <LoadingIndicator />
+    <LoadingIndicator className={"m-auto"} />
   );
 };
 

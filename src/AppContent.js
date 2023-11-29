@@ -91,7 +91,7 @@ const AppContent = (props) => {
               </Routes>
             </HashRouter>
           ) : (
-            <LoadingIndicator />
+            <LoadingIndicator className={"m-auto"}/>
           )}
         </Container>
       )}
