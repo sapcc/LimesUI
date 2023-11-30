@@ -4,4 +4,4 @@ node_modules
 /public/build/
 secretProps.json
 build/
-packagelock.json
+package-lock.json
