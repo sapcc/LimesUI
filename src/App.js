@@ -39,17 +39,15 @@ const App = (props = {}) => {
   });
 
   async function getToken() {
+    console.log("trying to fetch a new token");
     const token = await window[props.getTokenFuncName]();
     const expirationDate = token.expires_at;
-    const expirationMillis = Date.parse(expirationDate);
-    // Renew token request 10 seconds before expiration to avoid an token error.
+    const expirationMillis = new Date(expirationDate).getTime();
     let timeout;
     if (expirationMillis) {
-      //timeout = expirationMillis - Date.now() - 10000;
-      // debug purpose 1 minute requeue.
-      timeout = 60000
+      timeout = new Date(token.expires_at).getTime() - Date.now();
     } else {
-      timeout = 3610000;
+      timeout = 3610000; // Fallback to 1 hour.
     }
     setTimeout(() => {
       getToken();
