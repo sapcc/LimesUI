@@ -49,12 +49,13 @@ const App = (props = {}) => {
     } else {
       timeout = 3610000; // Fallback to 1 hour.
     }
-    setTimeout(() => {
+    const timer = setTimeout(() => {
       getToken();
     }, timeout);
     console.log("renew token");
     console.log(token);
     setToken(token.authToken);
+    return timer()
   }
 
   // on app initial load save Endpoint and URL_STATE_KEY so it can be
@@ -67,7 +68,8 @@ const App = (props = {}) => {
       return;
     }
     setUrlStateKey(URL_STATE_KEY);
-    getToken();
+    const timer = getToken();
+    return () => clearTimeout(timer)
   }, []);
 
   React.useEffect(() => {
