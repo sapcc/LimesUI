@@ -55,7 +55,7 @@ const App = (props = {}) => {
     console.log("renew token");
     console.log(token);
     setToken(token.authToken);
-    return timer()
+    return timer
   }
 
   // on app initial load save Endpoint and URL_STATE_KEY so it can be
