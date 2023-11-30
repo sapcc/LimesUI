@@ -2,7 +2,7 @@ import React from "react"
 import moment from "moment"
 import { useParams, useNavigate } from "react-router-dom"
 import Category from "./Category"
-import { byUIString } from "../lib/utils"
+import { t, byUIString } from "../lib/utils"
 import { Tabs, Tab, TabList, TabPanel, Container } from "juno-ui-components"
 
 const Overview = (props) => {
@@ -63,7 +63,7 @@ const Overview = (props) => {
         <TabList>
           {allAreas.map((area) => (
             <Tab onClick={() => navigate(`/${area}`)} key={area}>
-              {area}
+              {t(area)}
             </Tab>
           ))}
         </TabList>
