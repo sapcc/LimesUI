@@ -22,7 +22,7 @@ const AppContent = (props) => {
     data: projectAPIData,
     isLoading: projectIsLoading,
     isError: projectIsError,
-    error
+    error,
   } = projectQueryResult;
   const { data: commitmentAPIData, isLoading: commitmenIsLoading } =
     commitQueryResult;
@@ -62,36 +62,28 @@ const AppContent = (props) => {
             <HashRouter>
               <Routes>
                 <Route
-                  path="/"
+                  index
                   element={
                     <Overview {...projectData} canEdit={props.canEdit} />
                   }
-                >
-                  {" "}
-                </Route>
+                ></Route>
                 <Route
-                  path="/:currentArea/*"
+                  path="/:currentArea"
                   element={
                     <Overview {...projectData} canEdit={props.canEdit} />
                   }
                 >
-                  {" "}
+                  {props.canEdit && (
+                    <Route
+                      path="edit/:categoryName/:resourceName"
+                      element={<EditPanel {...projectData} />}
+                    />
+                  )}
                 </Route>
-                {props.canEdit && (
-                  <Route
-                    path="/:currentArea/edit/:categoryName/:resourceName"
-                    element={
-                      <>
-                        <Overview {...projectData} canEdit={props.canEdit} />
-                        <EditPanel {...projectData} />
-                      </>
-                    }
-                  />
-                )}
               </Routes>
             </HashRouter>
           ) : (
-            <LoadingIndicator className={"m-auto"}/>
+            <LoadingIndicator className={"m-auto"} />
           )}
         </Container>
       )}
