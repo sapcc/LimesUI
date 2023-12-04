@@ -39,6 +39,7 @@ const App = (props = {}) => {
     },
   });
 
+  // Reload page after token timeout.
   async function getToken() {
     console.log("trying to fetch a new token");
     const token = await window[props.getTokenFuncName]();
@@ -51,9 +52,8 @@ const App = (props = {}) => {
       timeout = 3610000; // Fallback to 1 hour.
     }
     const timer = setTimeout(() => {
-      getToken();
+      location.reload();
     }, timeout);
-    console.log("renew token");
     console.log(token);
     setToken(token.authToken);
     return timer;
