@@ -62,6 +62,20 @@ const CommitmentModal = (props) => {
     inputRef.current = e.target.value;
   }
 
+    // Enable Enter input to confirm modal.
+    React.useEffect(() => {
+      const listener = event => {
+        if (event.code === "Enter" || event.code === "NumpadEnter") {
+          event.preventDefault();
+          confirm()
+        }
+      };
+      document.addEventListener("keydown", listener);
+      return () => {
+        document.removeEventListener("keydown", listener);
+      };
+    }, []);
+
   const modalFooter = (
     <ModalFooter className="justify-end">
       <ButtonRow>
