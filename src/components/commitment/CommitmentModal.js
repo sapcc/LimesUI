@@ -36,7 +36,7 @@ const CommitmentModal = (props) => {
   const [invalidInput, setInvalidInput] = React.useState(false);
   const inputRef = React.useRef("");
   const [showCalendar, setShowCalendar] = React.useState(false);
-  const [selectedDate, setSelectedDate] = React.useState(moment()._d);
+  const [selectedDate, setSelectedDate] = React.useState(null);
   const formattedDate = formatTimeISO8160(moment(selectedDate).unix());
   const newCommitment = useStore((state) => state.commitment);
   const setCommitment = useStore((state) => state.setCommitment);
@@ -61,21 +61,7 @@ const CommitmentModal = (props) => {
     setInvalidInput(false);
     inputRef.current = e.target.value;
   }
-
-    // Enable Enter input to confirm modal.
-    React.useEffect(() => {
-      const listener = event => {
-        if (event.code === "Enter" || event.code === "NumpadEnter") {
-          event.preventDefault();
-          confirm()
-        }
-      };
-      document.addEventListener("keydown", listener);
-      return () => {
-        document.removeEventListener("keydown", listener);
-      };
-    }, []);
-
+  
   const modalFooter = (
     <ModalFooter className="justify-end">
       <ButtonRow>
