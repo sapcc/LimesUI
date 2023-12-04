@@ -36,7 +36,7 @@ const CommitmentModal = (props) => {
   const [invalidInput, setInvalidInput] = React.useState(false);
   const inputRef = React.useRef("");
   const [showCalendar, setShowCalendar] = React.useState(false);
-  const [selectedDate, setSelectedDate] = React.useState(null);
+  const [selectedDate, setSelectedDate] = React.useState(moment()._d);
   const formattedDate = formatTimeISO8160(moment(selectedDate).unix());
   const newCommitment = useStore((state) => state.commitment);
   const setCommitment = useStore((state) => state.setCommitment);
@@ -61,7 +61,7 @@ const CommitmentModal = (props) => {
     setInvalidInput(false);
     inputRef.current = e.target.value;
   }
-  
+
   const modalFooter = (
     <ModalFooter className="justify-end">
       <ButtonRow>
