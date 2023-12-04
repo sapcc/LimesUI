@@ -93,7 +93,7 @@ const CommitmentModal = (props) => {
     >
       <DataGrid
         columns={2}
-        className={!showCalendar && "mb-6"}
+        className={!showCalendar ? "mb-6" : "mb-0"}
         columnMaxSize="1fr"
       >
         <DataGridRow>

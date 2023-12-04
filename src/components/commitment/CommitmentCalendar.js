@@ -3,10 +3,10 @@ import moment from "moment";
 import { DayPicker } from "react-day-picker";
 
 const seasonEmoji = {
-  winter: "⛄️",
+  winter: "❄️",
   spring: "🌸",
   summer: "🌻",
-  autumn: "🍂",
+  autumn: "🍁",
 };
 
 // TODO: Change the max date when the future date limit for the API is defined.
