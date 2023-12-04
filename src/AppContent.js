@@ -49,45 +49,37 @@ const AppContent = (props) => {
     setCommitments(commitmentAPIData.commitments);
   }, [commitmentAPIData]);
 
-  return (
-    <>
-      {projectIsError ? (
-        <Message>{error.message}</Message>
+  return projectIsError ? (
+    <Message>{error.message}</Message>
+  ) : (
+    <Container px={false}>
+      {projectData &&
+      commitments &&
+      !projectIsLoading &&
+      !commitmenIsLoading ? (
+        <HashRouter>
+          <Routes>
+            <Route
+              index
+              element={<Overview {...projectData} canEdit={props.canEdit} />}
+            ></Route>
+            <Route
+              path="/:currentArea"
+              element={<Overview {...projectData} canEdit={props.canEdit} />}
+            >
+              {props.canEdit && (
+                <Route
+                  path="edit/:categoryName/:resourceName"
+                  element={<EditPanel {...projectData} />}
+                />
+              )}
+            </Route>
+          </Routes>
+        </HashRouter>
       ) : (
-        <Container px={false}>
-          {projectData &&
-          commitments &&
-          !projectIsLoading &&
-          !commitmenIsLoading ? (
-            <HashRouter>
-              <Routes>
-                <Route
-                  index
-                  element={
-                    <Overview {...projectData} canEdit={props.canEdit} />
-                  }
-                ></Route>
-                <Route
-                  path="/:currentArea"
-                  element={
-                    <Overview {...projectData} canEdit={props.canEdit} />
-                  }
-                >
-                  {props.canEdit && (
-                    <Route
-                      path="edit/:categoryName/:resourceName"
-                      element={<EditPanel {...projectData} />}
-                    />
-                  )}
-                </Route>
-              </Routes>
-            </HashRouter>
-          ) : (
-            <LoadingIndicator className={"m-auto"} />
-          )}
-        </Container>
+        <LoadingIndicator className={"m-auto"} />
       )}
-    </>
+    </Container>
   );
 };
 
