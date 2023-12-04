@@ -190,6 +190,10 @@ const createCommitmentStore = (set) => ({
   isCommitting: false,
   setIsCommitting: (setIsCommitting) =>
     set((state) => ({ isCommitting: setIsCommitting })),
+  //Used to disable tabs on edit mode
+  isEditing: false,
+  setIsEditing: (isEditing) =>
+    set((state) => ({ isEditing: isEditing })),
   //Used to open the submit modal
   isSubmitting: false,
   setIsSubmitting: (isSubmitting) =>

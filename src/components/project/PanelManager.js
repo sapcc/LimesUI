@@ -8,7 +8,8 @@ import { initialCommitmentObject } from "../../lib/store/store";
 
 // Panel needs to be rendered first to enable the fading UI animation.
 const PanelManager = (props) => {
-  const [isEditing, setIsEditing] = React.useState(false);
+  const isEditing = useStore((state) => state.isEditing);
+  const setIsEditing = useStore((state) => state.setIsEditing);
   const setCommitment = useStore((state) => state.setCommitment);
   const setToast = useStore((state) => state.setToast);
   const setIsCommitting = useStore((state) => state.setIsCommitting);
@@ -23,6 +24,7 @@ const PanelManager = (props) => {
   function onPanelClose() {
     setCommitment(initialCommitmentObject);
     setToast(null);
+    setIsEditing(false);
     setIsCommitting(false);
     navigate(`/${currentArea}`);
   }

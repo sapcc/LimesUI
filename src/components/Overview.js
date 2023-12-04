@@ -4,11 +4,13 @@ import { useParams, useNavigate, Outlet } from "react-router-dom";
 import Category from "./Category";
 import { t, byUIString } from "../lib/utils";
 import { Tabs, Tab, TabList, TabPanel, Container } from "juno-ui-components";
+import useStore from "../lib/store/store";
 
 const Overview = (props) => {
   const [allAreas, setAllAreas] = React.useState(
     Object.keys(props.overview.areas)
   );
+  const isEditing = useStore((state) => state.isEditing);
   const { currentArea = allAreas[0] } = useParams();
   const navigate = useNavigate();
   const currentTabIdx = allAreas.findIndex((area) => area === currentArea);
@@ -57,12 +59,18 @@ const Overview = (props) => {
     );
   }
 
+  console.log(isEditing)
+
   return (
     <Container px={false} className="mb-11">
       <Tabs selectedIndex={currentTabIdx} onSelect={() => {}}>
         <TabList>
           {allAreas.map((area) => (
-            <Tab onClick={() => navigate(`/${area}`)} key={area}>
+            <Tab
+              disabled={isEditing}
+              onClick={() => navigate(`/${area}`)}
+              key={area}
+            >
               {t(area)}
             </Tab>
           ))}
