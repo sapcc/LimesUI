@@ -1,4 +1,5 @@
 import { STRINGS } from "./constants";
+import moment from "moment";
 
 const perFlavorRx = /^instances_(.+)$/;
 
@@ -15,6 +16,18 @@ export const t = (str) => {
   const match = perFlavorRx.exec(str);
   return match ? match[1] : str;
 };
+
+// wrapper for formatTime
+export function formatTimeISO8160(unixTimeStamp) {
+  return formatTime(unixTimeStamp, "YYYY-MM-DD");
+}
+
+// Used to provide a uniform time format throughout the UI.
+export function formatTime(unixTimeStamp, formatter) {
+  if (!moment.unix(unixTimeStamp).isValid() || unixTimeStamp == "")
+    return false;
+  return moment.unix(unixTimeStamp).format(formatter);
+}
 
 // This can be used as a sorting predicate:
 //     sorted_things = things.sort(byUIString)

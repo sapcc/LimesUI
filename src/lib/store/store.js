@@ -180,8 +180,12 @@ export const initialCommitmentObject = {
   amount: 0,
   unit: "",
   duration: "",
+  confirm_by: "",
 };
 const createCommitmentStore = (set) => ({
+  commitment: { ...initialCommitmentObject },
+  setCommitment: (commitment) =>
+    set((state) => ({ commitment: { ...commitment } })),
   //Used to toggle the edit mode and the commitment button.
   isCommitting: false,
   setIsCommitting: (setIsCommitting) =>
@@ -196,9 +200,6 @@ const createCommitmentStore = (set) => ({
   deleteIsLoading: false,
   setDeleteIsLoading: (loading) =>
     set((state) => ({ deleteIsLoading: loading })),
-  commitment: { ...initialCommitmentObject },
-  setCommitment: (commitment) =>
-    set((state) => ({ commitment: { ...commitment } })),
   commitmentIsLoading: false,
   setCommitmentIsLoading: (loading) =>
     set((state) => ({ commitmentIsLoading: loading })),

@@ -13,6 +13,7 @@ import styles from "./styles.scss";
 import { fetchProxyInitDB } from "utils";
 import projectApiDB from "./lib/limes_project_api.json";
 import commitmentApiDB from "./lib/limes_commitment_api.json";
+import dayPickerStyle from "react-day-picker/dist/style.css?inline";
 
 /* IMPORTANT: Replace this with your app's name */
 const URL_STATE_KEY = "limesUI";
@@ -55,7 +56,7 @@ const App = (props = {}) => {
     console.log("renew token");
     console.log(token);
     setToken(token.authToken);
-    return timer
+    return timer;
   }
 
   // on app initial load save Endpoint and URL_STATE_KEY so it can be
@@ -69,7 +70,7 @@ const App = (props = {}) => {
     }
     setUrlStateKey(URL_STATE_KEY);
     const timer = getToken();
-    return () => clearTimeout(timer)
+    return () => clearTimeout(timer);
   }, []);
 
   React.useEffect(() => {
@@ -104,9 +105,9 @@ const App = (props = {}) => {
     </Message>
   ) : token ? (
     <QueryClientProvider client={queryClient}>
+      <style>{dayPickerStyle}</style>
       <AppShell
         pageHeader="Converged Cloud | App limesUI"
-        contentHeading={URL_STATE_KEY}
         embedded={props.embedded === "true" || props.embedded === true}
       >
         <AppContent {...props} />

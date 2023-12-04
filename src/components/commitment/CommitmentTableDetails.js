@@ -3,7 +3,6 @@ import moment from "moment";
 import {
   DataGridRow,
   DataGridCell,
-  ButtonRow,
   Button,
   Select,
   SelectOption,
@@ -11,6 +10,7 @@ import {
   Stack,
 } from "juno-ui-components";
 import { valueWithUnit, Unit } from "../../lib/unit";
+import { formatTime, formatTimeISO8160 } from "../../lib/utils";
 import useStore from "../../lib/store/store";
 import CommitmentTooltip from "./CommitmentTooltip";
 import { initialCommitmentObject } from "../../lib/store/store";
@@ -46,12 +46,6 @@ const CommitmentTableDetails = (props) => {
   const unit = new Unit(unitName);
   const initialParsedAmount = unit.format(amount, { ascii: true });
   const inputRef = React.useRef(initialParsedAmount);
-
-  function formatTime(unixTimeStamp, formatter) {
-    if (!moment.unix(unixTimeStamp).isValid() || unixTimeStamp == "")
-      return false;
-    return moment.unix(unixTimeStamp).format(formatter);
-  }
 
   function stopEditing() {
     setInvalidInput(false);
@@ -138,21 +132,21 @@ const CommitmentTableDetails = (props) => {
       </DataGridCell>
       <DataGridCell className="items-start">
         <CommitmentTooltip
-          displayText={formatTime(requested_at, "YYYY-MM-DD")}
+          displayText={formatTimeISO8160(requested_at)}
           toolTipContent={formatTime(requested_at, "YYYY-MM-DD HH:mm A")}
           emptyText=""
         />
       </DataGridCell>
       <DataGridCell className="items-start">
         <CommitmentTooltip
-          displayText={formatTime(confirmed_at, "YYYY-MM-DD")}
+          displayText={formatTimeISO8160(confirmed_at)}
           toolTipContent={formatTime(confirmed_at, "YYYY-MM-DD HH:mm A")}
           emptyText="Unconfirmed"
         />
       </DataGridCell>
       <DataGridCell className="items-start">
         <CommitmentTooltip
-          displayText={formatTime(expires_at, "YYYY-MM-DD")}
+          displayText={formatTimeISO8160(expires_at)}
           toolTipContent={formatTime(expires_at, "YYYY-MM-DD HH:mm A")}
           emptyText=""
         />

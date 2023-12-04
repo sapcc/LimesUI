@@ -172,6 +172,7 @@ const EditPanel = (props) => {
             <CommitmentModal
               title="Confirm commitment creation"
               subText="Commit"
+              isCommitting={true}
               az={currentAZ}
               commitment={newCommitment}
               onConfirm={postCommitment}
