@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Container, LoadingIndicator, Message } from "juno-ui-components";
 import { fetchProjectData } from "./lib/apiClient";
 import { HashRouter, Routes, Route } from "react-router-dom";
-import EditPanel from "./components/project/EditPanel";
+import PanelManager from "./components/project/PanelManager";
 import useStore from "./lib/store/store";
 
 const AppContent = (props) => {
@@ -70,7 +70,7 @@ const AppContent = (props) => {
               {props.canEdit && (
                 <Route
                   path="edit/:categoryName/:resourceName"
-                  element={<EditPanel {...projectData} />}
+                  element={<PanelManager {...projectData} />}
                 />
               )}
             </Route>

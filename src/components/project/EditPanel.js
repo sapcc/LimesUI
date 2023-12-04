@@ -57,7 +57,6 @@ const EditPanel = (props) => {
   const toast = useStore((state) => state.toast);
   const setToast = useStore((state) => state.setToast);
   const params = useParams();
-  const navigate = useNavigate();
   const { currentArea, categoryName, resourceName } = { ...params };
   const currentResource = props.categories[categoryName].resources.find(
     (res) => {
@@ -117,13 +116,6 @@ const EditPanel = (props) => {
     setCommitment({ ...initialCommitmentObject });
   }
 
-  function onPanelClose() {
-    setCommitment(initialCommitmentObject);
-    setToast(null);
-    setIsCommitting(false);
-    navigate(`/${currentArea}`);
-  }
-
   function dismissToast() {
     setToast(null);
   }
@@ -132,67 +124,59 @@ const EditPanel = (props) => {
   return (
     currentAZ &&
     currentResource.commitment_config?.durations && (
-      <Panel
-        size="large"
-        opened={true}
-        onClose={() => onPanelClose()}
-        closeable={true}
-        heading={`Edit Commitment: ${t(categoryName)} - ${t(resourceName)}`}
-      >
-        <PanelBody>
-          <ProjectResource
+      <PanelBody>
+        <ProjectResource
+          resource={currentResource}
+          currentAZ={currentAZ}
+          tracksQuota={tracksQuota(currentResource)}
+          isPanelView={true}
+        />
+        <AvailabilityZoneNav
+          az={currentResource.per_az}
+          currentAZ={currentAZ}
+          setCurrentAZ={setCurrentAZ}
+        />
+        {toast.message && (
+          <Toast
+            text={toast.message}
+            autoDismiss={true}
+            variant="danger"
+            onDismiss={() => dismissToast()}
+          />
+        )}
+        {commitments && (
+          <CommitmentTable
+            currentArea={currentArea}
+            currentResource={currentResource.name}
             resource={currentResource}
             currentAZ={currentAZ}
-            tracksQuota={tracksQuota(currentResource)}
-            isPanelView={true}
+            commitmentData={commitments}
           />
-          <AvailabilityZoneNav
-            az={currentResource.per_az}
-            currentAZ={currentAZ}
-            setCurrentAZ={setCurrentAZ}
+        )}
+        {isSubmitting && (
+          <CommitmentModal
+            title="Confirm commitment creation"
+            subText="Commit"
+            isCommitting={true}
+            az={currentAZ}
+            commitment={newCommitment}
+            onConfirm={postCommitment}
+            onModalClose={onPostModalClose}
+            showModal={isSubmitting}
           />
-          {toast.message && (
-            <Toast
-              text={toast.message}
-              autoDismiss={true}
-              variant="danger"
-              onDismiss={() => dismissToast()}
-            />
-          )}
-          {commitments && (
-            <CommitmentTable
-              currentArea={currentArea}
-              currentResource={currentResource.name}
-              resource={currentResource}
-              currentAZ={currentAZ}
-              commitmentData={commitments}
-            />
-          )}
-          {isSubmitting && (
-            <CommitmentModal
-              title="Confirm commitment creation"
-              subText="Commit"
-              isCommitting={true}
-              az={currentAZ}
-              commitment={newCommitment}
-              onConfirm={postCommitment}
-              onModalClose={onPostModalClose}
-              showModal={isSubmitting}
-            />
-          )}
-          {isDeleting && (
-            <CommitmentModal
-              title="Confirm commitment deletion"
-              subText="Delete"
-              az={currentAZ}
-              commitment={newCommitment}
-              onConfirm={deleteCommitment}
-              onModalClose={onDeleteModalClose}
-              showModal={isDeleting}
-            />
-          )}
-        </PanelBody>
-      </Panel>
+        )}
+        {isDeleting && (
+          <CommitmentModal
+            title="Confirm commitment deletion"
+            subText="Delete"
+            az={currentAZ}
+            commitment={newCommitment}
+            onConfirm={deleteCommitment}
+            onModalClose={onDeleteModalClose}
+            showModal={isDeleting}
+          />
+        )}
+      </PanelBody>
     )
   );
 };

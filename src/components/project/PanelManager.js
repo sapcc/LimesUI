@@ -8,12 +8,17 @@ import { initialCommitmentObject } from "../../lib/store/store";
 
 // Panel needs to be rendered first to enable the fading UI animation.
 const PanelManager = (props) => {
+  const [isEditing, setIsEditing] = React.useState(false);
   const setCommitment = useStore((state) => state.setCommitment);
   const setToast = useStore((state) => state.setToast);
   const setIsCommitting = useStore((state) => state.setIsCommitting);
   const navigate = useNavigate();
   const params = useParams();
   const { currentArea, categoryName, resourceName } = { ...params };
+
+  React.useEffect(() => {
+    setIsEditing(true);
+  }, []);
 
   function onPanelClose() {
     setCommitment(initialCommitmentObject);
@@ -25,7 +30,7 @@ const PanelManager = (props) => {
   return (
     <Panel
       size="large"
-      opened={true}
+      opened={isEditing}
       onClose={() => onPanelClose()}
       closeable={true}
       heading={`Edit Commitment: ${t(categoryName)} - ${t(resourceName)}`}
