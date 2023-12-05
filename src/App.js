@@ -52,7 +52,7 @@ const App = (props = {}) => {
       timeout = 3610000; // Fallback to 1 hour.
     }
     const timer = setTimeout(() => {
-      location.reload();
+      getToken()
     }, timeout);
     console.log(token);
     setToken(token.authToken);
