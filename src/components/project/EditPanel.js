@@ -48,12 +48,14 @@ const EditPanel = (props) => {
       },
       {
         onSuccess: (data) => {
-          setCommitmentIsLoading(false);
           callback(data.result);
+          setCommitmentIsLoading(false);
         },
         onError: () => {
           setCommitmentIsLoading(false);
           setToast("Network error: Could not post commitment.");
+          // Prevent modal from opening.
+          setIsSubmitting(false);
         },
       }
     );
@@ -138,10 +140,9 @@ const EditPanel = (props) => {
           az={currentAZ}
           minConfirmDate={minConfirmDate}
           commitment={newCommitment}
-          canConfirm={canConfirmCommitment}
+          canConfirmCommitment={canConfirmCommitment}
           onConfirm={postCommitment}
           onModalClose={onPostModalClose}
-          showModal={isSubmitting}
         />
       )}
     </PanelBody>
