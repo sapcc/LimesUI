@@ -1,8 +1,7 @@
 import React from "react";
 import Overview from "./components/Overview";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Container, LoadingIndicator, Message } from "juno-ui-components";
-import { fetchProjectData } from "./lib/apiClient";
 import { HashRouter, Routes, Route } from "react-router-dom";
 import PanelManager from "./components/project/PanelManager";
 import useStore from "./lib/store/store";
@@ -11,12 +10,10 @@ const AppContent = (props) => {
   const refetchProjectAPI = useStore((state) => state.refetchProjectAPI);
   const setRefetchProjectAPI = useStore((state) => state.setRefetchProjectAPI);
   const projectQueryResult = useQuery({
-    queryKey: ["projectData", props.mockAPI],
-    queryFn: fetchProjectData,
+    queryKey: ["projectData"],
   });
   const commitQueryResult = useQuery({
-    queryKey: ["commitmentData", props.mockAPI],
-    queryFn: fetchProjectData,
+    queryKey: ["commitmentData"],
   });
   const {
     data: projectAPIData,

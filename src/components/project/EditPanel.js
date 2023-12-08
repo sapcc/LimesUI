@@ -1,9 +1,6 @@
 import React from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { postCommitments, deleteCommitments } from "../../lib/apiClient";
-import { Panel, PanelBody, Toast } from "juno-ui-components";
-import { useParams, useNavigate } from "react-router-dom";
-import { t } from "../../lib/utils";
+import { PanelBody, Toast } from "juno-ui-components";
 import { tracksQuota } from "../../lib/utils";
 import ProjectResource from "./ProjectResource";
 import useStore from "../../lib/store/store";
@@ -13,58 +10,23 @@ import CommitmentModal from "../commitment/CommitmentModal";
 import { initialCommitmentObject } from "../../lib/store/store";
 
 const EditPanel = (props) => {
-  // Variables and State.
+  const { currentResource, currentArea } = { ...props };
+  const commit = useMutation({ mutationKey: ["newCommitment"] });
+  const confirm = useMutation({ mutationKey: ["canConfirm"] });
   const commitments = useStore((state) => state.commitments);
   const newCommitment = useStore((state) => state.commitment);
   const setCommitment = useStore((state) => state.setCommitment);
   const addCommitment = useStore((state) => state.addCommitment);
-  const removeCommitment = useStore((state) => state.removeCommitment);
   const setCommitmentIsLoading = useStore(
     (state) => state.setCommitmentIsLoading
   );
   const setRefetchProjectAPI = useStore((state) => state.setRefetchProjectAPI);
-  const postCommitmentQuery = useMutation({
-    mutationFn: postCommitments,
-    onSuccess: (data) => {
-      setRefetchProjectAPI(true);
-      setCommitmentIsLoading(false);
-      addCommitment(data.commitment);
-    },
-    onError: () => {
-      setCommitmentIsLoading(false);
-      setToast("Network error: Could not post commitment.");
-    },
-  });
-  const setDeleteIsLoading = useStore((state) => state.setDeleteIsLoading);
-  const deleteCommitmentQuery = useMutation({
-    mutationFn: deleteCommitments,
-    onSuccess: (data) => {
-      setDeleteIsLoading(false);
-      removeCommitment(data);
-    },
-    onError: () => {
-      setDeleteIsLoading(false);
-      setToast("Network error: Could not delete commitment.");
-    },
-  });
   const isSubmitting = useStore((state) => state.isSubmitting);
   const setIsSubmitting = useStore((state) => state.setIsSubmitting);
-  const isDeleting = useStore((state) => state.isDeleting);
-  const setIsDeleting = useStore((state) => state.setIsDeleting);
-  const { defaultOptions } = useQueryClient();
-  const queryMeta = defaultOptions.queries.meta;
   const setIsCommitting = useStore((state) => state.setIsCommitting);
   const toast = useStore((state) => state.toast);
   const setToast = useStore((state) => state.setToast);
-  const params = useParams();
-  const { currentArea, categoryName, resourceName } = { ...params };
-  const currentResource = props.categories[categoryName].resources.find(
-    (res) => {
-      if (res.name === resourceName) {
-        return res;
-      }
-    }
-  );
+  const minConfirmDate = currentResource?.commitment_config?.min_confirm_by;
   const currentAZ = useStore((state) => state.currentAZ);
   const setCurrentAZ = useStore((state) => state.setCurrentAZ);
 
@@ -75,30 +37,54 @@ const EditPanel = (props) => {
     return () => setCurrentAZ(null);
   }, []);
 
-  function postCommitment() {
+  function canConfirmCommitment(callback) {
     setCommitmentIsLoading(true);
-    const result = postCommitmentQuery.mutate({
-      payload: {
-        commitment: { ...newCommitment, id: "" },
+    const payload = { ...newCommitment, id: "" };
+    confirm.mutate(
+      {
+        payload: {
+          commitment: payload,
+        },
       },
-      meta: {
-        ...queryMeta,
-      },
-    });
+      {
+        onSuccess: (data) => {
+          setCommitmentIsLoading(false);
+          callback(data.result);
+        },
+        onError: () => {
+          setCommitmentIsLoading(false);
+          setToast("Network error: Could not post commitment.");
+        },
+      }
+    );
+  }
 
+  function postCommitment(confirm_by = null) {
+    setCommitmentIsLoading(true);
+    const payload = confirm_by
+      ? { ...newCommitment, id: "", confirm_by: confirm_by }
+      : { ...newCommitment, id: "" };
+    commit.mutate(
+      {
+        payload: {
+          commitment: payload,
+        },
+      },
+      {
+        onSuccess: (data) => {
+          setRefetchProjectAPI(true);
+          setCommitmentIsLoading(false);
+          addCommitment(data.commitment);
+        },
+        onError: () => {
+          setCommitmentIsLoading(false);
+          setToast("Network error: Could not post commitment.");
+        },
+      }
+    );
     setCommitment(initialCommitmentObject);
     setIsSubmitting(false);
     setIsCommitting(false);
-  }
-
-  function deleteCommitment() {
-    setDeleteIsLoading(true);
-    deleteCommitmentQuery.mutate({
-      commitmentID: newCommitment.id,
-      meta: { ...queryMeta },
-    });
-    setCommitment(initialCommitmentObject);
-    setIsDeleting(false);
   }
 
   function onPostModalClose() {
@@ -111,73 +97,54 @@ const EditPanel = (props) => {
     });
   }
 
-  function onDeleteModalClose() {
-    setIsDeleting(false);
-    setCommitment({ ...initialCommitmentObject });
-  }
-
   function dismissToast() {
     setToast(null);
   }
 
-  //Durations get checked to avoid route call to uneditable resource.
   return (
-    currentAZ &&
-    currentResource.commitment_config?.durations && (
-      <PanelBody>
-        <ProjectResource
+    <PanelBody>
+      <ProjectResource
+        resource={currentResource}
+        currentAZ={currentAZ}
+        tracksQuota={tracksQuota(currentResource)}
+        isPanelView={true}
+      />
+      <AvailabilityZoneNav
+        az={currentResource.per_az}
+        currentAZ={currentAZ}
+        setCurrentAZ={setCurrentAZ}
+      />
+      {toast.message && (
+        <Toast
+          text={toast.message}
+          autoDismiss={true}
+          variant="danger"
+          onDismiss={() => dismissToast()}
+        />
+      )}
+      {commitments && (
+        <CommitmentTable
+          currentArea={currentArea}
+          currentResource={currentResource.name}
           resource={currentResource}
           currentAZ={currentAZ}
-          tracksQuota={tracksQuota(currentResource)}
-          isPanelView={true}
+          commitmentData={commitments}
         />
-        <AvailabilityZoneNav
-          az={currentResource.per_az}
-          currentAZ={currentAZ}
-          setCurrentAZ={setCurrentAZ}
+      )}
+      {isSubmitting && (
+        <CommitmentModal
+          title="Confirm commitment creation"
+          subText="Commit"
+          az={currentAZ}
+          minConfirmDate={minConfirmDate}
+          commitment={newCommitment}
+          canConfirm={canConfirmCommitment}
+          onConfirm={postCommitment}
+          onModalClose={onPostModalClose}
+          showModal={isSubmitting}
         />
-        {toast.message && (
-          <Toast
-            text={toast.message}
-            autoDismiss={true}
-            variant="danger"
-            onDismiss={() => dismissToast()}
-          />
-        )}
-        {commitments && (
-          <CommitmentTable
-            currentArea={currentArea}
-            currentResource={currentResource.name}
-            resource={currentResource}
-            currentAZ={currentAZ}
-            commitmentData={commitments}
-          />
-        )}
-        {isSubmitting && (
-          <CommitmentModal
-            title="Confirm commitment creation"
-            subText="Commit"
-            isCommitting={true}
-            az={currentAZ}
-            commitment={newCommitment}
-            onConfirm={postCommitment}
-            onModalClose={onPostModalClose}
-            showModal={isSubmitting}
-          />
-        )}
-        {isDeleting && (
-          <CommitmentModal
-            title="Confirm commitment deletion"
-            subText="Delete"
-            az={currentAZ}
-            commitment={newCommitment}
-            onConfirm={deleteCommitment}
-            onModalClose={onDeleteModalClose}
-            showModal={isDeleting}
-          />
-        )}
-      </PanelBody>
-    )
+      )}
+    </PanelBody>
   );
 };
 

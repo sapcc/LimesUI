@@ -16,9 +16,18 @@ const PanelManager = (props) => {
   const navigate = useNavigate();
   const params = useParams();
   const { currentArea, categoryName, resourceName } = { ...params };
+  const currentResource = props.categories[categoryName]?.resources.find(
+    (res) => {
+      if (res.name === resourceName) {
+        return res;
+      }
+    }
+  );
 
   React.useEffect(() => {
-    setIsEditing(true);
+    if (currentResource) {
+      setIsEditing(true);
+    }
   }, []);
 
   function onPanelClose() {
@@ -29,16 +38,23 @@ const PanelManager = (props) => {
     navigate(`/${currentArea}`);
   }
 
+  //Durations get checked to avoid route call to uneditable resource.
   return (
-    <Panel
-      size="large"
-      opened={isEditing}
-      onClose={() => onPanelClose()}
-      closeable={true}
-      heading={`Edit Commitment: ${t(categoryName)} - ${t(resourceName)}`}
-    >
-      <EditPanel {...props} />
-    </Panel>
+    currentResource?.commitment_config?.durations && (
+      <Panel
+        size="large"
+        opened={isEditing}
+        onClose={() => onPanelClose()}
+        closeable={true}
+        heading={`Edit Commitment: ${t(categoryName)} - ${t(resourceName)}`}
+      >
+        <EditPanel
+          {...props}
+          currentResource={currentResource}
+          currentArea={currentArea}
+        />
+      </Panel>
+    )
   );
 };
 

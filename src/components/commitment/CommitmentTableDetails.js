@@ -1,5 +1,4 @@
 import React from "react";
-import moment from "moment";
 import {
   DataGridRow,
   DataGridCell,
@@ -8,6 +7,8 @@ import {
   SelectOption,
   TextInput,
   Stack,
+  DataGrid,
+  Container,
 } from "juno-ui-components";
 import { valueWithUnit, Unit } from "../../lib/unit";
 import { formatTime, formatTimeISO8160 } from "../../lib/utils";
@@ -21,12 +22,14 @@ const CommitmentTableDetails = (props) => {
     id,
     amount,
     duration,
-    requested_at,
+    created_at,
     confirmed_at,
     confirmed_at: isConfirmed,
+    confirm_by,
     expires_at,
     unit: unitName,
   } = { ...props.commitment };
+  const startDate = confirm_by ? confirm_by : created_at;
   const durations = props.durations;
   const currentArea = props.currentArea;
   const currentResource = props.currentResource;
@@ -38,8 +41,6 @@ const CommitmentTableDetails = (props) => {
   const setIsCommitting = useStore((state) => state.setIsCommitting);
   const commitmentIsLoading = useStore((state) => state.commitmentIsLoading);
   const setIsSubmitting = useStore((state) => state.setIsSubmitting);
-  const setIsDeleting = useStore((state) => state.setIsDeleting);
-  const deleteIsLoading = useStore((state) => state.deleteIsLoading);
   const setToast = useStore((state) => state.setToast);
   const [invalidDuration, setInValidDuration] = React.useState(false);
   const [invalidInput, setInvalidInput] = React.useState(false);
@@ -93,13 +94,6 @@ const CommitmentTableDetails = (props) => {
     setIsSubmitting(true);
   }
 
-  function handleDeletion() {
-    setCommitment({
-      ...props.commitment,
-    });
-    setIsDeleting(true);
-  }
-
   return (
     <DataGridRow>
       <DataGridCell>
@@ -132,57 +126,61 @@ const CommitmentTableDetails = (props) => {
       </DataGridCell>
       <DataGridCell className="items-start">
         <CommitmentTooltip
-          displayText={formatTimeISO8160(requested_at)}
-          toolTipContent={formatTime(requested_at, "YYYY-MM-DD HH:mm A")}
-          emptyText=""
+          displayText={
+            formatTimeISO8160(confirmed_at) ||
+            (!isAddingCommitment ? "Unconfirmed" : "")
+          }
+          toolTipContent={
+            <span className="grid grid-cols-3 gap-1">
+              <span>created: </span>
+              <span className="col-span-2">
+                {formatTime(created_at, "YYYY-MM-DD HH:mm A")}
+              </span>
+              {confirmed_at && (
+                <>
+                  <span>confirmed: </span>
+                  <span className="col-span-2">
+                    {formatTime(confirmed_at, "YYYY-MM-DD HH:mm A")}
+                  </span>
+                </>
+              )}
+            </span>
+          }
         />
       </DataGridCell>
       <DataGridCell className="items-start">
         <CommitmentTooltip
-          displayText={formatTimeISO8160(confirmed_at)}
-          toolTipContent={formatTime(confirmed_at, "YYYY-MM-DD HH:mm A")}
-          emptyText="Unconfirmed"
+          displayText={formatTimeISO8160(startDate)}
+          toolTipContent={formatTime(startDate, "YYYY-MM-DD HH:mm A")}
         />
       </DataGridCell>
       <DataGridCell className="items-start">
         <CommitmentTooltip
           displayText={formatTimeISO8160(expires_at)}
           toolTipContent={formatTime(expires_at, "YYYY-MM-DD HH:mm A")}
-          emptyText=""
         />
       </DataGridCell>
       <DataGridCell>
-        <div>
-          {isAddingCommitment ? (
-            <Stack gap="2">
-              <Button
-                variant="primary"
-                onClick={() => handleSave()}
-                progress={commitmentIsLoading}
-                size="small"
-                icon="check"
-              >
-                Save
-              </Button>
-              <Button onClick={() => stopEditing()} icon="close" size="small">
-                Cancel
-              </Button>
-            </Stack>
-          ) : !isConfirmed ? (
+        {isAddingCommitment ? (
+          <Stack gap="2">
             <Button
-              onClick={() => {
-                handleDeletion();
-              }}
-              progress={deleteIsLoading}
-              icon="deleteForever"
+              variant="primary"
+              onClick={() => handleSave()}
+              progress={commitmentIsLoading}
               size="small"
+              icon="check"
             >
-              Delete
+              Save
             </Button>
-          ) : (
-            "Committed"
-          )}
-        </div>
+            <Button onClick={() => stopEditing()} icon="close" size="small">
+              Cancel
+            </Button>
+          </Stack>
+        ) : isConfirmed ? (
+          "Committed"
+        ) : (
+          "Pending"
+        )}
       </DataGridCell>
     </DataGridRow>
   );

@@ -1,5 +1,6 @@
 import React from "react";
 import {
+  Message,
   Modal,
   ModalFooter,
   ButtonRow,
@@ -15,7 +16,6 @@ import { Unit, valueWithUnit } from "../../lib/unit";
 import { formatTimeISO8160 } from "../../lib/utils";
 import moment from "moment";
 import CommitmentCalendar from "./CommitmentCalendar";
-import useStore from "../../lib/store/store";
 
 const label = "font-semibold";
 
@@ -24,37 +24,58 @@ const CommitmentModal = (props) => {
     title,
     subText,
     az,
+    minConfirmDate,
     commitment,
+    canConfirm,
     onConfirm,
     onModalClose,
     showModal,
-    isCommitting,
   } = {
     ...props,
   };
+  const hasMinConfirmDate = minConfirmDate ? true : false;
   const unit = new Unit(commitment.unit);
   const [invalidInput, setInvalidInput] = React.useState(false);
   const inputRef = React.useRef("");
-  const [showCalendar, setShowCalendar] = React.useState(false);
-  const [selectedDate, setSelectedDate] = React.useState(moment()._d);
+  const [showWarning, setShowWarning] = React.useState(false);
+  const [showCalendar, setShowCalendar] = React.useState(hasMinConfirmDate);
+  // The calendar start date primarely uses the API date and defaults to todays timestamp.
+  const startDate = hasMinConfirmDate
+    ? moment.unix(minConfirmDate)._d
+    : moment()._d;
+  const [selectedDate, setSelectedDate] = React.useState(startDate);
   const formattedDate = formatTimeISO8160(moment(selectedDate).unix());
-  const newCommitment = useStore((state) => state.commitment);
-  const setCommitment = useStore((state) => state.setCommitment);
+
+  // Query can-confirm API. Determine if capacity is sufficient on limes.
+  // TODO: cannot be implemented yet: capacity errors not always identifiable by the API
+  /*
+  React.useEffect(() => {
+    const result = canConfirm((result) => {
+      console.log(result)
+      return result;
+    });
+    if (hasMinConfirmDate && !result) {
+      setShowWarning(true);
+    }
+  }, []);
+  */
 
   function confirm() {
     if (inputRef.current.toLowerCase() !== subText.toLowerCase()) {
       setInvalidInput(true);
       return;
     }
-    if (isCommitting) {
-      // The calendar component will handle an error message as footer.
-      if (!selectedDate) return;
-      setCommitment({
-        ...newCommitment,
-        confirm_by: moment(selectedDate).unix(),
-      });
+    if (!selectedDate) return;
+
+    // Send the request with or without confirm_by field.
+    // The API confirms commitments without confirm_by instantly.
+    const confirm_by = moment(selectedDate).unix();
+    const sendConfirmBy = showCalendar;
+    if (sendConfirmBy) {
+      onConfirm(confirm_by);
+    } else {
+      onConfirm();
     }
-    onConfirm();
   }
 
   function onInput(e) {
@@ -62,12 +83,18 @@ const CommitmentModal = (props) => {
     inputRef.current = e.target.value;
   }
 
+  function handleCalendarClick() {
+    setShowCalendar(!showCalendar);
+    setSelectedDate(startDate);
+  }
+
   const modalFooter = (
     <ModalFooter className="justify-end">
       <ButtonRow>
         <Button
+          disabled={!selectedDate ? true : false}
           label={subText}
-          variant={!isCommitting ? "primary-danger" : "primary"}
+          variant={"primary"}
           onClick={() => confirm()}
         />
         <Button
@@ -79,18 +106,21 @@ const CommitmentModal = (props) => {
     </ModalFooter>
   );
 
-  function handleCalendarClick() {
-    setShowCalendar(!showCalendar);
-    setSelectedDate(moment()._d);
-  }
-
   return (
     <Modal
+      className="max-h-full"
       title={title}
       open={showModal}
       modalFooter={modalFooter}
       onCancel={() => onModalClose()}
     >
+      {showWarning && (
+        <Message
+          className="m-auto"
+          variant="warning"
+          text="No capacity available. Confirmation delay possible."
+        />
+      )}
       <DataGrid
         columns={2}
         className={!showCalendar ? "mb-6" : "mb-0"}
@@ -108,20 +138,19 @@ const CommitmentModal = (props) => {
           <DataGridCell className={label}>Duration:</DataGridCell>
           <DataGridCell>{commitment.duration}</DataGridCell>
         </DataGridRow>
-        {isCommitting && (
-          <DataGridRow>
-            <DataGridCell className={label}>Activation</DataGridCell>
-            <DataGridCell>
-              <Checkbox
-                checked={!showCalendar}
-                onClick={() => {
-                  handleCalendarClick();
-                }}
-                label="immediately"
-              />
-            </DataGridCell>
-          </DataGridRow>
-        )}
+        <DataGridRow>
+          <DataGridCell className={label}>Activation</DataGridCell>
+          <DataGridCell>
+            <Checkbox
+              checked={!showCalendar}
+              disabled={hasMinConfirmDate}
+              onClick={() => {
+                handleCalendarClick();
+              }}
+              label="immediately"
+            />
+          </DataGridCell>
+        </DataGridRow>
         {showCalendar && (
           <DataGridRow>
             <DataGridCell className={label}>Activation Date</DataGridCell>
@@ -132,6 +161,7 @@ const CommitmentModal = (props) => {
       {showCalendar && (
         <Stack direction="vertical" alignment="center" className="h-[22.5rem]">
           <CommitmentCalendar
+            startDate={startDate}
             selectedDate={selectedDate}
             setSelectedDate={setSelectedDate}
           />

@@ -59,8 +59,6 @@ const Overview = (props) => {
     );
   }
 
-  console.log(isEditing)
-
   return (
     <Container px={false} className="mb-11">
       <Tabs selectedIndex={currentTabIdx} onSelect={() => {}}>

@@ -13,10 +13,10 @@ const limesStore = (set) => ({
   setCommitments: (commitments) =>
     set((state) => {
       commitments.sort((a, b) => {
-        if (a.requested_at < b.requested_at) {
+        if (a.created_at < b.created_at) {
           return 1;
         }
-        if (a.requested_at > b.requested_at) {
+        if (a.created_at > b.created_at) {
           return -1;
         }
         return 0;
@@ -28,14 +28,6 @@ const limesStore = (set) => ({
       const commitments = [...state.commitments];
       commitments.unshift(commitment);
       return { ...state, commitments: commitments };
-    }),
-  removeCommitment: (commitmentID) =>
-    set((state) => {
-      let newCommitments = state.commitments;
-      newCommitments = newCommitments.filter(
-        (commitment) => commitment.id !== commitmentID
-      );
-      return { ...state, commitments: newCommitments };
     }),
 
   ////////////////////////////////////////////////////////////////////////////////
@@ -180,30 +172,23 @@ export const initialCommitmentObject = {
   amount: 0,
   unit: "",
   duration: "",
-  confirm_by: "",
 };
 const createCommitmentStore = (set) => ({
   commitment: { ...initialCommitmentObject },
   setCommitment: (commitment) =>
     set((state) => ({ commitment: { ...commitment } })),
-  //Used to toggle the edit mode and the commitment button.
+  // Toggle the edit mode and the commitment button.
   isCommitting: false,
   setIsCommitting: (setIsCommitting) =>
     set((state) => ({ isCommitting: setIsCommitting })),
-  //Used to disable tabs on edit mode
+  // Disable tabs on edit mode
   isEditing: false,
-  setIsEditing: (isEditing) =>
-    set((state) => ({ isEditing: isEditing })),
-  //Used to open the submit modal
+  setIsEditing: (isEditing) => set((state) => ({ isEditing: isEditing })),
+  // Open the submit modal
   isSubmitting: false,
   setIsSubmitting: (isSubmitting) =>
     set((state) => ({ isSubmitting: isSubmitting })),
-  //Used to open the delete modal
-  isDeleting: false,
-  setIsDeleting: (isDeleting) => set((state) => ({ isDeleting: isDeleting })),
-  deleteIsLoading: false,
-  setDeleteIsLoading: (loading) =>
-    set((state) => ({ deleteIsLoading: loading })),
+  // Indicate loading state on commitment save
   commitmentIsLoading: false,
   setCommitmentIsLoading: (loading) =>
     set((state) => ({ commitmentIsLoading: loading })),
@@ -217,9 +202,26 @@ const createCommitmentStore = (set) => ({
     }),
 });
 
+const apiStore = (set) => ({
+  globalAPI: {
+    apiReady: false,
+    endpoint: "",
+    token: "",
+    projectID: "",
+    domainID: "",
+  },
+  setGlobalAPI: (globalAPI) => set((state) => ({ globalAPI: globalAPI })),
+  setToken: (token) =>
+    set((state) => ({ globalAPI: { ...state.globalAPI, token: token } })),
+  setApiReady: (isReady) => {
+    set((state) => ({ globalAPI: { ...state.globalAPI, apiReady: isReady } }));
+  },
+});
+
 const useStore = create((...a) => ({
   ...limesStore(...a),
   ...createCommitmentStore(...a),
+  ...apiStore(...a),
 }));
 
 export default useStore;

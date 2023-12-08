@@ -14,30 +14,30 @@ import { fetchProxyInitDB } from "utils";
 import projectApiDB from "./lib/limes_project_api.json";
 import commitmentApiDB from "./lib/limes_commitment_api.json";
 import dayPickerStyle from "react-day-picker/dist/style.css?inline";
+import useStore from "./lib/store/store";
+import AsyncWorker from "./AsyncWorker";
 
 /* IMPORTANT: Replace this with your app's name */
 const URL_STATE_KEY = "limesUI";
 /* --------------------------- */
 
 const App = (props = {}) => {
-  const { setUrlStateKey } = useGlobalsActions();
-  const [token, setToken] = React.useState(null);
+  const queryClient = props.queryClient;
+  const setGlobalApi = useStore((state) => state.setGlobalAPI);
+  const setToken = useStore((state) => state.setToken);
+  const token = useStore((state) => state.globalAPI.token);
+  const apiReady = useStore((state) => state.globalAPI.apiReady);
   const [tokenError, setTokenError] = React.useState(false);
+  const { setUrlStateKey } = useGlobalsActions();
 
-  // Create query client which it can be used from overall in the app
-  // set default endpoint to fetch data
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: {
-        meta: {
-          endpoint: props.endpoint || props.currentHost || "",
-          token: token || "",
-          projectID: props.projectID || "",
-          domainID: props.domainID || "",
-        },
-      },
-    },
-  });
+  React.useEffect(() => {
+    setGlobalApi({
+      endpoint: props.endpoint || props.currentHost || "",
+      token: props.getToken || "",
+      projectID: props.projectID || "",
+      domainID: props.domainID || "",
+    });
+  }, []);
 
   // Reload page after token timeout.
   async function getToken() {
@@ -103,28 +103,34 @@ const App = (props = {}) => {
       Failed to fetch a token. Please provide a token as property or provide a
       getTokenFunc.
     </Message>
-  ) : token ? (
+  ) : (
     <QueryClientProvider client={queryClient}>
       <style>{dayPickerStyle}</style>
+      <AsyncWorker mockAPI={props.mockAPI} />
       <AppShell
         pageHeader="Converged Cloud | App limesUI"
         embedded={props.embedded === "true" || props.embedded === true}
       >
-        <AppContent {...props} />
+        {apiReady ? (
+          <AppContent {...props} />
+        ) : (
+          <LoadingIndicator className={"m-auto"} />
+        )}
       </AppShell>
     </QueryClientProvider>
-  ) : (
-    <LoadingIndicator className={"m-auto"} />
   );
 };
 
 const StyledApp = (props) => {
+  // Create query client which it can be used from overall in the app
+  // set default endpoint to fetch data
+  const queryClient = new QueryClient();
   return (
     <AppShellProvider theme={`${props.theme ? props.theme : "theme-dark"}`}>
       {/* load styles inside the shadow dom */}
       <style>{styles.toString()}</style>
       <StoreProvider>
-        <App {...props} />
+        <App {...props} queryClient={queryClient} />
       </StoreProvider>
     </AppShellProvider>
   );

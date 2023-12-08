@@ -9,11 +9,8 @@ const seasonEmoji = {
   autumn: "🍁",
 };
 
-// TODO: Change the max date when the future date limit for the API is defined.
-const DATELIMIT = new Date(2024, 0, 1)
-
 const CommitmentCalendar = (props) => {
-  const { selectedDate, setSelectedDate } = { ...props };
+  const { startDate, selectedDate, setSelectedDate } = { ...props };
   const [errorState, setErrorState] = React.useState(false);
 
   const getSeason = (month) => {
@@ -36,7 +33,6 @@ const CommitmentCalendar = (props) => {
   return (
     <DayPicker
       mode="single"
-      selected={selectedDate}
       onSelect={(pickedDate) => {
         const pickedDateTime = new Date(pickedDate).setHours(23, 59, 59);
         // Decline dates in the past.
@@ -50,8 +46,8 @@ const CommitmentCalendar = (props) => {
         setSelectedDate(pickedDate);
       }}
       formatters={{ formatCaption }}
-      fromDate={new Date()}
-      toDate={DATELIMIT}
+      fromDate={startDate}
+      selected={selectedDate}
       footer={
         errorState && (
           <div className="text-xs text-theme-error">
