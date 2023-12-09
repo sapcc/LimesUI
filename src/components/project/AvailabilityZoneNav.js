@@ -1,13 +1,10 @@
-import React from "react"
-import { Tabs, Tab, TabList, TabPanel, Container } from "juno-ui-components"
-import useStore from "../../lib/store/store"
-import { initialCommitmentObject } from "../../lib/store/store"
+import React from "react";
+import { Tabs, Tab, TabList, TabPanel, Container } from "juno-ui-components";
+import useResetCommitment from "../../hooks/useResetCommitment";
 
 const AvailabilityZoneNav = (props) => {
-  const setIsCommitting = useStore((state) => state.setIsCommitting);
-  const setCommitment = useStore((state) => state.setCommitment);
-  const setToast = useStore((state) => state.setToast);
   const azIndex = props.az.findIndex((az) => az[0] === props.currentAZ);
+  const resetCommitment = useResetCommitment();
 
   return (
     <Container px={false} className="py-6">
@@ -20,10 +17,7 @@ const AvailabilityZoneNav = (props) => {
                 <Tab
                   key={az}
                   onClick={() => {
-                    props.setCurrentAZ(az[0]);
-                    setIsCommitting(false);
-                    setCommitment(initialCommitmentObject);
-                    setToast(null);
+                    resetCommitment(az);
                   }}
                 >
                   {az[0]}
@@ -38,7 +32,7 @@ const AvailabilityZoneNav = (props) => {
         )}
       </Tabs>
     </Container>
-  )
-}
+  );
+};
 
-export default AvailabilityZoneNav
+export default AvailabilityZoneNav;

@@ -1,34 +1,37 @@
 import React from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { PanelBody, Toast } from "juno-ui-components";
 import { tracksQuota } from "../../lib/utils";
 import ProjectResource from "./ProjectResource";
-import useStore from "../../lib/store/store";
+import {
+  limesStore,
+  limesStoreActions,
+  createCommitmentStore,
+  createCommitmentStoreActions,
+} from "../StoreProvider";
 import AvailabilityZoneNav from "./AvailabilityZoneNav";
 import CommitmentTable from "../commitment/CommitmentTable";
 import CommitmentModal from "../commitment/CommitmentModal";
-import { initialCommitmentObject } from "../../lib/store/store";
+import { initialCommitmentObject } from "../../lib/constants";
 
 const EditPanel = (props) => {
   const { currentResource, currentArea } = { ...props };
+  const minConfirmDate = currentResource?.commitment_config?.min_confirm_by;
+  const { commitments } = limesStore();
+  const { setRefetchProjectAPI } = limesStoreActions();
+  const { addCommitment } = limesStoreActions();
   const commit = useMutation({ mutationKey: ["newCommitment"] });
   const confirm = useMutation({ mutationKey: ["canConfirm"] });
-  const commitments = useStore((state) => state.commitments);
-  const newCommitment = useStore((state) => state.commitment);
-  const setCommitment = useStore((state) => state.setCommitment);
-  const addCommitment = useStore((state) => state.addCommitment);
-  const setCommitmentIsLoading = useStore(
-    (state) => state.setCommitmentIsLoading
-  );
-  const setRefetchProjectAPI = useStore((state) => state.setRefetchProjectAPI);
-  const isSubmitting = useStore((state) => state.isSubmitting);
-  const setIsSubmitting = useStore((state) => state.setIsSubmitting);
-  const setIsCommitting = useStore((state) => state.setIsCommitting);
-  const toast = useStore((state) => state.toast);
-  const setToast = useStore((state) => state.setToast);
-  const minConfirmDate = currentResource?.commitment_config?.min_confirm_by;
-  const currentAZ = useStore((state) => state.currentAZ);
-  const setCurrentAZ = useStore((state) => state.setCurrentAZ);
+  const { commitment: newCommitment } = createCommitmentStore();
+  const { toast } = createCommitmentStore();
+  const { isSubmitting } = createCommitmentStore();
+  const { currentAZ } = createCommitmentStore();
+  const { setCommitment } = createCommitmentStoreActions();
+  const { setCommitmentIsLoading } = createCommitmentStoreActions();
+  const { setIsSubmitting } = createCommitmentStoreActions();
+  const { setIsCommitting } = createCommitmentStoreActions();
+  const { setToast } = createCommitmentStoreActions();
+  const { setCurrentAZ } = createCommitmentStoreActions();
 
   React.useEffect(() => {
     if (!currentAZ) {
@@ -111,11 +114,7 @@ const EditPanel = (props) => {
         tracksQuota={tracksQuota(currentResource)}
         isPanelView={true}
       />
-      <AvailabilityZoneNav
-        az={currentResource.per_az}
-        currentAZ={currentAZ}
-        setCurrentAZ={setCurrentAZ}
-      />
+      <AvailabilityZoneNav az={currentResource.per_az} currentAZ={currentAZ} />
       {toast.message && (
         <Toast
           text={toast.message}

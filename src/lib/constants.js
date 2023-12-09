@@ -1,5 +1,16 @@
 export const COMMITMENTID = "AddCommitment"
 
+//used to reset the last commitment to default values.
+export const initialCommitmentObject = {
+  id: COMMITMENTID,
+  service_type: null,
+  resource_name: null,
+  availability_zone: null,
+  amount: 0,
+  unit: "",
+  duration: "",
+};
+
 export const STRINGS = {
   autoscaling: "Autoscaling",
   availability_zones: "Availability Zones",

@@ -1,16 +1,16 @@
 import React from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { fetchProxy } from "utils";
-import useStore from "../lib/store/store";
+import { apiStore, apiStoreActions } from "../components/StoreProvider";
 
 // Requeues are caused by window focus refetching.
 // More details: https://tanstack.com/query/v4/docs/react/guides/window-focus-refetching
 
 const useQueryClientFn = (isMockApi) => {
   const queryClient = useQueryClient();
-  const globalAPI = useStore((state) => state.globalAPI);
+  const globalAPI = apiStore();
+  const { setApiReady } = apiStoreActions();
   const { endpoint, token, projectID, domainID } = { ...globalAPI };
-  const setApiReady = useStore((state) => state.setApiReady);
 
   function responseHandler(response) {
     if (!response.ok) {

@@ -6,13 +6,13 @@ import {
   IntroBox,
 } from "juno-ui-components";
 import CommitmentTableDetails from "./CommitmentTableDetails";
-import useStore from "../../lib/store/store";
+import { createCommitmentStore } from "../StoreProvider";
 
 const CommitmentTable = (props) => {
   const durations = props.resource.commitment_config.durations;
   const unit = props.resource.unit;
-  const newCommitment = useStore((state) => state.commitment);
-  const isCommitting = useStore((state) => state.isCommitting);
+  const { commitment: newCommitment } = createCommitmentStore();
+  const { isCommitting } = createCommitmentStore();
   const { currentArea, currentResource, currentAZ, commitmentData } = {
     ...props,
   };

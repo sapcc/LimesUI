@@ -2,9 +2,12 @@ import React from "react";
 import { t } from "../../lib/utils";
 import { Stack, Button } from "juno-ui-components";
 import { Link } from "react-router-dom";
-import useStore from "../../lib/store/store";
 import ResourceBarBuilder from "./ResourceBarBuilder";
-import { initialCommitmentObject } from "../../lib/store/store";
+import useResetCommitment from "../../hooks/useResetCommitment";
+import {
+  createCommitmentStore,
+  createCommitmentStoreActions,
+} from "../StoreProvider";
 
 const barGroupContainer = `
     self-stretch  
@@ -58,18 +61,6 @@ const azContentHover = `
     `;
 
 const ProjectResource = (props) => {
-  const isCommitting = useStore((state) => state.isCommitting);
-  const setIsCommitting = useStore((state) => state.setIsCommitting);
-  const setToast = useStore((state) => state.setToast);
-  const setCommitment = useStore((state) => state.setCommitment);
-  const setCurrentAZ = useStore((state) => state.setCurrentAZ);
-  const hasAZs =
-    Object.keys(props.resource.per_az || {}).length > 0 ? true : false;
-  const hasDurations = props.resource?.commitment_config?.durations
-    ? true
-    : false;
-  const displayName = t(props.resource.name);
-  const { tracksQuota, parentResource, isPanelView } = { ...props };
   const {
     quota: originalQuota, //commitment + right
     usage,
@@ -78,7 +69,17 @@ const ProjectResource = (props) => {
     unit: unitName,
     per_az: availabilityZones,
   } = props.resource;
+  const hasAZs =
+    Object.keys(props.resource.per_az || {}).length > 0 ? true : false;
+  const hasDurations = props.resource?.commitment_config?.durations
+    ? true
+    : false;
+  const displayName = t(props.resource.name);
+  const { tracksQuota, parentResource, isPanelView } = { ...props };
   const showEdit = props.canEdit && tracksQuota && hasDurations && hasAZs;
+  const resetCommitment = useResetCommitment();
+  const { isCommitting } = createCommitmentStore();
+  const { setIsCommitting } = createCommitmentStoreActions();
 
   function azCommitmentSum(az) {
     let commitmentSum = 0;
@@ -165,10 +166,7 @@ const ProjectResource = (props) => {
                     : `az-bar ${azOverviewBar}`
                 }`}
                 onClick={() => {
-                  setCurrentAZ(az[0]);
-                  setIsCommitting(false);
-                  setCommitment(initialCommitmentObject);
-                  setToast(null);
+                  resetCommitment(az);
                 }}
               >
                 <div className={`az-title ${azTitle}`}>{az[0]}</div>

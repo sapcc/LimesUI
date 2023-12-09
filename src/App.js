@@ -6,7 +6,10 @@ import {
   Message,
   LoadingIndicator,
 } from "juno-ui-components";
-import StoreProvider, { useGlobalsActions } from "./components/StoreProvider";
+import StoreProvider, {
+  apiStore,
+  apiStoreActions,
+} from "./components/StoreProvider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import AppContent from "./AppContent";
 import styles from "./styles.scss";
@@ -14,24 +17,20 @@ import { fetchProxyInitDB } from "utils";
 import projectApiDB from "./lib/limes_project_api.json";
 import commitmentApiDB from "./lib/limes_commitment_api.json";
 import dayPickerStyle from "react-day-picker/dist/style.css?inline";
-import useStore from "./lib/store/store";
 import AsyncWorker from "./AsyncWorker";
 
-/* IMPORTANT: Replace this with your app's name */
-const URL_STATE_KEY = "limesUI";
 /* --------------------------- */
 
 const App = (props = {}) => {
   const queryClient = props.queryClient;
-  const setGlobalApi = useStore((state) => state.setGlobalAPI);
-  const setToken = useStore((state) => state.setToken);
-  const token = useStore((state) => state.globalAPI.token);
-  const apiReady = useStore((state) => state.globalAPI.apiReady);
+  const { setGlobalAPI } = apiStoreActions();
+  const { setToken } = apiStoreActions();
+  const { token } = apiStore();
+  const { apiReady } = apiStore();
   const [tokenError, setTokenError] = React.useState(false);
-  const { setUrlStateKey } = useGlobalsActions();
 
   React.useEffect(() => {
-    setGlobalApi({
+    setGlobalAPI({
       endpoint: props.endpoint || props.currentHost || "",
       token: props.getToken || "",
       projectID: props.projectID || "",
@@ -68,7 +67,6 @@ const App = (props = {}) => {
       setToken(props.token);
       return;
     }
-    setUrlStateKey(URL_STATE_KEY);
     const timer = getToken();
     return () => clearTimeout(timer);
   }, []);

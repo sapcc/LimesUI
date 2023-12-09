@@ -4,13 +4,13 @@ import { useParams, useNavigate, Outlet } from "react-router-dom";
 import Category from "./Category";
 import { t, byUIString } from "../lib/utils";
 import { Tabs, Tab, TabList, TabPanel, Container } from "juno-ui-components";
-import useStore from "../lib/store/store";
+import { createCommitmentStore } from "./StoreProvider";
 
 const Overview = (props) => {
   const [allAreas, setAllAreas] = React.useState(
     Object.keys(props.overview.areas)
   );
-  const isEditing = useStore((state) => state.isEditing);
+  const { isEditing } = createCommitmentStore();
   const { currentArea = allAreas[0] } = useParams();
   const navigate = useNavigate();
   const currentTabIdx = allAreas.findIndex((area) => area === currentArea);

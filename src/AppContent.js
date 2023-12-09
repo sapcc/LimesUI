@@ -4,11 +4,16 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Container, LoadingIndicator, Message } from "juno-ui-components";
 import { HashRouter, Routes, Route } from "react-router-dom";
 import PanelManager from "./components/project/PanelManager";
-import useStore from "./lib/store/store";
+import { limesStore, limesStoreActions } from "./components/StoreProvider";
 
 const AppContent = (props) => {
-  const refetchProjectAPI = useStore((state) => state.refetchProjectAPI);
-  const setRefetchProjectAPI = useStore((state) => state.setRefetchProjectAPI);
+  const { projectData } = limesStore();
+  const { refetchProjectAPI } = limesStore();
+  const { setRefetchProjectAPI } = limesStoreActions();
+  const { commitments } = limesStore();
+  const { setProjectData } = limesStoreActions();
+  const { restructureReport } = limesStoreActions();
+  const { setCommitments } = limesStoreActions();
   const projectQueryResult = useQuery({
     queryKey: ["projectData"],
   });
@@ -23,11 +28,6 @@ const AppContent = (props) => {
   } = projectQueryResult;
   const { data: commitmentAPIData, isLoading: commitmenIsLoading } =
     commitQueryResult;
-  const setCommitments = useStore((state) => state.setCommitments);
-  const commitments = useStore((state) => state.commitments);
-  const formatData = useStore((state) => state.restructureReport);
-  const setProjectData = useStore((state) => state.setProjectData);
-  const projectData = useStore((state) => state.projectData);
 
   React.useEffect(() => {
     if (!refetchProjectAPI) return;
@@ -38,7 +38,7 @@ const AppContent = (props) => {
   React.useEffect(() => {
     // Initial Commitment-API data fetch.
     if (!projectAPIData) return;
-    setProjectData(formatData(projectAPIData));
+    setProjectData(restructureReport(projectAPIData));
   }, [projectAPIData]);
 
   React.useEffect(() => {

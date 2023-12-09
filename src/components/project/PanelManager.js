@@ -3,16 +3,19 @@ import { Panel } from "juno-ui-components";
 import EditPanel from "./EditPanel";
 import { useParams, useNavigate } from "react-router";
 import { t } from "../../lib/utils";
-import useStore from "../../lib/store/store";
-import { initialCommitmentObject } from "../../lib/store/store";
+import { initialCommitmentObject } from "../../lib/constants";
+import {
+  createCommitmentStore,
+  createCommitmentStoreActions,
+} from "../StoreProvider";
 
 // Panel needs to be rendered first to enable the fading UI animation.
 const PanelManager = (props) => {
-  const isEditing = useStore((state) => state.isEditing);
-  const setIsEditing = useStore((state) => state.setIsEditing);
-  const setCommitment = useStore((state) => state.setCommitment);
-  const setToast = useStore((state) => state.setToast);
-  const setIsCommitting = useStore((state) => state.setIsCommitting);
+  const { isEditing } = createCommitmentStore();
+  const { setIsEditing } = createCommitmentStoreActions();
+  const { setCommitment } = createCommitmentStoreActions();
+  const { setToast } = createCommitmentStoreActions();
+  const { setIsCommitting } = createCommitmentStoreActions();
   const navigate = useNavigate();
   const params = useParams();
   const { currentArea, categoryName, resourceName } = { ...params };

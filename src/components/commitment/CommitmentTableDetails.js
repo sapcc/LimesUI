@@ -7,14 +7,12 @@ import {
   SelectOption,
   TextInput,
   Stack,
-  DataGrid,
-  Container,
 } from "juno-ui-components";
 import { valueWithUnit, Unit } from "../../lib/unit";
 import { formatTime, formatTimeISO8160 } from "../../lib/utils";
-import useStore from "../../lib/store/store";
+import { createCommitmentStore, createCommitmentStoreActions } from "../StoreProvider";
 import CommitmentTooltip from "./CommitmentTooltip";
-import { initialCommitmentObject } from "../../lib/store/store";
+import { initialCommitmentObject } from "../../lib/constants";
 import { COMMITMENTID } from "../../lib/constants";
 
 const CommitmentTableDetails = (props) => {
@@ -36,12 +34,12 @@ const CommitmentTableDetails = (props) => {
   const currentAZ = props.currentAZ;
 
   const isAddingCommitment = id === COMMITMENTID ? true : false;
-  const newCommitment = useStore((state) => state.commitment);
-  const setCommitment = useStore((state) => state.setCommitment);
-  const setIsCommitting = useStore((state) => state.setIsCommitting);
-  const commitmentIsLoading = useStore((state) => state.commitmentIsLoading);
-  const setIsSubmitting = useStore((state) => state.setIsSubmitting);
-  const setToast = useStore((state) => state.setToast);
+  const { commitment: newCommitment } = createCommitmentStore();
+  const { commitmentIsLoading } = createCommitmentStore();
+  const { setCommitment } = createCommitmentStoreActions();
+  const { setIsCommitting } = createCommitmentStoreActions();
+  const { setIsSubmitting } = createCommitmentStoreActions();
+  const { setToast } = createCommitmentStoreActions();
   const [invalidDuration, setInValidDuration] = React.useState(false);
   const [invalidInput, setInvalidInput] = React.useState(false);
   const unit = new Unit(unitName);

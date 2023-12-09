@@ -11,9 +11,19 @@ const StoreProvider = ({ children }) => (
 
 const useAppStore = (selector) => create(useContext(StoreContext), selector);
 
-export const useGlobalsUrlStateKey = () =>
-  useAppStore((state) => state.globals.urlStateKey);
-export const useGlobalsActions = () =>
-  useAppStore((state) => state.globals.actions);
+// APIStore
+export const apiStore = () => useAppStore((state) => state.api.globalAPI);
+export const apiStoreActions = () => useAppStore((state) => state.api.actions);
+
+// Project and Commitment Store
+export const limesStore = () => useAppStore((state) => state.project);
+export const limesStoreActions = () =>
+  useAppStore((state) => state.project.actions);
+
+// Creating commitments
+export const createCommitmentStore = () =>
+  useAppStore((state) => state.createCommitment);
+export const createCommitmentStoreActions = () =>
+  useAppStore((state) => state.createCommitment.actions);
 
 export default StoreProvider;
