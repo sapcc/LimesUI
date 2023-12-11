@@ -24,43 +24,25 @@ const CommitmentModal = (props) => {
     title,
     subText,
     az,
+    canConfirm,
     minConfirmDate,
     commitment,
-    canConfirmCommitment,
     onConfirm,
     onModalClose,
   } = {
     ...props,
   };
-  const hasMinConfirmDate = minConfirmDate ? true : false;
   const unit = new Unit(commitment.unit);
+  const hasMinConfirmDate = minConfirmDate ? true : false
   const [invalidInput, setInvalidInput] = React.useState(false);
   const inputRef = React.useRef("");
-  const [showModal, setShowModal] = React.useState(false);
-  const [canConfirm, setCanConfirm] = React.useState(true);
   const [showCalendar, setShowCalendar] = React.useState(hasMinConfirmDate);
   // The calendar start date primarely uses the API date and defaults to todays timestamp.
-  const startDate = hasMinConfirmDate
+  const startDate = minConfirmDate
     ? moment.unix(minConfirmDate)._d
     : moment()._d;
   const [selectedDate, setSelectedDate] = React.useState(startDate);
   const formattedDate = formatTimeISO8160(moment(selectedDate).unix());
-
-  // Query can-confirm API. Determine if capacity is sufficient on limes.
-  // If a minConfirmDate is set, skip the request. Limes handles capacity concerns.
-  React.useEffect(() => {
-    if (hasMinConfirmDate) {
-      setShowModal(true);
-      return;
-    }
-    canConfirmCommitment((result) => {
-      setShowModal(true);
-      if (!result) {
-        setCanConfirm(false);
-        setShowCalendar(true);
-      }
-    });
-  }, []);
 
   function confirm() {
     if (inputRef.current.toLowerCase() !== subText.toLowerCase()) {
@@ -109,91 +91,83 @@ const CommitmentModal = (props) => {
   );
 
   return (
-    showModal && (
-      <Modal
-        className="max-h-full"
-        title={title}
-        open={true}
-        modalFooter={modalFooter}
-        onCancel={() => onModalClose()}
+    <Modal
+      className="max-h-full"
+      title={title}
+      open={true}
+      modalFooter={modalFooter}
+      onCancel={() => onModalClose()}
+    >
+      {!canConfirm && (
+        <Message
+          className="m-auto"
+          variant="warning"
+          text="No capacity available. Confirmation delay possible."
+        />
+      )}
+      <DataGrid
+        columns={2}
+        className={!showCalendar ? "mb-6" : "mb-0"}
+        columnMaxSize="1fr"
       >
-        {!canConfirm && (
-          <Message
-            className="m-auto"
-            variant="warning"
-            text="No capacity available. Confirmation delay possible."
-          />
-        )}
-        <DataGrid
-          columns={2}
-          className={!showCalendar ? "mb-6" : "mb-0"}
-          columnMaxSize="1fr"
-        >
-          <DataGridRow>
-            <DataGridCell className={label}>Availability Zone:</DataGridCell>
-            <DataGridCell>{az}</DataGridCell>
-          </DataGridRow>
-          <DataGridRow>
-            <DataGridCell className={label}>Amount:</DataGridCell>
-            <DataGridCell>
-              {valueWithUnit(commitment.amount, unit)}
-            </DataGridCell>
-          </DataGridRow>
-          <DataGridRow>
-            <DataGridCell className={label}>Duration:</DataGridCell>
-            <DataGridCell>{commitment.duration}</DataGridCell>
-          </DataGridRow>
-          <DataGridRow>
-            <DataGridCell className={label}>Activation</DataGridCell>
-            <DataGridCell>
-              <Checkbox
-                checked={!showCalendar}
-                disabled={hasMinConfirmDate || !canConfirm}
-                onClick={() => {
-                  handleCalendarClick();
-                }}
-                label="immediately"
-              />
-            </DataGridCell>
-          </DataGridRow>
-          {showCalendar && (
-            <DataGridRow>
-              <DataGridCell className={label}>Activation Date</DataGridCell>
-              <DataGridCell>{formattedDate}</DataGridCell>
-            </DataGridRow>
-          )}
-        </DataGrid>
+        <DataGridRow>
+          <DataGridCell className={label}>Availability Zone:</DataGridCell>
+          <DataGridCell>{az}</DataGridCell>
+        </DataGridRow>
+        <DataGridRow>
+          <DataGridCell className={label}>Amount:</DataGridCell>
+          <DataGridCell>{valueWithUnit(commitment.amount, unit)}</DataGridCell>
+        </DataGridRow>
+        <DataGridRow>
+          <DataGridCell className={label}>Duration:</DataGridCell>
+          <DataGridCell>{commitment.duration}</DataGridCell>
+        </DataGridRow>
+        <DataGridRow>
+          <DataGridCell className={label}>Activation</DataGridCell>
+          <DataGridCell>
+            <Checkbox
+              checked={!showCalendar}
+              disabled={hasMinConfirmDate || !canConfirm}
+              onClick={() => {
+                handleCalendarClick();
+              }}
+              label="immediately"
+            />
+          </DataGridCell>
+        </DataGridRow>
         {showCalendar && (
-          <Stack
-            direction="vertical"
-            alignment="center"
-            className="h-[22.5rem]"
-          >
-            <CommitmentCalendar
-              startDate={startDate}
-              selectedDate={selectedDate}
-              setSelectedDate={setSelectedDate}
-            />
-          </Stack>
+          <DataGridRow>
+            <DataGridCell className={label}>Activation Date</DataGridCell>
+            <DataGridCell>{formattedDate}</DataGridCell>
+          </DataGridRow>
         )}
-        <Stack direction="vertical" alignment="center" className="mb-1">
-          <Stack className="mb-1">
-            To confirm, type:&nbsp;
-            <span className={label}>{subText}</span>
-          </Stack>
-          <Stack>
-            <TextInput
-              width="auto"
-              autoFocus
-              errortext={
-                invalidInput && "Please enter the highlighted term above."
-              }
-              onChange={(e) => onInput(e)}
-            />
-          </Stack>
+      </DataGrid>
+      {showCalendar && (
+        <Stack direction="vertical" alignment="center" className="h-[22.5rem]">
+          <CommitmentCalendar
+            startDate={startDate}
+            selectedDate={selectedDate}
+            setSelectedDate={setSelectedDate}
+          />
         </Stack>
-      </Modal>
-    )
+      )}
+      <Stack direction="vertical" alignment="center" className="mb-1">
+        <Stack className="mb-1">
+          To confirm, type:&nbsp;
+          <span className={label}>{subText}</span>
+        </Stack>
+        <Stack>
+          <TextInput
+            width="auto"
+            autoFocus
+            errortext={
+              invalidInput && "Please enter the highlighted term above."
+            }
+            onChange={(e) => onInput(e)}
+          />
+        </Stack>
+      </Stack>
+    </Modal>
   );
 };
 

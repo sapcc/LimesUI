@@ -17,6 +17,7 @@ import { initialCommitmentObject } from "../../lib/constants";
 const EditPanel = (props) => {
   const { currentResource, currentArea } = { ...props };
   const minConfirmDate = currentResource?.commitment_config?.min_confirm_by;
+  const [canConfirm, setCanConfirm] = React.useState(null);
   const { commitments } = limesStore();
   const { setRefetchProjectAPI } = limesStoreActions();
   const { addCommitment } = limesStoreActions();
@@ -40,7 +41,14 @@ const EditPanel = (props) => {
     return () => setCurrentAZ(null);
   }, []);
 
-  function canConfirmCommitment(callback) {
+  // Query can-confirm API. Determine if capacity is sufficient on limes.
+  // If a minConfirmDate is set, skip the request. Limes handles capacity concerns.
+  React.useEffect(() => {
+    if (!isSubmitting) return;
+    if (minConfirmDate) {
+      setCanConfirm(true);
+      return;
+    }
     setCommitmentIsLoading(true);
     const payload = { ...newCommitment, id: "" };
     confirm.mutate(
@@ -51,18 +59,18 @@ const EditPanel = (props) => {
       },
       {
         onSuccess: (data) => {
-          callback(data.result);
+          setCanConfirm(data.result);
           setCommitmentIsLoading(false);
         },
         onError: () => {
           setCommitmentIsLoading(false);
-          setToast("Network error: Could not post commitment.");
+          setToast("Check to confirm commitment failed.");
           // Prevent modal from opening.
           setIsSubmitting(false);
         },
       }
     );
-  }
+  }, [isSubmitting]);
 
   function postCommitment(confirm_by = null) {
     setCommitmentIsLoading(true);
@@ -94,6 +102,7 @@ const EditPanel = (props) => {
 
   function onPostModalClose() {
     setIsSubmitting(false);
+    setCanConfirm(false);
     setCommitment({
       ...initialCommitmentObject,
       amount: newCommitment.amount,
@@ -132,14 +141,14 @@ const EditPanel = (props) => {
           commitmentData={commitments}
         />
       )}
-      {isSubmitting && (
+      {isSubmitting && !confirm.isLoading && (
         <CommitmentModal
           title="Confirm commitment creation"
           subText="Commit"
           az={currentAZ}
+          canConfirm={canConfirm}
           minConfirmDate={minConfirmDate}
           commitment={newCommitment}
-          canConfirmCommitment={canConfirmCommitment}
           onConfirm={postCommitment}
           onModalClose={onPostModalClose}
         />
