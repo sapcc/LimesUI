@@ -47,11 +47,15 @@ const CommitmentModal = (props) => {
   const formattedDate = formatTimeISO8160(moment(selectedDate).unix());
 
   // Query can-confirm API. Determine if capacity is sufficient on limes.
-  // TODO: Not properly implemented yet: capacity can only be checked if no minConfirmDate is set.
+  // If a minConfirmDate is set, skip the request. Limes handles capacity concerns.
   React.useEffect(() => {
+    if (hasMinConfirmDate) {
+      setShowModal(true);
+      return;
+    }
     canConfirmCommitment((result) => {
       setShowModal(true);
-      if (!hasMinConfirmDate && !result) {
+      if (!result) {
         setCanConfirm(false);
         setShowCalendar(true);
       }
