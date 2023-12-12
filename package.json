@@ -89,6 +89,7 @@
     }
   },
   "dependencies": {
+    "cypress": "^13.6.1",
     "esbuild": "^0.19.4",
     "moment": "^2.29.4",
     "postcss-url": "^10.1.3",
