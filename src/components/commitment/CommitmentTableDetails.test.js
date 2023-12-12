@@ -1,17 +1,12 @@
 import React from "react";
-import {
-  fireEvent,
-  render,
-  screen,
-  renderHook,
-  act,
-  waitFor,
-} from "@testing-library/react";
+import { fireEvent, screen, renderHook, act } from "@testing-library/react";
 import CommitmentTableDetails from "./CommitmentTableDetails";
-import { initialCommitmentObject } from "../../lib/store/store";
-import useStore from "../../lib/store/store";
+import { initialCommitmentObject } from "../../lib/constants";
+import StoreProvider, {
+  createCommitmentStore,
+  createCommitmentStoreActions,
+} from "../StoreProvider";
 
-const { result } = renderHook(() => useStore());
 const durations = ["1 year", "2 years", "3 years"];
 const commitment = { ...initialCommitmentObject };
 
@@ -21,11 +16,21 @@ describe("CheckCommitedState", () => {
     confirmedCommitment.amount = 1003;
     confirmedCommitment.requested_at = 1696636800;
     confirmedCommitment.confirmed_at = 1696636800;
-    render(
-      <CommitmentTableDetails
-        commitment={confirmedCommitment}
-        durations={durations}
-      />
+    const wrapper = ({ children }) => (
+      <StoreProvider>
+        <CommitmentTableDetails
+          commitment={confirmedCommitment}
+          durations={durations}
+        />
+        {children}
+      </StoreProvider>
+    );
+    renderHook(
+      () => ({
+        commitmentStore: createCommitmentStore(),
+        commitmentStoreActions: createCommitmentStoreActions(),
+      }),
+      { wrapper }
     );
     const commitedField = screen.getByDisplayValue(
       new RegExp(confirmedCommitment.amount, "i")
@@ -35,9 +40,20 @@ describe("CheckCommitedState", () => {
 });
 
 describe("EditCommitments", () => {
+  let store;
   beforeEach(() => {
-    render(
-      <CommitmentTableDetails commitment={commitment} durations={durations} />
+    const wrapper = ({ children }) => (
+      <StoreProvider>
+        <CommitmentTableDetails commitment={commitment} durations={durations} />
+        {children}
+      </StoreProvider>
+    );
+    store = renderHook(
+      () => ({
+        commitmentStore: createCommitmentStore(),
+        commitmentStoreActions: createCommitmentStoreActions(),
+      }),
+      { wrapper }
     );
   });
 
@@ -58,7 +74,9 @@ describe("EditCommitments", () => {
     await act(async () => {
       fireEvent.click(close);
     });
-    expect(result.current.commitment.amount).toEqual(commitment.amount);
+    expect(store.result.current.commitmentStore.commitment.amount).toEqual(
+      commitment.amount
+    );
   });
 
   test("Check dropdown", () => {
