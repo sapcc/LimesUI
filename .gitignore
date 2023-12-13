@@ -5,3 +5,4 @@ node_modules
 secretProps.json
 build/
 package-lock.json
+coverage/
