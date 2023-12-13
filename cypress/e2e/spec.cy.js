@@ -1,8 +1,7 @@
 /// <reference types="Cypress" />
 
-// Warning: All gets with a dot search for a classname in juno
-// Those are inaccessible in our application
-// They might brick at some point in the future.
+// Warning: There are elements from juno that cant be accessed via data-cy
+// Those are tagged via the aria-label or its classes and might break in the future.
 describe("template spec", () => {
   const amount = 20;
   beforeEach(() => {
@@ -16,7 +15,7 @@ describe("template spec", () => {
     cy.get("[data-cy='addCommitment']").click();
     cy.get("[data-cy='commitmentInput']").clear().type(amount);
     cy.get("[data-cy='commitmentSelect']").click();
-    cy.get("[data-cy='commitmentSelectOption/0']").first().click();
+    cy.get("[data-cy='commitmentSelectOption/0']").click();
     cy.get("[data-cy='commitmentSave']").click();
     cy.get("[data-cy='modalCancel']").click();
     cy.get("[data-cy='commitmentInput']").should("have.value", amount);
@@ -27,8 +26,8 @@ describe("template spec", () => {
     cy.get("[data-cy='addCommitment']").click();
     cy.get("[data-cy='commitmentInput']").clear().type(amount);
     cy.get("[data-cy='commitmentSelect']").click();
-    cy.get("[data-cy='commitmentSelectOption/0']").first().click();
-    cy.get(".juno-panel-close").click()
+    cy.get("[data-cy='commitmentSelectOption/0']").click();
+    cy.get("[aria-label=close]").click()
     cy.get("[data-cy='edit/instances']").click();
     cy.get("[data-cy='addCommitment']").click();
     cy.get("[data-cy='commitmentInput']").should("have.value", 0);
