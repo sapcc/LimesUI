@@ -122,13 +122,19 @@ const ProjectResource = (props) => {
             to={`/${props.area}/edit/${props.categoryName}/${props.resource.name}`}
             state={props}
           >
-            <Button size="small" variant="subdued" icon="edit">
+            <Button
+              data-cy={`edit/${props.resource.name}`}
+              size="small"
+              variant="subdued"
+              icon="edit"
+            >
               Edit
             </Button>
           </Link>
         )}
         {props.isPanelView && (
           <Button
+            data-cy="addCommitment"
             onClick={() => setIsCommitting(true)}
             variant="primary"
             disabled={isCommitting}

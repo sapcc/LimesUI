@@ -82,6 +82,7 @@ const CommitmentModal = (props) => {
           onClick={() => confirm()}
         />
         <Button
+          data-cy="modalCancel"
           label="Cancel"
           variant="subdued"
           onClick={() => onModalClose()}

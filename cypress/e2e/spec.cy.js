@@ -3,17 +3,18 @@
 describe("template spec", () => {
   it("checks that edit exsists", () => {
     cy.visit("/");
-    cy.contains("Edit").should('exist')
-  })
+    cy.get("[data-cy='edit/instances']").should("exist");
+  });
   it("saves amount after modal exit", () => {
+    const amount = 20;
     cy.visit("/");
-    cy.contains("Edit").click();
-    cy.contains("Add Commitment").click();
-    cy.get("input").clear().type("20");
-    cy.get(".juno-select-toggle").click();
-    cy.get(".juno-select-option").first().click();
-    cy.contains("Save").click();
-    cy.get(".juno-modal-container").contains("Cancel").click();
-    cy.get("input").should('have.value', "20");
+    cy.get("[data-cy='edit/instances']").click();
+    cy.get("[data-cy='addCommitment']").click();
+    cy.get("[data-cy='commitmentInput']").clear().type(amount);
+    cy.get("[data-cy='commitmentSelect']").click();
+    cy.get("[data-cy='commitmentSelectOption/0']").first().click();
+    cy.get("[data-cy='commitmentSave']").click();
+    cy.get("[data-cy='modalCancel']").click();
+    cy.get("[data-cy='commitmentInput']").should("have.value", amount);
   });
 });

@@ -10,7 +10,10 @@ import {
 } from "juno-ui-components";
 import { valueWithUnit, Unit } from "../../lib/unit";
 import { formatTime, formatTimeISO8160 } from "../../lib/utils";
-import { createCommitmentStore, createCommitmentStoreActions } from "../StoreProvider";
+import {
+  createCommitmentStore,
+  createCommitmentStoreActions,
+} from "../StoreProvider";
 import CommitmentTooltip from "./CommitmentTooltip";
 import { initialCommitmentObject } from "../../lib/constants";
 import { COMMITMENTID } from "../../lib/constants";
@@ -98,6 +101,7 @@ const CommitmentTableDetails = (props) => {
         {isAddingCommitment ? (
           <TextInput
             className="max-w-[7rem]"
+            data-cy="commitmentInput"
             value={inputRef.current}
             invalid={invalidInput}
             autoFocus={true}
@@ -110,12 +114,18 @@ const CommitmentTableDetails = (props) => {
       <DataGridCell>
         {isAddingCommitment ? (
           <Select
+            data-cy="commitmentSelect"
             placeholder="Select"
             invalid={invalidDuration}
             onChange={(e) => handleSelect(e)}
           >
-            {durations.map((duration) => (
-              <SelectOption key={duration}>{duration}</SelectOption>
+            {durations.map((duration, idx) => (
+              <SelectOption
+                data-cy={`commitmentSelectOption/${idx}`}
+                key={duration}
+              >
+                {duration}
+              </SelectOption>
             ))}
           </Select>
         ) : (
@@ -162,6 +172,7 @@ const CommitmentTableDetails = (props) => {
         {isAddingCommitment ? (
           <Stack gap="2">
             <Button
+              data-cy="commitmentSave"
               variant="primary"
               onClick={() => handleSave()}
               progress={commitmentIsLoading}
@@ -170,7 +181,11 @@ const CommitmentTableDetails = (props) => {
             >
               Save
             </Button>
-            <Button onClick={() => stopEditing()} icon="close" size="small">
+            <Button
+              onClick={() => stopEditing()}
+              icon="close"
+              size="small"
+            >
               Cancel
             </Button>
           </Stack>
