@@ -1,8 +1,9 @@
 import React from "react";
 import { t } from "../../lib/utils";
-import { Stack, Button } from "juno-ui-components";
+import { Stack, Button, Badge } from "juno-ui-components";
 import { Link } from "react-router-dom";
 import ResourceBarBuilder from "./ResourceBarBuilder";
+import useCommitmentFilter from "../../hooks/useCommitmentFilter";
 import useResetCommitment from "../../hooks/useResetCommitment";
 import {
   createCommitmentStore,
@@ -62,6 +63,7 @@ const azContentHover = `
 
 const ProjectResource = (props) => {
   const {
+    name: resourceName,
     totalCommitments,
     usagePerCommitted,
     usagePerQuota,
@@ -73,7 +75,8 @@ const ProjectResource = (props) => {
     per_az: availabilityZones,
   } = props.resource;
   // displayedUsage ensures that resources without commitments get the project usage displayed.
-  const displayedUsage = usagePerCommitted > 0 ? usagePerCommitted : usagePerQuota
+  const displayedUsage =
+    usagePerCommitted > 0 ? usagePerCommitted : usagePerQuota;
   const hasAZs =
     Object.keys(props.resource.per_az || {}).length > 0 ? true : false;
   const hasDurations = props.resource?.commitment_config?.durations
@@ -82,6 +85,7 @@ const ProjectResource = (props) => {
   const displayName = t(props.resource.name);
   const { tracksQuota, parentResource, isPanelView } = { ...props };
   const showEdit = props.canEdit && tracksQuota && hasDurations && hasAZs;
+  const { hasPendingCommitments } = useCommitmentFilter();
   const resetCommitment = useResetCommitment();
   const { isCommitting } = createCommitmentStore();
   const { setIsCommitting } = createCommitmentStoreActions();
@@ -160,7 +164,15 @@ const ProjectResource = (props) => {
                   resetCommitment(az);
                 }}
               >
-                <div className={`az-title ${azTitle}`}>{az[0]}</div>
+                <div className={`az-title ${azTitle} flex justify-between`}>
+                  {az[0]}{" "}
+                  {hasPendingCommitments(resourceName, az[0]) && (
+                    <Badge variant="info">
+                      {" "}
+                      <b>pending</b>
+                    </Badge>
+                  )}
+                </div>
                 <ResourceBarBuilder
                   unit={unitName}
                   usage={az[1].usage}

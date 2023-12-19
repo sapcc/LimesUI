@@ -6,11 +6,13 @@ import {
   IntroBox,
 } from "juno-ui-components";
 import CommitmentTableDetails from "./CommitmentTableDetails";
+import useCommitmentFilter from "../../hooks/useCommitmentFilter";
 import { createCommitmentStore } from "../StoreProvider";
 
 const CommitmentTable = (props) => {
   const durations = props.resource.commitment_config.durations;
   const unit = props.resource.unit;
+  const { filterCommitments } = useCommitmentFilter();
   const { commitment: newCommitment } = createCommitmentStore();
   const { isCommitting } = createCommitmentStore();
   const { currentArea, currentResource, currentAZ, commitmentData } = {
@@ -43,12 +45,9 @@ const CommitmentTable = (props) => {
     },
   ];
 
-  const filterCommitments = (v) =>
-    v.resource_name === currentResource && v.availability_zone === currentAZ;
-
   //Add or remove edit commitment row.
   const filteredCommitments = React.useMemo(() => {
-    const filteredData = commitmentData.filter(filterCommitments);
+    const filteredData = filterCommitments(currentResource, currentAZ);
     if (!isCommitting) {
       return filteredData;
     }
