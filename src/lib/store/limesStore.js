@@ -93,6 +93,8 @@ const limesStore = (set) => ({
           for (let res of resourceList) {
             filterAZs(res);
             getQuotaNewOrOldModel(res);
+            addTotalCommitments(res);
+            addUsageValues(res);
             categories[res.category || serviceType].resources.push(res);
           }
         }
@@ -149,8 +151,9 @@ export default limesStore;
 // Helpers for restructureReport
 // Availability Zones will be received as objects. It is easier to handle them as an Array.
 function filterAZs(res) {
+  if (Array.isArray(res.per_az)) return;
   let validAZs;
-  if (res?.per_az !== undefined) {
+  if (res.per_az !== undefined) {
     validAZs = Object.entries(res.per_az);
     const filteredAZs = validAZs;
     res.per_az = filteredAZs;
@@ -168,6 +171,62 @@ function getQuotaNewOrOldModel(res) {
     return (quotaSum += az[1].quota || 0);
   });
   res.quota = quotaSum;
+}
+
+// Sum up all commitments of a resource over all AZ's
+function addTotalCommitments(res) {
+  let totalCommitments = 0;
+  // Sum of all commitments over all AZ's.
+  res.per_az.forEach((az) => {
+    const commitments = Object.values(az[1].committed || {});
+    commitments.forEach((commitmentValue) => {
+      totalCommitments += commitmentValue;
+    });
+  });
+  res.totalCommitments = totalCommitments;
+}
+
+// The sum bar of commitments is split in two scenarios:
+// 1) when no commitments are present (shows only one bar):
+// <sum(usage over all AZs)> / <Quota>
+// 2) when Commitments are present:
+// left side: <sum(usage on AZs with Commitments)> / <sum(Commitments of the AZs)>
+// right side: <sum(usage that exceeds the AZs Commitments)> / <Quota - Commitments>
+// This function adds the usage values of scenario 2 as attributes to the object.
+// TODO: on a resource without any commitments: usagePerQuota = Quota. Simplify the handling of this case.
+function addUsageValues(res) {
+  // usage: left side
+  let usagePerCommitted = 0;
+  // usage: right side
+  let usagePerQuota = 0;
+  // Sum of all usages with commitments.
+  // No commitments available => use usage.
+  res.per_az.forEach((az) => {
+    const azCommitments = Object.values(az[1].committed || {});
+    let azCommitmentSum = 0;
+    azCommitments.forEach((commtimentValue) => {
+      azCommitmentSum += commtimentValue;
+    });
+    const azUsage = az[1].usage || 0;
+    let usageValue;
+    // usage left side:
+    if (azUsage > azCommitmentSum) {
+      usageValue = azCommitmentSum;
+    } else {
+      usageValue = azUsage;
+    }
+    // usage right side:
+    if (azCommitmentSum == 0) {
+      usagePerQuota += az[1].usage;
+    }
+    if (azCommitmentSum > 0 && azUsage > azCommitmentSum) {
+      usagePerQuota += azUsage - azCommitmentSum;
+    }
+    usagePerCommitted += usageValue;
+    az.commitmentSum = azCommitmentSum;
+  });
+  res.usagePerCommitted = usagePerCommitted;
+  res.usagePerQuota = usagePerQuota;
 }
 
 const objectFromEntries = (entries) => {

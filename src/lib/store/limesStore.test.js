@@ -5,6 +5,13 @@ import StoreProvider, {
   limesStoreActions,
 } from "../../components/StoreProvider";
 
+// Expected is a dual bar display at the UI
+// Because only qa-de-1a has commitments: usagePerCommitted only takes this into account
+// The remaining AZ's don't have commitments: They get added to usagePerQuota
+const usagePerCommitted = 10;
+const totalCommitments = 30;
+const usagePerQuota = 50;
+
 const projectData = {
   project: {
     id: "123",
@@ -22,6 +29,10 @@ const projectData = {
               "qa-de-1a": {
                 usage: 10,
                 quota: 10,
+                committed: {
+                  "1 year": 20,
+                  "2 years": 10,
+                },
               },
               "qa-de-1b": {
                 usage: 20,
@@ -56,6 +67,7 @@ describe("limesStore", () => {
       { wrapper }
     );
   });
+
   describe("project", () => {
     test("restructure report - new model", () => {
       act(() => {
@@ -87,6 +99,18 @@ describe("limesStore", () => {
         store.result.current.limesStore.projectData.categories.compute
           .resources[0].quota
       ).toEqual(100);
+    });
+
+    test("values of added attributes", () => {
+      act(() => {
+        const structuredData =
+          store.result.current.limesStoreActions.restructureReport(projectData);
+        store.result.current.limesStoreActions.setProjectData(structuredData);
+      });
+      expect(
+        store.result.current.limesStore.projectData.categories.compute
+          .resources[0].totalCommitments
+      ).toEqual(totalCommitments);
     });
   });
 

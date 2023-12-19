@@ -62,6 +62,9 @@ const azContentHover = `
 
 const ProjectResource = (props) => {
   const {
+    totalCommitments,
+    usagePerCommitted,
+    usagePerQuota,
     quota: originalQuota, //commitment + right
     usage,
     usable_quota: usableQuota,
@@ -69,6 +72,8 @@ const ProjectResource = (props) => {
     unit: unitName,
     per_az: availabilityZones,
   } = props.resource;
+  // displayedUsage ensures that resources without commitments get the project usage displayed.
+  const displayedUsage = usagePerCommitted > 0 ? usagePerCommitted : usagePerQuota
   const hasAZs =
     Object.keys(props.resource.per_az || {}).length > 0 ? true : false;
   const hasDurations = props.resource?.commitment_config?.durations
@@ -80,27 +85,6 @@ const ProjectResource = (props) => {
   const resetCommitment = useResetCommitment();
   const { isCommitting } = createCommitmentStore();
   const { setIsCommitting } = createCommitmentStoreActions();
-
-  function azCommitmentSum(az) {
-    let commitmentSum = 0;
-    const commitments = Object.values(az[1].committed || {});
-    commitments.forEach((commitmentValue) => {
-      commitmentSum += commitmentValue;
-    });
-    return commitmentSum;
-  }
-
-  //commitmentCalculation for the main status bar.
-  const projectCommitmentSum = React.useMemo(() => {
-    let totalCommitmentSum = 0;
-    availabilityZones.forEach((az) => {
-      const commitments = Object.values(az[1].committed || {});
-      commitments.forEach((commitmentValue) => {
-        totalCommitmentSum += commitmentValue;
-      });
-    });
-    return totalCommitmentSum;
-  }, [availabilityZones]);
 
   return (
     <div
@@ -146,8 +130,9 @@ const ProjectResource = (props) => {
       </Stack>
       <ResourceBarBuilder
         unit={unitName}
-        usage={usage}
-        commitment={projectCommitmentSum}
+        usage={displayedUsage}
+        usageBurstSum={usagePerQuota}
+        commitment={totalCommitments}
         quota={originalQuota}
         parentQuota={parentResource?.quota}
         tracksQuota={tracksQuota}
@@ -180,7 +165,7 @@ const ProjectResource = (props) => {
                   unit={unitName}
                   usage={az[1].usage}
                   isAZ={true}
-                  commitment={azCommitmentSum(az)}
+                  commitment={az.commitmentSum}
                   quota={originalQuota}
                   parentQuota={parentResource?.quota}
                   tracksQuota={tracksQuota}

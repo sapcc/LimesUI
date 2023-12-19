@@ -15,7 +15,7 @@ const baseResourceBar = `
   border 
   border-theme-background-lvl-5 
   flex 
-`
+`;
 const emptyResourceBar = `
   bg-theme-background-lvl-2 
   `;
@@ -63,8 +63,12 @@ const ResourceBar = (props) => {
     extraFillLabel,
     extraCapacityLabel,
     fill,
+    // determine fill size of single bar
     capacity,
+    // determine if extra bar should be displayed
     commitment,
+    extraFillValue,
+    // determine fill size of extra bar
     extraCapacityValue,
     canEdit,
     showsCapacity,
@@ -72,42 +76,6 @@ const ResourceBar = (props) => {
   } = props;
 
   const disabled = false;
-
-  // React.useLayoutEffect(() => {
-  //   checkIfLabelFits()
-  // })
-
-  // function checkIfLabelFits(opts = {}) {
-  //   const bar = outerDivRef.current //this is the <div class="progress"/>
-  //   if (!bar) {
-  //     return
-  //   }
-
-  //   //measure the width of the filled portion of the bar
-  //   const filledBar = bar.querySelector(".has-label-if-fits")
-  //   if (!filledBar) {
-  //     //bar is completely full or empty, so we don't have to measure anything
-  //     return
-  //   }
-  //   const barWidth = filledBar.getBoundingClientRect().width
-
-  //   //measure the width of the label (one of them might be display:none and report width=0)
-  //   const labelWidths = [...bar.querySelectorAll(".progress-bar-label")].map(
-  //     (span) => span.getBoundingClientRect().width
-  //   )
-  //   const labelWidth = Math.max(...labelWidths)
-
-  //   //require some extra wiggle room (in px) around the label to account for UI
-  //   //margins, and because labels that fit too tightly look dumb
-  //   bar
-  //     .querySelector(".progress-bar-label")
-  //     .classList.toggle("label-fits", labelWidth + LABEL_MARGIN < barWidth)
-
-  //   //re-run this method after animations have completed
-  //   if (!opts.delayed) {
-  //     window.setTimeout(() => checkIfLabelFits({ delayed: true }), 500)
-  //   }
-  // }
 
   function buildResourceBar() {
     // First handle the creation of an empty bar.
@@ -140,11 +108,11 @@ const ResourceBar = (props) => {
       widthPercent = 0.5;
     }
     let widthCommitment =
-      Math.round((1000 * (fill - capacity)) / extraCapacityValue) / 10;
+      Math.round((1000 * extraFillValue) / extraCapacityValue) / 10;
 
     //special cases: purple
     let className =
-     commitment > 0 || !canEdit
+      commitment > 0 || !canEdit
         ? "progress-bar"
         : "progress-bar bg-sap-purple-2";
 
@@ -214,7 +182,7 @@ const ResourceBar = (props) => {
               <div
                 key="extra-filled"
                 className={`extra-fill ${filled} ${filledExtraResourceBar}`}
-                style={fill > capacity ? barStyleCommitment : { width: "0%" }}
+                style={barStyleCommitment}
               ></div>
             </div>
           </Stack>
