@@ -12,10 +12,12 @@ import {
 import AvailabilityZoneNav from "./AvailabilityZoneNav";
 import CommitmentTable from "../commitment/CommitmentTable";
 import CommitmentModal from "../commitment/CommitmentModal";
+import { Unit, valueWithUnit } from "../../lib/unit";
 import { initialCommitmentObject } from "../../lib/constants";
 
 const EditPanel = (props) => {
-  const { currentResource, currentArea, currentCategory } = { ...props };
+  const { currentResource, currentCategory } = { ...props };
+  const unit = new Unit(currentResource.unit || "");
   const minConfirmDate = currentResource?.commitment_config?.min_confirm_by;
   const [canConfirm, setCanConfirm] = React.useState(null);
   const { commitments } = limesStore();
@@ -45,6 +47,20 @@ const EditPanel = (props) => {
   // If a minConfirmDate is set, skip the request. Limes handles capacity concerns.
   React.useEffect(() => {
     if (!isSubmitting) return;
+    //TODO: sum(commitments) > total Quota a new commitment should not be allowed. Should probably be handled API side.
+    const newCommitmentSum =
+      currentResource.totalCommitments + newCommitment.amount;
+    if (newCommitmentSum > currentResource.quota) {
+      setToast(
+        `Unable to create commitments that exceed the total quota ${unit.format(
+          newCommitmentSum
+        )}/${unit.format(currentResource.quota)}`
+      );
+      setIsSubmitting(false);
+      return;
+    }
+    // Projects with a minConfirmDate do not need to check if they can be confirmed immediately.
+    // This will already be handled by the limes API.
     if (minConfirmDate) {
       setCanConfirm(true);
       return;
@@ -71,6 +87,8 @@ const EditPanel = (props) => {
       }
     );
   }, [isSubmitting]);
+
+  console.log(currentResource);
 
   function postCommitment(confirm_by = null) {
     setCommitmentIsLoading(true);
