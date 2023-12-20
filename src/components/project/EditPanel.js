@@ -87,9 +87,7 @@ const EditPanel = (props) => {
       }
     );
   }, [isSubmitting]);
-
-  console.log(currentResource);
-
+  
   function postCommitment(confirm_by = null) {
     setCommitmentIsLoading(true);
     const payload = confirm_by
