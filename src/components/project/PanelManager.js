@@ -55,6 +55,7 @@ const PanelManager = (props) => {
           {...props}
           currentResource={currentResource}
           currentArea={currentArea}
+          currentCategory={categoryName}
         />
       </Panel>
     )

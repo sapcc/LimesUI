@@ -15,7 +15,7 @@ const CommitmentTable = (props) => {
   const { filterCommitments } = useCommitmentFilter();
   const { commitment: newCommitment } = createCommitmentStore();
   const { isCommitting } = createCommitmentStore();
-  const { currentArea, currentResource, currentAZ, commitmentData } = {
+  const { currentCategory, currentResource, currentAZ, commitmentData } = {
     ...props,
   };
   const commitmentHeadCells = [
@@ -71,7 +71,7 @@ const CommitmentTable = (props) => {
           key={commitment.id}
           commitment={commitment}
           durations={durations}
-          currentArea={currentArea}
+          currentCategory={currentCategory}
           currentResource={currentResource}
           currentAZ={currentAZ}
         />

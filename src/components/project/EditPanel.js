@@ -15,7 +15,7 @@ import CommitmentModal from "../commitment/CommitmentModal";
 import { initialCommitmentObject } from "../../lib/constants";
 
 const EditPanel = (props) => {
-  const { currentResource, currentArea } = { ...props };
+  const { currentResource, currentArea, currentCategory } = { ...props };
   const minConfirmDate = currentResource?.commitment_config?.min_confirm_by;
   const [canConfirm, setCanConfirm] = React.useState(null);
   const { commitments } = limesStore();
@@ -51,6 +51,7 @@ const EditPanel = (props) => {
     }
     setCommitmentIsLoading(true);
     const payload = { ...newCommitment, id: "" };
+    console.log(payload)
     confirm.mutate(
       {
         payload: {
@@ -134,7 +135,7 @@ const EditPanel = (props) => {
       )}
       {commitments && (
         <CommitmentTable
-          currentArea={currentArea}
+          currentCategory={currentCategory}
           currentResource={currentResource.name}
           resource={currentResource}
           currentAZ={currentAZ}

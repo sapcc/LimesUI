@@ -32,7 +32,7 @@ const CommitmentTableDetails = (props) => {
   } = { ...props.commitment };
   const startDate = confirm_by ? confirm_by : created_at;
   const durations = props.durations;
-  const currentArea = props.currentArea;
+  const currentCategory = props.currentCategory;
   const currentResource = props.currentResource;
   const currentAZ = props.currentAZ;
 
@@ -87,7 +87,7 @@ const CommitmentTableDetails = (props) => {
     //Unit is set in parent component (table).
     setCommitment({
       ...newCommitment,
-      service_type: currentArea,
+      service_type: currentCategory,
       resource_name: currentResource,
       availability_zone: currentAZ,
       amount: parsedInput,
@@ -181,11 +181,7 @@ const CommitmentTableDetails = (props) => {
             >
               Save
             </Button>
-            <Button
-              onClick={() => stopEditing()}
-              icon="close"
-              size="small"
-            >
+            <Button onClick={() => stopEditing()} icon="close" size="small">
               Cancel
             </Button>
           </Stack>
