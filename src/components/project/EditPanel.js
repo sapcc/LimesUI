@@ -51,7 +51,6 @@ const EditPanel = (props) => {
     }
     setCommitmentIsLoading(true);
     const payload = { ...newCommitment, id: "" };
-    console.log(payload)
     confirm.mutate(
       {
         payload: {
