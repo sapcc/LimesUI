@@ -49,7 +49,8 @@ const ResourceBarBuilder = (props) => {
       capacity={capacity}
       commitment={commitment}
       extraFillValue={extraFillValue}
-      extraCapacityValue={extraCapacityValue}
+      // Providing 1 enables the bar to be filled completely if commitments > quota
+      extraCapacityValue={extraCapacityValue || 1}
       canEdit={showEdit || isPanelView}
       showsCapacity={false}
       isAZ={isAZ}
