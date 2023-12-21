@@ -12,12 +12,10 @@ import {
 import AvailabilityZoneNav from "./AvailabilityZoneNav";
 import CommitmentTable from "../commitment/CommitmentTable";
 import CommitmentModal from "../commitment/CommitmentModal";
-import { Unit, valueWithUnit } from "../../lib/unit";
 import { initialCommitmentObject } from "../../lib/constants";
 
 const EditPanel = (props) => {
   const { currentResource, currentCategory } = { ...props };
-  const unit = new Unit(currentResource.unit || "");
   const minConfirmDate = currentResource?.commitment_config?.min_confirm_by;
   const [canConfirm, setCanConfirm] = React.useState(null);
   const { commitments } = limesStore();
