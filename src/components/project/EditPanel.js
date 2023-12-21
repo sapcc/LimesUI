@@ -47,20 +47,7 @@ const EditPanel = (props) => {
   // If a minConfirmDate is set, skip the request. Limes handles capacity concerns.
   React.useEffect(() => {
     if (!isSubmitting) return;
-    //TODO: sum(commitments) > total Quota a new commitment should not be allowed. Should probably be handled API side.
-    const newCommitmentSum =
-      currentResource.totalCommitments + newCommitment.amount;
-    if (newCommitmentSum > currentResource.quota) {
-      setToast(
-        `Unable to create commitments that exceed the total quota ${unit.format(
-          newCommitmentSum
-        )}/${unit.format(currentResource.quota)}`
-      );
-      setIsSubmitting(false);
-      return;
-    }
-    // Projects with a minConfirmDate do not need to check if they can be confirmed immediately.
-    // This will already be handled by the limes API.
+    // capacity with a minConfirmDate will be identified by limes itself.
     if (minConfirmDate) {
       setCanConfirm(true);
       return;
@@ -87,7 +74,7 @@ const EditPanel = (props) => {
       }
     );
   }, [isSubmitting]);
-  
+
   function postCommitment(confirm_by = null) {
     setCommitmentIsLoading(true);
     const payload = confirm_by

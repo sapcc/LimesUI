@@ -33,7 +33,7 @@ const CommitmentModal = (props) => {
     ...props,
   };
   const unit = new Unit(commitment.unit);
-  const hasMinConfirmDate = minConfirmDate ? true : false
+  const hasMinConfirmDate = minConfirmDate ? true : false;
   const [invalidInput, setInvalidInput] = React.useState(false);
   const inputRef = React.useRef("");
   const [showCalendar, setShowCalendar] = React.useState(hasMinConfirmDate);
@@ -153,20 +153,22 @@ const CommitmentModal = (props) => {
         </Stack>
       )}
       <Stack direction="vertical" alignment="center" className="mb-1">
-        <Stack className="mb-1">
-          To confirm, type:&nbsp;
-          <span className={label}>{subText}</span>
-        </Stack>
-        <Stack>
-          <TextInput
-            width="auto"
-            autoFocus
-            errortext={
-              invalidInput && "Please enter the highlighted term above."
-            }
-            onChange={(e) => onInput(e)}
-          />
-        </Stack>
+        <div>
+          <Stack className="mb-1">
+            To confirm, type:&nbsp;
+            <span className={label}>{subText}</span>
+          </Stack>
+          <Stack>
+            <TextInput
+              width="auto"
+              autoFocus
+              errortext={
+                invalidInput && "Please enter the highlighted term above."
+              }
+              onChange={(e) => onInput(e)}
+            />
+          </Stack>
+        </div>
       </Stack>
     </Modal>
   );
