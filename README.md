@@ -9,7 +9,7 @@ Provides a elektra interface for the new resource management and billing model f
 npm install
 ```
 2. Create a ```secretProps.json``` file in the root directory with the following contents:
-```json
+```s
 {
   "theme": "theme-light" or "theme-dark"
   "endpoint": <Endpoint to the Limes API>
