@@ -17,7 +17,7 @@ npm install
   "domainID":
   "token": <OpenStack Keystone Token>
   "canEdit": <Defines if commitments can be created on resources>
-  "mockAPI": <Query real API or use provided mock data.>
+  "mockAPI": <Query real API or use provided mockdata.>
 }
 ```
 If the ```mockAPI``` attribute is set to ```true``` the endpint attribute becomes optional.
