@@ -33,21 +33,21 @@ Then navigate to <http://localhost:8000/>.
 The new calculation model is explained and provided at the [Limes API specifications](https://github.com/sapcc/limes/blob/master/docs/users/api-spec-resources.md)
 
 
-1. Visit the resource management section in elektra or use the local version of this UI.
+* Visit the resource management section in elektra or use the local version of this UI.
 
-2. the resources available in the chosen project will be visible in a tile view.
+* the resources available in the chosen project will be visible in a tile view.
 
-3. Resources that can be edited and have no commitments will be displayed in purple color. The resource bar displayed will have the following structrue:
+* Resources that can be edited and have no commitments will be displayed in purple color. The resource bar displayed will have the following structrue:
 ```sh
 <Usage>/<Available Quota>
 ```
 
-4. Resources that contain commitments will have the following structure:
+* Resources that contain commitments will have the following structure:
 ```sh
 <Usage>/<sum(Commitments)> | <Usage that exceeds Commitments>/<Remaining Quota>
 ```
 
-5. Resources that contain commitments that are not yet confirmed will have a ```pending``` label attached to them.
+* Resources that contain commitments that are not yet confirmed will have a ```pending``` label attached to them.
 
 ## Contribution
 Please open a issue in this repository and state the feature or error that you would like to have addressed.
