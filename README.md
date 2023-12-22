@@ -1,51 +1,57 @@
 # limesUI App
 
-This is the standard app limesUI for microfrontends. Use this as a basis for new juno microfrontend apps.
+Provides a elektra interface for the new resource management and billing model for the CCloud OpenStack infrastructure. Utilizes the API endpoints provided by Limes.
 
 ## How to build
 
+1. Install dependencies
 ```sh
 npm install
-APP_PORT=8180 npm run start
 ```
+2. Create a ```secretProps.json``` file in the root directory with the following contents:
+```json
+{
+  "theme": "theme-light" or "theme-dark"
+  "endpoint": <Endpoint to the Limes API>
+  "projectID":
+  "domainID":
+  "token": <OpenStack Keystone Token>
+  "canEdit": <Defines if commitments can be created on resources>
+  "mockAPI": <Query real API or use provided mock data.>
+}
+```
+If the ```mockAPI``` attribute is set to ```true``` the endpint attribute becomes optional.
 
-Then navigate to <http://localhost:8180/>.
+3. Run the app:
+```sh
+APP_PORT=8000 npm run start
+```
+Then navigate to <http://localhost:8000/>.
 
 ## Instructions
 
-1. Copy the `limesUI` folder, rename to name of your app
-2. Change the name in `package.json` from "limesUI" to your app's name
-3. Change `URL_STATE_KEY` in `App.js` to your app's name
+The new calculation model is explained and provided at the [Limes API specifications](https://github.com/sapcc/limes/blob/master/docs/users/api-spec-resources.md)
 
-## Usage
 
-### load via script tag
+1. Visit the resource management section in elektra or use the local version of this UI.
 
-```js
-<script
-  defer
-  src="https://JUNO_ASSETS_HOSTNAME/apps/widget-loader@VERSION/build/app.js"
-  data-name="YOUR_APP_NAME"
-  data-version="MFE_VERSION"
-></script>
+2. the resources available in the chosen project will be visible in a tile view.
+
+3. Resources that can be edited and have no commitments will be displayed in purple color. The resource bar displayed will have the following structrue:
+```sh
+<Usage>/<Available Quota>
 ```
 
-Most of the time using `latest` as `VERSION` and `data-version` is what you want to do. Alternatively you can see all published versions at `https://JUNO_CDN_HOSTNAME/manifest.json`.
-
-`YOUR_APP_NAME` must be the name you specified in your `package.json` (see above)
-
-Custom properties can be passed to the app via data properties on the script tag. See example `data-props-myprop` below. Custom properties can be accessed in your App.js via `props`. Use only lowercase letters and no special characters in custom prop names.
-
-Example:
-
-```js
-<script
-  defer
-  src="https://assets.juno.global.cloud.sap/apps/widget-loader@latest/build/app.js"
-  data-name="limesUI"
-  data-version="latest"
-  data-props-myprop="Passing a custom prop to my app"
-></script>
+4. Resources that contain commitments will have the following structure:
+```sh
+<Usage>/<sum(Commitments)> | <Usage that exceeds Commitments>/<Remaining Quota>
 ```
 
-More information about options [here](https://github.com/sapcc/juno/blob/main/apps/widget-loader/README.md)
+5. Resources that contain commitments that are not yet confirmed will have a ```pending``` label attached to them.
+
+## Contribution
+Please open a issue in this repository and state the feature or error that you would like to have addressed.
+
+## Contact
+If any other issues or questions arise, please contact ```Stefan Voigt``` in Slack or per Mail:
+```s.voigt@sap.com```
