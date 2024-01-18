@@ -10,7 +10,9 @@ const seasonEmoji = {
 };
 
 const CommitmentCalendar = (props) => {
-  const { startDate, selectedDate, setSelectedDate } = { ...props };
+  const { startDate, selectedDate, setSelectedDate, currentDayCommit } = {
+    ...props,
+  };
   const [errorState, setErrorState] = React.useState(false);
 
   const getSeason = (month) => {
@@ -34,6 +36,7 @@ const CommitmentCalendar = (props) => {
     <DayPicker
       mode="single"
       onSelect={(pickedDate) => {
+        // The current day should not be identified as a date in the past - 23:59:59
         const pickedDateTime = new Date(pickedDate).setHours(23, 59, 59);
         // Decline dates in the past.
         if (moment(pickedDateTime).isBefore() || !pickedDate) {
@@ -42,7 +45,14 @@ const CommitmentCalendar = (props) => {
           return;
         }
         setErrorState(false);
-        // Accept dates from today or the future.
+
+        // Identify if picked date is the current date
+        if (pickedDate.toDateString() === new Date().toDateString()) {
+          currentDayCommit(true);
+        } else {
+          currentDayCommit(false);
+        }
+
         setSelectedDate(pickedDate);
       }}
       formatters={{ formatCaption }}

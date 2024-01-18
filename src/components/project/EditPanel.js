@@ -103,7 +103,7 @@ const EditPanel = (props) => {
 
   function onPostModalClose() {
     setIsSubmitting(false);
-    setCanConfirm(false);
+    setCanConfirm(null);
     setCommitment({
       ...initialCommitmentObject,
       amount: newCommitment.amount,
@@ -142,7 +142,7 @@ const EditPanel = (props) => {
           commitmentData={commitments}
         />
       )}
-      {isSubmitting && !confirm.isLoading && (
+      {isSubmitting && canConfirm != null && (
         <CommitmentModal
           title="Confirm commitment creation"
           subText="Commit"

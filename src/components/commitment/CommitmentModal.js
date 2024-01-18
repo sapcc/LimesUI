@@ -36,7 +36,12 @@ const CommitmentModal = (props) => {
   const hasMinConfirmDate = minConfirmDate ? true : false;
   const [invalidInput, setInvalidInput] = React.useState(false);
   const inputRef = React.useRef("");
-  const [showCalendar, setShowCalendar] = React.useState(hasMinConfirmDate);
+  // Show Calendar if: 1.) min_confirm_by field is set 2.) Not enough capacity is available on limes.
+  const [showCalendar, setShowCalendar] = React.useState(
+    hasMinConfirmDate || !canConfirm
+  );
+  // Identify if a commitment will be set on the current day.
+  const [isCurrentDayCommit, setIsCurrentDayCommit] = React.useState(true);
   // The calendar start date primarely uses the API date and defaults to todays timestamp.
   const startDate = minConfirmDate
     ? moment.unix(minConfirmDate)._d
@@ -51,9 +56,18 @@ const CommitmentModal = (props) => {
     }
     if (!selectedDate) return;
 
+    // Handle current day commitments
+    // They should be active after now + 60 seconds (proper margin for the API)
+    // Other commitments will be set to 00:00:00 AM
+    let confirm_by;
+    if (isCurrentDayCommit === true) {
+      confirm_by = moment().unix() + 60;
+    } else {
+      confirm_by = moment(selectedDate).unix();
+    }
+
     // Send the request with or without confirm_by field.
     // The API confirms commitments without confirm_by instantly.
-    const confirm_by = moment(selectedDate).unix();
     const sendConfirmBy = showCalendar;
     if (sendConfirmBy) {
       onConfirm(confirm_by);
@@ -149,6 +163,7 @@ const CommitmentModal = (props) => {
             startDate={startDate}
             selectedDate={selectedDate}
             setSelectedDate={setSelectedDate}
+            currentDayCommit={setIsCurrentDayCommit}
           />
         </Stack>
       )}

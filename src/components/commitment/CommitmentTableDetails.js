@@ -28,6 +28,7 @@ const CommitmentTableDetails = (props) => {
     confirmed_at: isConfirmed,
     confirm_by,
     expires_at,
+    creator_name,
     unit: unitName,
   } = { ...props.commitment };
   const startDate = confirm_by ? confirm_by : created_at;
@@ -95,12 +96,19 @@ const CommitmentTableDetails = (props) => {
     setIsSubmitting(true);
   }
 
+  function parseRequesterName(name) {
+    const exp = new RegExp("[^@]*").exec(name)[0];
+    if (exp === "undefined") {
+      return "";
+    }
+    return exp;
+  }
+
   return (
     <DataGridRow>
       <DataGridCell>
         {isAddingCommitment ? (
           <TextInput
-            className="max-w-[7rem]"
             data-cy="commitmentInput"
             value={inputRef.current}
             invalid={invalidInput}
@@ -134,6 +142,12 @@ const CommitmentTableDetails = (props) => {
       </DataGridCell>
       <DataGridCell className="items-start">
         <CommitmentTooltip
+          displayText={formatTimeISO8160(startDate)}
+          toolTipContent={formatTime(startDate, "YYYY-MM-DD HH:mm A")}
+        />
+      </DataGridCell>
+      <DataGridCell className="items-start">
+        <CommitmentTooltip
           displayText={
             formatTimeISO8160(confirmed_at) ||
             (!isAddingCommitment ? "Unconfirmed" : "")
@@ -158,14 +172,14 @@ const CommitmentTableDetails = (props) => {
       </DataGridCell>
       <DataGridCell className="items-start">
         <CommitmentTooltip
-          displayText={formatTimeISO8160(startDate)}
-          toolTipContent={formatTime(startDate, "YYYY-MM-DD HH:mm A")}
+          displayText={formatTimeISO8160(expires_at)}
+          toolTipContent={formatTime(expires_at, "YYYY-MM-DD HH:mm A")}
         />
       </DataGridCell>
       <DataGridCell className="items-start">
         <CommitmentTooltip
-          displayText={formatTimeISO8160(expires_at)}
-          toolTipContent={formatTime(expires_at, "YYYY-MM-DD HH:mm A")}
+          displayText={parseRequesterName(creator_name)}
+          toolTipContent={creator_name}
         />
       </DataGridCell>
       <DataGridCell>

@@ -116,7 +116,7 @@ const ProjectResource = (props) => {
               variant="subdued"
               icon="edit"
             >
-              Edit
+              Manage
             </Button>
           </Link>
         )}
@@ -169,7 +169,7 @@ const ProjectResource = (props) => {
                   {hasPendingCommitments(resourceName, az[0]) && (
                     <Badge variant="info">
                       {" "}
-                      <b>pending</b>
+                      <b>+ pending</b>
                     </Badge>
                   )}
                 </div>

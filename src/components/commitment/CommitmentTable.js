@@ -28,16 +28,20 @@ const CommitmentTable = (props) => {
       label: "Duration",
     },
     {
-      key: "confirmedAt",
-      label: "Confirmed at",
-    },
-    {
       key: "startsAt",
       label: "Starts at",
     },
     {
+      key: "confirmedAt",
+      label: "Confirmed at",
+    },
+    {
       key: "expiresAt",
       label: "Expires at",
+    },
+    {
+      key: "requestedBy",
+      label: "Requester",
     },
     {
       key: "edit",

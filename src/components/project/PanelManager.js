@@ -49,7 +49,7 @@ const PanelManager = (props) => {
         opened={isEditing}
         onClose={() => onPanelClose()}
         closeable={true}
-        heading={`Edit Commitment: ${t(categoryName)} - ${t(resourceName)}`}
+        heading={`Manage Committed Resources: ${t(categoryName)} - ${t(resourceName)}`}
       >
         <EditPanel
           {...props}
