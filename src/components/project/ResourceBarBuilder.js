@@ -12,7 +12,7 @@ const ResourceBarBuilder = (props) => {
     parentQuota,
     tracksQuota,
     isPanelView,
-    showEdit,
+    editableResource,
     isAZ,
   } = { ...props };
   const unit = new Unit(unitName || "");
@@ -51,7 +51,7 @@ const ResourceBarBuilder = (props) => {
       extraFillValue={extraFillValue}
       // Providing 1 enables the bar to be filled completely if commitments > quota
       extraCapacityValue={extraCapacityValue || 1}
-      canEdit={showEdit || isPanelView}
+      canEdit={editableResource || isPanelView}
       showsCapacity={false}
       isAZ={isAZ}
     />

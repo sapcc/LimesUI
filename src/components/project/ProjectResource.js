@@ -68,7 +68,6 @@ const ProjectResource = (props) => {
     usagePerCommitted,
     usagePerQuota,
     quota: originalQuota, //commitment + right
-    usage,
     usable_quota: usableQuota,
     backend_quota: backendQuota,
     unit: unitName,
@@ -84,14 +83,17 @@ const ProjectResource = (props) => {
     : false;
   const displayName = t(props.resource.name);
   const { tracksQuota, parentResource, isPanelView } = { ...props };
-  const showEdit = props.canEdit && tracksQuota && hasDurations && hasAZs;
+  // editableResource indicates the color of the resource bar.
+  const editableResource = tracksQuota && hasDurations && hasAZs;
+  // advancedView toggles the display of non-commitable resources.
+  const advancedView = props.advancedView;
   const { hasPendingCommitments } = useCommitmentFilter();
   const resetCommitment = useResetCommitment();
   const { isCommitting } = createCommitmentStore();
   const { setIsCommitting } = createCommitmentStoreActions();
 
   return (
-    <div
+    (advancedView || editableResource) && <div
       className={
         !props.isPanelView ? `bar-card ${barGroupContainer}` : `bar-card-panel`
       }
@@ -105,7 +107,7 @@ const ProjectResource = (props) => {
       ></div>
       <Stack distribution="between" className={`bar-header ${barHeader}`}>
         <div className={`bar-title ${barTitle}`}>{displayName}</div>
-        {showEdit && (
+        {props.canEdit && editableResource && (
           <Link
             to={`/${props.area}/edit/${props.categoryName}/${props.resource.name}`}
             state={props}
@@ -141,7 +143,7 @@ const ProjectResource = (props) => {
         parentQuota={parentResource?.quota}
         tracksQuota={tracksQuota}
         isPanelView={isPanelView}
-        showEdit={showEdit}
+        editableResource={editableResource}
       />
       <div
         className={`az-container ${azPanelContent} ${
@@ -182,7 +184,7 @@ const ProjectResource = (props) => {
                   parentQuota={parentResource?.quota}
                   tracksQuota={tracksQuota}
                   isPanelView={isPanelView}
-                  showEdit={showEdit}
+                  editableResource={editableResource}
                 />
               </div>
             )

@@ -1,4 +1,5 @@
 export const COMMITMENTID = "AddCommitment"
+export const ADVANCEDVIEW="advancedView"
 
 //used to reset the last commitment to default values.
 export const initialCommitmentObject = {

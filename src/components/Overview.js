@@ -1,19 +1,21 @@
 import React from "react";
 import moment from "moment";
-import { useParams, useNavigate, Outlet } from "react-router-dom";
 import Category from "./Category";
-import { t, byUIString } from "../lib/utils";
-import { Tabs, Tab, TabList, TabPanel, Container } from "juno-ui-components";
 import { createCommitmentStore } from "./StoreProvider";
+import { useParams, useNavigate, Outlet } from "react-router-dom";
+import { t, byUIString } from "../lib/utils";
+import { ADVANCEDVIEW } from "../lib/constants";
+import { Tabs, Tab, TabList, TabPanel, Container } from "juno-ui-components";
 
 const Overview = (props) => {
-  const [allAreas, setAllAreas] = React.useState(
-    Object.keys(props.overview.areas)
-  );
+  const allAreas = Object.keys(props.overview.areas);
   const { isEditing } = createCommitmentStore();
   const { currentArea = allAreas[0] } = useParams();
   const navigate = useNavigate();
   const currentTabIdx = allAreas.findIndex((area) => area === currentArea);
+  const [advancedView, setAdvancedView] = React.useState(
+    JSON.parse(localStorage.getItem(ADVANCEDVIEW)) || false
+  );
 
   function renderArea() {
     const { areas, categories, scrapedAt, minScrapedAt, maxScrapedAt } =
@@ -44,13 +46,16 @@ const Overview = (props) => {
       <>
         {currentServices
           .sort(byUIString)
-          .map((serviceType) =>
-            categories[serviceType].map((categoryName) => (
+          .map((serviceType, idx) =>
+            categories[serviceType].map((categoryName, index) => (
               <Category
                 key={categoryName}
                 categoryName={categoryName}
                 category={props.categories[categoryName]}
                 canEdit={props.canEdit}
+                showAdvancedView={idx == 0 && index == 0}
+                advancedView={advancedView}
+                setAdvancedView={setAdvancedView}
               />
             ))
           )}

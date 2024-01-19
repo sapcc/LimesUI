@@ -8,10 +8,10 @@ describe("template spec", () => {
     cy.visit("/");
   })
   it("checks that edit exsists", () => {
-    cy.get("[data-cy='edit/instances']").should("exist");
+    cy.get("[data-cy='edit/cores']").should("exist");
   });
   it("saves amount after modal exit", () => {
-    cy.get("[data-cy='edit/instances']").click();
+    cy.get("[data-cy='edit/cores']").click();
     cy.get("[data-cy='addCommitment']").click();
     cy.get("[data-cy='commitmentInput']").clear().type(amount);
     cy.get("[data-cy='commitmentSelect']").click();
@@ -22,13 +22,13 @@ describe("template spec", () => {
   });
 
   it("resets commitment after panel close", () => {
-    cy.get("[data-cy='edit/instances']").click();
+    cy.get("[data-cy='edit/cores']").click();
     cy.get("[data-cy='addCommitment']").click();
     cy.get("[data-cy='commitmentInput']").clear().type(amount);
     cy.get("[data-cy='commitmentSelect']").click();
     cy.get("[data-cy='commitmentSelectOption/0']").click();
     cy.get("[aria-label=close]").click()
-    cy.get("[data-cy='edit/instances']").click();
+    cy.get("[data-cy='edit/cores']").click();
     cy.get("[data-cy='addCommitment']").click();
     cy.get("[data-cy='commitmentInput']").should("have.value", 0);
   })
