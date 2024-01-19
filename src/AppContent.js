@@ -1,6 +1,6 @@
 import React from "react";
 import Overview from "./components/Overview";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { Container, LoadingIndicator, Message } from "juno-ui-components";
 import { HashRouter, Routes, Route } from "react-router-dom";
 import PanelManager from "./components/project/PanelManager";

@@ -177,7 +177,7 @@ function getQuotaNewOrOldModel(res) {
 function addTotalCommitments(res) {
   let totalCommitments = 0;
   // Sum of all commitments over all AZ's.
-  res.per_az.forEach((az) => {
+  res.per_az?.forEach((az) => {
     const commitments = Object.values(az[1].committed || {});
     commitments.forEach((commitmentValue) => {
       totalCommitments += commitmentValue;
@@ -201,7 +201,7 @@ function addUsageValues(res) {
   let usagePerQuota = 0;
   // Sum of all usages with commitments.
   // No commitments available => use usage.
-  res.per_az.forEach((az) => {
+  res.per_az?.forEach((az) => {
     const azCommitments = Object.values(az[1].committed || {});
     let azCommitmentSum = 0;
     azCommitments.forEach((commtimentValue) => {

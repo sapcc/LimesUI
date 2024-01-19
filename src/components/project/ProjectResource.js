@@ -148,7 +148,7 @@ const ProjectResource = (props) => {
           props.isPanelView && "gap-2"
         }`}
       >
-        {props.resource.per_az.map(
+        {props.resource.per_az?.map(
           (az) =>
             az[0] !== "any" && (
               <div
