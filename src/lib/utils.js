@@ -50,11 +50,11 @@ export const sortByLogicalOrderAndName = (resources) => {
     }
     const res = resources.find((res) => res.name == resName);
     const parts = [];
-    if (res.contained_in) {
+    if (res?.contained_in) {
       parts.push(sortingKeyForName(res.contained_in));
       parts.push("000"); //ensure that `contained_in` resources are sorted before `scales_with` resources
     }
-    if (res.scales_with) {
+    if (res?.scales_with) {
       parts.push(sortingKeyForName(res.scales_with.resource_name));
     }
     parts.push(t(resName));

@@ -1,3 +1,5 @@
+import { tracksQuota } from "../utils";
+
 const limesStore = (set) => ({
   project: {
     //requery API after commit POST to get fresh commitment data for the resource bars.
@@ -92,6 +94,7 @@ const limesStore = (set) => ({
 
           for (let res of resourceList) {
             filterAZs(res);
+            identifyEditableResource(res);
             getQuotaNewOrOldModel(res);
             addTotalCommitments(res);
             addUsageValues(res);
@@ -159,6 +162,14 @@ function filterAZs(res) {
     res.per_az = filteredAZs;
   }
   return;
+}
+
+// Add a attribute that defines if a resource can be managed (edited)
+function identifyEditableResource(res) {
+  const hasDurations = res?.commitment_config?.durations ? true : false;
+  // editableResource indicates the color of the resource bar.
+  const editableResource = hasDurations;
+  res.editableResource = editableResource;
 }
 
 // old model: Resources have a quota attribute attached to them.

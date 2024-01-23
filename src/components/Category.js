@@ -1,8 +1,6 @@
 import React from "react";
 import { t, sortByLogicalOrderAndName, tracksQuota } from "../lib/utils";
-import { ADVANCEDVIEW } from "../lib/constants";
 import ProjectResource from "./project/ProjectResource";
-import { Button, Stack } from "juno-ui-components";
 
 const categoryTitle = `
     text-lg 
@@ -20,19 +18,17 @@ const categoryContent = `
 // TODO: for domain/cluster level add tracksQuota which skips resource that do not track quota.
 
 const Category = (props) => {
-  const {
-    categoryName,
-    canEdit,
-    showAdvancedView,
-    advancedView,
-    setAdvancedView,
-  } = props;
+  const { categoryName, canEdit, advancedView } = props;
   const { area, resources } = props.category;
   const forwardProps = {
     categoryName,
     area,
     canEdit,
   };
+
+  const editableResources = resources.filter(
+    (res) => res.editableResource === true
+  );
 
   //for usage-only resources with no quota of their own, this finds
   //the resource they're ultimately "contained_in"
@@ -45,43 +41,24 @@ const Category = (props) => {
   }
 
   return (
-    <div className="category-container mb-4">
-      <Stack distribution="between">
+    (editableResources.length > 0 || advancedView) && (
+      <div className="category-container mb-4">
         <h1 className={`category-title ${categoryTitle}`}>
           {t(props.categoryName)}
         </h1>
-        {showAdvancedView && (
-          <div>
-            <Button
-              size="small"
-              variant="primary"
-              onClick={() => {
-                localStorage.setItem(
-                  ADVANCEDVIEW,
-                  JSON.stringify(!advancedView)
-                );
-                setAdvancedView(!advancedView);
-              }}
-              className={"w-28"}
-            >
-              {advancedView ? "Reduce View" : "Advance View"}
-            </Button>
-          </div>
-        )}
-      </Stack>
-      <div className={`category-content ${categoryContent}`}>
-        {sortByLogicalOrderAndName(resources).map((res) => (
-          <ProjectResource
-            key={res.name}
-            resource={res}
-            {...forwardProps}
-            tracksQuota={tracksQuota(res)}
-            parentResource={getContainingResourceFor(res.name)}
-            advancedView={advancedView}
-          />
-        ))}
+        <div className={`category-content ${categoryContent}`}>
+          {sortByLogicalOrderAndName(advancedView ? resources : editableResources).map((res) => (
+            <ProjectResource
+              key={res.name}
+              resource={res}
+              {...forwardProps}
+              tracksQuota={tracksQuota(res)}
+              parentResource={getContainingResourceFor(res.name)}
+            />
+          ))}
+        </div>
       </div>
-    </div>
+    )
   );
 };
 

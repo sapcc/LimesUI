@@ -5,7 +5,15 @@ import { createCommitmentStore } from "./StoreProvider";
 import { useParams, useNavigate, Outlet } from "react-router-dom";
 import { t, byUIString } from "../lib/utils";
 import { ADVANCEDVIEW } from "../lib/constants";
-import { Tabs, Tab, TabList, TabPanel, Container } from "juno-ui-components";
+import {
+  Tabs,
+  Tab,
+  TabList,
+  TabPanel,
+  Container,
+  Button,
+  Stack,
+} from "juno-ui-components";
 
 const Overview = (props) => {
   const allAreas = Object.keys(props.overview.areas);
@@ -53,9 +61,7 @@ const Overview = (props) => {
                 categoryName={categoryName}
                 category={props.categories[categoryName]}
                 canEdit={props.canEdit}
-                showAdvancedView={idx == 0 && index == 0}
                 advancedView={advancedView}
-                setAdvancedView={setAdvancedView}
               />
             ))
           )}
@@ -77,7 +83,24 @@ const Overview = (props) => {
               {t(area)}
             </Tab>
           ))}
+          <div className="m-auto mr-0">
+            <Button
+              size="small"
+              variant="primary"
+              onClick={() => {
+                localStorage.setItem(
+                  ADVANCEDVIEW,
+                  JSON.stringify(!advancedView)
+                );
+                setAdvancedView(!advancedView);
+              }}
+              className={"w-24 self-center"}
+            >
+              {advancedView ? "Show less" : "Show more"}
+            </Button>
+          </div>
         </TabList>
+
         {allAreas.map((area) => (
           <TabPanel key={area} className={"m-4"}></TabPanel>
         ))}

@@ -72,28 +72,22 @@ const ProjectResource = (props) => {
     backend_quota: backendQuota,
     unit: unitName,
     per_az: availabilityZones,
+    editableResource,
   } = props.resource;
+  const { tracksQuota, parentResource, isPanelView } = {
+    ...props,
+  };
+  const displayName = t(props.resource.name);
   // displayedUsage ensures that resources without commitments get the project usage displayed.
   const displayedUsage =
     usagePerCommitted > 0 ? usagePerCommitted : usagePerQuota;
-  const hasAZs =
-    Object.keys(props.resource.per_az || {}).length > 0 ? true : false;
-  const hasDurations = props.resource?.commitment_config?.durations
-    ? true
-    : false;
-  const displayName = t(props.resource.name);
-  const { tracksQuota, parentResource, isPanelView } = { ...props };
-  // editableResource indicates the color of the resource bar.
-  const editableResource = tracksQuota && hasDurations && hasAZs;
-  // advancedView toggles the display of non-commitable resources.
-  const advancedView = props.advancedView;
   const { hasPendingCommitments } = useCommitmentFilter();
   const resetCommitment = useResetCommitment();
   const { isCommitting } = createCommitmentStore();
   const { setIsCommitting } = createCommitmentStoreActions();
 
   return (
-    (advancedView || editableResource) && <div
+    <div
       className={
         !props.isPanelView ? `bar-card ${barGroupContainer}` : `bar-card-panel`
       }
