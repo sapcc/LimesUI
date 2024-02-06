@@ -16,30 +16,54 @@ const useCommitmentFilter = () => {
     const filteredCommitments = filterCommitments(resourceName, azName);
     let planned = false;
     for (const commitment of filteredCommitments) {
-      if (commitment.confirm_by > Math.floor(Date.now() / 1000)) {
+      if (isPlanned(commitment)) {
         planned = true;
         break;
       }
     }
-
     return planned;
   }
 
+  function isPlanned(commitment) {
+    let planned = false;
+    if (commitment.confirm_by > Math.floor(Date.now() / 1000)) {
+      planned = true;
+    }
+    return planned;
+  }
+
+  // Resource level
   function hasPendingCommitments(resourceName, azName) {
     const filteredCommitments = filterCommitments(resourceName, azName);
     let pending = false;
     for (const commitment of filteredCommitments) {
-      if (
-        commitment.confirm_by < Math.floor(Date.now() / 1000) &&
-        !("confirmed_at" in commitment)
-      ) {
+      if (isPending(commitment)) {
         pending = true;
         break;
       }
     }
     return pending;
   }
-  return { filterCommitments, hasPendingCommitments, hasPlannedCommitments };
+
+  // Commitment level
+  function isPending(commitment) {
+    let pending = false;
+    if (
+      commitment.confirm_by < Math.floor(Date.now() / 1000) &&
+      !("confirmed_at" in commitment)
+    ) {
+      pending = true;
+    }
+    return pending;
+  }
+
+  return {
+    filterCommitments,
+    hasPendingCommitments,
+    isPending,
+    hasPlannedCommitments,
+    isPlanned,
+  };
 };
 
 export default useCommitmentFilter;

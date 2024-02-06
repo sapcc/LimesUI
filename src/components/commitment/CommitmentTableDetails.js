@@ -17,6 +17,7 @@ import {
 import CommitmentTooltip from "./CommitmentTooltip";
 import { initialCommitmentObject } from "../../lib/constants";
 import { COMMITMENTID } from "../../lib/constants";
+import useCommitmentFilter from "../../hooks/useCommitmentFilter";
 
 const CommitmentTableDetails = (props) => {
   const {
@@ -40,6 +41,7 @@ const CommitmentTableDetails = (props) => {
   const isAddingCommitment = id === COMMITMENTID ? true : false;
   const { commitment: newCommitment } = createCommitmentStore();
   const { commitmentIsLoading } = createCommitmentStore();
+  const { isPlanned, isPending } = useCommitmentFilter();
   const { setCommitment } = createCommitmentStoreActions();
   const { setIsCommitting } = createCommitmentStoreActions();
   const { setIsSubmitting } = createCommitmentStoreActions();
@@ -201,8 +203,10 @@ const CommitmentTableDetails = (props) => {
           </Stack>
         ) : isConfirmed ? (
           "Committed"
-        ) : (
+        ) : isPending(props.commitment) ? (
           "Pending"
+        ) : (
+          isPlanned(props.commitment) && "Planned"
         )}
       </DataGridCell>
     </DataGridRow>
