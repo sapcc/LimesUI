@@ -81,7 +81,8 @@ const ProjectResource = (props) => {
   // displayedUsage ensures that resources without commitments get the project usage displayed.
   const displayedUsage =
     usagePerCommitted > 0 ? usagePerCommitted : usagePerQuota;
-  const { hasPendingCommitments } = useCommitmentFilter();
+  const { hasPendingCommitments, hasPlannedCommitments } =
+    useCommitmentFilter();
   const resetCommitment = useResetCommitment();
   const { isCommitting } = createCommitmentStore();
   const { setIsCommitting } = createCommitmentStoreActions();
@@ -162,12 +163,20 @@ const ProjectResource = (props) => {
               >
                 <div className={`az-title ${azTitle} flex justify-between`}>
                   {az[0]}{" "}
-                  {hasPendingCommitments(resourceName, az[0]) && (
-                    <Badge variant="info">
-                      {" "}
-                      <b>+ pending</b>
-                    </Badge>
-                  )}
+                  <span>
+                    {hasPendingCommitments(resourceName, az[0]) && (
+                      <Badge variant="info">
+                        {" "}
+                        <b>+ pending</b>
+                      </Badge>
+                    )}
+                    {hasPlannedCommitments(resourceName, az[0]) && (
+                      <Badge variant="info" className={"ml-1"}>
+                        {" "}
+                        <b>+ planned</b>
+                      </Badge>
+                    )}
+                  </span>
                 </div>
                 <ResourceBarBuilder
                   unit={unitName}
