@@ -3,6 +3,8 @@ import { initialCommitmentObject } from "../constants";
 const createCommitmentStore = (set) => ({
   createCommitment: {
     commitment: { ...initialCommitmentObject },
+    // Requery API
+    refetchCommitmentAPI: false,
     // Toggle the edit mode and the commitment button.
     isCommitting: false,
     // Disable tabs on edit mode
@@ -15,12 +17,27 @@ const createCommitmentStore = (set) => ({
     toast: { message: null },
     // Display current selected AZ tab.
     currentAZ: null,
+    // Cluster/Domain View: currently clicked project of a resource in a domain.
+    currentProject: null,
+    // Transfer commitment to other project (Cluster/Domain View only).
+    transferCommitment: false,
+    // The user choses a concrete commitment to move.
+    isTransferring: false,
+    // The project to tranfer to
+    transferProject: null,
     actions: {
       setCommitment: (commitment) =>
         set((state) => ({
           createCommitment: {
             ...state.createCommitment,
             commitment: { ...commitment },
+          },
+        })),
+      setRefetchCommitmentAPI: (refetchCommitmentAPI) =>
+        set((state) => ({
+          createCommitment: {
+            ...state.createCommitment,
+            refetchCommitmentAPI: refetchCommitmentAPI,
           },
         })),
       setIsCommitting: (setIsCommitting) =>
@@ -48,11 +65,11 @@ const createCommitmentStore = (set) => ({
             commitmentIsLoading: loading,
           },
         })),
-      setToast: (toast) =>
+      setToast: (toast, variant = "danger") =>
         set((state) => ({
           createCommitment: {
             ...state.createCommitment,
-            toast: { message: toast },
+            toast: { message: toast, variant: variant },
           },
         })),
       setCurrentAZ: (currentAZ) =>
@@ -66,6 +83,34 @@ const createCommitmentStore = (set) => ({
             },
           };
         }),
+      setTransferCommitment: (transferCommitment) =>
+        set((state) => ({
+          createCommitment: {
+            ...state.createCommitment,
+            transferCommitment: transferCommitment,
+          },
+        })),
+      setCurrentProject: (project) =>
+        set((state) => ({
+          createCommitment: {
+            ...state.createCommitment,
+            currentProject: project,
+          },
+        })),
+      setIsTransferring: (isTransferring) =>
+        set((state) => ({
+          createCommitment: {
+            ...state.createCommitment,
+            isTransferring: isTransferring,
+          },
+        })),
+      setTransferProject: (transferProject) =>
+        set((state) => ({
+          createCommitment: {
+            ...state.createCommitment,
+            transferProject: transferProject,
+          },
+        })),
     },
   },
 });

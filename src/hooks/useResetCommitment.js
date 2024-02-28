@@ -6,6 +6,8 @@ const useResetCommitment = () => {
   const { setIsCommitting } = createCommitmentStoreActions();
   const { setCommitment } = createCommitmentStoreActions();
   const { setToast } = createCommitmentStoreActions();
+  const { setTransferCommitment } = createCommitmentStoreActions();
+  const { setIsTransferring } = createCommitmentStoreActions();
 
   function resetCommitment(az) {
     setCurrentAZ(az[0]);
@@ -14,7 +16,13 @@ const useResetCommitment = () => {
     setToast(null);
   }
 
-  return resetCommitment;
+  function resetCommitmentTransfer() {
+    setCommitment(initialCommitmentObject);
+    setTransferCommitment(false);
+    setIsTransferring(false);
+  }
+
+  return { resetCommitment, resetCommitmentTransfer };
 };
 
 export default useResetCommitment;

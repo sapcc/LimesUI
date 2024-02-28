@@ -7,18 +7,24 @@ import { initialCommitmentObject } from "../../lib/constants";
 import {
   createCommitmentStore,
   createCommitmentStoreActions,
+  domainStoreActions,
 } from "../StoreProvider";
 
 // Panel needs to be rendered first to enable the fading UI animation.
 const PanelManager = (props) => {
+  const { setShowCommitments } = domainStoreActions();
   const { isEditing } = createCommitmentStore();
+  const { currentProject } = createCommitmentStore();
   const { setIsEditing } = createCommitmentStoreActions();
   const { setCommitment } = createCommitmentStoreActions();
+  const { setTransferCommitment } = createCommitmentStoreActions();
+  const { setIsTransferring } = createCommitmentStoreActions();
   const { setToast } = createCommitmentStoreActions();
   const { setIsCommitting } = createCommitmentStoreActions();
   const navigate = useNavigate();
   const params = useParams();
   const { currentArea, categoryName, resourceName } = { ...params };
+  const { serviceType } = props.categories[categoryName];
   const currentResource = props.categories[categoryName]?.resources.find(
     (res) => {
       if (res.name === resourceName) {
@@ -36,8 +42,16 @@ const PanelManager = (props) => {
   function onPanelClose() {
     setCommitment(initialCommitmentObject);
     setToast(null);
+    // create commitment
     setIsEditing(false);
     setIsCommitting(false);
+    // transfer commitment
+    setTransferCommitment(false);
+    setIsTransferring(false);
+    // Reset showCommitment on project
+    if (currentProject) {
+      setShowCommitments(currentProject.metadata.id, false);
+    }
     navigate(`/${currentArea}`);
   }
 
@@ -49,10 +63,13 @@ const PanelManager = (props) => {
         opened={isEditing}
         onClose={() => onPanelClose()}
         closeable={true}
-        heading={`Manage Committed Resources: ${t(categoryName)} - ${t(resourceName)}`}
+        heading={`Manage Committed Resources: ${t(categoryName)} - ${t(
+          resourceName
+        )}`}
       >
         <EditPanel
           {...props}
+          serviceType={serviceType}
           currentResource={currentResource}
           currentArea={currentArea}
           currentCategory={categoryName}

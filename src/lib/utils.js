@@ -77,3 +77,27 @@ export const tracksQuota = (res) => {
     res.projects_quota !== undefined
   );
 };
+
+export const chunkProjects = (projects) => {
+  const projectChunks = [];
+  const chunkSize = 30;
+  for (let i = 0; i < projects.length; i += chunkSize) {
+    const chunk = projects.slice(i, i + chunkSize);
+    projectChunks.push(chunk);
+  }
+  return projectChunks;
+};
+
+export function unusedCommitments(committed, usage) {
+  if (committed > usage) {
+    return true;
+  }
+  return false;
+}
+
+export function uncommittedUsage(committed, usage) {
+  if (usage > committed) {
+    return true;
+  }
+  return false;
+}

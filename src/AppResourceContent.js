@@ -1,19 +1,23 @@
 import React from "react";
-import Overview from "./components/Overview";
+import Overview from "./components/mainView/Overview";
 import { useQuery } from "@tanstack/react-query";
 import { Container, LoadingIndicator, Message } from "juno-ui-components";
 import { HashRouter, Routes, Route } from "react-router-dom";
-import PanelManager from "./components/project/PanelManager";
-import { limesStore, limesStoreActions } from "./components/StoreProvider";
+import PanelManager from "./components/panel/PanelManager";
+import {
+  globalStoreActions,
+  projectStore,
+  projectStoreActions,
+} from "./components/StoreProvider";
 
-const AppContent = (props) => {
-  const { projectData } = limesStore();
-  const { refetchProjectAPI } = limesStore();
-  const { setRefetchProjectAPI } = limesStoreActions();
-  const { commitments } = limesStore();
-  const { setProjectData } = limesStoreActions();
-  const { restructureReport } = limesStoreActions();
-  const { setCommitments } = limesStoreActions();
+const AppResourceContent = (props) => {
+  const { projectData } = projectStore();
+  const { refetchProjectAPI } = projectStore();
+  const { setRefetchProjectAPI } = projectStoreActions();
+  const { commitments } = projectStore();
+  const { setProjectData } = projectStoreActions();
+  const { restructureReport } = globalStoreActions();
+  const { setCommitments } = projectStoreActions();
   const projectQueryResult = useQuery({
     queryKey: ["projectData"],
   });
@@ -38,7 +42,7 @@ const AppContent = (props) => {
   React.useEffect(() => {
     // Initial Commitment-API data fetch.
     if (!projectAPIData) return;
-    setProjectData(restructureReport(projectAPIData));
+    setProjectData(restructureReport(projectAPIData.project));
   }, [projectAPIData]);
 
   React.useEffect(() => {
@@ -80,4 +84,4 @@ const AppContent = (props) => {
   );
 };
 
-export default AppContent;
+export default AppResourceContent;

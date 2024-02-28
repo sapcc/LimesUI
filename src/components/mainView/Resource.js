@@ -1,14 +1,12 @@
 import React from "react";
+import { globalStore } from "../StoreProvider";
 import { t } from "../../lib/utils";
-import { Stack, Button, Badge } from "juno-ui-components";
+import { Stack, Button } from "juno-ui-components";
 import { Link } from "react-router-dom";
-import ResourceBarBuilder from "./ResourceBarBuilder";
-import useCommitmentFilter from "../../hooks/useCommitmentFilter";
+import { ProjectBadges } from "../shared/LimesBadges";
+import ResourceBarBuilder from "../resourceBar/ResourceBarBuilder";
 import useResetCommitment from "../../hooks/useResetCommitment";
-import {
-  createCommitmentStore,
-  createCommitmentStoreActions,
-} from "../StoreProvider";
+import AddCommitments from "../shared/AddCommitments";
 
 const barGroupContainer = `
     self-stretch  
@@ -61,19 +59,17 @@ const azContentHover = `
     transition-all
     `;
 
-const ProjectResource = (props) => {
+const Resource = (props) => {
   const {
     name: resourceName,
     totalCommitments,
     usagePerCommitted,
     usagePerQuota,
     quota: originalQuota, //commitment + right
-    usable_quota: usableQuota,
-    backend_quota: backendQuota,
     unit: unitName,
-    per_az: availabilityZones,
     editableResource,
   } = props.resource;
+  const { scope } = globalStore();
   const { tracksQuota, parentResource, isPanelView } = {
     ...props,
   };
@@ -81,11 +77,7 @@ const ProjectResource = (props) => {
   // displayedUsage ensures that resources without commitments get the project usage displayed.
   const displayedUsage =
     usagePerCommitted > 0 ? usagePerCommitted : usagePerQuota;
-  const { hasPendingCommitments, hasPlannedCommitments } =
-    useCommitmentFilter();
-  const resetCommitment = useResetCommitment();
-  const { isCommitting } = createCommitmentStore();
-  const { setIsCommitting } = createCommitmentStoreActions();
+  const { resetCommitment } = useResetCommitment();
 
   return (
     <div
@@ -117,16 +109,8 @@ const ProjectResource = (props) => {
             </Button>
           </Link>
         )}
-        {props.isPanelView && (
-          <Button
-            data-cy="addCommitment"
-            onClick={() => setIsCommitting(true)}
-            variant="primary"
-            disabled={isCommitting}
-            icon="addCircle"
-          >
-            Add Commitment
-          </Button>
+        {scope.isProject() && props.isPanelView && (
+          <AddCommitments label="Add Commitment" />
         )}
       </Stack>
       <ResourceBarBuilder
@@ -145,15 +129,17 @@ const ProjectResource = (props) => {
           props.isPanelView && "gap-2"
         }`}
       >
-        {props.resource.per_az?.map(
-          (az) =>
-            az[0] !== "any" && (
+        {props.resource.per_az?.map((az) => {
+          const azName = az[0];
+          const commitmentsInAZ = az[1];
+          return (
+            azName !== "any" && (
               <div
-                key={az[0]}
+                key={azName}
                 className={`az-bar ${
                   props.isPanelView
                     ? `az-bar ${barGroupContainer} ${
-                        az[0] !== "unknown" && azContentHover
+                        azName !== "unknown" && azContentHover
                       }`
                     : `az-bar ${azOverviewBar}`
                 }`}
@@ -162,25 +148,11 @@ const ProjectResource = (props) => {
                 }}
               >
                 <div className={`az-title ${azTitle} flex justify-between`}>
-                  {az[0]}{" "}
-                  <span>
-                    {hasPendingCommitments(resourceName, az[0]) && (
-                      <Badge variant="info">
-                        {" "}
-                        <b>+ pending</b>
-                      </Badge>
-                    )}
-                    {hasPlannedCommitments(resourceName, az[0]) && (
-                      <Badge variant="info" className={"ml-1"}>
-                        {" "}
-                        <b>+ planned</b>
-                      </Badge>
-                    )}
-                  </span>
+                  {azName} <ProjectBadges az={commitmentsInAZ} />
                 </div>
                 <ResourceBarBuilder
                   unit={unitName}
-                  usage={az[1].usage}
+                  usage={commitmentsInAZ.usage}
                   isAZ={true}
                   commitment={az.commitmentSum}
                   quota={originalQuota}
@@ -191,10 +163,11 @@ const ProjectResource = (props) => {
                 />
               </div>
             )
-        )}
+          );
+        })}
       </div>
     </div>
   );
 };
 
-export default ProjectResource;
+export default Resource;

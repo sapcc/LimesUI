@@ -1,5 +1,5 @@
 import React from "react";
-import ResourceBar from "../ResourceBar";
+import ResourceBar from "./ResourceBar";
 import { Unit, valueWithUnit } from "../../lib/unit";
 
 const ResourceBarBuilder = (props) => {
@@ -12,8 +12,11 @@ const ResourceBarBuilder = (props) => {
     parentQuota,
     tracksQuota,
     isPanelView,
+    // Displays bars either blue or purple if usage > commitments.
     editableResource,
     isAZ,
+    // Determines if NoQuota bars are the same size as filledBars.
+    equallySized,
   } = { ...props };
   const unit = new Unit(unitName || "");
 
@@ -54,6 +57,7 @@ const ResourceBarBuilder = (props) => {
       canEdit={editableResource || isPanelView}
       showsCapacity={false}
       isAZ={isAZ}
+      equallySized={equallySized}
     />
   );
 };

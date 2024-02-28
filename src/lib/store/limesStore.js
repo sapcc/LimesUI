@@ -1,6 +1,124 @@
-import { tracksQuota } from "../utils";
+import { unusedCommitments, uncommittedUsage } from "../../lib/utils";
 
 const limesStore = (set) => ({
+  domain: {
+    domainData: null,
+    refetchDomainAPI: false,
+    projects: null,
+    actions: {
+      setDomainData: (domainData) =>
+        set((state) => ({
+          domain: { ...state.domain, domainData: domainData },
+        })),
+      setRefetchDomainAPI: (refetchDomainAPI) =>
+        set((state) => ({
+          domain: { ...state.domain, refetchDomainAPI: refetchDomainAPI },
+        })),
+      setProjects: (projects, sortProjects = true) =>
+        set((state) => {
+          // The user sorts manually if commitments are added or moved to/from projects.
+          if (sortProjects) {
+            projects = state.domain.actions.sortProjects(projects);
+          } else {
+            // Keep previous order structure.
+            const domainProjects = [...state.domain.projects];
+            projects.sort((a, b) => {
+              return (
+                domainProjects.findIndex(
+                  (p) => p.metadata.id == a.metadata.id
+                ) -
+                domainProjects.findIndex((p) => p.metadata.id == b.metadata.id)
+              );
+            });
+          }
+
+          // Append the previous showCommitments state to the fresh API data.
+          projects.forEach((project) => {
+            if (state.domain.projects) {
+              const previousProjectIndex = state.domain.projects.findIndex(
+                (oldProject) => project.metadata.id == oldProject.metadata.id
+              );
+              project.showCommitments =
+                state.domain.projects[previousProjectIndex]?.showCommitments ||
+                false;
+            } else {
+              project.showCommitments = false;
+            }
+          });
+
+          return {
+            ...state,
+            domain: { ...state.domain, projects: projects },
+          };
+        }),
+      sortProjects: (projects) => {
+        // Sort after max(unused_commitments, uncommitted_usage)
+        const sortedProjects = projects.sort((a, b) => {
+          const { resources: resourcesA } = Object.values(a.categories)[0];
+          const { resources: resourcesB } = Object.values(b.categories)[0];
+          const resourceA = resourcesA[0];
+          const resourceB = resourcesB[0];
+          let maxA = getMaxCommitmentsOrUsage(
+            resourceA.totalCommitments,
+            resourceA.usage
+          );
+          let maxB = getMaxCommitmentsOrUsage(
+            resourceB.totalCommitments,
+            resourceB.usage
+          );
+
+          // Set no quota projects to the bottom of the table.
+          if (maxA == 0 && maxB == 0) {
+            maxA = resourceA.quota;
+            maxB = resourceB.quota;
+          }
+
+          // If everything has no quota, just sort alphabetically
+          if (maxA == maxB) {
+            maxA = a.metadata.name.toLowerCase();
+            maxB = b.metadata.name.toLowerCase();
+            return maxA > maxB ? 1 : -1;
+          }
+
+          return maxB > maxA ? 1 : -1;
+        });
+
+        function getMaxCommitmentsOrUsage(commitments, usage) {
+          const unused = unusedCommitments(commitments, usage)
+            ? commitments - usage
+            : 0;
+          const uncommitted = uncommittedUsage(commitments, usage)
+            ? usage - commitments
+            : 0;
+          return Math.max(unused, uncommitted);
+        }
+
+        return sortedProjects;
+      },
+      setSortedProjects: (projects) =>
+        set((state) => {
+          const sortedProjects = state.domain.actions.sortProjects([
+            ...projects,
+          ]);
+          return {
+            ...state,
+            domain: { ...state.domain, projects: sortedProjects },
+          };
+        }),
+      setShowCommitments: (projectID, value) =>
+        set((state) => {
+          const projects = [...state.domain.projects];
+          const index = projects.findIndex(
+            (project) => project.metadata.id == projectID
+          );
+          projects[index].showCommitments = value;
+          return {
+            ...state,
+            domain: { ...state.domain, projects: projects },
+          };
+        }),
+    },
+  },
   project: {
     //requery API after commit POST to get fresh commitment data for the resource bars.
     projectData: null,
@@ -41,11 +159,20 @@ const limesStore = (set) => ({
             project: { ...state.project, commitments: commitments },
           };
         }),
+    },
+  },
+  global: {
+    scope: null,
 
+    actions: {
+      setScope: (scope) => {
+        set((state) => ({
+          global: { ...state.global, scope: scope },
+        }));
+      },
       ////////////////////////////////////////////////////////////////////////////////
       // helper that need to restructure a Limes JSON into a triplet of
       // (metadata, overview, categories)
-
       restructureReport: (data, resourceFilter = null) => {
         // This helper takes the `data` returned by Limes under any GET
         // endpoint and flattens it into several structures that reflect the
@@ -60,7 +187,7 @@ const limesStore = (set) => ({
         // matching resources are removed from the result.)
 
         // `metadata` is what multiple levels need (e.g. bursting multiplier).
-        var { services: serviceList, ...metadata } = data.project;
+        var { services: serviceList, ...metadata } = data;
 
         //apply `resourceFilter`
         if (resourceFilter !== null) {
@@ -201,8 +328,8 @@ function addTotalCommitments(res) {
 // 1) when no commitments are present (shows only one bar):
 // <sum(usage over all AZs)> / <Quota>
 // 2) when Commitments are present:
-// left side: <sum(usage on AZs with Commitments)> / <sum(Commitments of the AZs)>
-// right side: <sum(usage that exceeds the AZs Commitments)> / <Quota - Commitments>
+// left side: <sum(usage on AZs with Commitments)> / <sum(Commitments of the AZs)> = (userPerCommitted / Commitments)
+// right side: <sum(usage that exceeds the AZs Commitments)> / <Quota - Commitments> = (usagePerQuota / RestQuota)
 // This function adds the usage values of scenario 2 as attributes to the object.
 // TODO: on a resource without any commitments: usagePerQuota = Quota. Simplify the handling of this case.
 function addUsageValues(res) {

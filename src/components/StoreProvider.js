@@ -15,9 +15,19 @@ const useAppStore = (selector) => create(useContext(StoreContext), selector);
 export const apiStore = () => useAppStore((state) => state.api.globalAPI);
 export const apiStoreActions = () => useAppStore((state) => state.api.actions);
 
+// limes globals
+export const globalStore = () => useAppStore((state) => state.global);
+export const globalStoreActions = () =>
+  useAppStore((state) => state.global.actions);
+
+// Domain Store
+export const domainStore = () => useAppStore((state) => state.domain);
+export const domainStoreActions = () =>
+  useAppStore((state) => state.domain.actions);
+
 // Project and Commitment Store
-export const limesStore = () => useAppStore((state) => state.project);
-export const limesStoreActions = () =>
+export const projectStore = () => useAppStore((state) => state.project);
+export const projectStoreActions = () =>
   useAppStore((state) => state.project.actions);
 
 // Creating commitments

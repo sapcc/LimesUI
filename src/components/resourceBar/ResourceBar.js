@@ -42,7 +42,6 @@ const noneResourceBar = `
   p-0.5
   text-theme-light 
   italic
-  h-8
   `;
 const barLable = `
   font-bold
@@ -73,6 +72,7 @@ const ResourceBar = (props) => {
     canEdit,
     showsCapacity,
     isAZ,
+    equallySized,
   } = props;
 
   const disabled = false;
@@ -95,7 +95,7 @@ const ResourceBar = (props) => {
           </span>
           <div
             key="filled"
-            className={noneResourceBar}
+            className={`${noneResourceBar} ${equallySized ? "h-4" : "h-8"}`}
             style={{ width: "100%" }}
           ></div>
         </Stack>

@@ -18,6 +18,7 @@ import CommitmentTooltip from "./CommitmentTooltip";
 import { initialCommitmentObject } from "../../lib/constants";
 import { COMMITMENTID } from "../../lib/constants";
 import useCommitmentFilter from "../../hooks/useCommitmentFilter";
+import useResetCommitment from "../../hooks/useResetCommitment";
 
 const CommitmentTableDetails = (props) => {
   const {
@@ -37,14 +38,18 @@ const CommitmentTableDetails = (props) => {
   const currentCategory = props.currentCategory;
   const currentResource = props.currentResource;
   const currentAZ = props.currentAZ;
-
   const isAddingCommitment = id === COMMITMENTID ? true : false;
   const { commitment: newCommitment } = createCommitmentStore();
   const { commitmentIsLoading } = createCommitmentStore();
+  const { transferCommitment } = createCommitmentStore();
+  const { isTransferring } = createCommitmentStore();
+  const [showTransfer, setShowTransfer] = React.useState(true);
   const { isPlanned, isPending } = useCommitmentFilter();
   const { setCommitment } = createCommitmentStoreActions();
   const { setIsCommitting } = createCommitmentStoreActions();
   const { setIsSubmitting } = createCommitmentStoreActions();
+  const { resetCommitmentTransfer } = useResetCommitment();
+  const { setIsTransferring } = createCommitmentStoreActions();
   const { setToast } = createCommitmentStoreActions();
   const [invalidDuration, setInValidDuration] = React.useState(false);
   const [invalidInput, setInvalidInput] = React.useState(false);
@@ -105,6 +110,21 @@ const CommitmentTableDetails = (props) => {
     }
     return exp;
   }
+
+  // Transfer commitment (Cluster/Domain View)
+  function transferCommit() {
+    setCommitment(props.commitment);
+    setIsTransferring(true);
+  }
+
+  // If a commitment is selected, hide all other move buttons from the UI.
+  React.useEffect(() => {
+    if (newCommitment.id == COMMITMENTID) {
+      setShowTransfer(true);
+    } else {
+      setShowTransfer(newCommitment?.id == id);
+    }
+  }, [isTransferring]);
 
   return (
     <DataGridRow>
@@ -198,6 +218,27 @@ const CommitmentTableDetails = (props) => {
               Save
             </Button>
             <Button onClick={() => stopEditing()} icon="close" size="small">
+              Cancel
+            </Button>
+          </Stack>
+        ) : transferCommitment && isConfirmed && showTransfer ? (
+          <Stack gap="2">
+            <Button
+              size="small"
+              variant="primary"
+              onClick={() => {
+                transferCommit();
+              }}
+              disabled={newCommitment?.id == id}
+            >
+              Move
+            </Button>
+            <Button
+              size="small"
+              onClick={() => {
+                resetCommitmentTransfer();
+              }}
+            >
               Cancel
             </Button>
           </Stack>

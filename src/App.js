@@ -9,15 +9,16 @@ import {
 import StoreProvider, {
   apiStore,
   apiStoreActions,
+  globalStoreActions,
 } from "./components/StoreProvider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import AppContent from "./AppContent";
 import styles from "./styles.scss";
 import { fetchProxyInitDB } from "utils";
 import projectApiDB from "./lib/limes_project_api.json";
 import commitmentApiDB from "./lib/limes_commitment_api.json";
 import dayPickerStyle from "react-day-picker/dist/style.css?inline";
 import AsyncWorker from "./AsyncWorker";
+import { Scope } from "./lib/scope";
 
 /* --------------------------- */
 
@@ -26,16 +27,22 @@ const App = (props = {}) => {
   const { setGlobalAPI } = apiStoreActions();
   const { setToken } = apiStoreActions();
   const { token } = apiStore();
+  const { setScope } = globalStoreActions();
+  const { projectID } = apiStore();
   const { apiReady } = apiStore();
   const [tokenError, setTokenError] = React.useState(false);
+  const scope = new Scope(props);
+  const Resource = scope.appComponent();
 
   React.useEffect(() => {
     setGlobalAPI({
       endpoint: props.endpoint || props.currentHost || "",
       token: props.getToken || "",
-      projectID: props.projectID || "",
+      // With a projectID set by DomainView, use the requested project ID.
+      projectID: props.projectID || projectID || "",
       domainID: props.domainID || "",
     });
+    setScope(scope)
   }, []);
 
   // Reload page after token timeout.
@@ -110,7 +117,7 @@ const App = (props = {}) => {
         embedded={props.embedded === "true" || props.embedded === true}
       >
         {apiReady ? (
-          <AppContent {...props} />
+          <Resource {...props} />
         ) : (
           <LoadingIndicator className={"m-auto"} />
         )}

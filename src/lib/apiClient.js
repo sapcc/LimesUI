@@ -21,11 +21,14 @@ const useQueryClientFn = (isMockApi) => {
     return response.json();
   }
 
+  // ProjectView Endpoints
   React.useEffect(() => {
     if (!queryClient || !endpoint || !token) return;
+    let pid;
     queryClient.setQueryDefaults(["projectData"], {
-      queryFn: async () => {
-        const url = `${endpoint}/v1/domains/${domainID}/projects/${projectID}`;
+      queryFn: async ({ queryKey }) => {
+        queryKey[1] ? (pid = queryKey[1]) : (pid = projectID);
+        const url = `${endpoint}/v1/domains/${domainID}/projects/${pid}`;
         const response = await fetchProxy(url, {
           method: "GET",
           headers: {
@@ -40,8 +43,9 @@ const useQueryClientFn = (isMockApi) => {
     });
 
     queryClient.setQueryDefaults(["commitmentData"], {
-      queryFn: async () => {
-        const url = `${endpoint}/v1/domains/${domainID}/projects/${projectID}/commitments`;
+      queryFn: async ({ queryKey }) => {
+        queryKey[1] ? (pid = queryKey[1]) : (pid = projectID);
+        const url = `${endpoint}/v1/domains/${domainID}/projects/${pid}/commitments`;
         const response = await fetchProxy(url, {
           method: "GET",
           headers: {
@@ -56,8 +60,9 @@ const useQueryClientFn = (isMockApi) => {
     });
 
     queryClient.setMutationDefaults(["newCommitment"], {
-      mutationFn: async ({ payload }) => {
-        const url = `${endpoint}/v1/domains/${domainID}/projects/${projectID}/commitments/new`;
+      mutationFn: async ({ payload, queryKey }) => {
+        queryKey ? (pid = queryKey) : (pid = projectID);
+        const url = `${endpoint}/v1/domains/${domainID}/projects/${pid}/commitments/new`;
         const response = await fetch(url, {
           method: "POST",
           headers: {
@@ -70,9 +75,30 @@ const useQueryClientFn = (isMockApi) => {
       },
     });
 
+    queryClient.setMutationDefaults(["deleteCommitment"], {
+      mutationFn: async ({ queryKey, commitmentID }) => {
+        queryKey ? (pid = queryKey) : (pid = projectID);
+        const url = `${endpoint}/v1/domains/${domainID}/projects/${pid}/commitments/${commitmentID}`;
+        const response = await fetch(url, {
+          method: "DELETE",
+          headers: {
+            Accept: "application/json",
+            "X-Auth-Token": token,
+          },
+        });
+        if (!response.ok) {
+          throw new Error(
+            `Network error while dseleting project data for ${projectID} Code: ${response.status}`
+          );
+        }
+        return response;
+      },
+    });
+
     queryClient.setMutationDefaults(["canConfirm"], {
-      mutationFn: async ({ payload }) => {
-        const url = `${endpoint}/v1/domains/${domainID}/projects/${projectID}/commitments/can-confirm`;
+      mutationFn: async ({ payload, queryKey }) => {
+        queryKey ? (pid = queryKey) : (pid = projectID);
+        const url = `${endpoint}/v1/domains/${domainID}/projects/${pid}/commitments/can-confirm`;
         const response = await fetch(url, {
           method: "POST",
           headers: {
@@ -86,6 +112,44 @@ const useQueryClientFn = (isMockApi) => {
     });
     setApiReady(true);
   }, [queryClient, endpoint, token, projectID, domainID]);
+
+  // DomainView Endpoints
+  React.useEffect(() => {
+    if (!queryClient || !endpoint || !token) return;
+    queryClient.setQueryDefaults(["domainData"], {
+      queryFn: async () => {
+        const url = `${endpoint}/v1/domains/${domainID}`;
+        const response = await fetchProxy(url, {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+            "X-Limes-V2-API-Preview": "per-az",
+            "X-Auth-Token": token,
+          },
+          ...{ mock: isMockApi },
+        });
+        return responseHandler(response);
+      },
+    });
+    queryClient.setQueryDefaults(["projectsInDomain"], {
+      queryFn: async ({ queryKey }) => {
+        const service = queryKey[1];
+        const resource = queryKey[2];
+        const url = `${endpoint}/v1/domains/${domainID}/projects?service=${service}&resource=${resource}`;
+        const response = await fetchProxy(url, {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+            "X-Limes-V2-API-Preview": "per-az",
+            "X-Auth-Token": token,
+          },
+          ...{ mock: isMockApi },
+        });
+        return responseHandler(response);
+      },
+    });
+    setApiReady(true);
+  }, [queryClient, endpoint, token, domainID]);
 };
 
 export default useQueryClientFn;

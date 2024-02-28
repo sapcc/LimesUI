@@ -4,10 +4,11 @@ import useResetCommitment from "../../hooks/useResetCommitment";
 
 const AvailabilityZoneNav = (props) => {
   const azIndex = props.az.findIndex((az) => az[0] === props.currentAZ);
-  const resetCommitment = useResetCommitment();
+  const { resetCommitment } = useResetCommitment();
+  const { resetCommitmentTransfer } = useResetCommitment();
 
   return (
-    <Container px={false} className="py-6">
+    <Container px={false} className="py-6 sticky top-0 bg-white z-[100]">
       <Tabs selectedIndex={azIndex} onSelect={() => {}}>
         <TabList>
           {props.az.map(
@@ -18,6 +19,7 @@ const AvailabilityZoneNav = (props) => {
                   key={az}
                   onClick={() => {
                     resetCommitment(az);
+                    resetCommitmentTransfer();
                   }}
                 >
                   {az[0]}

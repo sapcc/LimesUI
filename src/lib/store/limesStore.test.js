@@ -1,8 +1,9 @@
 import React from "react";
 import { renderHook, act } from "@testing-library/react";
 import StoreProvider, {
-  limesStore,
-  limesStoreActions,
+  projectStore,
+  projectStoreActions,
+  globalStoreActions,
 } from "../../components/StoreProvider";
 
 // Expected is a dual bar display at the UI
@@ -61,8 +62,9 @@ describe("limesStore", () => {
     const wrapper = ({ children }) => <StoreProvider>{children}</StoreProvider>;
     store = renderHook(
       () => ({
-        limesStore: limesStore(),
-        limesStoreActions: limesStoreActions(),
+        globalStoreActions: globalStoreActions(),
+        projectStore: projectStore(),
+        projectStoreActions: projectStoreActions(),
       }),
       { wrapper }
     );
@@ -72,18 +74,18 @@ describe("limesStore", () => {
     test("restructure report - new model", () => {
       act(() => {
         const structuredData =
-          store.result.current.limesStoreActions.restructureReport(projectData);
-        store.result.current.limesStoreActions.setProjectData(structuredData);
+          store.result.current.globalStoreActions.restructureReport(projectData.project);
+        store.result.current.projectStoreActions.setProjectData(structuredData);
       });
       expect(
-        store.result.current.limesStore.projectData.categories.compute
+        store.result.current.projectStore.projectData.categories.compute
           .resources[0].quota
       ).toEqual(60);
-      expect(store.result.current.limesStore.projectData.metadata.id).toEqual(
+      expect(store.result.current.projectStore.projectData.metadata.id).toEqual(
         "123"
       );
       expect(
-        store.result.current.limesStore.projectData.overview.areas.compute[0]
+        store.result.current.projectStore.projectData.overview.areas.compute[0]
       ).toEqual("compute");
     });
 
@@ -92,11 +94,11 @@ describe("limesStore", () => {
         const copy = { ...projectData };
         copy.project.services[0].resources[0].quota = 100;
         const structuredData =
-          store.result.current.limesStoreActions.restructureReport(copy);
-        store.result.current.limesStoreActions.setProjectData(structuredData);
+          store.result.current.globalStoreActions.restructureReport(copy.project);
+        store.result.current.projectStoreActions.setProjectData(structuredData);
       });
       expect(
-        store.result.current.limesStore.projectData.categories.compute
+        store.result.current.projectStore.projectData.categories.compute
           .resources[0].quota
       ).toEqual(100);
     });
@@ -104,11 +106,11 @@ describe("limesStore", () => {
     test("values of added attributes", () => {
       act(() => {
         const structuredData =
-          store.result.current.limesStoreActions.restructureReport(projectData);
-        store.result.current.limesStoreActions.setProjectData(structuredData);
+          store.result.current.globalStoreActions.restructureReport(projectData.project);
+        store.result.current.projectStoreActions.setProjectData(structuredData);
       });
       expect(
-        store.result.current.limesStore.projectData.categories.compute
+        store.result.current.projectStore.projectData.categories.compute
           .resources[0].totalCommitments
       ).toEqual(totalCommitments);
     });
@@ -117,9 +119,9 @@ describe("limesStore", () => {
   describe("commitments", () => {
     test("commitmentOrdering", () => {
       act(() => {
-        store.result.current.limesStoreActions.setCommitments(commitments);
+        store.result.current.projectStoreActions.setCommitments(commitments);
       });
-      expect(store.result.current.limesStore.commitments[0].created_at).toEqual(
+      expect(store.result.current.projectStore.commitments[0].created_at).toEqual(
         2
       );
     });

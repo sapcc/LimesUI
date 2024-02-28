@@ -1,6 +1,6 @@
 import React from "react";
-import { t, sortByLogicalOrderAndName, tracksQuota } from "../lib/utils";
-import ProjectResource from "./project/ProjectResource";
+import { t, sortByLogicalOrderAndName, tracksQuota } from "../../lib/utils";
+import Resource from "./Resource";
 
 const categoryTitle = `
     text-lg 
@@ -47,8 +47,10 @@ const Category = (props) => {
           {t(props.categoryName)}
         </h1>
         <div className={`category-content ${categoryContent}`}>
-          {sortByLogicalOrderAndName(advancedView ? resources : editableResources).map((res) => (
-            <ProjectResource
+          {sortByLogicalOrderAndName(
+            advancedView ? resources : editableResources
+          ).map((res) => (
+            <Resource
               key={res.name}
               resource={res}
               {...forwardProps}

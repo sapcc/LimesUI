@@ -1,10 +1,10 @@
 import React from "react";
 import moment from "moment";
 import Category from "./Category";
-import { createCommitmentStore } from "./StoreProvider";
+import { createCommitmentStore } from "../StoreProvider";
 import { useParams, useNavigate, Outlet } from "react-router-dom";
-import { t, byUIString } from "../lib/utils";
-import { ADVANCEDVIEW } from "../lib/constants";
+import { t, byUIString } from "../../lib/utils";
+import { ADVANCEDVIEW } from "../../lib/constants";
 import {
   Tabs,
   Tab,
