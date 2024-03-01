@@ -8,7 +8,7 @@ const AvailabilityZoneNav = (props) => {
   const { resetCommitmentTransfer } = useResetCommitment();
 
   return (
-    <Container px={false} className="py-6 sticky top-0 bg-white z-[100]">
+    <Container px={false} className="py-6 sticky top-0 bg-juno-grey-light-1 z-[100]">
       <Tabs selectedIndex={azIndex} onSelect={() => {}}>
         <TabList>
           {props.az.map(
