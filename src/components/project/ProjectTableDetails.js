@@ -46,6 +46,7 @@ const ProjectTableDetails = (props) => {
   const { isCommitting } = createCommitmentStore();
   const { transferCommitment } = createCommitmentStore();
   const { isTransferring } = createCommitmentStore();
+  const { setIsCommitting } = createCommitmentStoreActions();
   const { setTransferCommitment } = createCommitmentStoreActions();
   const { resetCommitmentTransfer } = useResetCommitment();
   // Be careful here! If enabled state is passed in as undefined, the useQuery hook spams the limes API for all projects!
@@ -93,6 +94,7 @@ const ProjectTableDetails = (props) => {
               onClick={() => {
                 resetCommitmentTransfer();
                 setMoveCommitment(false);
+                setIsCommitting(false);
                 updateShowCommitments(index);
               }}
             />
