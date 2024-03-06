@@ -125,9 +125,10 @@ const Resource = (props) => {
         editableResource={editableResource}
       />
       <div
-        className={`az-container ${azPanelContent} ${
-          props.isPanelView && "gap-2"
-        }`}
+        className={
+          props.isPanelView &&
+          `az-container ${azPanelContent} ${props.isPanelView && "gap-2"}`
+        }
       >
         {props.resource.per_az?.map((az) => {
           const azName = az[0];
