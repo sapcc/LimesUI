@@ -204,7 +204,6 @@ const limesStore = (set) => ({
 
         // `categories` is what the Category component needs.
         const categories = {};
-        console.log(serviceList);
         for (let srv of serviceList) {
           const {
             resources: resourceList,

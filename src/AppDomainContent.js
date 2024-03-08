@@ -33,7 +33,6 @@ const AppDomainContent = (props) => {
   }, [domainAPIData]);
 
   React.useEffect(() => {
-    console.log(refetchDomainAPI)
     if (!refetchDomainAPI) return;
     setRefetchDomainAPI(false);
     domainQueryResult.refetch();

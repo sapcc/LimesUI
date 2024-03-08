@@ -12,7 +12,7 @@ import {
   TabPanel,
   Container,
   Button,
-  Stack,
+  Box,
 } from "juno-ui-components";
 
 const Overview = (props) => {
@@ -21,15 +21,44 @@ const Overview = (props) => {
   const { isEditing } = createCommitmentStore();
   const { currentArea = allAreas[0] } = useParams();
   const navigate = useNavigate();
-  const currentTabIdx = allAreas.findIndex((area) => area === currentArea);
   const [advancedView, setAdvancedView] = React.useState(
     JSON.parse(localStorage.getItem(ADVANCEDVIEW)) || false
   );
+  const [currentTabIdx, setCurrentTabIdx] = React.useState(0);
+
+  // Hide tabs that should not be displayed in reduced resource view.
+  function onTabChange(currentArea) {
+    const areaIdx = allAreas.findIndex((area) => area === currentArea);
+    const editableAreaIdx = editableAreas.findIndex(
+      (area) => area === currentArea
+    );
+    if (advancedView) {
+      setCurrentTabIdx(areaIdx);
+      navigate(`/${allAreas[areaIdx]}`);
+      return;
+    }
+    if (editableAreaIdx > 0) {
+      setCurrentTabIdx(editableAreaIdx);
+      navigate(`/${editableAreas[editableAreaIdx]}`);
+      return;
+    }
+    setCurrentTabIdx(0);
+    navigate(`/${editableAreas[0]}`);
+  }
+
+  // Consider advanced view button click
+  React.useEffect(() => {
+    onTabChange(currentArea);
+  }, [advancedView]);
 
   function renderArea() {
     const { areas, categories, scrapedAt, minScrapedAt, maxScrapedAt } =
       props.overview;
     const currentServices = areas[currentArea];
+
+    if (!currentServices) {
+      return <Box>Invalid Path.</Box>;
+    }
 
     const currMinScrapedAt = currentServices
       .map((serviceType) => minScrapedAt[serviceType])
@@ -55,8 +84,8 @@ const Overview = (props) => {
       <>
         {currentServices
           .sort(byUIString)
-          .map((serviceType, idx) =>
-            categories[serviceType].map((categoryName, index) => (
+          .map((serviceType) =>
+            categories[serviceType].map((categoryName) => (
               <Category
                 key={categoryName}
                 categoryName={categoryName}
@@ -81,7 +110,7 @@ const Overview = (props) => {
             ) : (
               <Tab
                 disabled={isEditing}
-                onClick={() => navigate(`/${area}`)}
+                onClick={() => onTabChange(area)}
                 key={area}
               >
                 {t(area)}
