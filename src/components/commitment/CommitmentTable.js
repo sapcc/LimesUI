@@ -18,6 +18,12 @@ const CommitmentTable = (props) => {
   const { currentCategory, currentResource, currentAZ, commitmentData } = {
     ...props,
   };
+  const { per_az: availabilityZones } = props.resource;
+  const isAZAware =
+    availabilityZones.length == 1 && availabilityZones[0][0] == "any";
+  const noCommitmentsText = `No commitments found${
+    !isAZAware ? " in this availability zone" : ""
+  }.`;
   const commitmentHeadCells = [
     {
       key: "amount",
@@ -82,7 +88,7 @@ const CommitmentTable = (props) => {
       ))}
     </DataGrid>
   ) : (
-    <IntroBox text="No commitments found in this availability zone." />
+    <IntroBox text={noCommitmentsText} />
   );
 };
 

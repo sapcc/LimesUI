@@ -204,6 +204,7 @@ const limesStore = (set) => ({
 
         // `categories` is what the Category component needs.
         const categories = {};
+        console.log(serviceList);
         for (let srv of serviceList) {
           const {
             resources: resourceList,
@@ -219,13 +220,21 @@ const limesStore = (set) => ({
             };
           }
 
+          let editableResourceCount = 0;
           for (let res of resourceList) {
             filterAZs(res);
-            identifyEditableResource(res);
+            if (identifyEditableResource(res)) {
+              editableResourceCount++;
+            }
             getQuotaNewOrOldModel(res);
             addTotalCommitments(res);
             addUsageValues(res);
             categories[res.category || serviceType].resources.push(res);
+          }
+          if (editableResourceCount == 0) {
+            srv.editableService = false;
+          } else {
+            srv.editableService = true;
           }
         }
 
@@ -246,6 +255,19 @@ const limesStore = (set) => ({
           return result;
         };
 
+        // Identify areas that contain editable services
+        const areas = new Map();
+        const services = serviceList.map((srv) => [
+          srv.area,
+          srv.editableService,
+        ]);
+        services.forEach((srv) => {
+          const area = srv[0];
+          const editable = srv[1];
+          editable && areas.set(area, editable);
+        });
+        const editableAreas = Array.from(areas.keys());
+
         // `overview` is what the Overview component needs.
         const overview = {
           //This field is only filled for project scope, and {} otherwise.
@@ -262,6 +284,7 @@ const limesStore = (set) => ({
           areas: groupKeys(
             serviceList.map((srv) => [srv.area || srv.type, srv.type])
           ),
+          editableAreas: editableAreas,
           categories: groupKeys(
             Object.entries(categories).map(([catName, cat]) => [
               cat.serviceType,
@@ -297,6 +320,10 @@ function identifyEditableResource(res) {
   // editableResource indicates the color of the resource bar.
   const editableResource = hasDurations;
   res.editableResource = editableResource;
+  if (!hasDurations) {
+    return false;
+  }
+  return true;
 }
 
 // old model: Resources have a quota attribute attached to them.

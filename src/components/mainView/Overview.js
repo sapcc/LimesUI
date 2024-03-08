@@ -17,6 +17,7 @@ import {
 
 const Overview = (props) => {
   const allAreas = Object.keys(props.overview.areas);
+  const editableAreas = props.overview.editableAreas;
   const { isEditing } = createCommitmentStore();
   const { currentArea = allAreas[0] } = useParams();
   const navigate = useNavigate();
@@ -74,15 +75,19 @@ const Overview = (props) => {
     <Container px={false} className="mb-11">
       <Tabs selectedIndex={currentTabIdx} onSelect={() => {}}>
         <TabList>
-          {allAreas.map((area) => (
-            <Tab
-              disabled={isEditing}
-              onClick={() => navigate(`/${area}`)}
-              key={area}
-            >
-              {t(area)}
-            </Tab>
-          ))}
+          {allAreas.map((area) =>
+            !advancedView && !editableAreas.includes(area) ? (
+              ""
+            ) : (
+              <Tab
+                disabled={isEditing}
+                onClick={() => navigate(`/${area}`)}
+                key={area}
+              >
+                {t(area)}
+              </Tab>
+            )
+          )}
           <div className="m-auto mr-0">
             <Button
               size="small"
@@ -101,9 +106,13 @@ const Overview = (props) => {
           </div>
         </TabList>
 
-        {allAreas.map((area) => (
-          <TabPanel key={area} className={"m-4"}></TabPanel>
-        ))}
+        {allAreas.map((area) =>
+          !advancedView && !editableAreas.includes(area) ? (
+            ""
+          ) : (
+            <TabPanel key={area} className={"m-4"}></TabPanel>
+          )
+        )}
       </Tabs>
       {renderArea()}
       <Outlet />
