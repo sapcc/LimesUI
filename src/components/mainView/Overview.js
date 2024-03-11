@@ -31,13 +31,13 @@ const Overview = (props) => {
   // Hide tabs that should not be displayed in reduced resource view.
   function onTabChange(currentArea) {
     const areaIdx = allAreas.findIndex((area) => area === currentArea);
-    if (areaIdx > 0) {
-      setCurrentTabIdx(areaIdx);
-      navigate(`/${allAreas[areaIdx]}`);
-      return;
+    if (areaIdx < 0) {
+      setCurrentTabIdx(0);
+      navigate(`/${allAreas[0]}`);
+      return
     }
-    setCurrentTabIdx(0);
-    navigate(`/${allAreas[0]}`);
+    setCurrentTabIdx(areaIdx);
+    navigate(`/${allAreas[areaIdx]}`);
   }
 
   // Consider advanced view button click
