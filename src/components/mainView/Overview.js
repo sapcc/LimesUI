@@ -17,7 +17,6 @@ import {
 
 const Overview = (props) => {
   const navigate = useNavigate();
-  const { currentArea = allAreas[0] } = useParams();
   const editableAreas = props.overview.editableAreas;
   const { isEditing } = createCommitmentStore();
   const [currentTabIdx, setCurrentTabIdx] = React.useState(0);
@@ -27,6 +26,7 @@ const Overview = (props) => {
   const allAreas = advancedView
     ? Object.keys(props.overview.areas)
     : editableAreas;
+  const { currentArea = allAreas[0] } = useParams();
 
   // Hide tabs that should not be displayed in reduced resource view.
   function onTabChange(currentArea) {
