@@ -16,34 +16,28 @@ import {
 } from "juno-ui-components";
 
 const Overview = (props) => {
-  const allAreas = Object.keys(props.overview.areas);
+  const navigate = useNavigate();
+  const { currentArea = allAreas[0] } = useParams();
   const editableAreas = props.overview.editableAreas;
   const { isEditing } = createCommitmentStore();
-  const { currentArea = allAreas[0] } = useParams();
-  const navigate = useNavigate();
+  const [currentTabIdx, setCurrentTabIdx] = React.useState(0);
   const [advancedView, setAdvancedView] = React.useState(
     JSON.parse(localStorage.getItem(ADVANCEDVIEW)) || false
   );
-  const [currentTabIdx, setCurrentTabIdx] = React.useState(0);
+  const allAreas = advancedView
+    ? Object.keys(props.overview.areas)
+    : editableAreas;
 
   // Hide tabs that should not be displayed in reduced resource view.
   function onTabChange(currentArea) {
     const areaIdx = allAreas.findIndex((area) => area === currentArea);
-    const editableAreaIdx = editableAreas.findIndex(
-      (area) => area === currentArea
-    );
-    if (advancedView) {
+    if (areaIdx > 0) {
       setCurrentTabIdx(areaIdx);
       navigate(`/${allAreas[areaIdx]}`);
       return;
     }
-    if (editableAreaIdx > 0) {
-      setCurrentTabIdx(editableAreaIdx);
-      navigate(`/${editableAreas[editableAreaIdx]}`);
-      return;
-    }
     setCurrentTabIdx(0);
-    navigate(`/${editableAreas[0]}`);
+    navigate(`/${allAreas[0]}`);
   }
 
   // Consider advanced view button click
@@ -104,19 +98,15 @@ const Overview = (props) => {
     <Container px={false} className="mb-11">
       <Tabs selectedIndex={currentTabIdx} onSelect={() => {}}>
         <TabList>
-          {allAreas.map((area) =>
-            !advancedView && !editableAreas.includes(area) ? (
-              ""
-            ) : (
-              <Tab
-                disabled={isEditing}
-                onClick={() => onTabChange(area)}
-                key={area}
-              >
-                {t(area)}
-              </Tab>
-            )
-          )}
+          {allAreas.map((area) => (
+            <Tab
+              disabled={isEditing}
+              onClick={() => onTabChange(area)}
+              key={area}
+            >
+              {t(area)}
+            </Tab>
+          ))}
           <div className="m-auto mr-0">
             <Button
               size="small"
@@ -135,13 +125,9 @@ const Overview = (props) => {
           </div>
         </TabList>
 
-        {allAreas.map((area) =>
-          !advancedView && !editableAreas.includes(area) ? (
-            ""
-          ) : (
-            <TabPanel key={area} className={"m-4"}></TabPanel>
-          )
-        )}
+        {allAreas.map((area) => (
+          <TabPanel key={area} className={"m-4"}></TabPanel>
+        ))}
       </Tabs>
       {renderArea()}
       <Outlet />
