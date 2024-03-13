@@ -41,7 +41,7 @@ const CommitmentModal = (props) => {
     hasMinConfirmDate || !canConfirm
   );
   // Identify if a commitment will be set on the current day.
-  const [isCurrentDayCommit, setIsCurrentDayCommit] = React.useState(true);
+  const [isCurrentDayCommit, setIsCurrentDayCommit] = React.useState(minConfirmDate ? false : true);
   // The calendar start date primarely uses the API date and defaults to todays timestamp.
   const startDate = minConfirmDate
     ? moment.unix(minConfirmDate)._d

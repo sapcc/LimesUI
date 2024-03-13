@@ -53,6 +53,11 @@ const CommitmentCalendar = (props) => {
           currentDayCommit(false);
         }
 
+        // Timestamp needs to match server time in UTC.
+        pickedDate.setHours(
+          pickedDate.getHours() + Math.abs(pickedDate.getTimezoneOffset() / 60)
+        );
+
         setSelectedDate(pickedDate);
       }}
       formatters={{ formatCaption }}
