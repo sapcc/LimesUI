@@ -12,11 +12,10 @@ const useQueryClientFn = (isMockApi) => {
   const { setApiReady } = apiStoreActions();
   const { endpoint, token, projectID, domainID } = { ...globalAPI };
 
-  function responseHandler(response) {
+  async function responseHandler(response) {
     if (!response.ok) {
-      throw new Error(
-        `Network error while fetching project data for ${projectID} Code: ${response.status}`
-      );
+      const text = await response.text();
+      throw new Error(`Network error: ${text} (Code: ${response.status})`);
     }
     return response.json();
   }

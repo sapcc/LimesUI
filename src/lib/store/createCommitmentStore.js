@@ -14,7 +14,7 @@ const createCommitmentStore = (set) => ({
     // Indicate loading state on commitment save
     commitmentIsLoading: false,
     // Set toast on API errors
-    toast: { message: null },
+    toast: { message: null, variant: "" },
     // Display current selected AZ tab.
     currentAZ: null,
     // Cluster/Domain View: currently clicked project of a resource in a domain.

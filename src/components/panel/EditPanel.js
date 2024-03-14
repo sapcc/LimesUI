@@ -90,9 +90,9 @@ const EditPanel = (props) => {
           setCanConfirm(data.result);
           setCommitmentIsLoading(false);
         },
-        onError: (data) => {
+        onError: (error) => {
           setCommitmentIsLoading(false);
-          setToast("Check to confirm commitment failed.");
+          setToast(error.toString());
           // Prevent modal from opening.
           setIsSubmitting(false);
         },
@@ -126,9 +126,9 @@ const EditPanel = (props) => {
           setCommitmentIsLoading(false);
           addCommitment(data.commitment);
         },
-        onError: (data) => {
+        onError: (error) => {
           setCommitmentIsLoading(false);
-          setToast("Network error: Could not post commitment.");
+          setToast(error.toString());
         },
       }
     );
@@ -220,7 +220,7 @@ const EditPanel = (props) => {
           className={"p-0 sticky top-[11.5rem] z-[100]"}
           text={toast.message}
           autoDismiss={true}
-          variant={toast.state}
+          variant={toast.variant}
           onDismiss={() => dismissToast()}
         />
       )}
