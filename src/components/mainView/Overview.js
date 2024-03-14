@@ -22,13 +22,13 @@ const Overview = (props) => {
   const { isEditing } = createCommitmentStore();
   const [advancedView, setAdvancedView] = React.useState(
     JSON.parse(localStorage.getItem(ADVANCEDVIEW)) || false
-    );
-    const allAreas = advancedView
+  );
+  const allAreas = advancedView
     ? Object.keys(props.overview.areas)
     : editableAreas;
-    const { currentArea = allAreas[0] } = useParams();
-    const [currentTabIdx, setCurrentTabIdx] = React.useState(0);
-    
+  const { currentArea = allAreas[0] } = useParams();
+  const [currentTabIdx, setCurrentTabIdx] = React.useState(0);
+
   // Hide tabs that should not be displayed in reduced resource view.
   function onTabChange(currentArea) {
     const areaIdx = allAreas.findIndex((area) => area === currentArea);
