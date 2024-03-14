@@ -2,7 +2,7 @@ import React from "react";
 import moment from "moment";
 import Category from "./Category";
 import { createCommitmentStore } from "../StoreProvider";
-import { useParams, useNavigate, Outlet } from "react-router-dom";
+import { useParams, useNavigate, useLocation, Outlet } from "react-router-dom";
 import { t, byUIString } from "../../lib/utils";
 import { ADVANCEDVIEW } from "../../lib/constants";
 import {
@@ -17,24 +17,25 @@ import {
 
 const Overview = (props) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const editableAreas = props.overview.editableAreas;
   const { isEditing } = createCommitmentStore();
-  const [currentTabIdx, setCurrentTabIdx] = React.useState(0);
   const [advancedView, setAdvancedView] = React.useState(
     JSON.parse(localStorage.getItem(ADVANCEDVIEW)) || false
-  );
-  const allAreas = advancedView
+    );
+    const allAreas = advancedView
     ? Object.keys(props.overview.areas)
     : editableAreas;
-  const { currentArea = allAreas[0] } = useParams();
-
+    const { currentArea = allAreas[0] } = useParams();
+    const [currentTabIdx, setCurrentTabIdx] = React.useState(0);
+    
   // Hide tabs that should not be displayed in reduced resource view.
   function onTabChange(currentArea) {
     const areaIdx = allAreas.findIndex((area) => area === currentArea);
     if (areaIdx < 0) {
       setCurrentTabIdx(0);
       navigate(`/${allAreas[0]}`);
-      return
+      return;
     }
     setCurrentTabIdx(areaIdx);
     navigate(`/${allAreas[areaIdx]}`);
@@ -42,6 +43,10 @@ const Overview = (props) => {
 
   // Consider advanced view button click
   React.useEffect(() => {
+    // Do not reroute on any other subroute. Matches: ("/", "/route", "/route/")
+    // This would cause the refresh of the EditPanel to be rerouted to the main route.
+    const exp = new RegExp("^/[a-zA-Z0-9]*/?$").exec(location.pathname);
+    if (!exp) return;
     onTabChange(currentArea);
   }, [advancedView]);
 
