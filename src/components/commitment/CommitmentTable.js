@@ -15,7 +15,13 @@ const CommitmentTable = (props) => {
   const { filterCommitments } = useCommitmentFilter();
   const { commitment: newCommitment } = createCommitmentStore();
   const { isCommitting } = createCommitmentStore();
-  const { currentCategory, currentResource, currentAZ, commitmentData } = {
+  const {
+    serviceType,
+    currentCategory,
+    currentResource,
+    currentAZ,
+    commitmentData,
+  } = {
     ...props,
   };
   const { per_az: availabilityZones } = props.resource;
@@ -81,6 +87,7 @@ const CommitmentTable = (props) => {
           key={commitment.id}
           commitment={commitment}
           durations={durations}
+          serviceType={serviceType}
           currentCategory={currentCategory}
           currentResource={currentResource}
           currentAZ={currentAZ}

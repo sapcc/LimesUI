@@ -35,7 +35,7 @@ const CommitmentTableDetails = (props) => {
   } = { ...props.commitment };
   const startDate = confirm_by ? confirm_by : created_at;
   const durations = props.durations;
-  const currentCategory = props.currentCategory;
+  const serviceType = props.serviceType;
   const currentResource = props.currentResource;
   const currentAZ = props.currentAZ;
   const isAddingCommitment = id === COMMITMENTID ? true : false;
@@ -95,7 +95,7 @@ const CommitmentTableDetails = (props) => {
     //Unit is set in parent component (table).
     setCommitment({
       ...newCommitment,
-      service_type: currentCategory,
+      service_type: serviceType,
       resource_name: currentResource,
       availability_zone: currentAZ,
       amount: parsedInput,

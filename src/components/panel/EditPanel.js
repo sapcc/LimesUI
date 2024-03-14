@@ -226,6 +226,7 @@ const EditPanel = (props) => {
       )}
       {scope.isProject() && commitments && (
         <CommitmentTable
+          serviceType={serviceType}
           currentCategory={currentCategory}
           currentResource={currentResource.name}
           resource={currentResource}
