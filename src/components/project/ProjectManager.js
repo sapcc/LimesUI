@@ -10,12 +10,7 @@ import {
 import { LoadingIndicator } from "juno-ui-components";
 
 const ProjectManager = (props) => {
-  const {
-    serviceType,
-    currentCategory,
-    currentResource,
-    currentAZ,
-  } = props;
+  const { serviceType, currentCategory, currentResource, currentAZ } = props;
   const { refetchProjectAPI } = projectStore();
   const { setRefetchProjectAPI } = projectStoreActions();
   const { projects } = domainStore();
@@ -47,6 +42,7 @@ const ProjectManager = (props) => {
 
   return !isLoading && projects ? (
     <ProjectTable
+      serviceType={serviceType}
       currentCategory={currentCategory}
       currentAZ={currentAZ}
       projects={projects}

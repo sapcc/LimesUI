@@ -20,7 +20,7 @@ import {
 
 // Display the project details in DomainView
 const ProjectTable = (props) => {
-  const { currentCategory, currentAZ, projects } = props;
+  const { serviceType, currentCategory, currentAZ, projects } = props;
   const { setShowCommitments } = domainStoreActions();
   const { setSortedProjects } = domainStoreActions();
   const { setTransferProject } = createCommitmentStoreActions();
@@ -184,6 +184,7 @@ const ProjectTable = (props) => {
                 }
                 updateShowCommitments={updateShowCommitments}
                 handleCommitmentTransfer={handleCommitmentTransfer}
+                serviceType={serviceType}
                 currentCategory={currentCategory}
                 project={project}
                 resource={resource}

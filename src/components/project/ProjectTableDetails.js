@@ -27,6 +27,7 @@ const ProjectTableDetails = (props) => {
     showCommitments,
     updateShowCommitments,
     handleCommitmentTransfer,
+    serviceType,
     currentCategory,
     project,
     resource,
@@ -177,6 +178,7 @@ const ProjectTableDetails = (props) => {
                 <p className="font-semibold mb-5">Commitments:</p>
               )}
               <CommitmentTable
+                serviceType={serviceType}
                 currentCategory={currentCategory}
                 currentResource={resource.name}
                 resource={resource}
