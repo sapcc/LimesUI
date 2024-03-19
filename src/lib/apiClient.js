@@ -24,6 +24,7 @@ const useQueryClientFn = (isMockApi) => {
   React.useEffect(() => {
     if (!queryClient || !endpoint || !token) return;
     let pid;
+    let did;
     queryClient.setQueryDefaults(["projectData"], {
       queryFn: async ({ queryKey }) => {
         queryKey[1] ? (pid = queryKey[1]) : (pid = projectID);
@@ -44,7 +45,8 @@ const useQueryClientFn = (isMockApi) => {
     queryClient.setQueryDefaults(["commitmentData"], {
       queryFn: async ({ queryKey }) => {
         queryKey[1] ? (pid = queryKey[1]) : (pid = projectID);
-        const url = `${endpoint}/v1/domains/${domainID}/projects/${pid}/commitments`;
+        queryKey[2] ? (did = queryKey[2]) : (did = domainID);
+        const url = `${endpoint}/v1/domains/${did}/projects/${pid}/commitments`;
         const response = await fetchProxy(url, {
           method: "GET",
           headers: {
@@ -60,8 +62,9 @@ const useQueryClientFn = (isMockApi) => {
 
     queryClient.setMutationDefaults(["newCommitment"], {
       mutationFn: async ({ payload, queryKey }) => {
-        queryKey ? (pid = queryKey) : (pid = projectID);
-        const url = `${endpoint}/v1/domains/${domainID}/projects/${pid}/commitments/new`;
+        queryKey[0] ? (pid = queryKey[0]) : (pid = projectID);
+        queryKey[1] ? (did = queryKey[1]) : (did = domainID);
+        const url = `${endpoint}/v1/domains/${did}/projects/${pid}/commitments/new`;
         const response = await fetch(url, {
           method: "POST",
           headers: {
@@ -96,8 +99,9 @@ const useQueryClientFn = (isMockApi) => {
 
     queryClient.setMutationDefaults(["canConfirm"], {
       mutationFn: async ({ payload, queryKey }) => {
-        queryKey ? (pid = queryKey) : (pid = projectID);
-        const url = `${endpoint}/v1/domains/${domainID}/projects/${pid}/commitments/can-confirm`;
+        queryKey[0] ? (pid = queryKey[0]) : (pid = projectID);
+        queryKey[1] ? (did = queryKey[1]) : (did = domainID);
+        const url = `${endpoint}/v1/domains/${did}/projects/${pid}/commitments/can-confirm`;
         const response = await fetch(url, {
           method: "POST",
           headers: {
@@ -114,10 +118,12 @@ const useQueryClientFn = (isMockApi) => {
 
   // DomainView Endpoints
   React.useEffect(() => {
+    let dID;
     if (!queryClient || !endpoint || !token) return;
     queryClient.setQueryDefaults(["domainData"], {
-      queryFn: async () => {
-        const url = `${endpoint}/v1/domains/${domainID}`;
+      queryFn: async ({ queryKey }) => {
+        queryKey[1] ? (dID = queryKey[1]) : (dID = domainID);
+        const url = `${endpoint}/v1/domains/${dID}`;
         const response = await fetchProxy(url, {
           method: "GET",
           headers: {
@@ -134,7 +140,8 @@ const useQueryClientFn = (isMockApi) => {
       queryFn: async ({ queryKey }) => {
         const service = queryKey[1];
         const resource = queryKey[2];
-        const url = `${endpoint}/v1/domains/${domainID}/projects?service=${service}&resource=${resource}`;
+        queryKey[3] ? (dID = queryKey[3]) : (dID = domainID);
+        const url = `${endpoint}/v1/domains/${dID}/projects?service=${service}&resource=${resource}`;
         const response = await fetchProxy(url, {
           method: "GET",
           headers: {
@@ -148,6 +155,44 @@ const useQueryClientFn = (isMockApi) => {
       },
     });
     setApiReady(true);
+  }, [queryClient, endpoint, token, domainID]);
+
+  // ClusterView Endpoints
+  React.useEffect(() => {
+    if (!queryClient || !endpoint || !token) return;
+    queryClient.setQueryDefaults(["clusterData"], {
+      queryFn: async () => {
+        const url = `${endpoint}/v1/clusters/current`;
+        const response = await fetchProxy(url, {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+            "X-Limes-V2-API-Preview": "per-az",
+            "X-Auth-Token": token,
+          },
+          ...{ mock: isMockApi },
+        });
+        return responseHandler(response);
+      },
+    });
+    queryClient.setQueryDefaults(["domains"], {
+      queryFn: async ({ queryKey }) => {
+        const service = queryKey[1];
+        const resource = queryKey[2];
+        // sending an empty queryString results in the domains without any resources attached to them.
+        const url = `${endpoint}/v1/domains?service=${service}&resource=${resource}`;
+        const response = await fetchProxy(url, {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+            "X-Limes-V2-API-Preview": "per-az",
+            "X-Auth-Token": token,
+          },
+          ...{ mock: isMockApi },
+        });
+        return responseHandler(response);
+      },
+    });
   }, [queryClient, endpoint, token, domainID]);
 };
 

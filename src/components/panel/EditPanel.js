@@ -5,8 +5,9 @@ import { tracksQuota } from "../../lib/utils";
 import Resource from "../mainView/Resource";
 import {
   globalStore,
-  projectStore,
+  clusterStoreActions,
   domainStoreActions,
+  projectStore,
   projectStoreActions,
   createCommitmentStore,
   createCommitmentStoreActions,
@@ -16,6 +17,7 @@ import CommitmentTable from "../commitment/CommitmentTable";
 import CommitmentModal from "../commitment/CommitmentModal";
 import TransferModal from "../project/TransferModal";
 import ProjectManager from "../project/ProjectManager";
+import DomainManager from "../domain/DomainManager";
 import useResetCommitment from "../../hooks/useResetCommitment";
 import { initialCommitmentObject } from "../../lib/constants";
 
@@ -47,8 +49,9 @@ const EditPanel = (props) => {
   const { commitment } = createCommitmentStore();
   const { transferProject } = createCommitmentStore();
   const { setTransferProject } = createCommitmentStoreActions();
-  const { setRefetchCommitmentAPI } = createCommitmentStoreActions();
+  const { setRefetchClusterAPI } = clusterStoreActions();
   const { setRefetchDomainAPI } = domainStoreActions();
+  const { setRefetchCommitmentAPI } = createCommitmentStoreActions();
   const { setCommitment } = createCommitmentStoreActions();
   const { setCommitmentIsLoading } = createCommitmentStoreActions();
   const { setIsSubmitting } = createCommitmentStoreActions();
@@ -78,12 +81,15 @@ const EditPanel = (props) => {
     setCommitmentIsLoading(true);
     const payload = { ...newCommitment, id: "" };
     const currentProjectID = currentProject?.metadata?.id;
+    const currentDomainID = scope.isCluster()
+      ? currentProject.metadata.domainID
+      : null;
     confirm.mutate(
       {
         payload: {
           commitment: payload,
         },
-        queryKey: currentProjectID,
+        queryKey: [currentProjectID, currentDomainID],
       },
       {
         onSuccess: (data) => {
@@ -102,6 +108,9 @@ const EditPanel = (props) => {
 
   function postCommitment(confirm_by = null) {
     const currentProjectID = currentProject?.metadata?.id;
+    const currentDomainID = scope.isCluster()
+      ? currentProject.metadata.domainID
+      : null;
     setCommitmentIsLoading(true);
     const payload = confirm_by
       ? { ...newCommitment, id: "", confirm_by: confirm_by }
@@ -111,15 +120,16 @@ const EditPanel = (props) => {
         payload: {
           commitment: payload,
         },
-        queryKey: currentProjectID,
+        queryKey: [currentProjectID, currentDomainID],
       },
       {
         onSuccess: (data) => {
-          scope.isDomain() &&
+          (scope.isDomain() || scope.isCluster()) &&
             setToast(
               "Order of projects might have updated. Please sort the table.",
               "info"
             );
+          setRefetchClusterAPI(true);
           setRefetchDomainAPI(true);
           setRefetchProjectAPI(true);
           setRefetchCommitmentAPI(true);
@@ -239,6 +249,14 @@ const EditPanel = (props) => {
           serviceType={serviceType}
           currentCategory={currentCategory}
           currentResource={currentResource.name}
+          currentAZ={currentAZ}
+        />
+      )}
+      {scope.isCluster() && (
+        <DomainManager
+          serviceType={serviceType}
+          currentCategory={currentCategory}
+          currentResource={currentResource}
           currentAZ={currentAZ}
         />
       )}

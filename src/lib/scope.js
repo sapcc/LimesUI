@@ -1,3 +1,4 @@
+import AppClusterContent from "../AppClusterContent";
 import AppDomainContent from "../AppDomainContent";
 import AppResourceContent from "../AppResourceContent";
 
@@ -16,6 +17,7 @@ export class Scope {
   appComponent() {
     if (this.projectID) return AppResourceContent;
     if (this.domainID) return AppDomainContent;
+    return AppClusterContent;
   }
   isProject() {
     return this.projectID && this.domainID ? true : false;

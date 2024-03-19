@@ -1,6 +1,38 @@
 import { unusedCommitments, uncommittedUsage } from "../../lib/utils";
 
 const limesStore = (set) => ({
+  cluster: {
+    clusterData: null,
+    refetchClusterAPI: false,
+    domainData: null,
+    actions: {
+      setClusterData: (clusterData) =>
+        set((state) => ({
+          cluster: { ...state.cluster, clusterData: clusterData },
+        })),
+      setRefetchClusterAPI: (refetchClusterAPI) =>
+        set((state) => ({
+          cluster: { ...state.cluster, refetchClusterAPI: refetchClusterAPI },
+        })),
+      setDomainData: (domainData) =>
+        set((state) => ({
+          cluster: { ...state.cluster, domainData: domainData },
+        })),
+      setProjectsToDomain: (projectsPerDomain) =>
+        set((state) => {
+          const domains = [...state.cluster.domainData];
+          if (!domains) return;
+          projectsPerDomain.forEach((projects, idx) => {
+            domains[idx].projects = projects;
+          });
+
+          return {
+            ...state,
+            cluster: { ...state.cluster, domainData: domains },
+          };
+        }),
+    },
+  },
   domain: {
     domainData: null,
     refetchDomainAPI: false,
@@ -330,6 +362,11 @@ function identifyEditableResource(res) {
 function getQuotaNewOrOldModel(res) {
   if ("contained_in" in res) return;
   if ("quota" in res) return;
+  // Handle cluster level
+  if ("domains_quota" in res) {
+    res.quota = res.domains_quota;
+    return;
+  }
   let quotaSum = 0;
   res.per_az.forEach((az) => {
     return (quotaSum += az[1].quota || 0);
@@ -357,6 +394,7 @@ function addTotalCommitments(res) {
 // left side: <sum(usage on AZs with Commitments)> / <sum(Commitments of the AZs)> = (userPerCommitted / Commitments)
 // right side: <sum(usage that exceeds the AZs Commitments)> / <Quota - Commitments> = (usagePerQuota / RestQuota)
 // This function adds the usage values of scenario 2 as attributes to the object.
+// Important: On Cluster View the relevant usage is: projects_usage
 // TODO: on a resource without any commitments: usagePerQuota = Quota. Simplify the handling of this case.
 function addUsageValues(res) {
   // usage: left side
@@ -371,7 +409,7 @@ function addUsageValues(res) {
     azCommitments.forEach((commtimentValue) => {
       azCommitmentSum += commtimentValue;
     });
-    const azUsage = az[1].usage || 0;
+    const azUsage = az[1].projects_usage || az[1].usage || 0;
     let usageValue;
     // usage left side:
     if (azUsage > azCommitmentSum) {
@@ -381,7 +419,7 @@ function addUsageValues(res) {
     }
     // usage right side:
     if (azCommitmentSum == 0) {
-      usagePerQuota += az[1].usage;
+      usagePerQuota += az[1].projects_usage || az[1].usage || 0;
     }
     if (azCommitmentSum > 0 && azUsage > azCommitmentSum) {
       usagePerQuota += azUsage - azCommitmentSum;

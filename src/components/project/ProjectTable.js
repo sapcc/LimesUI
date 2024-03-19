@@ -1,6 +1,7 @@
 import React, { useRef } from "react";
 import { chunkProjects } from "../../lib/utils";
 import {
+  globalStore,
   domainStoreActions,
   createCommitmentStoreActions,
 } from "../StoreProvider";
@@ -21,6 +22,7 @@ import {
 // Display the project details in DomainView
 const ProjectTable = (props) => {
   const { serviceType, currentCategory, currentAZ, projects } = props;
+  const { scope } = globalStore();
   const { setShowCommitments } = domainStoreActions();
   const { setSortedProjects } = domainStoreActions();
   const { setTransferProject } = createCommitmentStoreActions();
@@ -49,17 +51,19 @@ const ProjectTable = (props) => {
       label: "Actions",
     },
   ];
+  // TODO: Make the colum sizes dynamic, text should probably be ellipsis.
+  const gridColumSize = scope.isDomain()
+    ? "25% 35% 20% 20%"
+    : "25% 30% 20% 25%";
   // Tailwind only accepts complete class names as string, otherwise it won't create the corresponding CSS.
   const colSpan = "col-span-4";
 
   // Refreshes our filtered data.
   // Filter exsists => only set the projects to filter, not all projects.
   React.useEffect(() => {
-    if (!projects) return;
-    let filteredProjects;
     const chunkedProjects = chunkProjects(projects);
     if (input) {
-      filteredProjects = filterProjects(input);
+      filterProjects(input);
     } else {
       setFilteredProjects(chunkedProjects);
     }
@@ -89,8 +93,11 @@ const ProjectTable = (props) => {
     const regex = new RegExp(input, "i");
     let filteredProjects = [];
     const filtered = projects.filter((project) => {
+      const filterName = scope.isCluster()
+        ? project.metadata.fullName
+        : project.metadata.name;
       return (
-        regex.exec(project.metadata.name) || regex.exec(project.metadata.id)
+        regex.exec(filterName) || regex.exec(project.metadata.id)
       );
     });
     filteredProjects.push(filtered);
@@ -154,7 +161,7 @@ const ProjectTable = (props) => {
       </ContentAreaToolbar>
       <DataGrid
         columns={projectTableHeadCells.length}
-        gridColumnTemplate={"25% 35% 20% 20%"}
+        gridColumnTemplate={gridColumSize}
       >
         <DataGridRow>
           {projectTableHeadCells.map((headCell) => (
@@ -177,7 +184,7 @@ const ProjectTable = (props) => {
             });
             return (
               <ProjectTableDetails
-                key={project.metadata.name}
+                key={project.metadata.id}
                 index={index}
                 showCommitments={
                   filteredProjects[currentPage][index].showCommitments

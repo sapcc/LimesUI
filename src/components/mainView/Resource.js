@@ -61,11 +61,11 @@ const azContentHover = `
 
 const Resource = (props) => {
   const {
-    name: resourceName,
     totalCommitments,
     usagePerCommitted,
     usagePerQuota,
     quota: originalQuota, //commitment + right
+    capacity,
     unit: unitName,
     editableResource,
   } = props.resource;
@@ -78,6 +78,8 @@ const Resource = (props) => {
   const displayedUsage =
     usagePerCommitted > 0 ? usagePerCommitted : usagePerQuota;
   const { resetCommitment } = useResetCommitment();
+  // Bar length on project/domain level is Quota. On Cluster level it is capacity.
+  const capacityOrQuota = scope.isCluster() ? capacity : originalQuota
 
   return (
     <div
@@ -118,7 +120,7 @@ const Resource = (props) => {
         usage={displayedUsage}
         usageBurstSum={usagePerQuota}
         commitment={totalCommitments}
-        quota={originalQuota}
+        quota={capacityOrQuota}
         parentQuota={parentResource?.quota}
         tracksQuota={tracksQuota}
         isPanelView={isPanelView}
@@ -153,10 +155,12 @@ const Resource = (props) => {
                 </div>
                 <ResourceBarBuilder
                   unit={unitName}
-                  usage={commitmentsInAZ.usage}
+                  usage={
+                    commitmentsInAZ.projects_usage || commitmentsInAZ.usage || 0
+                  }
                   isAZ={true}
                   commitment={az.commitmentSum}
-                  quota={originalQuota}
+                  quota={capacityOrQuota}
                   parentQuota={parentResource?.quota}
                   tracksQuota={tracksQuota}
                   isPanelView={isPanelView}

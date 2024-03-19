@@ -3,6 +3,7 @@ import ResourceBarBuilder from "../resourceBar/ResourceBarBuilder";
 import CommitmentTable from "../commitment/CommitmentTable";
 import AddCommitments from "../shared/AddCommitments";
 import {
+  globalStore,
   projectStore,
   projectStoreActions,
   createCommitmentStore,
@@ -36,7 +37,7 @@ const ProjectTableDetails = (props) => {
     colSpan,
   } = props;
   const { metadata } = project;
-  const { name: projectName, id: projectID } = metadata;
+  const { domainName, name: projectName, id: projectID } = metadata;
   const { quota, unit } = resource;
   const commitmentsInAZ = az[1];
   const { commitments } = projectStore();
@@ -50,9 +51,12 @@ const ProjectTableDetails = (props) => {
   const { setIsCommitting } = createCommitmentStoreActions();
   const { setTransferCommitment } = createCommitmentStoreActions();
   const { resetCommitmentTransfer } = useResetCommitment();
+  // commitment query requires a domain ID that differs on cluster level.
+  const { scope } = globalStore();
+  const domainID = scope.isCluster() ? metadata.domainID : null;
   // Be careful here! If enabled state is passed in as undefined, the useQuery hook spams the limes API for all projects!
   const commitQueryResult = useQuery({
-    queryKey: ["commitmentData", projectID],
+    queryKey: ["commitmentData", projectID, domainID],
     enabled: showCommitments,
   });
   const { data: commitmentData, isLoading } = commitQueryResult;
@@ -100,7 +104,7 @@ const ProjectTableDetails = (props) => {
               }}
             />
             <Stack direction={"vertical"}>
-              {projectName}
+              {scope.isCluster() ? metadata.fullName : projectName}
               <div className="text-xs">{projectID}</div>
             </Stack>
           </Stack>

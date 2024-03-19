@@ -20,6 +20,11 @@ export const globalStore = () => useAppStore((state) => state.global);
 export const globalStoreActions = () =>
   useAppStore((state) => state.global.actions);
 
+// Cluster Store
+export const clusterStore = () => useAppStore((state) => state.cluster);
+export const clusterStoreActions = () =>
+  useAppStore((state) => state.cluster.actions);
+
 // Domain Store
 export const domainStore = () => useAppStore((state) => state.domain);
 export const domainStoreActions = () =>

@@ -37,7 +37,7 @@ const ProjectBadges = (props) => {
         </Badge>
       )}
       {planned && (
-        <Badge variant="info" className={`${planned && "ml-1"}`}>
+        <Badge variant="info" className={`${pending && "ml-1"}`}>
           {" "}
           <b>+ planned</b>
         </Badge>
