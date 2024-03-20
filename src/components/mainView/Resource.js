@@ -83,15 +83,9 @@ const Resource = (props) => {
 
   function getQuotaOrCapacityForAZLevel(az) {
     if (scope.isCluster()) {
-      if ("capacity" in az) {
-        return az.capacity;
-      }
-      return capacity;
+      return az.capacity ?? capacity;
     }
-    if ("quota" in az) {
-      return az.quota;
-    }
-    return originalQuota;
+    return az.quota ?? originalQuota;
   }
 
   return (
