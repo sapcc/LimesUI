@@ -61,6 +61,7 @@ const ResourceBar = (props) => {
     capacityLabel,
     extraFillLabel,
     extraCapacityLabel,
+    usageLabel,
     fill,
     // determine fill size of single bar
     capacity,
@@ -124,7 +125,7 @@ const ResourceBar = (props) => {
         {commitment > 0 ? (
           <span className="font-normal">committed</span>
         ) : (
-          <span className="font-normal">quota used</span>
+          <span className="font-normal">{usageLabel}</span>
         )}
       </span>
     );

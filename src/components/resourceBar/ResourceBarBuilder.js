@@ -1,6 +1,7 @@
 import React from "react";
 import ResourceBar from "./ResourceBar";
 import { Unit, valueWithUnit } from "../../lib/unit";
+import { globalStore } from "../StoreProvider";
 
 const ResourceBarBuilder = (props) => {
   const {
@@ -18,6 +19,7 @@ const ResourceBarBuilder = (props) => {
     // Determines if NoQuota bars are the same size as filledBars.
     equallySized,
   } = { ...props };
+  const { scope } = globalStore();
   const unit = new Unit(unitName || "");
 
   // fillLabel: displays commitment or current usage.
@@ -48,8 +50,9 @@ const ResourceBarBuilder = (props) => {
       capacityLabel={valueWithUnit(capacity, unit)}
       extraFillLabel={valueWithUnit(extraFillValue, unit)}
       extraCapacityLabel={valueWithUnit(extraCapacityValue, unit)}
+      usageLabel={scope.isCluster() ? "capacity used" : "quota used"}
       fill={usage}
-      capacity={capacity}
+      capacity={capacity || 1}
       commitment={commitment}
       extraFillValue={extraFillValue}
       // Providing 1 enables the bar to be filled completely if commitments > quota

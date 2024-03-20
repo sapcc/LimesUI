@@ -79,7 +79,20 @@ const Resource = (props) => {
     usagePerCommitted > 0 ? usagePerCommitted : usagePerQuota;
   const { resetCommitment } = useResetCommitment();
   // Bar length on project/domain level is Quota. On Cluster level it is capacity.
-  const capacityOrQuota = scope.isCluster() ? capacity : originalQuota
+  const capacityOrQuota = scope.isCluster() ? capacity : originalQuota;
+
+  function getQuotaOrCapacityForAZLevel(az) {
+    if (scope.isCluster()) {
+      if ("capacity" in az) {
+        return az.capacity;
+      }
+      return capacity;
+    }
+    if ("quota" in az) {
+      return az.quota;
+    }
+    return originalQuota;
+  }
 
   return (
     <div
@@ -135,6 +148,7 @@ const Resource = (props) => {
         {props.resource.per_az?.map((az) => {
           const azName = az[0];
           const commitmentsInAZ = az[1];
+          const azQuotaOrCapacity = getQuotaOrCapacityForAZLevel(az[1]);
           return (
             azName !== "any" && (
               <div
@@ -160,7 +174,7 @@ const Resource = (props) => {
                   }
                   isAZ={true}
                   commitment={az.commitmentSum}
-                  quota={capacityOrQuota}
+                  quota={azQuotaOrCapacity}
                   parentQuota={parentResource?.quota}
                   tracksQuota={tracksQuota}
                   isPanelView={isPanelView}
