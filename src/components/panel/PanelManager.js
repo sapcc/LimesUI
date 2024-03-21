@@ -15,6 +15,7 @@ const PanelManager = (props) => {
   const { setShowCommitments } = domainStoreActions();
   const { isEditing } = createCommitmentStore();
   const { currentProject } = createCommitmentStore();
+  const project = React.useRef(currentProject);
   const { setIsEditing } = createCommitmentStoreActions();
   const { setCommitment } = createCommitmentStoreActions();
   const { setTransferCommitment } = createCommitmentStoreActions();
@@ -37,9 +38,17 @@ const PanelManager = (props) => {
     if (currentResource) {
       setIsEditing(true);
     }
+    // reset state if user presses return button at the browser
+    return () => {
+      onPanelClose(project.current);
+    };
   }, []);
 
-  function onPanelClose() {
+  React.useEffect(() => {
+    project.current = currentProject;
+  }, [currentProject]);
+
+  function onPanelClose(currentProject) {
     setCommitment(initialCommitmentObject);
     setToast(null);
     // create commitment
@@ -49,10 +58,10 @@ const PanelManager = (props) => {
     setTransferCommitment(false);
     setIsTransferring(false);
     // Reset showCommitment on project
+    console.log(currentProject);
     if (currentProject) {
       setShowCommitments(currentProject.metadata.id, false);
     }
-    navigate(`/${currentArea}`);
   }
 
   //Durations get checked to avoid route call to uneditable resource.
@@ -61,7 +70,10 @@ const PanelManager = (props) => {
       <Panel
         size="large"
         opened={isEditing}
-        onClose={() => onPanelClose()}
+        onClose={() => {
+          onPanelClose(currentProject);
+          navigate(`/${currentArea}`);
+        }}
         closeable={true}
         heading={`Manage Committed Resources: ${t(categoryName)} - ${t(
           resourceName
