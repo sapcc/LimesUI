@@ -337,11 +337,20 @@ export default limesStore;
 function filterAZs(res) {
   if (Array.isArray(res.per_az)) return;
   let validAZs;
-  if (res.per_az !== undefined) {
-    validAZs = Object.entries(res.per_az);
-    const filteredAZs = validAZs;
-    res.per_az = filteredAZs;
-  }
+  let filteredAZs;
+  let anyAz; 
+  if (res.per_az == undefined) return;
+  validAZs = Object.entries(res.per_az);
+  // move any AZ to it's own attribute if it's not the only AZ in the resource.
+  filteredAZs = validAZs.filter((az) => {
+    if (validAZs.length > 1 && az[0] == "any") {
+      anyAz = az;
+      return false;
+    }
+    return true;
+  });
+  res.per_az = filteredAZs;
+  res.anyAz = anyAz;
   return;
 }
 

@@ -58,7 +58,6 @@ const PanelManager = (props) => {
     setTransferCommitment(false);
     setIsTransferring(false);
     // Reset showCommitment on project
-    console.log(currentProject);
     if (currentProject) {
       setShowCommitments(currentProject.metadata.id, false);
     }

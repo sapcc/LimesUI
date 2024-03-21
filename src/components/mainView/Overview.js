@@ -29,6 +29,11 @@ const Overview = (props) => {
   const { currentArea = allAreas[0] } = useParams();
   const [currentTabIdx, setCurrentTabIdx] = React.useState(0);
 
+  // Hitting backspace on the UI leads to the previous selected tab.
+  React.useEffect(() => {
+    setCurrentTabIdx(allAreas.findIndex((area) => area === currentArea))
+  }, [currentArea]);
+
   // Hide tabs that should not be displayed in reduced resource view.
   function onTabChange(currentArea) {
     const areaIdx = allAreas.findIndex((area) => area === currentArea);
