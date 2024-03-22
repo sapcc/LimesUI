@@ -32,8 +32,8 @@ const Overview = (props) => {
 
   // Hitting edit view URL without edit permissions should lead to the main route.
   React.useEffect(() => {
-    if(canEdit) return
-    navigate(`/${currentArea}`)
+    if (canEdit || location.pathname == `/${currentArea}`) return;
+    navigate(`/${currentArea}`);
   }, [currentArea]);
 
   // Hitting backspace on the UI leads to the previous selected tab.
