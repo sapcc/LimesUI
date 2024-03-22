@@ -1,14 +1,11 @@
 import React from "react";
-import Overview from "./components/mainView/Overview";
 import { useQuery } from "@tanstack/react-query";
-import { Container, LoadingIndicator, Message } from "juno-ui-components";
-import { HashRouter, Routes, Route } from "react-router-dom";
-import PanelManager from "./components/panel/PanelManager";
 import {
   globalStoreActions,
   projectStore,
   projectStoreActions,
 } from "./components/StoreProvider";
+import ContentRoutes from "./ContentRoutes";
 
 const AppResourceContent = (props) => {
   const { projectData } = projectStore();
@@ -24,13 +21,8 @@ const AppResourceContent = (props) => {
   const commitQueryResult = useQuery({
     queryKey: ["commitmentData"],
   });
-  const {
-    data: projectAPIData,
-    isLoading: projectIsLoading,
-    isError: projectIsError,
-    error,
-  } = projectQueryResult;
-  const { data: commitmentAPIData, isLoading: commitmenIsLoading } =
+  const { data: projectAPIData } = projectQueryResult;
+  const { data: commitmentAPIData, isLoading: commitmentIsLoading } =
     commitQueryResult;
 
   React.useEffect(() => {
@@ -50,37 +42,15 @@ const AppResourceContent = (props) => {
     setCommitments(commitmentAPIData.commitments);
   }, [commitmentAPIData]);
 
-  return projectIsError ? (
-    <Message>{error.message}</Message>
-  ) : (
-    <Container px={false}>
-      {projectData &&
-      commitments &&
-      !projectIsLoading &&
-      !commitmenIsLoading ? (
-        <HashRouter>
-          <Routes>
-            <Route
-              index
-              element={<Overview {...projectData} canEdit={props.canEdit} />}
-            ></Route>
-            <Route
-              path="/:currentArea"
-              element={<Overview {...projectData} canEdit={props.canEdit} />}
-            >
-              {props.canEdit && (
-                <Route
-                  path="edit/:categoryName/:resourceName"
-                  element={<PanelManager {...projectData} />}
-                />
-              )}
-            </Route>
-          </Routes>
-        </HashRouter>
-      ) : (
-        <LoadingIndicator className={"m-auto"} />
-      )}
-    </Container>
+  return (
+    commitments &&
+    !commitmentIsLoading && (
+      <ContentRoutes
+        queryResult={projectQueryResult}
+        parsedData={projectData}
+        canEdit={props.canEdit}
+      />
+    )
   );
 };
 

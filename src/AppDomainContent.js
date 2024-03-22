@@ -1,14 +1,11 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
-import PanelManager from "./components/panel/PanelManager";
 import {
   domainStore,
   domainStoreActions,
   globalStoreActions,
 } from "./components/StoreProvider";
-import Overview from "./components/mainView/Overview";
-import { Container, LoadingIndicator, Message } from "juno-ui-components";
-import { HashRouter, Routes, Route } from "react-router-dom";
+import ContentRoutes from "./ContentRoutes";
 
 const AppDomainContent = (props) => {
   const { domainData } = domainStore();
@@ -19,12 +16,7 @@ const AppDomainContent = (props) => {
   const domainQueryResult = useQuery({
     queryKey: ["domainData"],
   });
-  const {
-    data: domainAPIData,
-    isLoading: domainIsLoading,
-    isError: domainIsError,
-    error,
-  } = domainQueryResult;
+  const { data: domainAPIData } = domainQueryResult;
 
   React.useEffect(() => {
     // Initial Commitment-API data fetch.
@@ -38,32 +30,12 @@ const AppDomainContent = (props) => {
     domainQueryResult.refetch();
   }, [refetchDomainAPI]);
 
-  return domainIsError ? (
-    <Message>{error.message}</Message>
-  ) : (
-    <Container px={false}>
-      {domainData && !domainIsLoading ? (
-        <HashRouter>
-          <Routes>
-            <Route
-              index
-              element={<Overview {...domainData} canEdit={props.canEdit} />}
-            ></Route>
-            <Route
-              path="/:currentArea"
-              element={<Overview {...domainData} canEdit={props.canEdit} />}
-            >
-              <Route
-                path="edit/:categoryName/:resourceName"
-                element={<PanelManager {...domainData} />}
-              />
-            </Route>
-          </Routes>
-        </HashRouter>
-      ) : (
-        <LoadingIndicator className={"m-auto"} />
-      )}
-    </Container>
+  return (
+    <ContentRoutes
+      queryResult={domainQueryResult}
+      parsedData={domainData}
+      canEdit={props.canEdit}
+    />
   );
 };
 
