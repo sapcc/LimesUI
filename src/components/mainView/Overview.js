@@ -16,6 +16,7 @@ import {
 } from "juno-ui-components";
 
 const Overview = (props) => {
+  const { canEdit } = props;
   const navigate = useNavigate();
   const location = useLocation();
   const editableAreas = props.overview.editableAreas;
@@ -29,9 +30,15 @@ const Overview = (props) => {
   const { currentArea = allAreas[0] } = useParams();
   const [currentTabIdx, setCurrentTabIdx] = React.useState(0);
 
+  // Hitting edit view URL without edit permissions should lead to the main route.
+  React.useEffect(() => {
+    if(canEdit) return
+    navigate(`/${currentArea}`)
+  }, [currentArea]);
+
   // Hitting backspace on the UI leads to the previous selected tab.
   React.useEffect(() => {
-    setCurrentTabIdx(allAreas.findIndex((area) => area === currentArea))
+    setCurrentTabIdx(allAreas.findIndex((area) => area === currentArea));
   }, [currentArea]);
 
   // Hide tabs that should not be displayed in reduced resource view.
@@ -140,7 +147,7 @@ const Overview = (props) => {
         ))}
       </Tabs>
       {renderArea()}
-      <Outlet />
+      {canEdit && <Outlet />}
     </Container>
   );
 };

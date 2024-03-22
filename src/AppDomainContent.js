@@ -53,12 +53,10 @@ const AppDomainContent = (props) => {
               path="/:currentArea"
               element={<Overview {...domainData} canEdit={props.canEdit} />}
             >
-              {props.canEdit && (
-                <Route
-                  path="edit/:categoryName/:resourceName"
-                  element={<PanelManager {...domainData} />}
-                />
-              )}
+              <Route
+                path="edit/:categoryName/:resourceName"
+                element={<PanelManager {...domainData} />}
+              />
             </Route>
           </Routes>
         </HashRouter>
