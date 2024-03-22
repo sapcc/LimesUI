@@ -57,6 +57,7 @@ const ProjectsPerDomain = (props) => {
     );
     setProjects(flattendProjects, sortProjects.current);
     sortProjects.current = true;
+    setProjectsUpdated(false);
   }, [projectsUpdated]);
 
   React.useEffect(() => {
@@ -68,7 +69,7 @@ const ProjectsPerDomain = (props) => {
     });
   }, [refetchProjectAPI]);
 
-  return projects && !isLoading ? (
+  return projects && !isLoading && !projectsUpdated ? (
     <ProjectTable
       serviceType={serviceType}
       currentCategory={currentCategory}
