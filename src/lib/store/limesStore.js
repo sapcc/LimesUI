@@ -380,7 +380,7 @@ function addTotalCommitments(res) {
   let totalCommitments = 0;
   // Determine per AZ if it contains any sort of commitment
   res.per_az?.forEach((az) => {
-    const hasCommitments = az[1].comitted || az[1].planned_commitments || az[1].pending_commitments ? true : false
+    const hasCommitments = az[1].committed || az[1].planned_commitments || az[1].pending_commitments ? true : false
     az.hasCommitments = hasCommitments;
   });
   // Sum of all commitments over all AZ's.
