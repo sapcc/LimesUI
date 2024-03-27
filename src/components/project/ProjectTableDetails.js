@@ -76,7 +76,7 @@ const ProjectTableDetails = (props) => {
 
   // only display the move commitment button on projects with a commitment on them.
   React.useEffect(() => {
-    az.commitmentSum > 0 ? setMoveCommitment(true) : setMoveCommitment(false);
+    az.hasCommitments ? setMoveCommitment(true) : setMoveCommitment(false);
   }, [showCommitments, az]);
 
   // Only display transfer button on other projects except the origin project which a commitments transfers from.
@@ -137,27 +137,29 @@ const ProjectTableDetails = (props) => {
             <div>
               <AddCommitments
                 label="Add"
-                disabled={!showCommitments || transferCommitment}
+                disabled={!showCommitments || transferCommitment || isLoading}
                 size="small"
               />
+              <Button
+                className={"ml-1"}
+                data-cy="moveCommitment"
+                variant="primary"
+                disabled={
+                  !showCommitments ||
+                  !moveCommitment ||
+                  transferCommitment ||
+                  isCommitting
+                }
+                size="small"
+                onClick={() => {
+                  setTransferCommitment(true);
+                }}
+              >
+                Move
+              </Button>
               {false && (
-                <Button
-                  className={"ml-1"}
-                  data-cy="moveCommitment"
-                  variant="primary"
-                  icon="edit"
-                  disabled={
-                    !showCommitments ||
-                    !moveCommitment ||
-                    transferCommitment ||
-                    isCommitting
-                  }
-                  size="small"
-                  onClick={() => {
-                    setTransferCommitment(true);
-                  }}
-                >
-                  Move
+                <Button className={"ml-1"} variant="primary" size="small">
+                  Edit
                 </Button>
               )}
             </div>

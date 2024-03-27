@@ -28,7 +28,7 @@ const AddCommitments = (props) => {
       }}
       variant="primary"
       disabled={active}
-      icon="addCircle"
+      icon={scope.isProject() ? "addCircle" : undefined}
       size={size}
     >
       {label}

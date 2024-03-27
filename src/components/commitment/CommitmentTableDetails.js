@@ -221,7 +221,7 @@ const CommitmentTableDetails = (props) => {
               Cancel
             </Button>
           </Stack>
-        ) : transferCommitment && isConfirmed && showTransfer ? (
+        ) : transferCommitment && showTransfer ? (
           <Stack gap="2">
             <Button
               size="small"

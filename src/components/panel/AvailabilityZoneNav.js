@@ -5,7 +5,6 @@ import useResetCommitment from "../../hooks/useResetCommitment";
 const AvailabilityZoneNav = (props) => {
   const azIndex = props.az.findIndex((az) => az[0] === props.currentAZ);
   const { resetCommitment } = useResetCommitment();
-  const { resetCommitmentTransfer } = useResetCommitment();
 
   return (
     <Container px={false} className="py-6 sticky top-0 bg-juno-grey-light-1 z-[100]">
@@ -19,7 +18,6 @@ const AvailabilityZoneNav = (props) => {
                   key={az}
                   onClick={() => {
                     resetCommitment(az);
-                    resetCommitmentTransfer();
                   }}
                 >
                   {az[0]}

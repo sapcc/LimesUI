@@ -14,6 +14,14 @@ const useResetCommitment = () => {
     setIsCommitting(false);
     setCommitment(initialCommitmentObject);
     setToast(null);
+    resetCommitmentTransfer();
+  }
+
+  function resetURLChangeState() {
+    setIsCommitting(false);
+    setCommitment(initialCommitmentObject);
+    setToast(null);
+    resetCommitmentTransfer();
   }
 
   function resetCommitmentTransfer() {
@@ -22,7 +30,7 @@ const useResetCommitment = () => {
     setIsTransferring(false);
   }
 
-  return { resetCommitment, resetCommitmentTransfer };
+  return { resetCommitment, resetURLChangeState, resetCommitmentTransfer };
 };
 
 export default useResetCommitment;

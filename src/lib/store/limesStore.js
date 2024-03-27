@@ -169,13 +169,10 @@ const limesStore = (set) => ({
       setCommitments: (commitments) =>
         set((state) => {
           commitments.sort((a, b) => {
-            if (a.created_at < b.created_at) {
-              return 1;
-            }
-            if (a.created_at > b.created_at) {
-              return -1;
-            }
-            return 0;
+            return b.created_at - a.created_at;
+          });
+          commitments.sort((a, b) => {
+            return b.confirmed_at || 0 - a.confirmed_at || 0;
           });
           return {
             ...state,
@@ -381,6 +378,11 @@ function getQuotaNewOrOldModel(res) {
 // Sum up all commitments of a resource over all AZ's
 function addTotalCommitments(res) {
   let totalCommitments = 0;
+  // Determine per AZ if it contains any sort of commitment
+  res.per_az?.forEach((az) => {
+    const hasCommitments = az[1].comitted || az[1].planned_commitments || az[1].pending_commitments ? true : false
+    az.hasCommitments = hasCommitments;
+  });
   // Sum of all commitments over all AZ's.
   res.per_az?.forEach((az) => {
     const commitments = Object.values(az[1].committed || {});

@@ -154,6 +154,48 @@ const useQueryClientFn = (isMockApi) => {
         return responseHandler(response);
       },
     });
+    queryClient.setMutationDefaults(["startCommitmentTransfer"], {
+      // payload contains amount and transferStatus (unlisted or public).
+      mutationFn: async ({
+        payload,
+        domainID: domID,
+        projectID,
+        commitmentID,
+      }) => {
+        domID ? (dID = domID) : (dID = domainID);
+        const url = `${endpoint}/v1/domains/${dID}/projects/${projectID}/commitments/${commitmentID}/start-transfer`;
+        const response = await fetchProxy(url, {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "X-Auth-Token": token,
+          },
+          body: JSON.stringify(payload),
+        });
+        return responseHandler(response);
+      },
+    });
+    queryClient.setMutationDefaults(["transferCommitment"], {
+      // Receives the target domainID and projectID to transfer the commitment to.
+      mutationFn: async ({
+        domainID: domID,
+        projectID,
+        commitmentID,
+        transferToken,
+      }) => {
+        domID ? (dID = domID) : (dID = domainID);
+        const url = `${endpoint}/v1/domains/${dID}/projects/${projectID}/transfer-commitment/${commitmentID}`;
+        const response = await fetchProxy(url, {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "X-Auth-Token": token,
+            "Transfer-Token": transferToken,
+          },
+        });
+        return responseHandler(response);
+      },
+    });
     setApiReady(true);
   }, [queryClient, endpoint, token, domainID]);
 

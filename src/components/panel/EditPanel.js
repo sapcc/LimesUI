@@ -37,8 +37,11 @@ const EditPanel = (props) => {
   const confirm = useMutation({
     mutationKey: ["canConfirm"],
   });
-  const del = useMutation({
-    mutationKey: ["deleteCommitment"],
+  const startTransfer = useMutation({
+    mutationKey: ["startCommitmentTransfer"],
+  });
+  const transfer = useMutation({
+    mutationKey: ["transferCommitment"],
   });
   const { resetCommitmentTransfer } = useResetCommitment();
   const { commitment: newCommitment } = createCommitmentStore();
@@ -147,51 +150,65 @@ const EditPanel = (props) => {
     setIsCommitting(false);
   }
 
-  // To transfer a commitment it get's created on the new and deleted in the old project.
-  // Because we delete, we might to consider a transaction rollback.
-  function transferCommitment(project, commitment) {
-    const currentProjectID = currentProject.metadata.id;
-    const transferProjectID = project.metadata.id;
-    const payload = commitment;
-    commit.mutate(
+  // Transferring a commitment requires to mark the commitment as transferrable and then transfer it to it's target.
+  function startCommitmentTransfer(project, commitment) {
+    const sourceProjectID = currentProject.metadata.id;
+    const sourceDomainID = scope.isCluster()
+      ? currentProject.metadata.domainID
+      : null;
+    startTransfer.mutate(
       {
         payload: {
-          commitment: payload,
+          commitment: {
+            amount: commitment.amount,
+            transfer_status: "unlisted",
+          },
         },
-        queryKey: transferProjectID,
+        domainID: sourceDomainID,
+        projectID: sourceProjectID,
+        commitmentID: commitment.id,
       },
       {
         onSuccess: (data) => {
-          del.mutate(
-            {
-              queryKey: currentProjectID,
-              commitmentID: commitment.id,
-            },
-            {
-              onSuccess: (data) => {
-                setToast(
-                  "Order of projects might have updated. Please sort the table.",
-                  "info"
-                );
-                resetCommitmentTransfer();
-                setRefetchCommitmentAPI(true);
-                setRefetchProjectAPI(true);
-                setTransferProject(null);
-              },
-              onError: (data) => {
-                resetCommitmentTransfer();
-                setTransferProject(null);
-                setToast(
-                  `Network Error: Unable to remove commit. Please contact an administrator.`
-                );
-              },
-            }
-          );
+          const receivedCommitment = data.commitment;
+          const transferToken = data.commitment.transfer_token;
+          transferCommitment(project, receivedCommitment, transferToken);
         },
-        onError: (data) => {
+        onError: (error) => {
           resetCommitmentTransfer();
           setTransferProject(null);
-          setToast("Network error: Could not post commitment.");
+          setToast(error.toString());
+        },
+      }
+    );
+  }
+
+  function transferCommitment(project, commitment, transferToken) {
+    const targetDomainID = project.metadata.parent_id;
+    const targetProjectID = project.metadata.id;
+
+    transfer.mutate(
+      {
+        domainID: targetDomainID,
+        projectID: targetProjectID,
+        commitmentID: commitment.id,
+        transferToken: transferToken,
+      },
+      {
+        onSuccess: () => {
+          setToast(
+            "Order of projects might have updated. Please sort the table.",
+            "info"
+          );
+          resetCommitmentTransfer();
+          setRefetchCommitmentAPI(true);
+          setRefetchProjectAPI(true);
+          setTransferProject(null);
+        },
+        onError: (error) => {
+          resetCommitmentTransfer();
+          setTransferProject(null);
+          setToast(error.toString());
         },
       }
     );
@@ -275,8 +292,9 @@ const EditPanel = (props) => {
       {transferProject && commitment && (
         <TransferModal
           title="Transfer Commitment"
+          subText="Transfer"
           onModalClose={onTransferModalClose}
-          onTransfer={transferCommitment}
+          onTransfer={startCommitmentTransfer}
           commitment={commitment}
           currentProject={currentProject}
           transferProject={transferProject}

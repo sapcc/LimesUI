@@ -2,6 +2,7 @@ import React from "react";
 import moment from "moment";
 import Category from "./Category";
 import { createCommitmentStore } from "../StoreProvider";
+import useResetCommitment from "../../hooks/useResetCommitment";
 import { useParams, useNavigate, useLocation, Outlet } from "react-router-dom";
 import { t, byUIString } from "../../lib/utils";
 import { ADVANCEDVIEW } from "../../lib/constants";
@@ -29,6 +30,12 @@ const Overview = (props) => {
     : editableAreas;
   const { currentArea = allAreas[0] } = useParams();
   const [currentTabIdx, setCurrentTabIdx] = React.useState(0);
+  const { resetURLChangeState } = useResetCommitment();
+
+  // EditPanel State should reset if the user changes the URL.
+  React.useEffect(() => {
+    resetURLChangeState();
+  }, [location.pathname]);
 
   // Hitting edit view URL without edit permissions should lead to the main route.
   React.useEffect(() => {
