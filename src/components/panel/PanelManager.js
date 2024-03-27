@@ -23,6 +23,7 @@ const PanelManager = (props) => {
   const { setToast } = createCommitmentStoreActions();
   const { setIsCommitting } = createCommitmentStoreActions();
   const { setIsSubmitting } = createCommitmentStoreActions();
+  const { setTransferProject } = createCommitmentStoreActions();
   const navigate = useNavigate();
   const params = useParams();
   const { currentArea, categoryName, resourceName } = { ...params };
@@ -42,6 +43,7 @@ const PanelManager = (props) => {
     // reset state if user presses return button at the browser
     return () => {
       setIsSubmitting(false);
+      setTransferProject(null);
       onPanelClose(project.current);
     };
   }, []);
