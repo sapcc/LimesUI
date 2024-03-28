@@ -8,6 +8,7 @@ const useResetCommitment = () => {
   const { setToast } = createCommitmentStoreActions();
   const { setTransferCommitment } = createCommitmentStoreActions();
   const { setIsTransferring } = createCommitmentStoreActions();
+  const { setDeleteCommitment } = createCommitmentStoreActions();
 
   function resetCommitment(az) {
     setCurrentAZ(az[0]);
@@ -20,6 +21,7 @@ const useResetCommitment = () => {
   function resetURLChangeState() {
     setIsCommitting(false);
     setCommitment(initialCommitmentObject);
+    setDeleteCommitment(null);
     setToast(null);
     resetCommitmentTransfer();
   }
