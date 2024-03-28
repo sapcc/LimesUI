@@ -24,6 +24,7 @@ const PanelManager = (props) => {
   const { setIsCommitting } = createCommitmentStoreActions();
   const { setIsSubmitting } = createCommitmentStoreActions();
   const { setTransferProject } = createCommitmentStoreActions();
+  const { setDeleteCommitment } = createCommitmentStoreActions();
   const navigate = useNavigate();
   const params = useParams();
   const { currentArea, categoryName, resourceName } = { ...params };
@@ -44,6 +45,7 @@ const PanelManager = (props) => {
     return () => {
       setIsSubmitting(false);
       setTransferProject(null);
+      setDeleteCommitment(null);
       onPanelClose(project.current);
     };
   }, []);

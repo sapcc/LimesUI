@@ -1,6 +1,8 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
+  createCommitmentStore,
+  createCommitmentStoreActions,
   globalStoreActions,
   projectStore,
   projectStoreActions,
@@ -11,6 +13,8 @@ const AppResourceContent = (props) => {
   const { projectData } = projectStore();
   const { refetchProjectAPI } = projectStore();
   const { setRefetchProjectAPI } = projectStoreActions();
+  const { refetchCommitmentAPI } = createCommitmentStore();
+  const { setRefetchCommitmentAPI } = createCommitmentStoreActions();
   const { commitments } = projectStore();
   const { setProjectData } = projectStoreActions();
   const { restructureReport } = globalStoreActions();
@@ -30,6 +34,12 @@ const AppResourceContent = (props) => {
     setRefetchProjectAPI(false);
     projectQueryResult.refetch();
   }, [refetchProjectAPI]);
+
+  React.useEffect(() => {
+    if (!refetchCommitmentAPI) return;
+    setRefetchCommitmentAPI(false);
+    commitQueryResult.refetch();
+  }, [refetchCommitmentAPI]);
 
   React.useEffect(() => {
     // Initial Commitment-API data fetch.

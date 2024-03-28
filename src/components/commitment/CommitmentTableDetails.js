@@ -21,6 +21,7 @@ import useCommitmentFilter from "../../hooks/useCommitmentFilter";
 import useResetCommitment from "../../hooks/useResetCommitment";
 
 const CommitmentTableDetails = (props) => {
+  const { commitment } = props;
   const {
     id,
     amount,
@@ -32,7 +33,7 @@ const CommitmentTableDetails = (props) => {
     expires_at,
     creator_name,
     unit: unitName,
-  } = { ...props.commitment };
+  } = { ...commitment };
   const startDate = confirm_by ? confirm_by : created_at;
   const durations = props.durations;
   const serviceType = props.serviceType;
@@ -50,6 +51,7 @@ const CommitmentTableDetails = (props) => {
   const { setIsSubmitting } = createCommitmentStoreActions();
   const { resetCommitmentTransfer } = useResetCommitment();
   const { setIsTransferring } = createCommitmentStoreActions();
+  const { setDeleteCommitment } = createCommitmentStoreActions();
   const { setToast } = createCommitmentStoreActions();
   const [invalidDuration, setInValidDuration] = React.useState(false);
   const [invalidInput, setInvalidInput] = React.useState(false);
@@ -125,6 +127,22 @@ const CommitmentTableDetails = (props) => {
       setShowTransfer(newCommitment?.id == id);
     }
   }, [isTransferring]);
+
+  function setCommitmentLabel() {
+    let label;
+    isConfirmed
+      ? (label = "Committed")
+      : isPending(commitment)
+      ? (label = "Pending")
+      : isPlanned(commitment)
+      ? (label = "Planned")
+      : (label = "");
+    return label;
+  }
+
+  function onCommitmentDelete() {
+    setDeleteCommitment(commitment);
+  }
 
   return (
     <DataGridRow>
@@ -242,12 +260,22 @@ const CommitmentTableDetails = (props) => {
               Cancel
             </Button>
           </Stack>
-        ) : isConfirmed ? (
-          "Committed"
-        ) : isPending(props.commitment) ? (
-          "Pending"
         ) : (
-          isPlanned(props.commitment) && "Planned"
+          <Stack className="gap-1">
+            <Stack>{setCommitmentLabel()}</Stack>
+            {commitment?.can_be_deleted && (
+              <Stack className={"m-auto mr-0"}>
+                <Button
+                  onClick={() => {
+                    onCommitmentDelete();
+                  }}
+                  size="small"
+                  icon={"cancel"}
+                  variant="primary-danger"
+                />
+              </Stack>
+            )}
+          </Stack>
         )}
       </DataGridCell>
     </DataGridRow>

@@ -78,9 +78,14 @@ const useQueryClientFn = (isMockApi) => {
     });
 
     queryClient.setMutationDefaults(["deleteCommitment"], {
-      mutationFn: async ({ queryKey, commitmentID }) => {
-        queryKey ? (pid = queryKey) : (pid = projectID);
-        const url = `${endpoint}/v1/domains/${domainID}/projects/${pid}/commitments/${commitmentID}`;
+      mutationFn: async ({
+        domainID: domID,
+        projectID: projID,
+        commitmentID,
+      }) => {
+        projID ? (pid = projID) : (pid = projectID);
+        domID ? (did = domID) : (did = domainID);
+        const url = `${endpoint}/v1/domains/${did}/projects/${pid}/commitments/${commitmentID}`;
         const response = await fetch(url, {
           method: "DELETE",
           headers: {

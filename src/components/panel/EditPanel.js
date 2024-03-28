@@ -20,6 +20,7 @@ import ProjectManager from "../project/ProjectManager";
 import DomainManager from "../domain/DomainManager";
 import useResetCommitment from "../../hooks/useResetCommitment";
 import { initialCommitmentObject } from "../../lib/constants";
+import DeleteModal from "../commitment/DeleteModal";
 
 const EditPanel = (props) => {
   const { scope } = globalStore();
@@ -43,6 +44,9 @@ const EditPanel = (props) => {
   const transfer = useMutation({
     mutationKey: ["transferCommitment"],
   });
+  const commitmentDelete = useMutation({
+    mutationKey: ["deleteCommitment"],
+  });
   const { resetCommitmentTransfer } = useResetCommitment();
   const { commitment: newCommitment } = createCommitmentStore();
   const { toast } = createCommitmentStore();
@@ -51,6 +55,7 @@ const EditPanel = (props) => {
   const { currentAZ } = createCommitmentStore();
   const { commitment } = createCommitmentStore();
   const { transferProject } = createCommitmentStore();
+  const { deleteCommitment } = createCommitmentStore();
   const { setTransferProject } = createCommitmentStoreActions();
   const { setRefetchClusterAPI } = clusterStoreActions();
   const { setRefetchDomainAPI } = domainStoreActions();
@@ -59,6 +64,7 @@ const EditPanel = (props) => {
   const { setCommitmentIsLoading } = createCommitmentStoreActions();
   const { setIsSubmitting } = createCommitmentStoreActions();
   const { setIsCommitting } = createCommitmentStoreActions();
+  const { setDeleteCommitment } = createCommitmentStoreActions();
 
   const { setToast } = createCommitmentStoreActions();
   const { setCurrentAZ } = createCommitmentStoreActions();
@@ -137,7 +143,6 @@ const EditPanel = (props) => {
           setRefetchProjectAPI(true);
           setRefetchCommitmentAPI(true);
           setCommitmentIsLoading(false);
-          addCommitment(data.commitment);
         },
         onError: (error) => {
           setCommitmentIsLoading(false);
@@ -214,6 +219,30 @@ const EditPanel = (props) => {
     );
   }
 
+  // Delete commitment
+  function deleteCommitmentAPI(commitment) {
+    if (!deleteCommitment) return;
+    const targetDomainID = currentProject?.metadata.parent_id || null;
+    const targetProjectID = currentProject?.metadata.id || null;
+    commitmentDelete.mutate(
+      {
+        domainID: targetDomainID,
+        projectID: targetProjectID,
+        commitmentID: commitment.id,
+      },
+      {
+        onSuccess: () => {
+          console.log("SUCESS")
+          setRefetchCommitmentAPI(true);
+          setDeleteCommitment(null);
+        },
+        onError: (error) => {
+          setToast(error.toString());
+        },
+      }
+    );
+  }
+
   function onPostModalClose() {
     setIsSubmitting(false);
     setCanConfirm(null);
@@ -227,6 +256,10 @@ const EditPanel = (props) => {
 
   function onTransferModalClose() {
     setTransferProject(null);
+  }
+
+  function onDeleteClose() {
+    setDeleteCommitment(null);
   }
 
   function dismissToast() {
@@ -298,6 +331,15 @@ const EditPanel = (props) => {
           commitment={commitment}
           currentProject={currentProject}
           transferProject={transferProject}
+        />
+      )}
+      {deleteCommitment && (
+        <DeleteModal
+          title="Delete Commitment"
+          subText="Delete"
+          commitment={deleteCommitment}
+          onModalClose={onDeleteClose}
+          onDelete={deleteCommitmentAPI}
         />
       )}
     </PanelBody>
