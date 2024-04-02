@@ -10,14 +10,13 @@ const useResetCommitment = () => {
   const { setIsTransferring } = createCommitmentStoreActions();
   const { setDeleteCommitment } = createCommitmentStoreActions();
 
+  // Handle closure of edit panel.
   function resetCommitment(az) {
     setCurrentAZ(az[0]);
-    setIsCommitting(false);
-    setCommitment(initialCommitmentObject);
-    setToast(null);
-    resetCommitmentTransfer();
+    resetURLChangeState();
   }
 
+  // Handle manual URL change.
   function resetURLChangeState() {
     setIsCommitting(false);
     setCommitment(initialCommitmentObject);
@@ -26,6 +25,7 @@ const useResetCommitment = () => {
     resetCommitmentTransfer();
   }
 
+  // Handle commitment transfer mode cancellation.
   function resetCommitmentTransfer() {
     setCommitment(initialCommitmentObject);
     setTransferCommitment(false);
