@@ -16,7 +16,7 @@ import { Unit } from "../../lib/unit";
 const label = "font-semibold";
 
 const DeleteModal = (props) => {
-  const { title, subText, onModalClose, commitment, onDelete } = props;
+  const { title, subText, onModalClose, commitment, az, onDelete } = props;
   const unit = new Unit(commitment.unit);
   const inputRef = React.useRef("");
   const [invalidInput, setInvalidInput] = React.useState(false);
@@ -70,6 +70,10 @@ const DeleteModal = (props) => {
         <DataGridRow>
           <DataGridCell className={label}>Duration:</DataGridCell>
           <DataGridCell>{commitment.duration}</DataGridCell>
+        </DataGridRow>
+        <DataGridRow>
+          <DataGridCell className={label}>Availability Zone:</DataGridCell>
+          <DataGridCell>{az}</DataGridCell>
         </DataGridRow>
       </DataGrid>
       <Stack direction="vertical" alignment="center" className="mb-1 mt-5">

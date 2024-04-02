@@ -232,7 +232,7 @@ const EditPanel = (props) => {
       },
       {
         onSuccess: () => {
-          console.log("SUCESS")
+          console.log("SUCESS");
           setRefetchCommitmentAPI(true);
           setDeleteCommitment(null);
         },
@@ -338,6 +338,7 @@ const EditPanel = (props) => {
           title="Delete Commitment"
           subText="Delete"
           commitment={deleteCommitment}
+          az={currentAZ}
           onModalClose={onDeleteClose}
           onDelete={deleteCommitmentAPI}
         />
