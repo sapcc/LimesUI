@@ -148,7 +148,8 @@ const ProjectTableDetails = (props) => {
                   !showCommitments ||
                   !moveCommitment ||
                   transferCommitment ||
-                  isCommitting
+                  isCommitting ||
+                  isLoading
                 }
                 size="small"
                 onClick={() => {
