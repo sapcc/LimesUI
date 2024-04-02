@@ -64,16 +64,16 @@ const DeleteModal = (props) => {
     >
       <DataGrid columns={2} columnMaxSize="1fr">
         <DataGridRow>
+          <DataGridCell className={label}>Availability Zone:</DataGridCell>
+          <DataGridCell>{az}</DataGridCell>
+        </DataGridRow>
+        <DataGridRow>
           <DataGridCell className={label}>Amount:</DataGridCell>
           <DataGridCell>{valueWithUnit(commitment.amount, unit)}</DataGridCell>
         </DataGridRow>
         <DataGridRow>
           <DataGridCell className={label}>Duration:</DataGridCell>
           <DataGridCell>{commitment.duration}</DataGridCell>
-        </DataGridRow>
-        <DataGridRow>
-          <DataGridCell className={label}>Availability Zone:</DataGridCell>
-          <DataGridCell>{az}</DataGridCell>
         </DataGridRow>
       </DataGrid>
       <Stack direction="vertical" alignment="center" className="mb-1 mt-5">
