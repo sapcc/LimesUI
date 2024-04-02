@@ -189,7 +189,8 @@ const EditPanel = (props) => {
   }
 
   function transferCommitment(project, commitment, transferToken) {
-    const targetDomainID = project.metadata.parent_id;
+    // Cluster View targets the custom field domainID. It is set in the cluster project handling logic.
+    const targetDomainID = project?.metadata.domainID || null;
     const targetProjectID = project.metadata.id;
 
     transfer.mutate(
@@ -222,7 +223,8 @@ const EditPanel = (props) => {
   // Delete commitment
   function deleteCommitmentAPI(commitment) {
     if (!deleteCommitment) return;
-    const targetDomainID = currentProject?.metadata.parent_id || null;
+    // Cluster View targets the custom field domainID. It is set in the cluster project handling logic.
+    const targetDomainID = currentProject?.metadata.domainID || null;
     const targetProjectID = currentProject?.metadata.id || null;
     commitmentDelete.mutate(
       {
