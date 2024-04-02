@@ -19,10 +19,6 @@ const DomainManager = (props) => {
     setDomainData(domainAPIData.domains);
   }, [domainAPIData]);
 
-  React.useEffect(() => {
-    if (!domainData) return;
-  }, [domainData]);
-
   return (
     domainData &&
     !isLoading && (

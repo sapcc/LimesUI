@@ -19,7 +19,6 @@ const ProjectsPerDomain = (props) => {
   const { setProjectsToDomain } = clusterStoreActions();
   const { projects } = domainStore();
   const { setProjects } = domainStoreActions();
-  const [projectsUpdated, setProjectsUpdated] = React.useState(false);
   const projectQueries = useQueries({
     queries: domains.map((domain) => {
       return {
@@ -28,25 +27,30 @@ const ProjectsPerDomain = (props) => {
     }),
   });
   const isLoading = projectQueries.some((query) => query.isLoading);
+  // Refetches change the fetchStatus not the loading status.
+  const fetchNotFinished = projectQueries.some(
+    (query) => query.fetchStatus != "idle"
+  );
   const { setRefetchProjectAPI } = projectStoreActions();
   const { refetchProjectAPI } = projectStore();
+  const projectsUpdated = React.useRef(false);
   const sortProjects = React.useRef(true);
 
   // Cluster level: Add projects to fetched domains.
   React.useEffect(() => {
-    if (isLoading) return;
+    if (isLoading || fetchNotFinished) return;
     const restructucturedProjects = projectQueries.map((query) => {
       return query.data.projects.map((projects) => {
         return restructureReport(projects);
       });
     });
-    setProjectsUpdated(true);
     setProjectsToDomain(restructucturedProjects);
-  }, [isLoading]);
+    projectsUpdated.current = true;
+  }, [isLoading, fetchNotFinished]);
 
   // Domain level: Flatten the nested array of projects over all domains.
   React.useEffect(() => {
-    if (!projectsUpdated) return;
+    if (!projectsUpdated.current) return;
     const flattendProjects = domains.flatMap((domain) =>
       domain.projects?.map((project) => {
         project.metadata.domainID = domain.id;
@@ -56,9 +60,9 @@ const ProjectsPerDomain = (props) => {
       })
     );
     setProjects(flattendProjects, sortProjects.current);
+    projectsUpdated.current = false;
     sortProjects.current = true;
-    setProjectsUpdated(false);
-  }, [projectsUpdated]);
+  }, [projectsUpdated.current]);
 
   React.useEffect(() => {
     if (!refetchProjectAPI) return;
@@ -69,7 +73,7 @@ const ProjectsPerDomain = (props) => {
     });
   }, [refetchProjectAPI]);
 
-  return projects && !isLoading && !projectsUpdated ? (
+  return projects && !isLoading && !fetchNotFinished && !projectsUpdated.current ? (
     <ProjectTable
       serviceType={serviceType}
       currentCategory={currentCategory}

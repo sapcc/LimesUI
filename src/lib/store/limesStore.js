@@ -37,6 +37,9 @@ const limesStore = (set) => ({
     domainData: null,
     refetchDomainAPI: false,
     projects: null,
+    // previous project in detail view. Displays commitments.
+    // Used to close the detailed view if another projects enters its detail mode.
+    previousProject: null,
     actions: {
       setDomainData: (domainData) =>
         set((state) => ({
@@ -45,6 +48,10 @@ const limesStore = (set) => ({
       setRefetchDomainAPI: (refetchDomainAPI) =>
         set((state) => ({
           domain: { ...state.domain, refetchDomainAPI: refetchDomainAPI },
+        })),
+      setPreviousProject: (previousProject) =>
+        set((state) => ({
+          domain: { ...state.domain, previousProject: previousProject },
         })),
       setProjects: (projects, sortProjects = true) =>
         set((state) => {

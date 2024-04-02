@@ -4,6 +4,7 @@ import {
   globalStore,
   domainStoreActions,
   createCommitmentStoreActions,
+  domainStore,
 } from "../StoreProvider";
 import ProjectTableDetails from "./ProjectTableDetails";
 import {
@@ -23,6 +24,8 @@ import {
 const ProjectTable = (props) => {
   const { serviceType, currentCategory, currentAZ, projects } = props;
   const { scope } = globalStore();
+  const { previousProject } = domainStore();
+  const { setPreviousProject } = domainStoreActions();
   const { setShowCommitments } = domainStoreActions();
   const { setSortedProjects } = domainStoreActions();
   const { setTransferProject } = createCommitmentStoreActions();
@@ -31,7 +34,6 @@ const ProjectTable = (props) => {
   const [filteredProjects, setFilteredProjects] = React.useState([]);
   const [currentPage, setCurrentPage] = React.useState(0);
   const [input, setInput] = React.useState(null);
-  const previousProject = useRef(null);
 
   const projectTableHeadCells = [
     {
@@ -73,17 +75,17 @@ const ProjectTable = (props) => {
     const projects = [...filteredProjects];
     const project = filteredProjects[currentPage][index];
     const projectID = filteredProjects[currentPage][index].metadata.id;
-    const previousProjectID = previousProject.current?.metadata?.id;
+    const previousProjectID = previousProject?.metadata?.id;
     setCurrentProject(project);
     // Disable the last clicked project
-    if (previousProject.current && projectID != previousProjectID) {
+    if (previousProject && projectID != previousProjectID) {
       setShowCommitments(previousProjectID, false);
     }
     // A click on the same (active) project disables it. Otherwise it enables it.
     setShowCommitments(projectID, !project.showCommitments);
 
     // Track the previous project.
-    previousProject.current = project;
+    setPreviousProject(project);
     setFilteredProjects(projects);
   }
 
@@ -96,9 +98,7 @@ const ProjectTable = (props) => {
       const filterName = scope.isCluster()
         ? project.metadata.fullName
         : project.metadata.name;
-      return (
-        regex.exec(filterName) || regex.exec(project.metadata.id)
-      );
+      return regex.exec(filterName) || regex.exec(project.metadata.id);
     });
     filteredProjects.push(filtered);
     const chunkedProjects = chunkProjects(filteredProjects[0]);

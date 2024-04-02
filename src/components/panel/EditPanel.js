@@ -234,7 +234,6 @@ const EditPanel = (props) => {
       },
       {
         onSuccess: () => {
-          console.log("SUCESS");
           setRefetchCommitmentAPI(true);
           setDeleteCommitment(null);
         },
