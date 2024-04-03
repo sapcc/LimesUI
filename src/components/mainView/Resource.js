@@ -79,7 +79,7 @@ const Resource = (props) => {
     usagePerCommitted > 0 ? usagePerCommitted : usagePerQuota;
   const { resetCommitment } = useResetCommitment();
   // Bar length on project/domain level is Quota. On Cluster level it is capacity.
-  const capacityOrQuota = scope.isCluster() ? capacity : originalQuota;
+  const capacityOrQuota = scope.isCluster() ? capacity || 0 : originalQuota;
 
   function getQuotaOrCapacityForAZLevel(az) {
     if (scope.isCluster()) {

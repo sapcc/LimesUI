@@ -52,14 +52,15 @@ const ResourceBarBuilder = (props) => {
       extraCapacityLabel={valueWithUnit(extraCapacityValue, unit)}
       usageLabel={scope.isCluster() ? "capacity used" : "quota used"}
       fill={usage}
-      capacity={capacity || 1}
+      capacity={capacity}
       commitment={commitment}
       extraFillValue={extraFillValue}
       // Providing 1 enables the bar to be filled completely if commitments > quota
       extraCapacityValue={extraCapacityValue || 1}
       canEdit={editableResource || isPanelView}
-      showsCapacity={false}
+      showsCapacity={scope.isCluster()}
       isAZ={isAZ}
+      // No Quota and Quota bars have the same size within the Edit Panel Tables.
       equallySized={equallySized}
     />
   );
