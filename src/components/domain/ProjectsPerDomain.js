@@ -32,6 +32,9 @@ const ProjectsPerDomain = (props) => {
   const { setRefetchProjectAPI } = projectStoreActions();
   const { refetchProjectAPI } = projectStore();
   const sortProjects = React.useRef(true);
+  // Required check for rendering. This is a fail save.
+  // If not present: Projects might get pushed to panel table with the availability zones of the predecessor causing a crash.
+  // For Example: Opening a resource with only "any" AZ and then quickly opening a resource which has different AZs.
   const projectsUpdated = React.useRef(false);
 
   // Cluster level: Add projects to fetched domains.
