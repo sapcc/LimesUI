@@ -32,10 +32,12 @@ const ProjectsPerDomain = (props) => {
   const { setRefetchProjectAPI } = projectStoreActions();
   const { refetchProjectAPI } = projectStore();
   const sortProjects = React.useRef(true);
+  const projectsUpdated = React.useRef(false);
 
   // Cluster level: Add projects to fetched domains.
   React.useEffect(() => {
     if (isFetching) return;
+    projectsUpdated.current = false;
     const restructucturedProjects = projectQueries.map((query) => {
       return query.data.projects.map((projects) => {
         return restructureReport(projects);
@@ -52,6 +54,7 @@ const ProjectsPerDomain = (props) => {
       })
     );
     setProjects(flattendProjects, sortProjects.current);
+    projectsUpdated.current = true;
   }, [isFetching]);
 
   React.useEffect(() => {
@@ -63,7 +66,7 @@ const ProjectsPerDomain = (props) => {
     });
   }, [refetchProjectAPI]);
 
-  return projects && !isLoading ? (
+  return projects && !isLoading && projectsUpdated.current ? (
     <ProjectTable
       serviceType={serviceType}
       currentCategory={currentCategory}
