@@ -207,8 +207,10 @@ const EditPanel = (props) => {
             "info"
           );
           resetCommitmentTransfer();
-          setRefetchCommitmentAPI(true);
+          setRefetchClusterAPI(true);
+          setRefetchDomainAPI(true);
           setRefetchProjectAPI(true);
+          setRefetchCommitmentAPI(true);
           setTransferProject(null);
         },
         onError: (error) => {
@@ -234,6 +236,9 @@ const EditPanel = (props) => {
       },
       {
         onSuccess: () => {
+          setRefetchClusterAPI(true);
+          setRefetchDomainAPI(true);
+          setRefetchProjectAPI(true);
           setRefetchCommitmentAPI(true);
           setDeleteCommitment(null);
         },
