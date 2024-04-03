@@ -77,20 +77,22 @@ const DeleteModal = (props) => {
         </DataGridRow>
       </DataGrid>
       <Stack direction="vertical" alignment="center" className="mb-1 mt-5">
-        <Stack className={"mt-5"}>
-          To confirm, type:&nbsp;
-          <span className={label}>{subText}</span>
-        </Stack>
-        <Stack>
-          <TextInput
-            width="auto"
-            autoFocus
-            errortext={
-              invalidInput && "Please enter the highlighted term above."
-            }
-            onChange={(e) => onInput(e)}
-          />
-        </Stack>
+        <div>
+          <Stack className={"mt-5"}>
+            To confirm, type:&nbsp;
+            <span className={label}>{subText}</span>
+          </Stack>
+          <Stack>
+            <TextInput
+              width="auto"
+              autoFocus
+              errortext={
+                invalidInput && "Please enter the highlighted term above."
+              }
+              onChange={(e) => onInput(e)}
+            />
+          </Stack>
+        </div>
       </Stack>
     </Modal>
   );
