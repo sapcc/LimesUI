@@ -33,8 +33,6 @@ const ProjectsPerDomain = (props) => {
   const projectsUpdated = React.useRef(false);
   const sortProjects = React.useRef(true);
 
-  console.log(projectQueries);
-
   // Cluster level: Add projects to fetched domains.
   React.useEffect(() => {
     if (fetchNotFinished) return;
