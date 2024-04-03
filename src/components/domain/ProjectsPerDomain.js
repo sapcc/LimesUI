@@ -27,7 +27,7 @@ const ProjectsPerDomain = (props) => {
     }),
   });
   // Refetches change the fetchStatus not the loading status.
-  const fetchNotFinished = projectQueries.some((query) => query.isFetching);
+  const isFetching = projectQueries.some((query) => query.isFetching);
   const { setRefetchProjectAPI } = projectStoreActions();
   const { refetchProjectAPI } = projectStore();
   const projectsUpdated = React.useRef(false);
@@ -35,7 +35,7 @@ const ProjectsPerDomain = (props) => {
 
   // Cluster level: Add projects to fetched domains.
   React.useEffect(() => {
-    if (fetchNotFinished) return;
+    if (isFetching) return;
     const restructucturedProjects = projectQueries.map((query) => {
       return query.data.projects.map((projects) => {
         return restructureReport(projects);
@@ -43,7 +43,7 @@ const ProjectsPerDomain = (props) => {
     });
     setProjectsToDomain(restructucturedProjects);
     projectsUpdated.current = true;
-  }, [fetchNotFinished]);
+  }, [isFetching]);
 
   // Domain level: Flatten the nested array of projects over all domains.
   React.useEffect(() => {
@@ -70,7 +70,7 @@ const ProjectsPerDomain = (props) => {
     });
   }, [refetchProjectAPI]);
 
-  return projects && !fetchNotFinished && !projectsUpdated.current ? (
+  return projects && !isFetching && !projectsUpdated.current ? (
     <ProjectTable
       serviceType={serviceType}
       currentCategory={currentCategory}
