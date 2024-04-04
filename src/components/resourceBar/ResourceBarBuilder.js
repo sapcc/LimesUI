@@ -59,7 +59,7 @@ const ResourceBarBuilder = (props) => {
       // Providing 1 enables the bar to be filled completely if commitments > quota
       extraCapacityValue={extraCapacityValue || 1}
       canEdit={editableResource || isPanelView}
-      showsCapacity={scope.isCluster()}
+      showsCapacity={scope.isCluster() && !clusterQuotaView}
       isAZ={isAZ}
       // No Quota and Quota bars have the same size within the Edit Panel Tables.
       equallySized={equallySized}
