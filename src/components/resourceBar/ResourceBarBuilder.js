@@ -18,6 +18,7 @@ const ResourceBarBuilder = (props) => {
     isAZ,
     // Determines if NoQuota bars are the same size as filledBars.
     equallySized,
+    clusterQuotaView,
   } = { ...props };
   const { scope } = globalStore();
   const unit = new Unit(unitName || "");
@@ -50,7 +51,7 @@ const ResourceBarBuilder = (props) => {
       capacityLabel={valueWithUnit(capacity, unit)}
       extraFillLabel={valueWithUnit(extraFillValue, unit)}
       extraCapacityLabel={valueWithUnit(extraCapacityValue, unit)}
-      usageLabel={scope.isCluster() ? "capacity used" : "quota used"}
+      usageLabel={scope.isCluster() && !clusterQuotaView ? "capacity used" : "quota used"}
       fill={usage}
       capacity={capacity}
       commitment={commitment}

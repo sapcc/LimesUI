@@ -120,6 +120,7 @@ const ProjectTableDetails = (props) => {
             tracksQuota={tracksQuota(resource)}
             editableResource={true}
             equallySized={true}
+            clusterQuotaView={true}
           />
         </DataGridCell>
         <DataGridCell>
