@@ -47,7 +47,7 @@ const ProjectsPerDomain = (props) => {
       });
     });
     setProjectsToDomain(restructucturedProjects);
-    // Flat the projects within the domains in order to pass them to the
+    // Flat the projects within the domains in order to pass them to the project table.
     const flattendProjects = domains.flatMap((domain) =>
       domain.projects?.map((project) => {
         project.metadata.domainID = domain.id;
