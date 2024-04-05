@@ -1,5 +1,6 @@
 import React from "react";
 import { useQueries } from "@tanstack/react-query";
+import { resourceHasParent } from "../../lib/utils";
 import {
   globalStoreActions,
   clusterStoreActions,
@@ -14,7 +15,9 @@ import { LoadingIndicator } from "juno-ui-components";
 const ProjectsPerDomain = (props) => {
   // Fetch project data for all domains
   const { domains, serviceType, currentCategory, resource, currentAZ } = props;
-  const resourceName = resource.name;
+  const resourceName = resourceHasParent(resource)
+  ? null
+  : resource.name;
   const { restructureReport } = globalStoreActions();
   const { setProjectsToDomain } = clusterStoreActions();
   const { projects } = domainStore();
@@ -72,6 +75,7 @@ const ProjectsPerDomain = (props) => {
   return projects && !isLoading && projectsUpdated.current ? (
     <ProjectTable
       serviceType={serviceType}
+      currentResource={resource}
       currentCategory={currentCategory}
       currentAZ={currentAZ}
       projects={projects}

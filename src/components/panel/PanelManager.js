@@ -2,7 +2,12 @@ import React from "react";
 import { Panel } from "juno-ui-components";
 import EditPanel from "./EditPanel";
 import { useParams, useNavigate } from "react-router";
-import { t } from "../../lib/utils";
+import {
+  t,
+  getCurrentResource,
+  getContainingResourceFor,
+  tracksQuota,
+} from "../../lib/utils";
 import { initialCommitmentObject } from "../../lib/constants";
 import {
   createCommitmentStore,
@@ -29,13 +34,10 @@ const PanelManager = (props) => {
   const params = useParams();
   const { currentArea, categoryName, resourceName } = { ...params };
   const { serviceType } = props.categories[categoryName];
-  const currentResource = props.categories[categoryName]?.resources.find(
-    (res) => {
-      if (res.name === resourceName) {
-        return res;
-      }
-    }
-  );
+  const { resources } = props.categories[categoryName];
+  const currentResource = getCurrentResource(resources, resourceName);
+  const resourceTracksQuota = tracksQuota(currentResource);
+  const parentResource = getContainingResourceFor(resources, resourceName);
 
   React.useEffect(() => {
     if (currentResource) {
@@ -88,6 +90,8 @@ const PanelManager = (props) => {
           {...props}
           serviceType={serviceType}
           currentResource={currentResource}
+          tracksQuota={resourceTracksQuota}
+          parentResource={parentResource}
           currentArea={currentArea}
           currentCategory={categoryName}
         />

@@ -31,7 +31,7 @@ const ResourceBarBuilder = (props) => {
   const commitmentOrQuota = commitment > 0 ? commitment : quota;
   const capacity = tracksQuota ? commitmentOrQuota : parentQuota;
 
-  // ExtraBar: displays values that exceed that exceed the commitment
+  // ExtraBar: displays values that exceed the commitment
   // The sum bar can display the second bar without completely filling the first bar.
   let extraFillValue;
   if (usageBurstSum > 0) {

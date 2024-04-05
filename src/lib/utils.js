@@ -30,16 +30,16 @@ export function formatTime(unixTimeStamp, formatter) {
 }
 
 // This can be used as a sorting predicate:
-//     sorted_things = things.sort(byUIString)
+// sorted_things = things.sort(byUIString)
 export const byUIString = (a, b) => {
   const aa = t(a);
   const bb = t(b);
   return aa < bb ? -1 : aa > bb ? 1 : 0;
 };
 
-//A sorting method for resources in a category. This is not just a predicate
-//because we need to traverse the entire list to compute individual sorting
-//keys.
+// A sorting method for resources in a category. This is not just a predicate
+// because we need to traverse the entire list to compute individual sorting
+// keys.
 export const sortByLogicalOrderAndName = (resources) => {
   const sortingKeysByName = {};
   let sortingKeyForName;
@@ -78,6 +78,35 @@ export const tracksQuota = (res) => {
   );
 };
 
+// get specific resource from provided resource list.
+export function getCurrentResource(resources, resourceName) {
+  return resources.find((res) => {
+    if (res.name === resourceName) {
+      return res;
+    }
+  });
+}
+
+// check if resource has a parent.
+export function resourceHasParent(resource) {
+  if (resource.contained_in) {
+    return true;
+  }
+  return false;
+}
+
+// get parent of provided resource
+// for usage-only resources with no quota of their own, this finds
+// the resource they're ultimately "contained_in"
+export function getContainingResourceFor(resources, resourceName) {
+  const res = resources.find((res) => res.name === resourceName);
+  if (res.contained_in) {
+    return getContainingResourceFor(resources, res.contained_in);
+  }
+  return res;
+}
+
+// project chunks for table pagination in the EditPanel.
 export const chunkProjects = (projects) => {
   const projectChunks = [];
   const chunkSize = 30;

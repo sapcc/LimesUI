@@ -1,7 +1,6 @@
 import React from "react";
 import { useMutation } from "@tanstack/react-query";
 import { PanelBody, Toast } from "juno-ui-components";
-import { tracksQuota } from "../../lib/utils";
 import Resource from "../mainView/Resource";
 import {
   globalStore,
@@ -24,7 +23,7 @@ import DeleteModal from "../commitment/DeleteModal";
 
 const EditPanel = (props) => {
   const { scope } = globalStore();
-  const { serviceType, currentResource, currentCategory } = {
+  const { serviceType, currentResource, tracksQuota, parentResource, currentCategory } = {
     ...props,
   };
   const minConfirmDate = currentResource?.commitment_config?.min_confirm_by;
@@ -276,8 +275,9 @@ const EditPanel = (props) => {
     <PanelBody>
       <Resource
         resource={currentResource}
+        parentResource={parentResource}
         currentAZ={currentAZ}
-        tracksQuota={tracksQuota(currentResource)}
+        tracksQuota={tracksQuota}
         isPanelView={true}
       />
       <AvailabilityZoneNav az={currentResource.per_az} currentAZ={currentAZ} />
@@ -304,7 +304,7 @@ const EditPanel = (props) => {
         <ProjectManager
           serviceType={serviceType}
           currentCategory={currentCategory}
-          currentResource={currentResource.name}
+          currentResource={currentResource}
           currentAZ={currentAZ}
         />
       )}

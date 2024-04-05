@@ -1,5 +1,10 @@
-import React, { useRef } from "react";
-import { chunkProjects } from "../../lib/utils";
+import React from "react";
+import {
+  chunkProjects,
+  getCurrentResource,
+  getContainingResourceFor,
+  tracksQuota,
+} from "../../lib/utils";
 import {
   globalStore,
   domainStoreActions,
@@ -22,7 +27,8 @@ import {
 
 // Display the project details in DomainView
 const ProjectTable = (props) => {
-  const { serviceType, currentCategory, currentAZ, projects } = props;
+  const { serviceType, currentResource, currentCategory, currentAZ, projects } =
+    props;
   const { scope } = globalStore();
   const { previousProject } = domainStore();
   const { setPreviousProject } = domainStoreActions();
@@ -177,7 +183,15 @@ const ProjectTable = (props) => {
           filteredProjects[currentPage].map((project, index) => {
             const { categories } = project;
             const { resources } = Object.values(categories)[0];
-            const resource = resources[0];
+            const resource = getCurrentResource(
+              resources,
+              currentResource.name
+            );
+            const resourceTracksQuota = tracksQuota(currentResource);
+            const parentResource = getContainingResourceFor(
+              resources,
+              currentResource.name
+            );
             const az = resource.per_az.filter((az) => {
               const azName = az[0];
               return azName === currentAZ;
@@ -195,6 +209,8 @@ const ProjectTable = (props) => {
                 currentCategory={currentCategory}
                 project={project}
                 resource={resource}
+                parentResource={parentResource}
+                tracksQuota={resourceTracksQuota}
                 az={az[0]}
                 currentAZ={currentAZ}
                 colSpan={colSpan}

@@ -10,7 +10,6 @@ import {
   createCommitmentStoreActions,
 } from "../StoreProvider";
 import { useQuery } from "@tanstack/react-query";
-import { tracksQuota } from "../../lib/utils";
 import {
   DataGridRow,
   DataGridCell,
@@ -32,6 +31,8 @@ const ProjectTableDetails = (props) => {
     currentCategory,
     project,
     resource,
+    parentResource,
+    tracksQuota,
     az,
     currentAZ,
     colSpan,
@@ -114,10 +115,12 @@ const ProjectTableDetails = (props) => {
             key={metadata.name}
             unit={unit}
             usage={commitmentsInAZ.usage}
+            usageBurstSum={resource.usagePerQuota}
             isAZ={true}
             commitment={az.commitmentSum}
             quota={quota}
-            tracksQuota={tracksQuota(resource)}
+            tracksQuota={tracksQuota}
+            parentQuota={parentResource?.quota}
             editableResource={true}
             equallySized={true}
             clusterQuotaView={true}

@@ -1,5 +1,10 @@
 import React from "react";
-import { t, sortByLogicalOrderAndName, tracksQuota } from "../../lib/utils";
+import {
+  t,
+  sortByLogicalOrderAndName,
+  tracksQuota,
+  getContainingResourceFor,
+} from "../../lib/utils";
 import Resource from "./Resource";
 
 const categoryTitle = `
@@ -30,16 +35,6 @@ const Category = (props) => {
     (res) => res.editableResource === true
   );
 
-  //for usage-only resources with no quota of their own, this finds
-  //the resource they're ultimately "contained_in"
-  function getContainingResourceFor(resName) {
-    const res = resources.find((res) => res.name === resName);
-    if (res.contained_in) {
-      return getContainingResourceFor(res.contained_in);
-    }
-    return res;
-  }
-
   return (
     (editableResources.length > 0 || advancedView) && (
       <div className="category-container mb-4">
@@ -49,15 +44,17 @@ const Category = (props) => {
         <div className={`category-content ${categoryContent}`}>
           {sortByLogicalOrderAndName(
             advancedView ? resources : editableResources
-          ).map((res) => (
-            <Resource
-              key={res.name}
-              resource={res}
-              {...forwardProps}
-              tracksQuota={tracksQuota(res)}
-              parentResource={getContainingResourceFor(res.name)}
-            />
-          ))}
+          ).map((res) => {
+            return (
+              <Resource
+                key={res.name}
+                resource={res}
+                {...forwardProps}
+                tracksQuota={tracksQuota(res)}
+                parentResource={getContainingResourceFor(resources, res.name)}
+              />
+            );
+          })}
         </div>
       </div>
     )

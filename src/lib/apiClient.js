@@ -146,7 +146,10 @@ const useQueryClientFn = (isMockApi) => {
         const service = queryKey[1];
         const resource = queryKey[2];
         queryKey[3] ? (dID = queryKey[3]) : (dID = domainID);
-        const url = `${endpoint}/v1/domains/${dID}/projects?service=${service}&resource=${resource}`;
+        // Only query all resources if the the resource has a parent resource to get its quota values from.
+        const url = resource
+          ? `${endpoint}/v1/domains/${dID}/projects?service=${service}&resource=${resource}`
+          : `${endpoint}/v1/domains/${dID}/projects?service=${service}`;
         const response = await fetchProxy(url, {
           method: "GET",
           headers: {
