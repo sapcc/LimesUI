@@ -304,6 +304,7 @@ const EditPanel = (props) => {
         <ProjectManager
           serviceType={serviceType}
           currentCategory={currentCategory}
+          parentResource={parentResource}
           currentResource={currentResource}
           currentAZ={currentAZ}
         />
@@ -312,6 +313,7 @@ const EditPanel = (props) => {
         <DomainManager
           serviceType={serviceType}
           currentCategory={currentCategory}
+          parentResource={parentResource}
           currentResource={currentResource}
           currentAZ={currentAZ}
         />

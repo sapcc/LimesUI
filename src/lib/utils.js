@@ -87,14 +87,6 @@ export function getCurrentResource(resources, resourceName) {
   });
 }
 
-// check if resource has a parent.
-export function resourceHasParent(resource) {
-  if (resource.contained_in) {
-    return true;
-  }
-  return false;
-}
-
 // get parent of provided resource
 // for usage-only resources with no quota of their own, this finds
 // the resource they're ultimately "contained_in"

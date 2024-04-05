@@ -11,17 +11,22 @@ import {
 import { LoadingIndicator } from "juno-ui-components";
 
 const ProjectManager = (props) => {
-  const { serviceType, currentCategory, currentResource, currentAZ } = props;
-  const resourceName = resourceHasParent(currentResource)
-    ? null
-    : currentResource.name;
+  const {
+    serviceType,
+    currentCategory,
+    currentResource,
+    currentAZ,
+    parentResource,
+  } = props;
+  const resourceName = currentResource.name;
+  const parentResourceName = parentResource.name;
   const { refetchProjectAPI } = projectStore();
   const { setRefetchProjectAPI } = projectStoreActions();
   const { projects } = domainStore();
   const { setProjects } = domainStoreActions();
   const { restructureReport } = globalStoreActions();
   const projectsQueryResult = useQuery({
-    queryKey: ["projectsInDomain", serviceType, resourceName],
+    queryKey: ["projectsInDomain", serviceType, resourceName, parentResourceName],
   });
   const { data: projectsInDomain, isLoading } = projectsQueryResult;
   const sortProjects = React.useRef(true);

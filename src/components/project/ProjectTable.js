@@ -41,6 +41,8 @@ const ProjectTable = (props) => {
   const [currentPage, setCurrentPage] = React.useState(0);
   const [input, setInput] = React.useState(null);
 
+  console.log(currentResource.name, projects)
+
   const projectTableHeadCells = [
     {
       key: "projectName",

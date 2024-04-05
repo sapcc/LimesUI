@@ -145,11 +145,11 @@ const useQueryClientFn = (isMockApi) => {
       queryFn: async ({ queryKey }) => {
         const service = queryKey[1];
         const resource = queryKey[2];
-        queryKey[3] ? (dID = queryKey[3]) : (dID = domainID);
+        const parentResource = queryKey[3];
+        queryKey[4] ? (dID = queryKey[4]) : (dID = domainID);
         // Only query all resources if the the resource has a parent resource to get its quota values from.
-        const url = resource
-          ? `${endpoint}/v1/domains/${dID}/projects?service=${service}&resource=${resource}`
-          : `${endpoint}/v1/domains/${dID}/projects?service=${service}`;
+        // If resource = parentResource the API only delivers the resource. Which means a query with resource and parentResource is fine.
+        const url = `${endpoint}/v1/domains/${dID}/projects?service=${service}&resource=${resource}&resource=${parentResource}`;
         const response = await fetchProxy(url, {
           method: "GET",
           headers: {

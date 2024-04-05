@@ -14,10 +14,16 @@ import { LoadingIndicator } from "juno-ui-components";
 
 const ProjectsPerDomain = (props) => {
   // Fetch project data for all domains
-  const { domains, serviceType, currentCategory, resource, currentAZ } = props;
-  const resourceName = resourceHasParent(resource)
-  ? null
-  : resource.name;
+  const {
+    domains,
+    serviceType,
+    currentCategory,
+    resource,
+    parentResource,
+    currentAZ,
+  } = props;
+  const resourceName = resource.name;
+  const parentResourceName = parentResource.name;
   const { restructureReport } = globalStoreActions();
   const { setProjectsToDomain } = clusterStoreActions();
   const { projects } = domainStore();
@@ -25,7 +31,7 @@ const ProjectsPerDomain = (props) => {
   const projectQueries = useQueries({
     queries: domains.map((domain) => {
       return {
-        queryKey: ["projectsInDomain", serviceType, resourceName, domain.id],
+        queryKey: ["projectsInDomain", serviceType, resourceName, parentResourceName, domain.id],
       };
     }),
   });
