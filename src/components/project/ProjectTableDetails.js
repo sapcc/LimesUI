@@ -1,4 +1,5 @@
 import React from "react";
+import { getQuotaForAZLevel } from "../../lib/resourceBarValues";
 import ResourceBarBuilder from "../resourceBar/ResourceBarBuilder";
 import CommitmentTable from "../commitment/CommitmentTable";
 import AddCommitments from "../shared/AddCommitments";
@@ -38,8 +39,8 @@ const ProjectTableDetails = (props) => {
     colSpan,
   } = props;
   const { metadata } = project;
-  const { domainName, name: projectName, id: projectID } = metadata;
-  const { quota, unit } = resource;
+  const { name: projectName, id: projectID } = metadata;
+  const { quota, capacity, unit } = resource;
   const commitmentsInAZ = az[1];
   const { commitments } = projectStore();
   const { currentProject } = createCommitmentStore();
@@ -89,6 +90,8 @@ const ProjectTableDetails = (props) => {
     }
   }, [currentProject]);
 
+  console.log(project.metadata.name, resource);
+
   // TODO: As soon as the limes API is ready, activate the transfer commitment (move) button.
   return (
     <React.Fragment>
@@ -118,7 +121,7 @@ const ProjectTableDetails = (props) => {
             usageBurstSum={resource.usagePerQuota}
             isAZ={true}
             commitment={az.commitmentSum}
-            quota={quota}
+            quota={getQuotaForAZLevel(az[1], quota)}
             tracksQuota={tracksQuota}
             parentQuota={parentResource?.quota}
             editableResource={true}

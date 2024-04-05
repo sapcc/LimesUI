@@ -1,6 +1,7 @@
 import React from "react";
 import { globalStore } from "../StoreProvider";
 import { t } from "../../lib/utils";
+import { getQuotaForAZLevel } from "../../lib/resourceBarValues";
 import { Stack, Button } from "juno-ui-components";
 import { Link } from "react-router-dom";
 import { ProjectBadges } from "../shared/LimesBadges";
@@ -81,13 +82,6 @@ const Resource = (props) => {
   // Bar length on project/domain level is Quota. On Cluster level it is capacity.
   const capacityOrQuota = scope.isCluster() ? capacity || 0 : originalQuota;
 
-  function getQuotaOrCapacityForAZLevel(az) {
-    if (scope.isCluster()) {
-      return az.capacity ?? capacity;
-    }
-    return az.quota ?? originalQuota;
-  }
-
   return (
     <div
       className={
@@ -142,7 +136,7 @@ const Resource = (props) => {
         {props.resource.per_az?.map((az) => {
           const azName = az[0];
           const commitmentsInAZ = az[1];
-          const azQuotaOrCapacity = getQuotaOrCapacityForAZLevel(az[1]);
+          const azQuota = getQuotaForAZLevel(az[1], originalQuota);
           return (
             azName !== "any" && (
               <div
@@ -168,7 +162,7 @@ const Resource = (props) => {
                   }
                   isAZ={true}
                   commitment={az.commitmentSum}
-                  quota={azQuotaOrCapacity}
+                  quota={azQuota}
                   parentQuota={parentResource?.quota}
                   tracksQuota={tracksQuota}
                   isPanelView={isPanelView}
