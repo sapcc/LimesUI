@@ -1,6 +1,5 @@
 import React from "react";
 import { useQueries } from "@tanstack/react-query";
-import { resourceHasParent } from "../../lib/utils";
 import {
   globalStoreActions,
   clusterStoreActions,

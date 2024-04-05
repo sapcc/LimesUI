@@ -1,7 +1,6 @@
 import React from "react";
 import ProjectTable from "./ProjectTable";
 import { useQuery } from "@tanstack/react-query";
-import { resourceHasParent } from "../../lib/utils";
 import { projectStore, projectStoreActions } from "../StoreProvider";
 import {
   globalStoreActions,
