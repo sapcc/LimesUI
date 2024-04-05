@@ -118,7 +118,6 @@ const ProjectTableDetails = (props) => {
             key={metadata.name}
             unit={unit}
             usage={commitmentsInAZ.usage}
-            usageBurstSum={resource.usagePerQuota}
             isAZ={true}
             commitment={az.commitmentSum}
             quota={getQuotaForAZLevel(az[1], quota)}

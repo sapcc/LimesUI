@@ -1,7 +1,10 @@
 import React from "react";
 import { globalStore } from "../StoreProvider";
 import { t } from "../../lib/utils";
-import { getQuotaForAZLevel } from "../../lib/resourceBarValues";
+import {
+  getCapacityForAZLevel,
+  getQuotaForAZLevel,
+} from "../../lib/resourceBarValues";
 import { Stack, Button } from "juno-ui-components";
 import { Link } from "react-router-dom";
 import { ProjectBadges } from "../shared/LimesBadges";
@@ -136,7 +139,9 @@ const Resource = (props) => {
         {props.resource.per_az?.map((az) => {
           const azName = az[0];
           const commitmentsInAZ = az[1];
-          const azQuota = getQuotaForAZLevel(az[1], originalQuota);
+          const azQuotaOrCapacity = scope.isCluster()
+            ? getCapacityForAZLevel(az[1], capacity)
+            : getQuotaForAZLevel(az[1], originalQuota);
           return (
             azName !== "any" && (
               <div
@@ -162,7 +167,7 @@ const Resource = (props) => {
                   }
                   isAZ={true}
                   commitment={az.commitmentSum}
-                  quota={azQuota}
+                  quota={azQuotaOrCapacity}
                   parentQuota={parentResource?.quota}
                   tracksQuota={tracksQuota}
                   isPanelView={isPanelView}
