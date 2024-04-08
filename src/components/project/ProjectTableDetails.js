@@ -93,8 +93,6 @@ const ProjectTableDetails = (props) => {
     }
   }, [currentProject]);
 
-  console.log(project.metadata.name, resource);
-
   // TODO: As soon as the limes API is ready, activate the transfer commitment (move) button.
   return (
     <React.Fragment>
