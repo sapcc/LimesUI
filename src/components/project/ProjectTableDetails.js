@@ -1,5 +1,8 @@
 import React from "react";
-import { getQuotaForAZLevel } from "../../lib/resourceBarValues";
+import {
+  getQuotaForAZLevel,
+  getUsageForAZLevel,
+} from "../../lib/resourceBarValues";
 import ResourceBarBuilder from "../resourceBar/ResourceBarBuilder";
 import CommitmentTable from "../commitment/CommitmentTable";
 import AddCommitments from "../shared/AddCommitments";
@@ -117,7 +120,7 @@ const ProjectTableDetails = (props) => {
           <ResourceBarBuilder
             key={metadata.name}
             unit={unit}
-            usage={commitmentsInAZ.usage}
+            usage={getUsageForAZLevel(az[1])}
             isAZ={true}
             commitment={az.commitmentSum}
             quota={getQuotaForAZLevel(az[1], quota)}

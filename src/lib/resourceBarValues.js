@@ -1,5 +1,9 @@
-// AZs may or may not contain their own quota and capacity.
-// Either the AZ or resource values get delivered.
+// AZs may or may not contain their own values.
+// Either the AZ or resource values get provided to the UI.
+
+export function getUsageForAZLevel(az) {
+  return az.projects_usage || az.usage || 0;
+}
 
 export function getCapacityForAZLevel(az, capacity) {
   return az.capacity ?? capacity;

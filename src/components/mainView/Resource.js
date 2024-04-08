@@ -4,6 +4,7 @@ import { t } from "../../lib/utils";
 import {
   getCapacityForAZLevel,
   getQuotaForAZLevel,
+  getUsageForAZLevel,
 } from "../../lib/resourceBarValues";
 import { Stack, Button } from "juno-ui-components";
 import { Link } from "react-router-dom";
@@ -162,9 +163,7 @@ const Resource = (props) => {
                 </div>
                 <ResourceBarBuilder
                   unit={unitName}
-                  usage={
-                    commitmentsInAZ.projects_usage || commitmentsInAZ.usage || 0
-                  }
+                  usage={getUsageForAZLevel(commitmentsInAZ)}
                   isAZ={true}
                   commitment={az.commitmentSum}
                   quota={azQuotaOrCapacity}
