@@ -188,7 +188,7 @@ const ProjectTableDetails = (props) => {
         <div className={`${colSpan} mt-2 mb-5`}>
           {commitments && !isLoading ? (
             <>
-              {az.commitmentSum > 0 && (
+              {az.hasCommitments && (
                 <p className="font-semibold mb-5">Commitments:</p>
               )}
               <CommitmentTable
