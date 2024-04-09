@@ -23,7 +23,13 @@ import DeleteModal from "../commitment/DeleteModal";
 
 const EditPanel = (props) => {
   const { scope } = globalStore();
-  const { serviceType, currentResource, tracksQuota, parentResource, currentCategory } = {
+  const {
+    serviceType,
+    currentResource,
+    tracksQuota,
+    parentResource,
+    currentCategory,
+  } = {
     ...props,
   };
   const minConfirmDate = currentResource?.commitment_config?.min_confirm_by;
@@ -280,16 +286,17 @@ const EditPanel = (props) => {
         tracksQuota={tracksQuota}
         isPanelView={true}
       />
+      <div className={"sticky top-0 z-[100] bg-juno-grey-light-1 h-8"}>
+        {toast.message && (
+          <Toast
+            className={"pb-0"}
+            text={toast.message}
+            variant={toast.variant}
+            onDismiss={() => dismissToast()}
+          />
+        )}
+      </div>
       <AvailabilityZoneNav az={currentResource.per_az} currentAZ={currentAZ} />
-      {toast.message && (
-        <Toast
-          className={"p-0 sticky top-[11.5rem] z-[100]"}
-          text={toast.message}
-          autoDismiss={true}
-          variant={toast.variant}
-          onDismiss={() => dismissToast()}
-        />
-      )}
       {scope.isProject() && commitments && (
         <CommitmentTable
           serviceType={serviceType}
