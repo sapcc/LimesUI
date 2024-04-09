@@ -3,6 +3,7 @@ import {
   chunkProjects,
   getCurrentResource,
   getContainingResourceFor,
+  getParentResourceFor,
   tracksQuota,
 } from "../../lib/utils";
 import {
@@ -188,10 +189,12 @@ const ProjectTable = (props) => {
               currentResource.name
             );
             const resourceTracksQuota = tracksQuota(currentResource);
-            const parentResource = getContainingResourceFor(
-              resources,
-              currentResource.name
-            );
+            // Expecting the resource and optionally its parent in the object
+            // Therefore identifying the parent recursively is not an option.
+            const parentResource =
+              resources.length == 2
+                ? getParentResourceFor(resources, currentResource.name)
+                : getContainingResourceFor(resources, currentResource.name);
             const az = resource.per_az.filter((az) => {
               const azName = az[0];
               return azName === currentAZ;

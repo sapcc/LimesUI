@@ -98,6 +98,12 @@ export function getContainingResourceFor(resources, resourceName) {
   return res;
 }
 
+// For optimization reasons we only fetch the resource and its parent from the API.
+// This occurs in cases where we already recursively determined the parent beforehand.
+export function getParentResourceFor(resources, resourceName) {
+  return resources.find((res) => res.name !== resourceName);
+}
+
 // project chunks for table pagination in the EditPanel.
 export const chunkProjects = (projects) => {
   const projectChunks = [];
