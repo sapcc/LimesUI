@@ -190,7 +190,7 @@ const ProjectTable = (props) => {
             );
             const resourceTracksQuota = tracksQuota(currentResource);
             // Expecting the resource and optionally its parent in the object
-            // Therefore only identifying the parent recursively is nut sufficient.
+            // Therefore only identifying the parent recursively is not sufficient.
             const parentResource =
               resources.length == 2
                 ? getParentResourceFor(resources, currentResource.name)
