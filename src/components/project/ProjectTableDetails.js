@@ -41,10 +41,10 @@ const ProjectTableDetails = (props) => {
     currentAZ,
     colSpan,
   } = props;
+  const parentAZ = parentResource.per_az.find((paz) => paz[0] == az[0]);
   const { metadata } = project;
   const { name: projectName, id: projectID } = metadata;
-  const { quota, capacity, unit } = resource;
-  const commitmentsInAZ = az[1];
+  const { quota, unit } = resource;
   const { commitments } = projectStore();
   const { currentProject } = createCommitmentStore();
   const { refetchCommitmentAPI } = createCommitmentStore();
@@ -123,7 +123,7 @@ const ProjectTableDetails = (props) => {
             commitment={az.commitmentSum}
             quota={getQuotaForAZLevel(az[1], quota)}
             tracksQuota={tracksQuota}
-            parentQuota={parentResource?.quota}
+            parentQuota={getQuotaForAZLevel(parentAZ[1], parentResource?.quota)}
             editableResource={true}
             equallySized={true}
             clusterQuotaView={true}

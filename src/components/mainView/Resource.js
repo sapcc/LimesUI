@@ -86,6 +86,12 @@ const Resource = (props) => {
   // Bar length on project/domain level is Quota. On Cluster level it is capacity.
   const capacityOrQuota = scope.isCluster() ? capacity || 0 : originalQuota;
 
+  function getQuotaOrCapacityForAZResource(az, capacity, quota) {
+    return scope.isCluster()
+      ? getCapacityForAZLevel(az, capacity)
+      : getQuotaForAZLevel(az, quota);
+  }
+
   return (
     <div
       className={
@@ -140,9 +146,19 @@ const Resource = (props) => {
         {props.resource.per_az?.map((az) => {
           const azName = az[0];
           const commitmentsInAZ = az[1];
-          const azQuotaOrCapacity = scope.isCluster()
-            ? getCapacityForAZLevel(az[1], capacity)
-            : getQuotaForAZLevel(az[1], originalQuota);
+          const azQuotaOrCapacity = getQuotaOrCapacityForAZResource(
+            az[1],
+            capacity,
+            originalQuota
+          );
+          const parentAZ = parentResource.per_az.find(
+            (paz) => paz[0] == azName
+          );
+          const parentQuotaOrCapacity = getQuotaOrCapacityForAZResource(
+            parentAZ[1],
+            parentResource.capacity,
+            parentResource.quota
+          );
           return (
             azName !== "any" && (
               <div
@@ -167,7 +183,7 @@ const Resource = (props) => {
                   isAZ={true}
                   commitment={az.commitmentSum}
                   quota={azQuotaOrCapacity}
-                  parentQuota={parentResource?.quota}
+                  parentQuota={parentQuotaOrCapacity}
                   tracksQuota={tracksQuota}
                   isPanelView={isPanelView}
                   editableResource={editableResource}
