@@ -108,9 +108,9 @@ const ProjectTableDetails = (props) => {
                 updateShowCommitments(index);
               }}
             />
-            <Stack direction={"vertical"}>
-              {scope.isCluster() ? metadata.fullName : projectName}
-              <div className="text-xs">{projectID}</div>
+            <Stack direction={"vertical"} className="w-full">
+              <div className="truncate">{scope.isCluster() ? metadata.fullName : projectName}</div>
+              <div className="text-xs truncate">{projectID}</div>
             </Stack>
           </Stack>
         </DataGridCell>
