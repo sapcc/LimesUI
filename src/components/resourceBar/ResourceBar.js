@@ -54,6 +54,9 @@ const disabledLable = `
   font-bold
 `;
 
+const usageExceedsCapacity =
+  "repeating-linear-gradient(55deg,#c9302c ,#c9302c  8px,#d9534f 8px,#d9534f 16px)";
+
 const ResourceBar = (props) => {
   const outerDivRef = React.useRef(null);
   const {
@@ -96,7 +99,7 @@ const ResourceBar = (props) => {
           </span>
           <div
             key="filled"
-            className={`${noneResourceBar} ${equallySized ? "h-4" : "h-8"}`}
+            className={`${noneResourceBar} ${equallySized ? "h-4" : "h-7"}`}
             style={{ width: "100%" }}
           ></div>
         </Stack>
@@ -111,11 +114,29 @@ const ResourceBar = (props) => {
     let widthCommitment =
       Math.round((1000 * extraFillValue) / extraCapacityValue) / 10;
 
-    //special cases: purple
-    let className =
-      commitment > 0 || !canEdit
-        ? "progress-bar"
-        : "progress-bar bg-sap-purple-2";
+    // special cases:
+    // purple: Occurs when usage > commitments. Do not display purple if resource is not managable.
+    // gradient: Occurs if usage > capacity. Displays a striped bar.
+    let className;
+    if (commitment > 0 || !canEdit) {
+      className = "progress-bar";
+    } else {
+      className = "progress-bar bg-sap-purple-2";
+    }
+
+    let gradientSingleBar;
+    if (commitment == 0 && fill > capacity) {
+      gradientSingleBar = {
+        background: usageExceedsCapacity,
+      };
+    }
+
+    let gradientExtraBar;
+    if (commitment > 0 && extraFillValue > extraCapacityValue) {
+      gradientExtraBar = {
+        background: usageExceedsCapacity,
+      };
+    }
 
     const label = (
       <span
@@ -139,8 +160,14 @@ const ResourceBar = (props) => {
     );
 
     let filled = className;
-    let barStyleFilled = { width: widthPercent + "%" };
-    let barStyleCommitment = { width: widthCommitment + "%" };
+    let barStyleFilled = {
+      width: widthPercent + "%",
+      background: gradientSingleBar?.background,
+    };
+    let barStyleCommitment = {
+      width: widthCommitment + "%",
+      background: gradientExtraBar?.background,
+    };
     if (disabled) {
       filled = "progress-bar progress-bar-disabled has-label";
     }
@@ -152,7 +179,7 @@ const ResourceBar = (props) => {
         <Stack
           direction="vertical"
           distribution="between"
-          style={commitment > 0 ? { width: "70%" } : { width: "100%" }}
+          style={{ width: commitment > 0 ? "70%" : "100%" }}
         >
           {label}
           <div
