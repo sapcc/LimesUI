@@ -171,6 +171,7 @@ const Resource = (props) => {
                     : `az-bar ${azOverviewBar}`
                 }`}
                 onClick={() => {
+                  if (!props.isPanelView) return;
                   resetCommitment(az);
                 }}
               >
