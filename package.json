@@ -86,6 +86,11 @@
       "value": "false",
       "type": "optional",
       "description": "Wheter the API data should be mocked."
+    },
+    "local": {
+      "value": false,
+      "type": "optional",
+      "description": "Used to display debug log data in local development."
     }
   },
   "dependencies": {

@@ -60,7 +60,9 @@ const App = (props = {}) => {
     const timer = setTimeout(() => {
       getToken();
     }, timeout);
-    console.log(token);
+    if(props.local) {
+      console.log(token);
+    }
     setToken(token.authToken);
     return timer;
   }
