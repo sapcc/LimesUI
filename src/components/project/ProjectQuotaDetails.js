@@ -86,7 +86,7 @@ const ProjectQuotaDetails = (props) => {
             autoFocus={true}
             onChange={(e) => handleInput(e)}
           />
-        ) : maxQuota ? (
+        ) : maxQuota >= 0 ? (
           valueWithUnit(maxQuota, unit)
         ) : (
           "Not set"
