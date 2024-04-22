@@ -4,7 +4,15 @@ import { clusterStore, clusterStoreActions } from "../StoreProvider";
 import ProjectsPerDomain from "./ProjectsPerDomain";
 
 const DomainManager = (props) => {
-  const { serviceType, currentCategory, currentResource, parentResource, currentAZ } = props;
+  const {
+    serviceType,
+    currentCategory,
+    currentResource,
+    parentResource,
+    currentAZ,
+    subRoute,
+    setMaxQuota,
+  } = props;
   const { domainData } = clusterStore();
   const { setDomainData } = clusterStoreActions();
   const domainQueryResult = useQuery({
@@ -29,6 +37,8 @@ const DomainManager = (props) => {
         domains={domainData}
         currentCategory={currentCategory}
         currentAZ={currentAZ}
+        subRoute={subRoute}
+        setMaxQuota={setMaxQuota}
       />
     )
   );

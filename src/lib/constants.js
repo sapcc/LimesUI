@@ -1,5 +1,5 @@
-export const COMMITMENTID = "AddCommitment"
-export const ADVANCEDVIEW="advancedView"
+export const COMMITMENTID = "AddCommitment";
+export const ADVANCEDVIEW = "advancedView";
 
 //used to reset the last commitment to default values.
 export const initialCommitmentObject = {
@@ -11,6 +11,11 @@ export const initialCommitmentObject = {
   unit: "",
   duration: "",
 };
+
+// Distinguish EditPanels with different purposes.
+export const PanelType = Object.freeze({
+  quota: { name: "quota" },
+});
 
 export const STRINGS = {
   autoscaling: "Autoscaling",

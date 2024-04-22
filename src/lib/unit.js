@@ -101,7 +101,7 @@ export class Unit {
   //    Unit('MiB').parse('10 whatever') => { error: 'syntax' }
   //    Unit('MiB').parse('10 KiB')      => { error: 'fractional-value' }
   //    Unit('MiB').parse('1024 KiB')    => 1
-  parse(input) {
+  parse(input, commitment = true) {
     //check overall syntax "<value> [<unit>]"
     const baseMatch = /^\s*([0-9.,]+)\s*([a-zA-Z]*)\s*$/.exec(input);
     if (baseMatch === null) {
@@ -113,7 +113,7 @@ export class Unit {
       return { error: "syntax" };
     }
 
-    if (baseMatch[1] == 0) {
+    if (baseMatch[1] == 0 && commitment) {
       return { error: "cannot create empty commitments." };
     }
 

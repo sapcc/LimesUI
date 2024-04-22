@@ -32,7 +32,7 @@ const PanelManager = (props) => {
   const { setDeleteCommitment } = createCommitmentStoreActions();
   const navigate = useNavigate();
   const params = useParams();
-  const { currentArea, categoryName, resourceName } = { ...params };
+  const { currentArea, categoryName, resourceName, subRoute } = { ...params };
   const { serviceType } = props.categories[categoryName];
   const { resources } = props.categories[categoryName];
   const currentResource = getCurrentResource(resources, resourceName);
@@ -94,6 +94,7 @@ const PanelManager = (props) => {
           parentResource={parentResource}
           currentArea={currentArea}
           currentCategory={categoryName}
+          subRoute={subRoute}
         />
       </Panel>
     )

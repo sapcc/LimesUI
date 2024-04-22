@@ -16,6 +16,8 @@ const ProjectManager = (props) => {
     currentResource,
     currentAZ,
     parentResource,
+    subRoute,
+    setMaxQuota,
   } = props;
   const resourceName = currentResource.name;
   const parentResourceName = parentResource.name;
@@ -25,7 +27,12 @@ const ProjectManager = (props) => {
   const { setProjects } = domainStoreActions();
   const { restructureReport } = globalStoreActions();
   const projectsQueryResult = useQuery({
-    queryKey: ["projectsInDomain", serviceType, resourceName, parentResourceName],
+    queryKey: [
+      "projectsInDomain",
+      serviceType,
+      resourceName,
+      parentResourceName,
+    ],
   });
   const { data: projectsInDomain, isLoading } = projectsQueryResult;
   const sortProjects = React.useRef(true);
@@ -55,6 +62,8 @@ const ProjectManager = (props) => {
       currentResource={currentResource}
       currentAZ={currentAZ}
       projects={projects}
+      subRoute={subRoute}
+      setMaxQuota={setMaxQuota}
     />
   ) : (
     <LoadingIndicator className={`m-auto`} />

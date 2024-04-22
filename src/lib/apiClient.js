@@ -118,6 +118,28 @@ const useQueryClientFn = (isMockApi) => {
         return responseHandler(response);
       },
     });
+
+    queryClient.setMutationDefaults(["setMaxQuota"], {
+      mutationFn: async ({ payload, targetDomain, targetProject }) => {
+        targetDomain ? (did = targetDomain) : (did = domainID);
+        const url = `${endpoint}/v1/domains/${did}/projects/${targetProject}/max-quota`;
+        const response = await fetch(url, {
+          method: "PUT",
+          headers: {
+            Accept: "application/json",
+            "X-Auth-Token": token,
+          },
+          body: JSON.stringify(payload),
+        });
+        if (!response.ok) {
+          throw new Error(
+            `Network error while dseleting project data for ${projectID} Code: ${response.status}`
+          );
+        }
+        return response;
+      },
+    });
+
     setApiReady(true);
   }, [queryClient, endpoint, token, projectID, domainID]);
 

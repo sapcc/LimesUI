@@ -6,6 +6,7 @@ import {
   getParentResourceFor,
   tracksQuota,
 } from "../../lib/utils";
+import { PanelType } from "../../lib/constants";
 import {
   globalStore,
   domainStoreActions,
@@ -25,11 +26,62 @@ import {
   LoadingIndicator,
   Button,
 } from "juno-ui-components";
+import ProjectQuotaDetails from "./ProjectQuotaDetails";
+
+const projectTableHeadCells = [
+  {
+    key: "projectName",
+    label: "ProjectName",
+  },
+  {
+    key: "resourceBar",
+    label: "Status",
+  },
+  {
+    key: "labels",
+    label: "Labels",
+  },
+  {
+    key: "Actions",
+    label: "Actions",
+  },
+];
+
+const quotaTableHeadCells = [
+  {
+    key: "projectName",
+    label: "ProjectName",
+  },
+  {
+    key: "projectUsage",
+    label: "Usage",
+  },
+  {
+    key: "projectQuota",
+    label: "Quota",
+  },
+  {
+    key: "projectMaxQuota",
+    label: "Max-Quota",
+  },
+  {
+    key: "Actions",
+    label: "Actions",
+  },
+];
 
 // Display the project details in DomainView
 const ProjectTable = (props) => {
-  const { serviceType, currentResource, currentCategory, currentAZ, projects } =
-    props;
+  const {
+    serviceType,
+    currentResource,
+    currentCategory,
+    currentAZ,
+    projects,
+    subRoute,
+    setMaxQuota,
+  } = props;
+  const resourceTracksQuota = tracksQuota(currentResource);
   const { scope } = globalStore();
   const { previousProject } = domainStore();
   const { setPreviousProject } = domainStoreActions();
@@ -41,29 +93,21 @@ const ProjectTable = (props) => {
   const [filteredProjects, setFilteredProjects] = React.useState([]);
   const [currentPage, setCurrentPage] = React.useState(0);
   const [input, setInput] = React.useState(null);
+  
+  if (!resourceTracksQuota && subRoute) return;
 
-  const projectTableHeadCells = [
-    {
-      key: "projectName",
-      label: "ProjectName",
-    },
-    {
-      key: "resourceBar",
-      label: "Status",
-    },
-    {
-      key: "labels",
-      label: "Labels",
-    },
-    {
-      key: "Actions",
-      label: "Actions",
-    },
-  ];
-  // TODO: Make the colum sizes dynamic, text should probably be ellipsis.
-  const gridColumSize = scope.isDomain()
-    ? "25% 35% 20% 20%"
-    : "25% 30% 20% 25%";
+  let headCells;
+  let gridColumSize;
+  switch (subRoute) {
+    case PanelType.quota.name:
+      gridColumSize = "25% 20% 20% 20% 15%";
+      headCells = quotaTableHeadCells;
+      break;
+    default:
+      gridColumSize = scope.isDomain() ? "25% 35% 20% 20%" : "25% 30% 20% 25%";
+      headCells = projectTableHeadCells;
+  }
+
   // Tailwind only accepts complete class names as string, otherwise it won't create the corresponding CSS.
   const colSpan = "col-span-4";
 
@@ -118,7 +162,9 @@ const ProjectTable = (props) => {
 
   return projects ? (
     <>
-      <ContentAreaToolbar className={"p-0 sticky top-24 z-[100]"}>
+      <ContentAreaToolbar
+        className={`p-0 sticky ${subRoute ? "top-8" : "top-24"} z-[100]`}
+      >
         <Stack className="w-full" direction="horizontal" distribution="between">
           <Stack>
             <Filters
@@ -135,15 +181,17 @@ const ProjectTable = (props) => {
                 />
               }
             />
-            <Button
-              onClick={() => {
-                setToast(null);
-                setSortedProjects(projects);
-              }}
-              className={"m-auto"}
-            >
-              Sort
-            </Button>
+            {!subRoute && (
+              <Button
+                onClick={() => {
+                  setToast(null);
+                  setSortedProjects(projects);
+                }}
+                className={"m-auto"}
+              >
+                Sort
+              </Button>
+            )}
           </Stack>
           <Pagination
             currentPage={currentPage + 1}
@@ -166,15 +214,14 @@ const ProjectTable = (props) => {
           />
         </Stack>
       </ContentAreaToolbar>
-      <DataGrid
-        columns={projectTableHeadCells.length}
-        gridColumnTemplate={gridColumSize}
-      >
+      <DataGrid columns={headCells.length} gridColumnTemplate={gridColumSize}>
         <DataGridRow>
-          {projectTableHeadCells.map((headCell) => (
+          {headCells.map((headCell) => (
             <DataGridHeadCell
               key={headCell.key}
-              className={"p-0 sticky top-40 z-[100]"}
+              className={`p-0 sticky ${
+                subRoute ? "top-[6.5rem]" : "top-40"
+              } z-[100]`}
             >
               {headCell.label}
             </DataGridHeadCell>
@@ -188,7 +235,6 @@ const ProjectTable = (props) => {
               resources,
               currentResource.name
             );
-            const resourceTracksQuota = tracksQuota(currentResource);
             // Expecting the resource and optionally its parent in the object
             // Therefore only identifying the parent recursively is not sufficient.
             const parentResource =
@@ -199,7 +245,7 @@ const ProjectTable = (props) => {
               const azName = az[0];
               return azName === currentAZ;
             });
-            return (
+            return !subRoute ? (
               <ProjectTableDetails
                 key={project.metadata.id}
                 index={index}
@@ -217,6 +263,14 @@ const ProjectTable = (props) => {
                 az={az[0]}
                 currentAZ={currentAZ}
                 colSpan={colSpan}
+              />
+            ) : (
+              <ProjectQuotaDetails
+                key={project.metadata.id}
+                serviceType={serviceType}
+                project={project}
+                resource={resource}
+                setMaxQuota={setMaxQuota}
               />
             );
           })}

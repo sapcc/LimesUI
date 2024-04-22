@@ -89,7 +89,7 @@ const ResourceBar = (props) => {
           direction="vertical"
           distribution="between"
           className="mb-2"
-          style={{width: commitment > 0 ? "70%" : "100%"}}
+          style={{ width: commitment > 0 ? "70%" : "100%" }}
         >
           <span
             className={`progress-bar-label ${disabledLable} ${

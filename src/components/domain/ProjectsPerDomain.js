@@ -20,6 +20,8 @@ const ProjectsPerDomain = (props) => {
     resource,
     parentResource,
     currentAZ,
+    subRoute,
+    setMaxQuota,
   } = props;
   const resourceName = resource.name;
   const parentResourceName = parentResource.name;
@@ -30,7 +32,13 @@ const ProjectsPerDomain = (props) => {
   const projectQueries = useQueries({
     queries: domains.map((domain) => {
       return {
-        queryKey: ["projectsInDomain", serviceType, resourceName, parentResourceName, domain.id],
+        queryKey: [
+          "projectsInDomain",
+          serviceType,
+          resourceName,
+          parentResourceName,
+          domain.id,
+        ],
       };
     }),
   });
@@ -84,6 +92,8 @@ const ProjectsPerDomain = (props) => {
       currentCategory={currentCategory}
       currentAZ={currentAZ}
       projects={projects}
+      subRoute={subRoute}
+      setMaxQuota={setMaxQuota}
     />
   ) : (
     <LoadingIndicator className={`m-auto`} />

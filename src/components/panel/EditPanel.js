@@ -29,6 +29,7 @@ const EditPanel = (props) => {
     tracksQuota,
     parentResource,
     currentCategory,
+    subRoute,
   } = {
     ...props,
   };
@@ -36,7 +37,6 @@ const EditPanel = (props) => {
   const [canConfirm, setCanConfirm] = React.useState(null);
   const { commitments } = projectStore();
   const { setRefetchProjectAPI } = projectStoreActions();
-  const { addCommitment } = projectStoreActions();
   const commit = useMutation({
     mutationKey: ["newCommitment"],
   });
@@ -51,6 +51,9 @@ const EditPanel = (props) => {
   });
   const commitmentDelete = useMutation({
     mutationKey: ["deleteCommitment"],
+  });
+  const maxQuota = useMutation({
+    mutationKey: ["setMaxQuota"],
   });
   const { resetCommitmentTransfer } = useResetCommitment();
   const { commitment: newCommitment } = createCommitmentStore();
@@ -70,7 +73,6 @@ const EditPanel = (props) => {
   const { setIsSubmitting } = createCommitmentStoreActions();
   const { setIsCommitting } = createCommitmentStoreActions();
   const { setDeleteCommitment } = createCommitmentStoreActions();
-
   const { setToast } = createCommitmentStoreActions();
   const { setCurrentAZ } = createCommitmentStoreActions();
 
@@ -254,6 +256,29 @@ const EditPanel = (props) => {
     );
   }
 
+  // maxQuota can be set for a project with n services and m resources.
+  function setMaxQuota(project, domainID, projectID) {
+    if (!project) return;
+    const targetDomainID = domainID || null;
+    const targetProjectID = projectID;
+
+    maxQuota.mutate(
+      {
+        payload: project,
+        targetDomain: targetDomainID,
+        targetProject: targetProjectID,
+      },
+      {
+        onSuccess: () => {
+          setRefetchProjectAPI(true);
+        },
+        onError: (error) => {
+          setToast(error.toString());
+        },
+      }
+    );
+  }
+
   function onPostModalClose() {
     setIsSubmitting(false);
     setCanConfirm(null);
@@ -285,6 +310,7 @@ const EditPanel = (props) => {
         currentAZ={currentAZ}
         tracksQuota={tracksQuota}
         isPanelView={true}
+        subRoute={subRoute}
       />
       <div className={"sticky top-0 z-[100] bg-juno-grey-light-1 h-8"}>
         {toast.message && (
@@ -296,7 +322,12 @@ const EditPanel = (props) => {
           />
         )}
       </div>
-      <AvailabilityZoneNav az={currentResource.per_az} currentAZ={currentAZ} />
+      {!subRoute && (
+        <AvailabilityZoneNav
+          az={currentResource.per_az}
+          currentAZ={currentAZ}
+        />
+      )}
       {scope.isProject() && commitments && (
         <CommitmentTable
           serviceType={serviceType}
@@ -314,6 +345,8 @@ const EditPanel = (props) => {
           parentResource={parentResource}
           currentResource={currentResource}
           currentAZ={currentAZ}
+          subRoute={subRoute}
+          setMaxQuota={setMaxQuota}
         />
       )}
       {scope.isCluster() && (
@@ -323,6 +356,8 @@ const EditPanel = (props) => {
           parentResource={parentResource}
           currentResource={currentResource}
           currentAZ={currentAZ}
+          subRoute={subRoute}
+          setMaxQuota={setMaxQuota}
         />
       )}
       {isSubmitting && canConfirm != null && (

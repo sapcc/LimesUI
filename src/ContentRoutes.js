@@ -26,7 +26,12 @@ const ContentRoutes = (props) => {
               <Route
                 path="edit/:categoryName/:resourceName"
                 element={<PanelManager {...parsedData} />}
-              />
+              >
+                <Route
+                  path=":subRoute"
+                  element={<PanelManager {...parsedData} />}
+                />
+              </Route>
             </Route>
           </Routes>
         </HashRouter>

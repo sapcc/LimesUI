@@ -1,6 +1,7 @@
 import React from "react";
 import { globalStore } from "../StoreProvider";
 import { t } from "../../lib/utils";
+import { PanelType } from "../../lib/constants";
 import {
   getCapacityForAZLevel,
   getQuotaForAZLevel,
@@ -75,7 +76,7 @@ const Resource = (props) => {
     editableResource,
   } = props.resource;
   const { scope } = globalStore();
-  const { tracksQuota, parentResource, isPanelView } = {
+  const { tracksQuota, parentResource, isPanelView, subRoute } = {
     ...props,
   };
   const displayName = t(props.resource.name);
@@ -108,19 +109,32 @@ const Resource = (props) => {
       <Stack distribution="between" className={`bar-header ${barHeader}`}>
         <div className={`bar-title ${barTitle}`}>{displayName}</div>
         {props.canEdit && editableResource && (
-          <Link
-            to={`/${props.area}/edit/${props.categoryName}/${props.resource.name}`}
-            state={props}
-          >
-            <Button
-              data-cy={`edit/${props.resource.name}`}
-              size="small"
-              variant="subdued"
-              icon="edit"
+          <Stack>
+            {!scope.isProject() && <div className="mr-1 font-normal text-sm m-auto">Manage:</div>}
+            <Link
+              to={`/${props.area}/edit/${props.categoryName}/${props.resource.name}`}
+              state={props}
             >
-              Manage
-            </Button>
-          </Link>
+              <Button
+                data-cy={`edit/${props.resource.name}`}
+                size="small"
+                variant="subdued"
+                icon="edit"
+              >
+                {scope.isProject() ? "Manage" : "Commitments"}
+              </Button>
+            </Link>
+            {!scope.isProject() && tracksQuota && (
+              <Link
+                to={`/${props.area}/edit/${props.categoryName}/${props.resource.name}/${PanelType.quota.name}`}
+                state={props}
+              >
+                <Button className="ml-1" size="small" icon="edit">
+                  Quota
+                </Button>
+              </Link>
+            )}
+          </Stack>
         )}
         {scope.isProject() && props.isPanelView && (
           <AddCommitments label="Add Commitment" />
@@ -166,12 +180,13 @@ const Resource = (props) => {
                 className={`az-bar ${
                   props.isPanelView
                     ? `az-bar ${barGroupContainer} ${
-                        azName !== "unknown" && azContentHover
+                        !subRoute && azName !== "unknown" && azContentHover
                       }`
                     : `az-bar ${azOverviewBar}`
                 }`}
                 onClick={() => {
-                  if (!props.isPanelView) return;
+                  if (!props.isPanelView || subRoute || azName == "unknown")
+                    return;
                   resetCommitment(az);
                 }}
               >

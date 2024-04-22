@@ -165,11 +165,6 @@ const ProjectTableDetails = (props) => {
               >
                 Move
               </Button>
-              {false && (
-                <Button className={"ml-1"} variant="primary" size="small">
-                  Edit
-                </Button>
-              )}
             </div>
           ) : (
             <Button
