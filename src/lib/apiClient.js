@@ -94,9 +94,8 @@ const useQueryClientFn = (isMockApi) => {
           },
         });
         if (!response.ok) {
-          throw new Error(
-            `Network error while dseleting project data for ${projectID} Code: ${response.status}`
-          );
+          const text = await response.text();
+          throw new Error(`Network error: ${text} (Code: ${response.status})`);
         }
         return response;
       },
@@ -132,9 +131,8 @@ const useQueryClientFn = (isMockApi) => {
           body: JSON.stringify(payload),
         });
         if (!response.ok) {
-          throw new Error(
-            `Network error while dseleting project data for ${projectID} Code: ${response.status}`
-          );
+          const text = await response.text();
+          throw new Error(`Network error: ${text} (Code: ${response.status})`);
         }
         return response;
       },
