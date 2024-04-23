@@ -35,7 +35,6 @@ const ProjectQuotaDetails = (props) => {
     let parsedInput = unit.parse(inputRef.current, false);
     // input of "" sets the maxQuota to null in the database.
     if (inputRef.current == "") parsedInput = null;
-    console.log(inputRef.current);
     if (parsedInput?.error) {
       setInvalidInput(true);
       setToast(parsedInput.error);
@@ -44,7 +43,6 @@ const ProjectQuotaDetails = (props) => {
     const parseTarget = serializeProject(parsedInput);
     const domainID = project?.metadata.domainID || null;
     const projectID = project.metadata.id;
-    console.log(parseTarget);
     setMaxQuota(parseTarget, domainID, projectID);
     setIsEditing(false);
   }
