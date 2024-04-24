@@ -24,6 +24,17 @@ const ProjectQuotaDetails = (props) => {
   const { setToast } = createCommitmentStoreActions();
   const [isEditing, setIsEditing] = React.useState(false);
   const [invalidInput, setInvalidInput] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState({
+    state: false,
+    projectID: null,
+  });
+
+  React.useEffect(() => {
+    if (!isLoading.projectID) return;
+    if (isLoading.projectID != project.metadata.id) return;
+    setIsLoading({ state: false, projectID: null });
+    setIsEditing(false);
+  }, [resource]);
 
   function handleInput(e) {
     setInvalidInput(false);
@@ -43,8 +54,8 @@ const ProjectQuotaDetails = (props) => {
     const parseTarget = serializeProject(parsedInput);
     const domainID = project?.metadata.domainID || null;
     const projectID = project.metadata.id;
+    setIsLoading({ state: true, projectID: projectID });
     setMaxQuota(parseTarget, domainID, projectID);
-    setIsEditing(false);
   }
 
   function serializeProject(maxQuota) {
@@ -110,6 +121,7 @@ const ProjectQuotaDetails = (props) => {
             <Button
               size="small"
               variant="primary"
+              progress={isLoading.state}
               onClick={() => {
                 handleSave();
               }}
