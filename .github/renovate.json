@@ -1,0 +1,24 @@
+{
+  "extends": [
+    "config:base",
+    "default:pinDigestsDisabled",
+    "mergeConfidence:all-badges",
+    "docker:disable"
+  ],
+  "assignees": [
+    "I539149",
+    "d063094"
+  ],
+  "commitMessageAction": "Renovate: Update",
+  "constraints": {
+    "node": ">= 18"
+  },
+  "dependencyDashboardOSVVulnerabilitySummary": "all",
+  "osvVulnerabilityAlerts": true,
+  "postUpdateOptions": [ "npmDedupe" ],
+  "prHourlyLimit": 0,
+  "schedule": [
+    "on Friday"
+  ],
+  "semanticCommits": "disabled"
+}
