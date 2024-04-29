@@ -53,14 +53,11 @@ const AppResourceContent = (props) => {
   }, [commitmentAPIData]);
 
   return (
-    commitments &&
-    !commitmentIsLoading && (
-      <ContentRoutes
-        queryResult={projectQueryResult}
-        parsedData={projectData}
-        canEdit={props.canEdit}
-      />
-    )
+    <ContentRoutes
+      queryResult={projectQueryResult}
+      parsedData={projectData}
+      canEdit={props.canEdit}
+    />
   );
 };
 
