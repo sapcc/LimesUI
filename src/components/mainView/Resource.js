@@ -6,6 +6,10 @@ import {
   getCapacityForAZLevel,
   getQuotaForAZLevel,
   getUsageForAZLevel,
+  getUsageForLeftBar,
+  getUsageForRightBar,
+  getTotalUsageForLeftBar,
+  getTotalUsageForRightBar,
 } from "../../lib/resourceBarValues";
 import { Stack, Button } from "juno-ui-components";
 import { Link } from "react-router-dom";
@@ -110,7 +114,9 @@ const Resource = (props) => {
         <div className={`bar-title ${barTitle}`}>{displayName}</div>
         {props.canEdit && editableResource && (
           <Stack>
-            {!scope.isProject() && <div className="mr-1 font-normal text-sm m-auto">Manage:</div>}
+            {!scope.isProject() && (
+              <div className="mr-1 font-normal text-sm m-auto">Manage:</div>
+            )}
             <Link
               to={`/${props.area}/edit/${props.categoryName}/${props.resource.name}`}
               state={props}
@@ -142,8 +148,16 @@ const Resource = (props) => {
       </Stack>
       <ResourceBarBuilder
         unit={unitName}
-        usage={displayedUsage}
-        usageBurstSum={usagePerQuota}
+        usage={
+          scope.isProject()
+            ? displayedUsage
+            : getTotalUsageForLeftBar(props.resource)
+        }
+        usageBurstSum={
+          scope.isProject()
+            ? usagePerQuota
+            : getTotalUsageForRightBar(props.resource)
+        }
         commitment={totalCommitments}
         quota={capacityOrQuota}
         parentQuota={parentResource?.quota}
@@ -195,7 +209,16 @@ const Resource = (props) => {
                 </div>
                 <ResourceBarBuilder
                   unit={unitName}
-                  usage={getUsageForAZLevel(commitmentsInAZ)}
+                  usage={
+                    scope.isProject()
+                      ? getUsageForAZLevel(commitmentsInAZ)
+                      : getUsageForLeftBar(commitmentsInAZ)
+                  }
+                  usageBurstSum={
+                    scope.isProject()
+                      ? null
+                      : getUsageForRightBar(commitmentsInAZ)
+                  }
                   isAZ={true}
                   commitment={az.commitmentSum}
                   quota={azQuotaOrCapacity}

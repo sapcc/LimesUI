@@ -12,7 +12,7 @@ export const initialCommitmentObject = {
   duration: "",
 };
 
-// Distinguish EditPanels with different purposes.
+// Distinguish EditPanels with different purposes. F.e.: Max-Quota Editing or Commitment creation.
 export const PanelType = Object.freeze({
   quota: { name: "quota" },
 });
