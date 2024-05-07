@@ -25,7 +25,7 @@ export function getTotalUsageForLeftBar(resource) {
     if (az.commitmentSum > 0) {
       totalUsage += getUsageForLeftBar(az[1]);
     } else if (resource.totalCommitments == 0) {
-      totalUsage += az[1].usage;
+      totalUsage += getUsageForAZLevel(az[1]);
     } else {
       totalUsage += 0;
     }
@@ -41,7 +41,7 @@ export function getTotalUsageForRightBar(resource) {
     // No commitments available => The usage gets added to the right bar, because it's uncommitted usage.
     az.commitmentSum > 0
       ? (totalUsage += getUsageForRightBar(az[1]))
-      : (totalUsage += az[1].usage);
+      : (totalUsage += getUsageForAZLevel(az[1]));
   });
 
   return totalUsage;
@@ -59,9 +59,10 @@ export function getUsageForLeftBar(az) {
 
 export function getUsageForRightBar(az) {
   const commitmentSum = getCommitmentSumPerAZ(az);
+  const usage = getUsageForAZLevel(az);
   const rightBarUsage =
     az.uncommitted_usage ??
-    az.usage - (commitmentSum - (az.unused_commitments || 0));
+    usage - (commitmentSum - (az.unused_commitments || 0));
 
   return rightBarUsage;
 }
