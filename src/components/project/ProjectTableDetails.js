@@ -94,6 +94,7 @@ const ProjectTableDetails = (props) => {
   }, [currentProject]);
 
   // TODO: As soon as the limes API is ready, activate the transfer commitment (move) button.
+  const displayedName = scope.isCluster() ? metadata.fullName : projectName;
   return (
     <React.Fragment>
       <DataGridRow>
@@ -109,7 +110,7 @@ const ProjectTableDetails = (props) => {
               }}
             />
             <Stack direction={"vertical"} className="w-full">
-              <div className="truncate">{scope.isCluster() ? metadata.fullName : projectName}</div>
+              <div className="truncate" title={displayedName}>{displayedName}</div>
               <div className="text-xs truncate">{projectID}</div>
             </Stack>
           </Stack>
