@@ -88,7 +88,8 @@ The difference between State and the Store is the following:
 - State: Remembers a variable value throughout rerenders for a component. Can be passed to components that the parent component calls.
 - Store: Remembers variable values throughout rerenders that can be accessed from components other than the direct decendents of a parent component.
 
-The following image displays an overview for the store structure:
+The following image displays an overview of the store structure:
+
 ![Store-Structure](./images/sore-overview.png)
 
 Each store contains:
