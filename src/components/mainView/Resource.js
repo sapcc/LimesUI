@@ -205,7 +205,7 @@ const Resource = (props) => {
                 }}
               >
                 <div className={`az-title ${azTitle} flex justify-between`}>
-                  {azName} <ProjectBadges az={commitmentsInAZ} />
+                  {azName} <ProjectBadges az={commitmentsInAZ} unit={unitName}/>
                 </div>
                 <ResourceBarBuilder
                   unit={unitName}

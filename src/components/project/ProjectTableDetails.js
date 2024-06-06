@@ -110,7 +110,9 @@ const ProjectTableDetails = (props) => {
               }}
             />
             <Stack direction={"vertical"} className="w-full">
-              <div className="truncate" title={displayedName}>{displayedName}</div>
+              <div className="truncate" title={displayedName}>
+                {displayedName}
+              </div>
               <div className="text-xs truncate">{projectID}</div>
             </Stack>
           </Stack>
