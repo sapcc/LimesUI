@@ -47,7 +47,8 @@ const ProjectBadges = (props) => {
         <Badge variant="info">
           {" "}
           <b>
-            + {unit.name != "" && valueWithUnit(pendingAmount, unit)} pending
+            + {props.displayValues && valueWithUnit(pendingAmount, unit)}{" "}
+            pending
           </b>
         </Badge>
       )}
@@ -55,7 +56,8 @@ const ProjectBadges = (props) => {
         <Badge variant="info" className={`${pending && "ml-1"}`}>
           {" "}
           <b>
-            + {unit.name != "" && valueWithUnit(plannedAmount, unit)} planned
+            + {props.displayValues && valueWithUnit(plannedAmount, unit)}{" "}
+            planned
           </b>
         </Badge>
       )}
