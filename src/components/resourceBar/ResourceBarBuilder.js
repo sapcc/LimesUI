@@ -29,7 +29,8 @@ const ResourceBarBuilder = (props) => {
 
   // capacityLabel: displays commitments, quota or parentQuota (on usageOnly resources)
   const commitmentOrQuota = commitment > 0 ? commitment : quota;
-  const capacity = tracksQuota ? commitmentOrQuota : parentQuota;
+  const commitmentOrParentQuota = commitment > 0 ? commitment : parentQuota;
+  const capacity = tracksQuota ? commitmentOrQuota : commitmentOrParentQuota;
 
   // ExtraBar: displays values that exceed the commitment
   // The sum bar can display the second bar without completely filling the first bar.
@@ -39,7 +40,8 @@ const ResourceBarBuilder = (props) => {
   } else {
     extraFillValue = usage >= commitment ? usage - commitment : "0";
   }
-  let extraCapacityValue = quota - commitment;
+  const quotaOrParentQuota = tracksQuota ? quota : parentQuota;
+  let extraCapacityValue = quotaOrParentQuota - commitment;
   if (extraCapacityValue < 0) {
     extraCapacityValue = 0;
   }
@@ -51,7 +53,9 @@ const ResourceBarBuilder = (props) => {
       capacityLabel={valueWithUnit(capacity, unit)}
       extraFillLabel={valueWithUnit(extraFillValue, unit)}
       extraCapacityLabel={valueWithUnit(extraCapacityValue, unit)}
-      usageLabel={scope.isCluster() && !clusterQuotaView ? "capacity used" : "quota used"}
+      usageLabel={
+        scope.isCluster() && !clusterQuotaView ? "capacity used" : "quota used"
+      }
       fill={usage}
       capacity={capacity}
       commitment={commitment}
