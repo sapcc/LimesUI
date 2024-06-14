@@ -2,8 +2,6 @@ import React from "react";
 import {
   chunkProjects,
   getCurrentResource,
-  getContainingResourceFor,
-  getParentResourceFor,
   tracksQuota,
 } from "../../lib/utils";
 import { PanelType } from "../../lib/constants";
@@ -235,12 +233,6 @@ const ProjectTable = (props) => {
               resources,
               currentResource.name
             );
-            // Expecting the resource and optionally its parent in the object
-            // Therefore only identifying the parent recursively is not sufficient.
-            const parentResource =
-              resources.length == 2
-                ? getParentResourceFor(resources, currentResource.name)
-                : getContainingResourceFor(resources, currentResource.name);
             const az = resource.per_az.filter((az) => {
               const azName = az[0];
               return azName === currentAZ;
@@ -258,7 +250,6 @@ const ProjectTable = (props) => {
                 currentCategory={currentCategory}
                 project={project}
                 resource={resource}
-                parentResource={parentResource}
                 tracksQuota={resourceTracksQuota}
                 az={az[0]}
                 currentAZ={currentAZ}

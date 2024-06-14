@@ -8,7 +8,6 @@ const DomainManager = (props) => {
     serviceType,
     currentCategory,
     currentResource,
-    parentResource,
     currentAZ,
     subRoute,
     setMaxQuota,
@@ -33,7 +32,6 @@ const DomainManager = (props) => {
       <ProjectsPerDomain
         serviceType={serviceType}
         resource={currentResource}
-        parentResource={parentResource}
         domains={domainData}
         currentCategory={currentCategory}
         currentAZ={currentAZ}

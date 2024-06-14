@@ -80,7 +80,7 @@ const Resource = (props) => {
     editableResource,
   } = props.resource;
   const { scope } = globalStore();
-  const { tracksQuota, parentResource, isPanelView, subRoute } = {
+  const { tracksQuota, isPanelView, subRoute } = {
     ...props,
   };
   const displayName = t(props.resource.name);
@@ -96,6 +96,8 @@ const Resource = (props) => {
       ? getCapacityForAZLevel(az, capacity)
       : getQuotaForAZLevel(az, quota);
   }
+
+  console.log(props.resource.name, props.resource)
 
   return (
     <div
@@ -160,7 +162,6 @@ const Resource = (props) => {
         }
         commitment={totalCommitments}
         quota={capacityOrQuota}
-        parentQuota={parentResource?.quota}
         tracksQuota={tracksQuota}
         isPanelView={isPanelView}
         editableResource={editableResource}
@@ -178,14 +179,6 @@ const Resource = (props) => {
             az[1],
             capacity,
             originalQuota
-          );
-          const parentAZ = parentResource.per_az.find(
-            (paz) => paz[0] == azName
-          );
-          const parentQuotaOrCapacity = getQuotaOrCapacityForAZResource(
-            parentAZ[1],
-            parentResource.capacity,
-            parentResource.quota
           );
           return (
             azName !== "any" && (
@@ -227,7 +220,6 @@ const Resource = (props) => {
                   isAZ={true}
                   commitment={az.commitmentSum}
                   quota={azQuotaOrCapacity}
-                  parentQuota={parentQuotaOrCapacity}
                   tracksQuota={tracksQuota}
                   isPanelView={isPanelView}
                   editableResource={editableResource}

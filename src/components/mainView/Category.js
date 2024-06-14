@@ -3,7 +3,6 @@ import {
   t,
   sortByLogicalOrderAndName,
   tracksQuota,
-  getContainingResourceFor,
 } from "../../lib/utils";
 import Resource from "./Resource";
 
@@ -51,7 +50,6 @@ const Category = (props) => {
                 resource={res}
                 {...forwardProps}
                 tracksQuota={tracksQuota(res)}
-                parentResource={getContainingResourceFor(resources, res.name)}
               />
             );
           })}

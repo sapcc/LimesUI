@@ -27,7 +27,6 @@ const EditPanel = (props) => {
     serviceType,
     currentResource,
     tracksQuota,
-    parentResource,
     currentCategory,
     subRoute,
   } = {
@@ -306,7 +305,6 @@ const EditPanel = (props) => {
     <PanelBody>
       <Resource
         resource={currentResource}
-        parentResource={parentResource}
         currentAZ={currentAZ}
         tracksQuota={tracksQuota}
         isPanelView={true}
@@ -342,7 +340,6 @@ const EditPanel = (props) => {
         <ProjectManager
           serviceType={serviceType}
           currentCategory={currentCategory}
-          parentResource={parentResource}
           currentResource={currentResource}
           currentAZ={currentAZ}
           subRoute={subRoute}
@@ -353,7 +350,6 @@ const EditPanel = (props) => {
         <DomainManager
           serviceType={serviceType}
           currentCategory={currentCategory}
-          parentResource={parentResource}
           currentResource={currentResource}
           currentAZ={currentAZ}
           subRoute={subRoute}

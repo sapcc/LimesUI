@@ -18,13 +18,11 @@ const ProjectsPerDomain = (props) => {
     serviceType,
     currentCategory,
     resource,
-    parentResource,
     currentAZ,
     subRoute,
     setMaxQuota,
   } = props;
   const resourceName = resource.name;
-  const parentResourceName = parentResource.name;
   const { restructureReport } = globalStoreActions();
   const { setProjectsToDomain } = clusterStoreActions();
   const { projects } = domainStore();
@@ -36,7 +34,6 @@ const ProjectsPerDomain = (props) => {
           "projectsInDomain",
           serviceType,
           resourceName,
-          parentResourceName,
           domain.id,
         ],
       };

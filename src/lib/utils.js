@@ -87,23 +87,6 @@ export function getCurrentResource(resources, resourceName) {
   });
 }
 
-// get parent of provided resource
-// for usage-only resources with no quota of their own, this finds
-// the resource they're ultimately "contained_in"
-export function getContainingResourceFor(resources, resourceName) {
-  const res = resources.find((res) => res.name === resourceName);
-  if (res.contained_in) {
-    return getContainingResourceFor(resources, res.contained_in);
-  }
-  return res;
-}
-
-// For optimization reasons we only fetch the resource and its parent from the API.
-// This occurs in cases where we already recursively determined the parent beforehand.
-export function getParentResourceFor(resources, resourceName) {
-  return resources.find((res) => res.name !== resourceName);
-}
-
 // project chunks for table pagination in the EditPanel.
 export const chunkProjects = (projects) => {
   const projectChunks = [];

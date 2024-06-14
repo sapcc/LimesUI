@@ -10,7 +10,6 @@ const ResourceBarBuilder = (props) => {
     usageBurstSum,
     commitment,
     quota,
-    parentQuota,
     tracksQuota,
     isPanelView,
     // Displays bars either blue or purple if usage > commitments.
@@ -27,10 +26,10 @@ const ResourceBarBuilder = (props) => {
   const showCommitmentOrUsage =
     usage > commitment && commitment > 0 ? commitment : usage;
 
-  // capacityLabel: displays commitments, quota or parentQuota (on usageOnly resources)
+  // capacityLabel: displays commitments, quota or usage (on usageOnly resources)
   const commitmentOrQuota = commitment > 0 ? commitment : quota;
-  const commitmentOrParentQuota = commitment > 0 ? commitment : parentQuota;
-  const capacity = tracksQuota ? commitmentOrQuota : commitmentOrParentQuota;
+  const noQuotaResourceValue = commitment > 0 ? commitment : usage;
+  const capacity = tracksQuota ? commitmentOrQuota : noQuotaResourceValue;
 
   // ExtraBar: displays values that exceed the commitment
   // The sum bar can display the second bar without completely filling the first bar.
@@ -40,8 +39,8 @@ const ResourceBarBuilder = (props) => {
   } else {
     extraFillValue = usage >= commitment ? usage - commitment : "0";
   }
-  const quotaOrParentQuota = tracksQuota ? quota : parentQuota;
-  let extraCapacityValue = quotaOrParentQuota - commitment;
+  const quotaOrUsage = tracksQuota ? quota : usage;
+  let extraCapacityValue = quotaOrUsage - commitment;
   if (extraCapacityValue < 0) {
     extraCapacityValue = 0;
   }

@@ -5,7 +5,6 @@ import { useParams, useNavigate } from "react-router";
 import {
   t,
   getCurrentResource,
-  getContainingResourceFor,
   tracksQuota,
 } from "../../lib/utils";
 import { initialCommitmentObject } from "../../lib/constants";
@@ -37,7 +36,6 @@ const PanelManager = (props) => {
   const { resources } = props.categories[categoryName];
   const currentResource = getCurrentResource(resources, resourceName);
   const resourceTracksQuota = tracksQuota(currentResource);
-  const parentResource = getContainingResourceFor(resources, resourceName);
 
   React.useEffect(() => {
     if (currentResource) {
@@ -91,7 +89,6 @@ const PanelManager = (props) => {
           serviceType={serviceType}
           currentResource={currentResource}
           tracksQuota={resourceTracksQuota}
-          parentResource={parentResource}
           currentArea={currentArea}
           currentCategory={categoryName}
           subRoute={subRoute}
