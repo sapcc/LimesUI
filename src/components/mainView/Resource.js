@@ -97,8 +97,6 @@ const Resource = (props) => {
       : getQuotaForAZLevel(az, quota);
   }
 
-  console.log(props.resource.name, props.resource)
-
   return (
     <div
       className={
