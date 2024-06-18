@@ -54,7 +54,7 @@ const build = async () => {
       isProduction && !IGNORE_EXTERNALS
         ? Object.keys(pkg.peerDependencies || {})
         : [],
-    entryPoints: [pkg.source],
+    entryPoints: [pkg.source, "src/quotaPlugin.js"],
     outdir,
     // this step is important for performance reason.
     // the main file (index.js) contains minimal code needed to

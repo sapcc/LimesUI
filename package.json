@@ -1,6 +1,6 @@
 {
   "name": "limesUI",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "author": "VoigtS",
   "license": "MIT",
   "source": "src/index.js",
@@ -91,6 +91,11 @@
       "value": false,
       "type": "optional",
       "description": "Used to display debug log data in local development."
+    },
+    "quotaProject": {
+      "value": "string",
+      "type": "optional",
+      "description": "Identify the current project."
     }
   },
   "dependencies": {

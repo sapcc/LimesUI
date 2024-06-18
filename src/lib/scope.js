@@ -2,6 +2,15 @@ import AppClusterContent from "../AppClusterContent";
 import AppDomainContent from "../AppDomainContent";
 import AppResourceContent from "../AppResourceContent";
 
+//matches the part of the URL path for any scope's main view
+//
+//     /domainname/projectname/pluginname/subroute
+//     ^^^^^^^^^^^^^^^^^^^^^^^
+const urlBaseRx = new RegExp("/?[^/]+/[^/]+");
+export const getBaseURL = () => {
+  return urlBaseRx.exec(window.location.pathname) + "/resources/v2/project";
+};
+
 /*
  * There are three scopes the UI handles depending of the environment variables used as input:
  *      projectScope = new Scope({ domainID, projectID });
