@@ -47,6 +47,9 @@
       import("./build/index.js").then((app) => {
         app.mount(document.getElementById("root"), { props: appProps })
       })
+      import("./build/quotaPlugin.js").then((app) => {
+        app.mount(document.getElementById("quotaPlugin"), { props: appProps })
+      })
     </script>
     <div id="quotaPlugin" data-juno-app="limesUI"></div>
     <div id="root" data-juno-app="limesUI"></div>
