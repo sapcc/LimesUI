@@ -39,7 +39,6 @@ const QuotaUsage = (props) => {
 
   React.useEffect(() => {
     if (!projectData) return;
-    console.log(projectData);
     switch (quotaProject) {
       case "compute":
         setDisplayLabel(
