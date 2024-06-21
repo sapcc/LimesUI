@@ -139,6 +139,28 @@ const App = (props) => {
   const { token } = apiStore();
   const { setToken } = apiStoreActions();
   const { setGlobalAPI } = apiStoreActions();
+  const [tokenError, setTokenError] = React.useState(false);
+
+  async function getToken() {
+    // set to empty string to fetch local test data in dev mode
+    if (!window[props.getTokenFuncName]) {
+      setTokenError(true);
+      setToken(props.token);
+      return;
+    }
+    const token = await window[props.getTokenFuncName]();
+    setToken(token.authToken);
+  }
+
+  React.useEffect(() => {
+    getToken();
+  }, []);
+
+  React.useEffect(() => {
+    if (token) {
+      setTokenError(false);
+    }
+  }, [token]);
 
   async function getToken() {
     // set to empty string to fetch local test data in dev mode
@@ -163,13 +185,16 @@ const App = (props) => {
     });
   }, []);
 
-  return (
-    token && (
-      <QueryClientProvider client={queryClient}>
-        <AsyncWorker mockAPI={props.mockAPI} />
-        {apiReady && <QuotaUsage {...props} />}
-      </QueryClientProvider>
-    )
+  return tokenError ? (
+    <Message>
+      Failed to fetch a token. Please provide a token as property or provide a
+      getTokenFunc.
+    </Message>
+  ) : (
+    <QueryClientProvider client={queryClient}>
+      <AsyncWorker mockAPI={props.mockAPI} />
+      {apiReady && <QuotaUsage {...props} />}
+    </QueryClientProvider>
   );
 };
 
