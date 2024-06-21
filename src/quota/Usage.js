@@ -114,7 +114,7 @@ const QuotaUsage = (props) => {
   return isError ? (
     <>{console.log(error)}</>
   ) : isLoading ? (
-    <Spinner variant="primary" size="small"/>
+    <Spinner variant="primary" size="small" />
   ) : (
     displayLabel && (
       <a href={urlPath}>
@@ -137,13 +137,27 @@ const App = (props) => {
   const { queryClient } = props;
   const { apiReady } = apiStore();
   const { token } = apiStore();
+  const { setToken } = apiStoreActions();
   const { setGlobalAPI } = apiStoreActions();
+
+  async function getToken() {
+    // set to empty string to fetch local test data in dev mode
+    if (!window[props.getTokenFuncName]) {
+      setToken(props.token);
+      return;
+    }
+    const token = await window[props.getTokenFuncName]();
+    setToken(token.authToken);
+  }
+
+  React.useEffect(() => {
+    getToken();
+  }, []);
 
   React.useEffect(() => {
     setGlobalAPI({
       endpoint: props.endpoint || props.currentHost || "",
       // Token will be directly provided by elektra.
-      token: props.token || "",
       projectID: props.projectID || projectID || "",
       domainID: props.domainID || "",
     });
