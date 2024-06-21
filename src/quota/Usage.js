@@ -134,12 +134,14 @@ const QuotaUsage = (props) => {
             distribution={props.quotaAlign}
             alignment="center"
             gap="1"
-            className={"flex-nowrap"}
           >
             <Icon icon="monitorHeart" size="16px" />
-            <div className="text-xs">Remaining Quota:</div>
+            <div className="text-xs whitespace-nowrap">Remaining Quota:</div>
           </Stack>
-          <div className="text-xs">{displayLabel}</div>
+          <Stack className="justify-start">
+            <div className="text-xs">{displayLabel}</div>
+          </Stack>
+           
         </Stack>
       </a>
     )
