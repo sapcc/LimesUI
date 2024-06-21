@@ -123,23 +123,25 @@ const QuotaUsage = (props) => {
     <Spinner variant="primary" size="small" />
   ) : (
     displayLabel && (
-      <a href={urlPath}>
+      <>
         <Stack
           direction="horizontal"
-          className={"text-[#888888] hover:text-[#555555]"}
+          distribution={props.quotaAlign}
+          alignment="center"
+          gap="1"
         >
+          <Icon icon="monitorHeart" size="16px" />
+          <div className="text-xs hover:underline">Remaining Quota:</div>
+        </Stack>
+        <a href={urlPath}>
           <Stack
             direction="horizontal"
-            distribution={props.quotaAlign}
-            alignment="center"
-            gap="2"
+            className={"text-[#888888] hover:text-[#555555]"}
           >
-            <Icon icon="monitorHeart" size="16px" />
-            <div className="text-xs hover:underline">Remaining Quota:</div>
+            <div className="text-xs hover:underline">{displayLabel}</div>
           </Stack>
-          <div className="text-xs hover:underline">{displayLabel}</div>
-        </Stack>
-      </a>
+        </a>
+      </>
     )
   );
 };
@@ -198,10 +200,11 @@ const App = (props) => {
   }, []);
 
   return tokenError ? (
-    <Message className={"text-xs"}>
-      Failed to fetch a token. Please provide a token as property or provide a
-      getTokenFunc.
-    </Message>
+    <>
+      {console.log(
+        "Failed to fetch a token. Please provide a token as property or provide a getTokenFunc."
+      )}
+    </>
   ) : (
     <QueryClientProvider client={queryClient}>
       <AsyncWorker mockAPI={props.mockAPI} />
