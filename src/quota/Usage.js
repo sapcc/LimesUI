@@ -140,7 +140,7 @@ const QuotaUsage = (props) => {
             <div className="text-xs whitespace-nowrap">Remaining Quota:</div>
           </Stack>
           <Stack direction="horizontal" distribution="start" alignment="start">
-            <div className="text-xs">{displayLabel}</div>
+            <div className="text-xs text-justify">{displayLabel}</div>
           </Stack>
         </Stack>
       </a>
