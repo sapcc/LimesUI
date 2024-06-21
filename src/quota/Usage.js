@@ -123,27 +123,28 @@ const QuotaUsage = (props) => {
     <Spinner variant="primary" size="small" />
   ) : (
     displayLabel && (
-      <a href={urlPath}>
+      <Stack direction="horizontal" distribution={props.quotaAlign} gap="1">
         <Stack
+          className={"text-[#888888]"}
           direction="horizontal"
-          className={"text-[#888888] hover:text-[#555555] hover:underline"}
-          distribution={props.quotaAlign}
+          distribution="start"
+          alignment="center"
           gap="1"
         >
+          <Icon icon="monitorHeart" size="16px" />
+          <div className="text-xs whitespace-nowrap">Remaining Quota:</div>
+        </Stack>
+        <a href={urlPath}>
           <Stack
+            className="hover:underline  text-[#888888] hover:text-[#555555]"
             direction="horizontal"
             distribution="start"
             alignment="start"
-            gap="1"
           >
-            <Icon icon="monitorHeart" size="16px" />
-            <div className="text-xs whitespace-nowrap">Remaining Quota:</div>
-          </Stack>
-          <Stack direction="horizontal" distribution="start" alignment="start">
             <div className="text-xs text-justify">{displayLabel}</div>
           </Stack>
-        </Stack>
-      </a>
+        </a>
+      </Stack>
     )
   );
 };
