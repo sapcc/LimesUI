@@ -1,5 +1,5 @@
 import React from "react";
-import { AppShellProvider, Icon, Stack, Spinner } from "juno-ui-components";
+import { AppShell, AppShellProvider, Icon, Stack, Spinner } from "juno-ui-components";
 import StoreProvider, {
   apiStore,
   apiStoreActions,
@@ -121,6 +121,7 @@ const QuotaUsage = (props) => {
         <Stack
           direction="horizontal"
           distribution={props.quotaAlign}
+          alignment="center"
           className={"text-[#888888] hover:text-[#555555]"}
         >
           <Icon icon="monitorHeart" size="16px" />
@@ -170,7 +171,7 @@ const App = (props) => {
       return;
     }
     const token = await window[props.getTokenFuncName]();
-    console.log("==", token)
+    console.log("==", token);
     setToken(token.authToken);
   }
 
@@ -195,7 +196,9 @@ const App = (props) => {
   ) : (
     <QueryClientProvider client={queryClient}>
       <AsyncWorker mockAPI={props.mockAPI} />
-      {apiReady && <QuotaUsage {...props} />}
+      <AppShell embedded={true}>
+        {apiReady && <QuotaUsage {...props} />}
+      </AppShell>
     </QueryClientProvider>
   );
 };
