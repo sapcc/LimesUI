@@ -1,5 +1,6 @@
 export const COMMITMENTID = "AddCommitment";
 export const ADVANCEDVIEW = "advancedView";
+export const CEREBROKEY = "HANA VM Availability";
 
 //used to reset the last commitment to default values.
 export const initialCommitmentObject = {
@@ -25,6 +26,7 @@ export const STRINGS = {
   bgpvpns_single: "BGP VPN",
   capacity: "Capacity",
   capacity_standard_hdd: "Capacity",
+  cerebro: "Available HANA VM resources",
   cfm_share_capacity: "Share Capacity",
   compute: "Compute",
   compute_cascade_lake: "Compute (Cascade Lake)",

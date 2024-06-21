@@ -5,7 +5,8 @@ import { createCommitmentStore } from "../StoreProvider";
 import useResetCommitment from "../../hooks/useResetCommitment";
 import { useParams, useNavigate, useLocation, Outlet } from "react-router-dom";
 import { t, byUIString } from "../../lib/utils";
-import { ADVANCEDVIEW } from "../../lib/constants";
+import { ADVANCEDVIEW, CEREBROKEY } from "../../lib/constants";
+import AvailableBigVMResource from "../bigVM/AvailableBigVMResource";
 import {
   Tabs,
   Tab,
@@ -118,6 +119,20 @@ const Overview = (props) => {
     );
   }
 
+  function renderBigVM() {
+    const { areas } = props.overview;
+    return <AvailableBigVMResource categoryName={areas[currentArea]} />;
+  }
+
+  let currentTab;
+  switch (currentArea) {
+    case CEREBROKEY:
+      currentTab = renderBigVM();
+      break;
+    default:
+      currentTab = renderArea();
+  }
+
   return (
     <Container px={false} className="mb-11">
       <Tabs selectedIndex={currentTabIdx} onSelect={() => {}}>
@@ -153,7 +168,7 @@ const Overview = (props) => {
           <TabPanel key={area} className={"m-4"}></TabPanel>
         ))}
       </Tabs>
-      {renderArea()}
+      {currentTab}
       {canEdit && <Outlet />}
     </Container>
   );

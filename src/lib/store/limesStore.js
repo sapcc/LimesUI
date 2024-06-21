@@ -1,3 +1,4 @@
+import { CEREBROKEY } from "../constants";
 import { unusedCommitments, uncommittedUsage } from "../../lib/utils";
 
 const limesStore = (set) => ({
@@ -287,11 +288,14 @@ const limesStore = (set) => ({
           srv.area,
           srv.editableService,
         ]);
+
         services.forEach((srv) => {
           const area = srv[0];
           const editable = srv[1];
           editable && areas.set(area, editable);
         });
+        // HANA BigVMResource needs to be added manually to the areas with the coressponding CEREBRO key.
+        areas.set(CEREBROKEY, true);
         const editableAreas = Array.from(areas.keys());
 
         // `overview` is what the Overview component needs.
@@ -318,6 +322,7 @@ const limesStore = (set) => ({
             ])
           ),
         };
+        overview.areas[CEREBROKEY] = ["cerebro"];
 
         return { metadata, categories, overview };
       },
