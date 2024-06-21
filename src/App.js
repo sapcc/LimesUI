@@ -37,7 +37,6 @@ const App = (props = {}) => {
   React.useEffect(() => {
     setGlobalAPI({
       endpoint: props.endpoint || props.currentHost || "",
-      token: props.getToken || "",
       // With a projectID set by DomainView, use the requested project ID.
       projectID: props.projectID || projectID || "",
       domainID: props.domainID || "",
@@ -72,6 +71,8 @@ const App = (props = {}) => {
   React.useEffect(() => {
     // set to empty string to fetch local test data in dev mode
     if (!window[props.getTokenFuncName]) {
+      // Set an error if the getTokenFuncName function was not provided to the app. 
+      // In this case no token can be fetched
       setTokenError(true);
       setToken(props.token);
       return;

@@ -1,5 +1,11 @@
 import React from "react";
-import { AppShell, AppShellProvider, Icon, Stack, Spinner } from "juno-ui-components";
+import {
+  AppShell,
+  AppShellProvider,
+  Icon,
+  Stack,
+  Spinner,
+} from "juno-ui-components";
 import StoreProvider, {
   apiStore,
   apiStoreActions,
@@ -120,15 +126,18 @@ const QuotaUsage = (props) => {
       <a href={urlPath}>
         <Stack
           direction="horizontal"
-          distribution={props.quotaAlign}
-          alignment="center"
           className={"text-[#888888] hover:text-[#555555]"}
         >
-          <Icon icon="monitorHeart" size="16px" />
-          &nbsp;
-          <div className="text-xs hover:underline">
-            Remaining Quota: {displayLabel}
-          </div>
+          <Stack
+            direction="horizontal"
+            distribution={props.quotaAlign}
+            alignment="center"
+            gap="2"
+          >
+            <Icon icon="monitorHeart" size="16px" />
+            <div className="text-xs hover:underline">Remaining Quota:</div>
+          </Stack>
+          <div className="text-xs hover:underline">{displayLabel}</div>
         </Stack>
       </a>
     )
@@ -182,7 +191,7 @@ const App = (props) => {
   React.useEffect(() => {
     setGlobalAPI({
       endpoint: props.endpoint || props.currentHost || "",
-      // Token will be directly provided by elektra.
+      // Token needs to be fetched from Elektra.
       projectID: props.projectID || projectID || "",
       domainID: props.domainID || "",
     });
