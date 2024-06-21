@@ -124,23 +124,26 @@ const QuotaUsage = (props) => {
   ) : (
     displayLabel && (
       <>
-        <Stack
-          direction="horizontal"
-          distribution={props.quotaAlign}
-          alignment="center"
-          gap="1"
-        >
-          <Icon icon="monitorHeart" size="16px" />
-          <div className="text-xs hover:underline">Remaining Quota:</div>
-        </Stack>
-        <a href={urlPath}>
+        <Stack direction="horizontal">
           <Stack
             direction="horizontal"
-            className={"text-[#888888] hover:text-[#555555]"}
+            distribution={props.quotaAlign}
+            alignment="center"
+            gap="1"
+            className={"text-[#888888]"}
           >
-            <div className="text-xs hover:underline">{displayLabel}</div>
+            <Icon icon="monitorHeart" size="16px" />
+            <div className="text-xs">Remaining Quota:</div>
           </Stack>
-        </a>
+          <a href={urlPath}>
+            <Stack
+              direction="horizontal"
+              className={"text-[#888888] hover:text-[#555555]"}
+            >
+              <div className="text-xs hover:underline">{displayLabel}</div>
+            </Stack>
+          </a>
+        </Stack>
       </>
     )
   );
