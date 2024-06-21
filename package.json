@@ -96,6 +96,11 @@
       "value": "string",
       "type": "optional",
       "description": "Identify the current project."
+    },
+    "quotaAlign": {
+      "value": "string",
+      "type": "optional",
+      "description": "Align the displayed quota text to start, center or end (default: end)"
     }
   },
   "dependencies": {

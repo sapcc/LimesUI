@@ -120,6 +120,7 @@ const QuotaUsage = (props) => {
       <a href={urlPath}>
         <Stack
           direction="horizontal"
+          distribution={props.quotaAlign}
           className={"text-[#888888] hover:text-[#555555]"}
         >
           <Icon icon="monitorHeart" size="16px" />
@@ -187,7 +188,7 @@ const App = (props) => {
   }, []);
 
   return tokenError ? (
-    <Message>
+    <Message className={"text-xs"}>
       Failed to fetch a token. Please provide a token as property or provide a
       getTokenFunc.
     </Message>
