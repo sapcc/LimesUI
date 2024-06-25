@@ -15,6 +15,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import styles from "./styles.scss";
 import { fetchProxyInitDB } from "utils";
 import projectApiDB from "./lib/limes_project_api.json";
+import cerebroApiDB from "./lib/cerebro_api.json";
 import commitmentApiDB from "./lib/limes_commitment_api.json";
 import dayPickerStyle from "react-day-picker/dist/style.css?inline";
 import AsyncWorker from "./AsyncWorker";
@@ -41,7 +42,7 @@ const App = (props = {}) => {
       projectID: props.projectID || projectID || "",
       domainID: props.domainID || "",
     });
-    setScope(scope)
+    setScope(scope);
   }, []);
 
   // Reload page after token timeout.
@@ -59,7 +60,7 @@ const App = (props = {}) => {
     const timer = setTimeout(() => {
       getToken();
     }, timeout);
-    if(props.local) {
+    if (props.local) {
       console.log(token);
     }
     setToken(token.authToken);
@@ -71,7 +72,7 @@ const App = (props = {}) => {
   React.useEffect(() => {
     // set to empty string to fetch local test data in dev mode
     if (!window[props.getTokenFuncName]) {
-      // Set an error if the getTokenFuncName function was not provided to the app. 
+      // Set an error if the getTokenFuncName function was not provided to the app.
       // In this case no token can be fetched
       setTokenError(true);
       setToken(props.token);
@@ -93,13 +94,19 @@ const App = (props = {}) => {
         {
           projects: [projectApiDB],
           projectCommitments: commitmentApiDB.projectCommitments,
+          cerebro: [cerebroApiDB],
         },
         {
           debug: true,
+          // replaces routes with a path to match the mock keys.
+          // providing an ID causes the mock to return as an object instead of an Array.
+          // ${x} refers to the x'th place of the subroute's generic entries.
+          // example: $2 in "/(.*)/projects/(.*)" => {projectID}
           rewriteRoutes: {
             "/v1/domains/(.*)/projects/(.*)/commitments":
               "/projectCommitments/$2/commitments",
             "/v1/domains/(.*)/projects/(.*)": "/projects/$2",
+            "(.*)/(.*)/resources/project/bigvm_resources": "/cerebro/bigvm_resources",
           },
         }
       );

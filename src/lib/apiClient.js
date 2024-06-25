@@ -2,6 +2,7 @@ import React from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { fetchProxy } from "utils";
 import { apiStore, apiStoreActions } from "../components/StoreProvider";
+import { getCerebroBaseURL } from "./scope";
 
 // Requeues are caused by window focus refetching.
 // More details: https://tanstack.com/query/v4/docs/react/guides/window-focus-refetching
@@ -261,6 +262,35 @@ const useQueryClientFn = (isMockApi) => {
       },
     });
   }, [queryClient, endpoint, token, domainID]);
+
+  // Cerebro API Client
+  React.useEffect(() => {
+    queryClient.setQueryDefaults(["cerebro"], {
+      queryFn: async () => {
+        // Don't retrieve a token in dev to ensure the mocks work.
+        const token = isMockApi
+          ? null
+          : [...document.querySelectorAll("meta")].find(
+              (n) => n.name.toLowerCase() == "csrf-token"
+            ).content;
+        const host = isMockApi ? "host" : window.location.host;
+        const path = isMockApi
+          ? "/domain/project/resources/project"
+          : getCerebroBaseURL();
+
+        const url = `https://${host}${path}/bigvm_resources`;
+        const response = await fetchProxy(url, {
+          method: "GET",
+          headers: {
+            "X-Requested-With": "XMLHttpRequest",
+            "X-CSRF-Token": token,
+          },
+          ...{ mock: isMockApi },
+        });
+        return responseHandler(response);
+      },
+    });
+  }, [queryClient]);
 };
 
 export default useQueryClientFn;

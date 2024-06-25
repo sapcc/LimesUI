@@ -185,7 +185,6 @@ const App = (props) => {
       return;
     }
     const token = await window[props.getTokenFuncName]();
-    console.log("==", token);
     setToken(token.authToken);
   }
 

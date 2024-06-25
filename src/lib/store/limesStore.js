@@ -295,7 +295,7 @@ const limesStore = (set) => ({
           editable && areas.set(area, editable);
         });
         // HANA BigVMResource needs to be added manually to the areas with the coressponding CEREBRO key.
-       // areas.set(CEREBROKEY, true);
+        areas.set(CEREBROKEY, true);
         const editableAreas = Array.from(areas.keys());
 
         // `overview` is what the Overview component needs.
@@ -322,7 +322,7 @@ const limesStore = (set) => ({
             ])
           ),
         };
-      //  overview.areas[CEREBROKEY] = ["cerebro"];
+        overview.areas[CEREBROKEY] = ["cerebro"];
 
         return { metadata, categories, overview };
       },

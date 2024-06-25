@@ -11,6 +11,10 @@ export const getBaseURL = () => {
   return urlBaseRx.exec(window.location.pathname) + "/resources/v2/project";
 };
 
+export const getCerebroBaseURL = () => {
+  return urlBaseRx.exec(window.location.pathname) + "/resources/project";
+};
+
 /*
  * There are three scopes the UI handles depending of the environment variables used as input:
  *      projectScope = new Scope({ domainID, projectID });
