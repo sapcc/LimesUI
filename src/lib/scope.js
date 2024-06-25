@@ -12,7 +12,10 @@ export const getBaseURL = () => {
 };
 
 export const getCerebroBaseURL = () => {
-  return urlBaseRx.exec(window.location.pathname) + "/resources/project";
+  const basePath = window.location.pathname;
+  // Cerebro does not have the v2 suffix on its path.
+  const fixedBasePath = basePath.replace("/v2", "");
+  return fixedBasePath;
 };
 
 /*
