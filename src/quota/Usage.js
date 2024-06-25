@@ -39,8 +39,6 @@ const QuotaUsage = (props) => {
   const urlPath = getBaseURL();
   const stackDistribution = props.quotaAlign != "" ? props.quotaAlign : "end";
 
-  console.log("d", props.quotaAlign)
-
   React.useEffect(() => {
     if (!data) return;
     setProjectData(restructureReport(data.project));
