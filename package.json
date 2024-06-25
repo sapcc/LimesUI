@@ -1,6 +1,6 @@
 {
   "name": "limesUI",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "author": "VoigtS",
   "license": "MIT",
   "source": "src/index.js",
@@ -98,7 +98,7 @@
       "description": "Identify the current project."
     },
     "quotaAlign": {
-      "value": "string",
+      "value": "",
       "type": "optional",
       "description": "Align the displayed quota text to start, center or end (default: end)"
     }

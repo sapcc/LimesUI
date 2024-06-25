@@ -37,6 +37,9 @@ const QuotaUsage = (props) => {
   const { data, isLoading, isError, error } = projectQueryResult;
   const [displayLabel, setDisplayLabel] = React.useState(null);
   const urlPath = getBaseURL();
+  const stackDistribution = props.quotaAlign != "" ? props.quotaAlign : "end";
+
+  console.log("d", props.quotaAlign)
 
   React.useEffect(() => {
     if (!data) return;
@@ -123,7 +126,7 @@ const QuotaUsage = (props) => {
     <Spinner variant="primary" size="small" />
   ) : (
     displayLabel && (
-      <Stack direction="horizontal" distribution={props.quotaAlign} gap="1">
+      <Stack direction="horizontal" distribution={stackDistribution} gap="1">
         <Stack
           className={"text-[#888888]"}
           direction="horizontal"
