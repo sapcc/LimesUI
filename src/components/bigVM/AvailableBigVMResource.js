@@ -35,6 +35,7 @@ const barTitle = `
 const AvailableBigVMResource = (props) => {
   const cerebroQueryResult = useQuery({
     queryKey: ["cerebro"],
+    retry: false,
   });
   const { data, isError, error, isLoading } = cerebroQueryResult;
   const [placeableVMs, setPlaceableVMs] = React.useState([]);
