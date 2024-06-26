@@ -220,6 +220,12 @@ const App = (props) => {
 
 const Usage = (props) => {
   const queryClient = new QueryClient();
+
+  // HardCut: don't render the component if no domain/project ID's are provided
+  // This plugin is only available on project level.
+  // Return null on cluster/domain level to ensure local development without errors.
+  if (!props.projectID || props.domainID) return null;
+
   return (
     <AppShellProvider theme={`${props.theme ? props.theme : "theme-dark"}`}>
       {/* load styles inside the shadow dom */}
