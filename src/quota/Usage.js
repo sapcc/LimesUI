@@ -36,8 +36,80 @@ const QuotaUsage = (props) => {
   });
   const { data, isLoading, isError, error } = projectQueryResult;
   const [displayLabel, setDisplayLabel] = React.useState(null);
+  const [service, setService] = React.useState({ type: null, resources: [] });
   const urlPath = getBaseURL();
   const stackDistribution = props.quotaAlign != "" ? props.quotaAlign : "end";
+
+  React.useEffect(() => {
+    // Check the availability of the project first.
+    // Otherwise the loading indicator will be displayed on each elektra plugin.
+    if (!quotaProject) return;
+    switch (quotaProject) {
+      case "compute":
+        setService({
+          type: "compute",
+          resources: ["instances", "cores", "ram"],
+        });
+        break;
+      case "block_storage":
+        setService({
+          type: "volumev2",
+          resources: ["volumes", "snapshots", "capacity"],
+        });
+        break;
+      case "lbaas2":
+        setService({
+          type: "loadbalancing",
+          resources: ["loadbalancers", "listeners", "pools", "l7policies"],
+        });
+        break;
+      case "networking":
+        setService({
+          type: "networking",
+          resources: [
+            "floating_ips",
+            "networks",
+            "subnets",
+            "routers",
+            "security_groups",
+          ],
+        });
+        break;
+      case "shared_filesystem_storage":
+        setService({
+          type: "sharev2",
+          resources: [
+            "share_capacity",
+            "shares",
+            "share_snapshots",
+            "share_networks",
+            "snapshot_capacity",
+          ],
+        });
+        break;
+      case "dns_service":
+        setService({
+          type: "dns",
+          resources: ["zones", "recordsets"],
+        });
+        break;
+      case "keppel":
+        setService({
+          type: "keppel",
+          resources: ["images"],
+        });
+        break;
+      case "object_storage":
+        setService({
+          type: "object-store",
+          resources: ["capacity"],
+        });
+        break;
+      default:
+        setDisplayLabel(null);
+        break;
+    }
+  }, [quotaProject]);
 
   React.useEffect(() => {
     if (!data) return;
@@ -45,80 +117,15 @@ const QuotaUsage = (props) => {
   }, [data]);
 
   React.useEffect(() => {
-    if (!projectData) return;
-    switch (quotaProject) {
-      case "compute":
-        setDisplayLabel(
-          getQuotaFromResources(projectData, "compute", [
-            "instances",
-            "cores",
-            "ram",
-          ])
-        );
-        break;
-      case "block_storage":
-        setDisplayLabel(
-          getQuotaFromResources(projectData, "volumev2", [
-            "volumes",
-            "snapshots",
-            "capacity",
-          ])
-        );
-        break;
-      case "lbaas2":
-        setDisplayLabel(
-          getQuotaFromResources(projectData, "loadbalancing", [
-            "loadbalancers",
-            "listeners",
-            "pools",
-            "l7policies",
-          ])
-        );
-        break;
-      case "networking":
-        setDisplayLabel(
-          getQuotaFromResources(projectData, "networking", [
-            "floating_ips",
-            "networks",
-            "subnets",
-            "routers",
-            "security_groups",
-          ])
-        );
-        break;
-      case "shared_filesystem_storage":
-        setDisplayLabel(
-          getQuotaFromResources(projectData, "sharev2", [
-            "share_capacity",
-            "shares",
-            "share_snapshots",
-            "share_networks",
-            "snapshot_capacity",
-          ])
-        );
-        break;
-      case "dns_service":
-        setDisplayLabel(
-          getQuotaFromResources(projectData, "dns", ["zones", "recordsets"])
-        );
-        break;
-      case "keppel":
-        setDisplayLabel(
-          getQuotaFromResources(projectData, "keppel", ["images"])
-        );
-        break;
-      case "object_storage":
-        setDisplayLabel(
-          getQuotaFromResources(projectData, "object-store", ["capacity"])
-        );
-        break;
-      default:
-        setDisplayLabel(null);
-        break;
-    }
-  }, [projectData]);
+    if (!projectData || !service.type) return;
+    setDisplayLabel(
+      getQuotaFromResources(projectData, service.type, service.resources)
+    );
+  }, [projectData, service]);
 
-  return isError ? (
+  return !service.type ? (
+    <></>
+  ) : isError ? (
     <>{console.log(error)}</>
   ) : isLoading ? (
     <Spinner variant="primary" size="small" />
