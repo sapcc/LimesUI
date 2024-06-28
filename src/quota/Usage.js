@@ -41,7 +41,7 @@ const QuotaUsage = (props) => {
   const stackDistribution = props.quotaAlign != "" ? props.quotaAlign : "end";
 
   React.useEffect(() => {
-    // Check the availability of the project first.
+    // Determine the availability of the project first.
     // Otherwise the loading indicator will be displayed on each elektra plugin.
     if (!quotaProject) return;
     switch (quotaProject) {
