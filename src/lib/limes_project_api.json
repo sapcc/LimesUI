@@ -25,7 +25,12 @@
             },
             "per_az": {
               "qa-de-1a": {
-                "usage": 90
+                "usage": 90,
+                "historical_usage": {
+                  "min_usage": 60,
+                  "max_usage": 90,
+                  "duration": "48h"
+                }
               },
               "qa-de-1b": {
                 "usage": 37

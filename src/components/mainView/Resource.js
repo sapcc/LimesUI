@@ -11,7 +11,14 @@ import {
   getTotalUsageForLeftBar,
   getTotalUsageForRightBar,
 } from "../../lib/resourceBarValues";
-import { Stack, Button } from "juno-ui-components";
+import {
+  Stack,
+  Button,
+  Icon,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "juno-ui-components";
 import { Link } from "react-router-dom";
 import { ProjectBadges } from "../shared/LimesBadges";
 import ResourceBarBuilder from "../resourceBar/ResourceBarBuilder";
@@ -173,6 +180,9 @@ const Resource = (props) => {
         {props.resource.per_az?.map((az) => {
           const azName = az[0];
           const commitmentsInAZ = az[1];
+          const minUsage = az[1]?.historical_usage?.min_usage ?? -1;
+          const azUsage = az[1].usage;
+          const matchesCondition = minUsage < 0.95 * azUsage;
           const azQuotaOrCapacity = getQuotaOrCapacityForAZResource(
             az[1],
             capacity,
@@ -196,7 +206,26 @@ const Resource = (props) => {
                 }}
               >
                 <div className={`az-title ${azTitle} flex justify-between`}>
-                  {azName}{" "}
+                  <Stack alignment="center" gap="1">
+                    {azName}
+                    {minUsage >= 0 && matchesCondition && (
+                      <Tooltip triggerEvent="hover">
+                        <TooltipTrigger>
+                          <Icon
+                            icon="info"
+                            size="16px"
+                            color="jn-global-text"
+                          />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <span className="text-sm p-0">
+                            Usage increased by {(azUsage / (minUsage || 1) - 1) * 100}{" "}
+                            % recently
+                          </span>
+                        </TooltipContent>
+                      </Tooltip>
+                    )}
+                  </Stack>
                   <ProjectBadges
                     az={commitmentsInAZ}
                     unit={unitName}
