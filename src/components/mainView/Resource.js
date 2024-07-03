@@ -11,19 +11,14 @@ import {
   getTotalUsageForLeftBar,
   getTotalUsageForRightBar,
 } from "../../lib/resourceBarValues";
-import {
-  Stack,
-  Button,
-  Icon,
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-} from "juno-ui-components";
+import { Stack, Button } from "juno-ui-components";
 import { Link } from "react-router-dom";
 import { ProjectBadges } from "../shared/LimesBadges";
 import ResourceBarBuilder from "../resourceBar/ResourceBarBuilder";
 import useResetCommitment from "../../hooks/useResetCommitment";
 import AddCommitments from "../shared/AddCommitments";
+import HistoricalUsage from "./subComponents/HistoricalUsage";
+import PhysicalUsage from "./subComponents/PhysicalUsage";
 
 const barGroupContainer = `
     self-stretch  
@@ -180,9 +175,6 @@ const Resource = (props) => {
         {props.resource.per_az?.map((az) => {
           const azName = az[0];
           const commitmentsInAZ = az[1];
-          const minUsage = az[1]?.historical_usage?.min_usage ?? -1;
-          const azUsage = az[1].usage;
-          const matchesCondition = minUsage < 0.95 * azUsage;
           const azQuotaOrCapacity = getQuotaOrCapacityForAZResource(
             az[1],
             capacity,
@@ -206,25 +198,9 @@ const Resource = (props) => {
                 }}
               >
                 <div className={`az-title ${azTitle} flex justify-between`}>
-                  <Stack alignment="center" gap="1">
+                  <Stack className={"mt-2"} alignment="center" gap="1">
                     {azName}
-                    {minUsage >= 0 && matchesCondition && (
-                      <Tooltip triggerEvent="hover">
-                        <TooltipTrigger>
-                          <Icon
-                            icon="info"
-                            size="16px"
-                            color="jn-global-text"
-                          />
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <span className="text-sm p-0">
-                            Usage increased by {(azUsage / (minUsage || 1) - 1) * 100}{" "}
-                            % recently
-                          </span>
-                        </TooltipContent>
-                      </Tooltip>
-                    )}
+                    <HistoricalUsage az={az[1]} />
                   </Stack>
                   <ProjectBadges
                     az={commitmentsInAZ}
@@ -251,6 +227,7 @@ const Resource = (props) => {
                   isPanelView={isPanelView}
                   editableResource={editableResource}
                 />
+                <PhysicalUsage resource={az[1]} unit={unitName} />
               </div>
             )
           );

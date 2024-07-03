@@ -5,7 +5,6 @@ const LABEL_MARGIN = 10;
 const resourceBarWrapper = ``;
 
 const barConainer = `
-  mb-2 
   min-w-full 
   gap-1
 `;
@@ -88,7 +87,6 @@ const ResourceBar = (props) => {
         <Stack
           direction="vertical"
           distribution="between"
-          className="mb-2"
           style={{ width: commitment > 0 ? "70%" : "100%" }}
         >
           <span
