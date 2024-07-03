@@ -111,3 +111,8 @@ export function uncommittedUsage(committed, usage) {
   }
   return false;
 }
+
+export function isAZUnaware(az) {
+  if (az.length == 1 && az[0][0] == "any") return true;
+  return false;
+}

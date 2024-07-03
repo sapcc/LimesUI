@@ -7,9 +7,9 @@ import {
 } from "juno-ui-components";
 
 const HistoricalUsage = (props) => {
-  const { az } = props;
-  const minUsage = az?.historical_usage?.min_usage ?? -1;
-  const azUsage = az.usage;
+  const { resource } = props;
+  const minUsage = resource?.historical_usage?.min_usage ?? -1;
+  const azUsage = resource.usage;
   const matchesCondition = minUsage < 0.95 * azUsage;
 
   return (

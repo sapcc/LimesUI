@@ -14,6 +14,7 @@ import {
 import { Stack, Button } from "juno-ui-components";
 import { Link } from "react-router-dom";
 import { ProjectBadges } from "../shared/LimesBadges";
+import { isAZUnaware } from "../../lib/utils";
 import ResourceBarBuilder from "../resourceBar/ResourceBarBuilder";
 import useResetCommitment from "../../hooks/useResetCommitment";
 import AddCommitments from "../shared/AddCommitments";
@@ -115,7 +116,14 @@ const Resource = (props) => {
       <Stack distribution="between" className={`bar-header ${barHeader}`}>
         <div className={`bar-title ${barTitle}`}>{displayName}</div>
         {props.canEdit && editableResource && (
-          <Stack>
+          <Stack className="items-center" gap="1">
+            {isAZUnaware(props.resource.per_az) && (
+              <ProjectBadges
+                az={props.resource.per_az[0][1]}
+                unit={unitName}
+                displayValues={true}
+              />
+            )}
             {!scope.isProject() && (
               <div className="mr-1 font-normal text-sm m-auto">Manage:</div>
             )}
@@ -166,6 +174,9 @@ const Resource = (props) => {
         isPanelView={isPanelView}
         editableResource={editableResource}
       />
+      {isAZUnaware(props.resource.per_az) && (
+        <PhysicalUsage resource={props.resource} unit={unitName} />
+      )}
       <div
         className={
           props.isPanelView &&
@@ -200,7 +211,7 @@ const Resource = (props) => {
                 <div className={`az-title ${azTitle} flex justify-between`}>
                   <Stack className={"mt-2"} alignment="center" gap="1">
                     {azName}
-                    <HistoricalUsage az={az[1]} />
+                    <HistoricalUsage resource={az[1]} />
                   </Stack>
                   <ProjectBadges
                     az={commitmentsInAZ}

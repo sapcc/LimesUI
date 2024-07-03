@@ -1165,13 +1165,27 @@
             "name": "capacity",
             "unit": "B",
             "quota_distribution_model": "hierarchical",
+            "commitment_config": {
+              "durations": [
+                "1 year",
+                "2 years",
+                "3 years"
+              ]
+            },
             "per_az": {
               "any": {
-                "usage": 1150972499166
+                "usage": 1150972499166,
+                "pending_commitments": {
+                  "1 year": 1099511627776
+                },
+                "planned_commitments": {
+                  "1 year": 54975581388800
+                }
               }
             },
             "quota": 5497558138880,
             "usable_quota": 5497558138880,
+            "physical_usage": 1099511627776,
             "usage": 1150972499166,
             "annotations": {
               "can_autoscale": "true"
