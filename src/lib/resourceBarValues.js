@@ -18,6 +18,7 @@ export function getQuotaForAZLevel(az, quota) {
 // SUM-Bar (Bar over all AZ's) calculation -> loops over all AZ's.
 export function getTotalUsageForLeftBar(resource) {
   const AZs = resource.per_az;
+  if (!AZs) return;
   let totalUsage = 0;
   AZs.forEach((az) => {
     // No commitments available => No usage gets added to the left bar, because it's uncommitted usage.
@@ -37,6 +38,7 @@ export function getTotalUsageForLeftBar(resource) {
 export function getTotalUsageForRightBar(resource) {
   const AZs = resource.per_az;
   let totalUsage = 0;
+  if (!AZs) return;
   AZs.forEach((az) => {
     // No commitments available => The usage gets added to the right bar, because it's uncommitted usage.
     az.commitmentSum > 0
