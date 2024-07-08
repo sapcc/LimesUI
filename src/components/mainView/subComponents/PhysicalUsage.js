@@ -43,7 +43,10 @@ const PhysicalUsage = (props) => {
             <TooltipTrigger>{createBadge()}</TooltipTrigger>
             <TooltipContent>
               <div className="text-sm">
-                A difference might occur due to <a href={docLink}>Snapmirror</a>{" "}
+                A difference might occur due to{" "}
+                <a target="_blank" rel="noopener noreferrer" href={docLink}>
+                  Snapmirror
+                </a>{" "}
                 usage.
               </div>
             </TooltipContent>
