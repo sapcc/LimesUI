@@ -1,14 +1,35 @@
 import React from "react";
-import { Box, Icon, Stack } from "juno-ui-components";
+import {
+  Box,
+  Icon,
+  Stack,
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "juno-ui-components";
 import { Unit } from "../../../lib/unit";
 
+const docLink =
+  "https://documentation.global.cloud.sap/docs/customer/storage/file-storage/fs-howto/filestore-create-a-share-replica/";
+
 const PhysicalUsage = (props) => {
-  const { resource, unit: unitName } = props;
+  const { resource, resourceName = null, unit: unitName } = props;
+  const name = resourceName ?? resource.name;
   const { usage } = resource;
   const physicalUsage = resource?.physical_usage;
   const isWarning = physicalUsage > usage;
   const unit = new Unit(unitName);
   const displayText = `Physical Usage: ${unit.format(physicalUsage)}`;
+  const isSnapshot = name == "snapshot_capacity";
+
+  function createBadge() {
+    return (
+      <Stack className="items-center" gap="1">
+        {isWarning && <Icon icon="warning" size="12px" />}
+        <span className="text-xs">{displayText}</span>
+      </Stack>
+    );
+  }
 
   return physicalUsage ? (
     <Box
@@ -16,10 +37,21 @@ const PhysicalUsage = (props) => {
         isWarning && "bg-theme-warning bg-opacity-25"
       }`}
     >
-      <Stack className="items-center" gap="1">
-        {isWarning && <Icon icon="warning" size="12px" />}
-        <span className="text-xs">{displayText}</span>
-      </Stack>
+      {isSnapshot && isWarning ? (
+        <Stack className="items-center">
+          <Tooltip triggerEvent="click">
+            <TooltipTrigger>{createBadge()}</TooltipTrigger>
+            <TooltipContent>
+              <div className="text-sm">
+                A difference might occur due to <a href={docLink}>Snapmirror</a>{" "}
+                usage.
+              </div>
+            </TooltipContent>
+          </Tooltip>
+        </Stack>
+      ) : (
+        createBadge()
+      )}
     </Box>
   ) : null;
 };

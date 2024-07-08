@@ -238,7 +238,11 @@ const Resource = (props) => {
                   isPanelView={isPanelView}
                   editableResource={editableResource}
                 />
-                <PhysicalUsage resource={az[1]} unit={unitName} />
+                <PhysicalUsage
+                  resource={az[1]}
+                  resourceName={props.resource.name}
+                  unit={unitName}
+                />
               </div>
             )
           );
