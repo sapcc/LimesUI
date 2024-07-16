@@ -21,8 +21,8 @@ const HistoricalUsage = (props) => {
         </TooltipTrigger>
         <TooltipContent>
           <span className="text-sm p-0">
-            Usage increased by {(azUsage / (minUsage || 1) - 1) * 100} %
-            recently
+            Usage increased by{" "}
+            {((azUsage / (minUsage || 1) - 1) * 100).toFixed(2)} % recently
           </span>
         </TooltipContent>
       </Tooltip>

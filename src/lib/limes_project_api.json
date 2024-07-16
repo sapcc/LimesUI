@@ -27,7 +27,7 @@
               "qa-de-1a": {
                 "usage": 90,
                 "historical_usage": {
-                  "min_usage": 60,
+                  "min_usage": 62,
                   "max_usage": 90,
                   "duration": "48h"
                 }
