@@ -25,7 +25,7 @@
             },
             "per_az": {
               "qa-de-1a": {
-                "usage": 90,
+                "usage": 4002,
                 "historical_usage": {
                   "min_usage": 62,
                   "max_usage": 90,

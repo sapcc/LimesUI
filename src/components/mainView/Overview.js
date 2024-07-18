@@ -6,7 +6,8 @@ import useResetCommitment from "../../hooks/useResetCommitment";
 import { useParams, useNavigate, useLocation, Outlet } from "react-router-dom";
 import { t, byUIString } from "../../lib/utils";
 import { ADVANCEDVIEW, CEREBROKEY } from "../../lib/constants";
-import AvailableBigVMResource from "../bigVM/AvailableBigVMResource";
+import AvailableBigVMResource from "../paygAvailability/bigVM/AvailableBigVMResource";
+import PaygOverview from "../paygAvailability/clusterCapacity/PaygOverview";
 import {
   Tabs,
   Tab,
@@ -60,6 +61,16 @@ const Overview = (props) => {
     setCurrentTabIdx(areaIdx);
     navigate(`/${allAreas[areaIdx]}`);
   }
+
+  // On custom tab, directly route to it.
+  React.useEffect(() => {
+    if (currentArea == CEREBROKEY) {
+      const tabIdx = allAreas.length - 1;
+      setCurrentTabIdx(tabIdx);
+      navigate(`/${allAreas[tabIdx]}`);
+      return;
+    }
+  }, [advancedView]);
 
   // Consider advanced view button click
   React.useEffect(() => {
@@ -119,15 +130,20 @@ const Overview = (props) => {
     );
   }
 
-  function renderBigVM() {
+  function renderPAYG() {
     const { areas } = props.overview;
-    return <AvailableBigVMResource categoryName={areas[currentArea]} />;
+    return (
+      <div>
+        <PaygOverview />
+        <AvailableBigVMResource categoryName={areas[currentArea]} />
+      </div>
+    );
   }
 
   let currentTab;
   switch (currentArea) {
     case CEREBROKEY:
-      currentTab = renderBigVM();
+      currentTab = renderPAYG();
       break;
     default:
       currentTab = renderArea();

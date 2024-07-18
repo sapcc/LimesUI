@@ -1,5 +1,6 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
+import useClusterAPI from "./hooks/useClusterAPI";
 import { LoadingIndicator, Message } from "juno-ui-components";
 import {
   createCommitmentStore,
@@ -20,6 +21,7 @@ const AppResourceContent = (props) => {
   const { setProjectData } = projectStoreActions();
   const { restructureReport } = globalStoreActions();
   const { setCommitments } = projectStoreActions();
+  const { cluster } = useClusterAPI({ isDetail: true });
   const projectQueryResult = useQuery({
     queryKey: ["projectData"],
   });
@@ -57,20 +59,20 @@ const AppResourceContent = (props) => {
     setCommitments(commitmentAPIData.commitments);
   }, [commitmentAPIData]);
 
-  // TODO: This is quick fix. Not checking the commitment API state caused commitments not showing for a while.
-  // This will be rewritten more neatly when I'm back from holiday.
-  // IMPORTANT: QA Elektra has issues. The UI will show CORS errors. I tested this successfully in eu-de-1
-  // Contact the UI team if we keep seeing CORS error in console.
   return commitmentIsError ? (
     <Message>{commitmentError.message}</Message>
-  ) : commitments && !commitmentIsLoading ? (
-    <ContentRoutes
-      queryResult={projectQueryResult}
-      parsedData={projectData}
-      canEdit={props.canEdit}
-    />
-  ) : (
+  ) : cluster.isError ? (
+    <Message>{cluster.error.message}</Message>
+  ) : commitmentIsLoading || cluster.isLoading ? (
     <LoadingIndicator className={"m-auto"} />
+  ) : (
+    commitments && (
+      <ContentRoutes
+        queryResult={projectQueryResult}
+        parsedData={projectData}
+        canEdit={props.canEdit}
+      />
+    )
   );
 };
 

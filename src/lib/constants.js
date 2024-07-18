@@ -1,6 +1,7 @@
 export const COMMITMENTID = "AddCommitment";
 export const ADVANCEDVIEW = "advancedView";
-export const CEREBROKEY = "HANA VM Availability";
+export const CEREBROKEY = "PAYG Availability";
+export const PAYG_AZUNAWARE_KEY = "overview";
 
 //used to reset the last commitment to default values.
 export const initialCommitmentObject = {

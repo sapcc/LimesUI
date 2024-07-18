@@ -17,10 +17,17 @@ const ResourceBarBuilder = (props) => {
     isAZ,
     // Determines if NoQuota bars are the same size as filledBars.
     equallySized,
+    // bar should display quota(cluster scope) or capacity (project/domain scope)
     clusterQuotaView,
+    paygView,
   } = { ...props };
   const { scope } = globalStore();
   const unit = new Unit(unitName || "");
+  const clusterView = paygView
+    ? true
+    : clusterQuotaView
+    ? false
+    : scope.isCluster();
 
   // fillLabel: displays commitment or current usage.
   const showCommitmentOrUsage =
@@ -52,20 +59,19 @@ const ResourceBarBuilder = (props) => {
       capacityLabel={valueWithUnit(capacity, unit)}
       extraFillLabel={valueWithUnit(extraFillValue, unit)}
       extraCapacityLabel={valueWithUnit(extraCapacityValue, unit)}
-      usageLabel={
-        scope.isCluster() && !clusterQuotaView ? "capacity used" : "quota used"
-      }
+      usageLabel={paygView ? "" : clusterView ? "capacity used" : "quota used"}
       fill={usage}
       capacity={capacity}
-      commitment={commitment}
+      commitment={commitment ?? 0}
       extraFillValue={extraFillValue}
       // Providing 1 enables the bar to be filled completely if commitments > quota
       extraCapacityValue={extraCapacityValue || 1}
       canEdit={editableResource || isPanelView}
-      showsCapacity={scope.isCluster() && !clusterQuotaView}
+      showsCapacity={clusterView}
       isAZ={isAZ}
       // No Quota and Quota bars have the same size within the Edit Panel Tables.
       equallySized={equallySized}
+      paygView={paygView}
     />
   );
 };

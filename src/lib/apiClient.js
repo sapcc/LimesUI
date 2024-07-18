@@ -229,8 +229,11 @@ const useQueryClientFn = (isMockApi) => {
   React.useEffect(() => {
     if (!queryClient || !endpoint || !token) return;
     queryClient.setQueryDefaults(["clusterData"], {
-      queryFn: async () => {
-        const url = `${endpoint}/v1/clusters/current`;
+      queryFn: async ({ queryKey }) => {
+        const isDetail = queryKey[1];
+        const url = isDetail
+          ? `${endpoint}/v1/clusters/current?detail`
+          : `${endpoint}/v1/clusters/current`;
         const response = await fetchProxy(url, {
           method: "GET",
           headers: {

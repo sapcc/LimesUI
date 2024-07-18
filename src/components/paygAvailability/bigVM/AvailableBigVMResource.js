@@ -1,17 +1,11 @@
 import React from "react";
 import { LoadingIndicator, Message, Box, Stack } from "juno-ui-components";
-import { t } from "../../lib/utils";
+import { t } from "../../../lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { parseApiData } from "./parseApiData";
+import { categoryTitle } from "../stylescss";
 
 const columnsPerRow = 3;
-const categoryTitle = `
-    text-lg 
-    mb-4 
-    font-bold 
-    col-span-full 
-    text-theme-hig
-    `;
 const categoryContent = `
     grid
     gap-4 

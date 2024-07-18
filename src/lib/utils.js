@@ -37,6 +37,18 @@ export const byUIString = (a, b) => {
   return aa < bb ? -1 : aa > bb ? 1 : 0;
 };
 
+//A sorting predicate for categories: Sort by translated name, but categories
+//named after their service come first.
+export const byNameIn = (serviceType) => (a, b) => {
+  if (t(serviceType) == t(a)) {
+    return -1
+  }
+  if (t(serviceType) == t(b)) {
+    return +1
+  }
+  return byUIString(a, b)
+}
+
 // A sorting method for resources in a category. This is not just a predicate
 // because we need to traverse the entire list to compute individual sorting
 // keys.

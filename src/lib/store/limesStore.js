@@ -1,7 +1,7 @@
 import { CEREBROKEY } from "../constants";
 import { unusedCommitments, uncommittedUsage } from "../../lib/utils";
 
-const limesStore = (set) => ({
+const limesStore = (set, get) => ({
   cluster: {
     clusterData: null,
     refetchClusterAPI: false,
@@ -325,6 +325,23 @@ const limesStore = (set) => ({
         overview.areas[CEREBROKEY] = ["cerebro"];
 
         return { metadata, categories, overview };
+      },
+      receiveCapacity: (data) => {
+        // resourceFilters could be defined here.
+        const restructure = get().global.actions.restructureReport;
+        const { metadata, categories, overview } = restructure(data, null);
+        //The AvailabilityZoneCategory component needs a list of all AZs to render
+        //the AZ table consistently across all categories.
+        const availabilityZones = {};
+        for (const categoryName in categories) {
+          for (const resource of categories[categoryName].resources) {
+            if (!resource?.per_az) continue;
+            for (const azCapacity of resource.per_az) {
+              availabilityZones[azCapacity[0]] = true;
+            }
+          }
+        }
+        return { metadata, categories, overview, availabilityZones };
       },
     },
   },

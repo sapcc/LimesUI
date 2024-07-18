@@ -76,6 +76,7 @@ const ResourceBar = (props) => {
     showsCapacity,
     isAZ,
     equallySized,
+    paygView,
   } = props;
 
   const disabled = false;
@@ -121,6 +122,15 @@ const ResourceBar = (props) => {
       className = "progress-bar";
     } else {
       className = "progress-bar bg-sap-purple-2";
+    }
+
+    // On paygView we need specific coloring
+    if (paygView) {
+      if (fill >= capacity) {
+        className = "progress-bar bg-theme-warning";
+      } else {
+        className = "progress-bar";
+      }
     }
 
     let gradientSingleBar;

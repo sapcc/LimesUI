@@ -14,9 +14,10 @@ import StoreProvider, {
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import styles from "./styles.scss";
 import { fetchProxyInitDB } from "utils";
-import projectApiDB from "./lib/limes_project_api.json";
-import cerebroApiDB from "./lib/cerebro_api.json";
-import commitmentApiDB from "./lib/limes_commitment_api.json";
+import projectApiDB from "./lib/fixtures/limes_project_api.json";
+import cerebroApiDB from "./lib/fixtures/cerebro_api.json";
+import commitmentApiDB from "./lib/fixtures/limes_commitment_api.json";
+import clusterApiDB from "./lib/fixtures/cluster_api.json";
 import dayPickerStyle from "react-day-picker/dist/style.css?inline";
 import AsyncWorker from "./AsyncWorker";
 import { Scope } from "./lib/scope";
@@ -95,6 +96,7 @@ const App = (props = {}) => {
           projects: [projectApiDB],
           projectCommitments: commitmentApiDB.projectCommitments,
           cerebro: [cerebroApiDB],
+          cluster: [clusterApiDB],
         },
         {
           debug: true,
@@ -103,10 +105,12 @@ const App = (props = {}) => {
           // ${x} refers to the x'th place of the subroute's generic entries.
           // example: $2 in "/(.*)/projects/(.*)" => {projectID}
           rewriteRoutes: {
+            "/v1/clusters/current*": "/cluster/qa_cluster",
             "/v1/domains/(.*)/projects/(.*)/commitments":
               "/projectCommitments/$2/commitments",
             "/v1/domains/(.*)/projects/(.*)": "/projects/$2",
-            "(.*)/(.*)/resources/project/bigvm_resources": "/cerebro/bigvm_resources",
+            "(.*)/(.*)/resources/project/bigvm_resources":
+              "/cerebro/bigvm_resources",
           },
         }
       );

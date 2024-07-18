@@ -1,39 +1,14 @@
 import React from "react";
-import { useQuery } from "@tanstack/react-query";
-import {
-  clusterStore,
-  clusterStoreActions,
-  globalStoreActions,
-} from "./components/StoreProvider";
 import ContentRoutes from "./ContentRoutes";
+import useClusterAPI from "./hooks/useClusterAPI";
 
 const AppClusterContent = (props) => {
-  const { clusterData } = clusterStore();
-  const { setClusterData } = clusterStoreActions();
-  const { restructureReport } = globalStoreActions();
-  const { refetchClusterAPI } = clusterStore();
-  const { setRefetchClusterAPI } = clusterStoreActions();
-  const clusterQueryResult = useQuery({
-    queryKey: ["clusterData"],
-  });
-  const { data: clusterAPIData } = clusterQueryResult;
-
-  React.useEffect(() => {
-    // Initial Commitment-API data fetch.
-    if (!clusterAPIData) return;
-    setClusterData(restructureReport(clusterAPIData.cluster));
-  }, [clusterAPIData]);
-
-  React.useEffect(() => {
-    if (!refetchClusterAPI) return;
-    setRefetchClusterAPI(false);
-    clusterQueryResult.refetch();
-  }, [refetchClusterAPI]);
+  const { cluster } = useClusterAPI({ isDetail: false });
 
   return (
     <ContentRoutes
-      queryResult={clusterQueryResult}
-      parsedData={clusterData}
+      queryResult={cluster}
+      parsedData={cluster.data}
       canEdit={props.canEdit}
     />
   );

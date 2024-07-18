@@ -6,6 +6,8 @@ import {
   globalStoreActions,
 } from "./components/StoreProvider";
 import ContentRoutes from "./ContentRoutes";
+import { LoadingIndicator, Message } from "juno-ui-components";
+import useClusterAPI from "./hooks/useClusterAPI";
 
 const AppDomainContent = (props) => {
   const { domainData } = domainStore();
@@ -13,6 +15,7 @@ const AppDomainContent = (props) => {
   const { setRefetchDomainAPI } = domainStoreActions();
   const { setDomainData } = domainStoreActions();
   const { restructureReport } = globalStoreActions();
+  const { cluster } = useClusterAPI({ isDetail: true });
   const domainQueryResult = useQuery({
     queryKey: ["domainData"],
   });
@@ -30,7 +33,11 @@ const AppDomainContent = (props) => {
     domainQueryResult.refetch();
   }, [refetchDomainAPI]);
 
-  return (
+  return cluster.isError ? (
+    <Message>{cluster.error.message}</Message>
+  ) : cluster.isLoading ? (
+    <LoadingIndicator className={"m-auto"} />
+  ) : (
     <ContentRoutes
       queryResult={domainQueryResult}
       parsedData={domainData}
