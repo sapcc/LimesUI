@@ -1,8 +1,19 @@
 import React from "react";
 import { t, tracksQuota } from "../../../lib/utils";
-import { Grid, GridRow, GridColumn } from "juno-ui-components";
+import {
+  Grid,
+  GridRow,
+  GridColumn,
+  Icon,
+  Stack,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "juno-ui-components";
 import ResourceBarBuilder from "../../resourceBar/ResourceBarBuilder";
-import { PAYG_AZUNAWARE_KEY } from "../../../lib/constants";
+import { isAZUnaware } from "../../../lib/utils";
+
+const resourceTitle = `text-sm text-right font-medium`;
 
 function renderBar(resource, usage, capacity) {
   const { name, unit } = resource;
@@ -96,20 +107,40 @@ function renderSubCapacityBar(resource, azName) {
   });
 }
 
+function getAZUnawareResourceName(resource) {
+  return (
+    <Stack className="justify-end items-center" gap="1">
+      <div className={resourceTitle}>{t(resource.name)}</div>
+      <Tooltip triggerEvent="hover">
+        <TooltipTrigger>
+          <Icon size="14px" icon="info" />
+        </TooltipTrigger>
+        <TooltipContent>
+          <span className="text-sm p-0">Resource is AZ unaware.</span>
+        </TooltipContent>
+      </Tooltip>
+    </Stack>
+  );
+}
+
 const PaygResource = (props) => {
   const { resource } = props;
-  const { validAvailabilityZones, titleWidth, azColumnWidth, scope } = props;
+  const { validAvailabilityZones, titleWidth, azColumnWidth } = props;
 
   return (
     <Grid className="mb-4">
       <GridRow>
         <GridColumn className="content-end" cols={titleWidth}>
-          <div className="text-sm text-right font-medium">{t(resource.name)}</div>
+          {isAZUnaware(resource.per_az) ? (
+            getAZUnawareResourceName(resource)
+          ) : (
+            <div className={resourceTitle}>{t(resource.name)}</div>
+          )}
         </GridColumn>
-        {validAvailabilityZones.map((azName) => {
+        {validAvailabilityZones.map((azName, idx) => {
           return (
             <GridColumn key={azName} cols={azColumnWidth}>
-              {azName == PAYG_AZUNAWARE_KEY
+              {isAZUnaware(resource.per_az) && idx == 0
                 ? renderBarFromResource(resource)
                 : renderBarFromAZ(resource, azName)}
             </GridColumn>

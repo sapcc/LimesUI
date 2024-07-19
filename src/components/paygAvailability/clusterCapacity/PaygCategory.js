@@ -5,6 +5,7 @@ import { categoryTitle } from "../stylescss";
 import { globalStore } from "../../StoreProvider";
 import { PAYG_AZUNAWARE_KEY } from "../../../lib/constants";
 import PaygResource from "./PaygResource";
+import { isAZUnaware } from "../../../lib/utils";
 
 // Tailwind does not allow dynamic class insertion. F.E: col-span-${size}
 // That's stupid, hence we might get 0-4 availability zones.
@@ -14,7 +15,7 @@ import PaygResource from "./PaygResource";
 // Tailwind sucks.
 const PaygCategory = (props) => {
   const { categoryName, category, areaAZs } = props;
-  const { serviceType, resources } = category;
+  const { resources } = category;
   const editableResources = resources.filter(
     (res) => res.editableResource === true
   );
@@ -34,16 +35,27 @@ const PaygCategory = (props) => {
     return validAvailabilityZones;
   }
 
-  const validAvailabilityZones = React.useMemo(() => {
+  const [validAvailabilityZones, hasMixedAZAwareness] = React.useMemo(() => {
     // Q: We already have such a logic in the limes store to get the cluster data, why is something similar here?
     // A: The store logic views on area level (used to determine an evenly Grid span), this is on category level (used to display the correct AZ's).
     const availabilityZones = {};
-    for (const resource of category.resources) {
+    let includesAZAware = false;
+    let includesAZUnaware = false;
+    for (const resource of editableResources) {
       if (!resource?.per_az) continue;
-      for (const azCapacity of resource.per_az) {
-        availabilityZones[azCapacity[0]] = true;
-      }
+      resource.per_az.forEach((az) => {
+        // Handle AzUnaware resources mixed with azAware:
+        // Display the resource values for the unaware resource, but the az values for the others.
+        if (!isAZUnaware(resource.per_az)) {
+          includesAZAware = true;
+        } else {
+          includesAZUnaware = true;
+        }
+        availabilityZones[az[0]] = true;
+      });
     }
+    const hasMixedAZAwareness = includesAZAware && includesAZUnaware;
+
     const azKeys = Object.keys(availabilityZones).sort();
     const validAvailabilityZones = filterAvailabilityZones(azKeys);
 
@@ -52,7 +64,7 @@ const PaygCategory = (props) => {
       validAvailabilityZones.push(PAYG_AZUNAWARE_KEY);
     }
 
-    return validAvailabilityZones;
+    return [validAvailabilityZones, hasMixedAZAwareness];
   }, [category]);
 
   // We calculate with 12 Grid columns total.
@@ -74,13 +86,15 @@ const PaygCategory = (props) => {
           <div className={categoryTitle}>{t(categoryName)}</div>
           <Grid>
             <GridRow>
-              <GridColumn cols={titleWidth}>
-                <div></div>
-              </GridColumn>
-              {validAvailabilityZones.map((az) => {
+              <GridColumn cols={titleWidth}></GridColumn>
+              {validAvailabilityZones.map((az, idx) => {
                 return (
                   <GridColumn cols={azColumnWidth} key={az}>
-                    <div className="font-bold mb-2">{az}</div>
+                    <div className="font-bold mb-2">
+                      {hasMixedAZAwareness && idx == 0
+                        ? PAYG_AZUNAWARE_KEY + " / " + az
+                        : az}
+                    </div>
                   </GridColumn>
                 );
               })}
