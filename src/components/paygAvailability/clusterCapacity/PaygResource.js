@@ -48,6 +48,8 @@ function renderBarFromResource(resource) {
   return renderBar(resource, totalUsage, capacity);
 }
 
+// TODO: We are currently uncertain if subcapacities should be shown. Needs to be cleared up with David Höller at some point.
+/*
 function getTotalSubCapacities(subCapacities) {
   let totalSubcapacity = {};
   subCapacities.map((subCapacity) => {
@@ -79,7 +81,9 @@ function getTotalSubCapacities(subCapacities) {
 
   return totalSubcapacities;
 }
+  */
 
+/*
 function renderSubCapacityBar(resource, azName) {
   const subCapacities = resource?.subcapacities;
   if (!subCapacities || !azName) return;
@@ -106,6 +110,7 @@ function renderSubCapacityBar(resource, azName) {
     );
   });
 }
+*/
 
 function getAZUnawareResourceName(resource) {
   return (
@@ -149,13 +154,14 @@ const PaygResource = (props) => {
       </GridRow>
       <GridRow className="mb-4">
         <GridColumn cols={titleWidth}></GridColumn>
-        {validAvailabilityZones.map((azName) => {
+        {/*
+        validAvailabilityZones.map((azName) => {
           return (
             <GridColumn key={azName} cols={azColumnWidth}>
               {renderSubCapacityBar(resource, azName)}
             </GridColumn>
           );
-        })}
+        })*/}
       </GridRow>
     </Grid>
   );
