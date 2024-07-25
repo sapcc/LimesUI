@@ -101,6 +101,7 @@ const ProjectTableDetails = (props) => {
             <Icon
               icon={showCommitments ? "expandMore" : "chevronRight"}
               onClick={() => {
+                if (isTransferring) return;
                 resetCommitmentTransfer();
                 setMoveCommitment(false);
                 setIsCommitting(false);
