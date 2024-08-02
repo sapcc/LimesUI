@@ -6,8 +6,7 @@ import useResetCommitment from "../../hooks/useResetCommitment";
 import { useParams, useNavigate, useLocation, Outlet } from "react-router-dom";
 import { t, byUIString } from "../../lib/utils";
 import { ADVANCEDVIEW, CEREBROKEY } from "../../lib/constants";
-import AvailableBigVMResource from "../paygAvailability/bigVM/AvailableBigVMResource";
-import PaygOverview from "../paygAvailability/clusterCapacity/PaygOverview";
+import PAYGOverview from "../paygAvailability/bigVM/PAYGOverview";
 import {
   Tabs,
   Tab,
@@ -131,11 +130,9 @@ const Overview = (props) => {
   }
 
   function renderPAYG() {
-    const { areas } = props.overview;
     return (
       <div>
-        <PaygOverview />
-        <AvailableBigVMResource categoryName={areas[currentArea]} />
+        <PAYGOverview />
       </div>
     );
   }

@@ -4,7 +4,7 @@ import { byUIString, t } from "../../../lib/utils";
 import { categoryTitle } from "../stylescss";
 import { globalStore } from "../../StoreProvider";
 import { PAYG_AZUNAWARE_KEY } from "../../../lib/constants";
-import PaygResource from "./PaygResource";
+import PAYGLimebro from "./PAYGLimebro";
 import { isAZUnaware } from "../../../lib/utils";
 
 // Tailwind does not allow dynamic class insertion. F.E: col-span-${size}
@@ -13,13 +13,16 @@ import { isAZUnaware } from "../../../lib/utils";
 // Example: Cols: 12; AZ's: 3; Required: col-span-3 (with title: col-span-2)
 // Gladly the Juno Grid already did all those checks so I don't have to...
 // Tailwind sucks.
-const PaygCategory = (props) => {
-  const { categoryName, category, areaAZs } = props;
+const PAYGCategory = (props) => {
+  const { categoryName, cerebro, category, areaAZs } = props;
   const { resources } = category;
   const editableResources = resources.filter(
     (res) => res.editableResource === true
   );
   const { scope } = globalStore();
+
+  // Disable Baremetal Flavors
+  if (categoryName === "per_flavor_baremetal") return;
 
   function filterAvailabilityZones(availabilityZones) {
     // some AZs are hidden for regular users and only shown for cluster admins:
@@ -65,18 +68,13 @@ const PaygCategory = (props) => {
     }
 
     return [validAvailabilityZones, hasMixedAZAwareness];
-  }, [category]);
-
-  // We calculate with 12 Grid columns total.
-  const titleWidth = 2;
+  }, [categoryName]);
   const azColumnWidth = Math.floor(
-    10 / filterAvailabilityZones(areaAZs).length
+    12 / filterAvailabilityZones(areaAZs).length
   );
   const forwardProps = {
     validAvailabilityZones,
-    titleWidth,
     azColumnWidth,
-    scope,
   };
 
   return (
@@ -86,7 +84,6 @@ const PaygCategory = (props) => {
           <div className={categoryTitle}>{t(categoryName)}</div>
           <Grid>
             <GridRow>
-              <GridColumn cols={titleWidth}></GridColumn>
               {validAvailabilityZones.map((az, idx) => {
                 return (
                   <GridColumn cols={azColumnWidth} key={az}>
@@ -100,13 +97,15 @@ const PaygCategory = (props) => {
               })}
             </GridRow>
           </Grid>
+          <PAYGLimebro
+            resources={editableResources.sort(byUIString)}
+            cerebro={cerebro}
+            {...forwardProps}
+          />
         </>
       )}
-      {editableResources.sort(byUIString).map((res) => {
-        return <PaygResource key={res.name} resource={res} {...forwardProps} />;
-      })}
     </div>
   );
 };
 
-export default PaygCategory;
+export default PAYGCategory;
