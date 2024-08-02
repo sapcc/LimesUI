@@ -5,7 +5,12 @@ export function parseApiData(data) {
   const result = Object.keys(availabilityZones)
     .sort()
     .map((az) => {
-      const entry = { availabilityZone: az, flavors: [] };
+      const scrapeTime = availabilityZones[az].timestamp_data_crawled;
+      const entry = {
+        availabilityZone: az,
+        flavors: [],
+        scrapeTime: scrapeTime,
+      };
       const flavors = availabilityZones[az]?.placeable_vms;
       if (!flavors) {
         return entry;
@@ -13,7 +18,7 @@ export function parseApiData(data) {
       Object.keys(flavors)
         .sort()
         .forEach((fname) => {
-          if (fname.startsWith(filterRule) && flavors[fname] > 0) {
+          if (fname.startsWith(filterRule)) {
             entry.flavors.push({ [fname]: flavors[fname] });
           }
         });

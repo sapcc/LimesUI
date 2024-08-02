@@ -1,5 +1,4 @@
 import React from "react";
-import moment from "moment";
 import Category from "./Category";
 import { createCommitmentStore } from "../StoreProvider";
 import useResetCommitment from "../../hooks/useResetCommitment";
@@ -16,6 +15,7 @@ import {
   Button,
   Box,
 } from "juno-ui-components";
+import { getScrapeTime } from "../../lib/getScrapeTime";
 
 const Overview = (props) => {
   const { canEdit } = props;
@@ -81,33 +81,14 @@ const Overview = (props) => {
   }, [advancedView]);
 
   function renderArea() {
-    const { areas, categories, scrapedAt, minScrapedAt, maxScrapedAt } =
-      props.overview;
+    const { areas, categories } = props.overview;
     const currentServices = areas[currentArea];
 
     if (!currentServices) {
       return <Box>Invalid Path.</Box>;
     }
 
-    const currMinScrapedAt = currentServices
-      .map((serviceType) => minScrapedAt[serviceType])
-      .filter((x) => x !== undefined);
-    const currMaxScrapedAt = currentServices
-      .map((serviceType) => maxScrapedAt[serviceType])
-      .filter((x) => x !== undefined);
-    const currScrapedAt = currentServices
-      .map((serviceType) => scrapedAt[serviceType])
-      .filter((x) => x !== undefined);
-    const minScrapedStr = moment
-      .unix(Math.min(...currMinScrapedAt, ...currScrapedAt))
-      .fromNow(true);
-    const maxScrapedStr = moment
-      .unix(Math.max(...currMaxScrapedAt, ...currScrapedAt))
-      .fromNow(true);
-    const ageDisplay =
-      minScrapedStr == maxScrapedStr
-        ? minScrapedStr
-        : `between ${minScrapedStr} and ${maxScrapedStr}`;
+    const ageDisplay = getScrapeTime(currentServices, props.overview);
 
     return (
       <>
@@ -130,9 +111,17 @@ const Overview = (props) => {
   }
 
   function renderPAYG() {
+    const { areas } = props.overview;
+    const allServices = [];
+    Object.keys(areas).forEach((_, idx) => {
+      allServices.push(...Object.values(areas)[idx]);
+    });
+
+    const ageDisplay = getScrapeTime(allServices, props.overview);
     return (
       <div>
         <PAYGOverview />
+        <div>Usage last updated {ageDisplay} ago.</div>
       </div>
     );
   }

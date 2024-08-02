@@ -30,11 +30,9 @@ const PAYGCategory = (props) => {
     // - "unknown": pseudo-AZ for capacity not assigned to an AZ (mostly during buildup)
     // - "tempest-test-...": dummy AZ created by Tempest
     // - "cp...": pseudo-AZ for control plane nodes without AZ association
-    const validAvailabilityZones = scope.isCluster()
-      ? availabilityZones.filter((az) => az != "any")
-      : availabilityZones.filter(
-          (az) => az != "unknown" && az != "any" && !/^tempest-|^cp/.test(az)
-        );
+    const validAvailabilityZones = availabilityZones.filter(
+      (az) => az != "unknown" && az != "any" && !/^tempest-|^cp/.test(az)
+    );
     return validAvailabilityZones;
   }
 

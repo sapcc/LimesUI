@@ -43,8 +43,7 @@ const PAYGResource = (props) => {
   }
 
   function getAvailableResourcesFromAZ() {
-    const totalUsage =
-      az?.commitmentSum + azValues?.uncommitted_usage || 0;
+    const totalUsage = az?.commitmentSum + azValues?.uncommitted_usage || 0;
     const capacity = azValues?.capacity || 0;
     let availableResources = capacity - totalUsage;
     return availableResources;
@@ -74,11 +73,7 @@ const PAYGResource = (props) => {
     >
       <span
         className={`box-border h-2 w-2 ${
-          availableResources < 0
-            ? "bg-theme-error"
-            : availableResources > 0
-            ? "bg-theme-success"
-            : "bg-theme-warning"
+          availableResources > 0 ? "bg-theme-success" : "bg-theme-warning"
         } rounded-full`}
       ></span>
       <Stack gap="1" className="items-center">
@@ -87,7 +82,10 @@ const PAYGResource = (props) => {
         {azUnaware && createTooltip(resource, "Resource is AZ unaware.")}
       </Stack>
       <span className="text-xs">
-        {unit.format(availableResources)} available
+        {availableResources < 0
+          ? unit.format(0)
+          : unit.format(availableResources)}{" "}
+        available
       </span>
     </Stack>
   );

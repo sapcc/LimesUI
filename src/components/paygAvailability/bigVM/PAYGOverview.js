@@ -5,6 +5,7 @@ import { byUIString, byNameIn } from "../../../lib/utils";
 import PAYGCategory from "./PAYGCategory";
 import { useQuery } from "@tanstack/react-query";
 import { parseApiData } from "./parseApiData";
+import { getCerebroTime } from "../../../lib/getScrapeTime";
 
 const PAYGOverview = () => {
   const { clusterData } = clusterStore();
@@ -19,12 +20,24 @@ const PAYGOverview = () => {
   });
   const { data, isError, error, isLoading } = cerebroQueryResult;
   const [placeableVMs, setPlaceableVMs] = React.useState([]);
+  const [ageDisplay, setAgeDisplay] = React.useState(null);
 
   React.useEffect(() => {
     if (!data) return;
     const parsedData = parseApiData(data);
     setPlaceableVMs(parsedData);
   }, [data]);
+
+  React.useEffect(() => {
+    if (placeableVMs.length == 0) return;
+    let timeStamps = [];
+    placeableVMs.forEach((placeable) => {
+      timeStamps.push(placeable.scrapeTime);
+    });
+
+    const cerebroScrapeAge = getCerebroTime(timeStamps);
+    setAgeDisplay(cerebroScrapeAge);
+  }, [placeableVMs]);
 
   function sortAreas(areas) {
     return areas.sort(byUIString);
@@ -34,34 +47,40 @@ const PAYGOverview = () => {
     return categories[serviceType]?.sort(byNameIn(serviceType));
   }
 
+  function dismantleError(error) {
+    try {
+      return JSON.parse(error.message).error;
+    } catch {
+      return error.toString();
+    }
+  }
+
   return (
     <>
       {isError && (
         <Message
           className="mb-2"
           variant="warning"
-          text={error.toString()}
+          text={dismantleError(error)}
         />
       )}
-      {isLoading ? (
-        <LoadingIndicator className={`m-auto`} />
-      ) : (
-        sortAreas(Object.keys(areas)).map((area) =>
-          sortAreas(areas[area]).map((serviceType) =>
-            sortCategories(serviceType)?.map((categoryName) => {
-              return (
-                <PAYGCategory
-                  key={categoryName}
-                  category={clusterData.categories[categoryName]}
-                  categoryName={categoryName}
-                  cerebro={placeableVMs}
-                  areaAZs={Object.keys(clusterData.availabilityZones).sort()}
-                />
-              );
-            })
-          )
+      {isLoading && <LoadingIndicator className={`m-auto`} />}
+      {sortAreas(Object.keys(areas)).map((area) =>
+        sortAreas(areas[area]).map((serviceType) =>
+          sortCategories(serviceType)?.map((categoryName) => {
+            return (
+              <PAYGCategory
+                key={categoryName}
+                category={clusterData.categories[categoryName]}
+                categoryName={categoryName}
+                cerebro={placeableVMs}
+                areaAZs={Object.keys(clusterData.availabilityZones).sort()}
+              />
+            );
+          })
         )
       )}
+      {ageDisplay && <div>Cerebro last updated {ageDisplay} ago.</div>}
     </>
   );
 };
