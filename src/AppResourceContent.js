@@ -63,7 +63,7 @@ const AppResourceContent = (props) => {
     <Message>{commitmentError.message}</Message>
   ) : cluster.isError ? (
     <Message>{cluster.error.message}</Message>
-  ) : commitmentIsLoading || cluster.isLoading ? (
+  ) : commitmentIsLoading || !cluster.data ? (
     <LoadingIndicator className={"m-auto"} />
   ) : (
     commitments && (

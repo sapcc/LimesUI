@@ -35,7 +35,7 @@ const AppDomainContent = (props) => {
 
   return cluster.isError ? (
     <Message>{cluster.error.message}</Message>
-  ) : cluster.isLoading ? (
+  ) : cluster.isLoading || !cluster.data ? (
     <LoadingIndicator className={"m-auto"} />
   ) : (
     <ContentRoutes
