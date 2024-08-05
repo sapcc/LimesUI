@@ -16,8 +16,8 @@ const useQueryClientFn = (isMockApi) => {
   async function responseHandler(response, addStatusCode = true) {
     if (!response.ok) {
       const text = await response.text();
-      const response = addStatusCode ? `${text} (Code: ${response.status})` : `${text}`
-      throw new Error(response);
+      const errorText = addStatusCode ? `${text} (Code: ${response.status})` : `${text}`
+      throw new Error(errorText);
     }
     return response.json();
   }
