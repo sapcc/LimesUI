@@ -13,10 +13,11 @@ const useQueryClientFn = (isMockApi) => {
   const { setApiReady } = apiStoreActions();
   const { endpoint, token, projectID, domainID } = { ...globalAPI };
 
-  async function responseHandler(response) {
+  async function responseHandler(response, addStatusCode = true) {
     if (!response.ok) {
       const text = await response.text();
-      throw new Error(`${text} (Code: ${response.status})`);
+      const response = addStatusCode ? `${text} (Code: ${response.status})` : `${text}`
+      throw new Error(response);
     }
     return response.json();
   }
@@ -290,7 +291,7 @@ const useQueryClientFn = (isMockApi) => {
           },
           ...{ mock: isMockApi },
         });
-        return responseHandler(response);
+        return responseHandler(response, false);
       },
     });
   }, [queryClient]);
