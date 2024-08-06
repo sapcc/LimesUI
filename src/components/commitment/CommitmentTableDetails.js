@@ -48,6 +48,7 @@ const CommitmentTableDetails = (props) => {
   const [showTransfer, setShowTransfer] = React.useState(true);
   const { isPlanned, isPending } = useCommitmentFilter();
   const { setCommitment } = createCommitmentStoreActions();
+  const { setTransferredCommitment } = createCommitmentStoreActions();
   const { setIsCommitting } = createCommitmentStoreActions();
   const { setIsSubmitting } = createCommitmentStoreActions();
   const { resetCommitmentTransfer } = useResetCommitment();
@@ -120,14 +121,14 @@ const CommitmentTableDetails = (props) => {
   // Transfer commitment (Cluster/Domain View)
   function transferCommit() {
     setIsTransferring(true);
-    setCommitment(props.commitment);
+    setTransferredCommitment(props.commitment);
   }
 
   function transferCommitOnProjectLevel() {
     setTransferFromAndToProject(
       commitmentInTrasfer ? TransferStatus.VIEW : TransferStatus.START
     );
-    setCommitment(props.commitment);
+    setTransferredCommitment(props.commitment);
   }
 
   // If a commitment is selected, hide all other move buttons from the UI.

@@ -62,7 +62,7 @@ const EditPanel = (props) => {
   const { isSubmitting } = createCommitmentStore();
   const { currentProject } = createCommitmentStore();
   const { currentAZ } = createCommitmentStore();
-  const { commitment } = createCommitmentStore();
+  const { transferredCommitment } = createCommitmentStore();
   const { transferProject } = createCommitmentStore();
   const { transferFromAndToProject } = createCommitmentStore();
   const { setTransferFromAndToProject } = createCommitmentStoreActions();
@@ -72,6 +72,7 @@ const EditPanel = (props) => {
   const { setRefetchDomainAPI } = domainStoreActions();
   const { setRefetchCommitmentAPI } = createCommitmentStoreActions();
   const { setCommitment } = createCommitmentStoreActions();
+  const { setTransferredCommitment } = createCommitmentStoreActions();
   const { setCommitmentIsLoading } = createCommitmentStoreActions();
   const { setIsSubmitting } = createCommitmentStoreActions();
   const { setIsCommitting } = createCommitmentStoreActions();
@@ -308,7 +309,7 @@ const EditPanel = (props) => {
   }
 
   function onTransferModalProjectClose() {
-    setCommitment(initialCommitmentObject);
+    setTransferredCommitment(initialCommitmentObject);
     setTransferFromAndToProject(null);
   }
 
@@ -390,20 +391,20 @@ const EditPanel = (props) => {
       )}
       {scope.isProject() &&
         transferFromAndToProject == TransferStatus.START &&
-        commitment && (
+        transferredCommitment && (
           <TransferModal
             title="Transfer Commitment"
             subText="Transfer"
             onModalClose={onTransferModalProjectClose}
             onTransfer={startCommitmentTransfer}
-            commitment={commitment}
+            commitment={transferredCommitment}
           />
         )}
       {scope.isProject() && transferFromAndToProject == TransferStatus.VIEW && (
         <TransferTokenModal
           title="Transfer Commitment"
           onModalClose={onTransferModalProjectClose}
-          commitment={commitment}
+          commitment={transferredCommitment}
         />
       )}
       {scope.isProject() &&
@@ -419,13 +420,13 @@ const EditPanel = (props) => {
             onModalClose={onTransferModalProjectClose}
           />
         )}
-      {transferProject && commitment && (
+      {transferProject && transferredCommitment && (
         <TransferModal
           title="Transfer Commitment"
           subText="Transfer"
           onModalClose={onTransferModalClose}
           onTransfer={startCommitmentTransfer}
-          commitment={commitment}
+          commitment={transferredCommitment}
           currentProject={currentProject}
           transferProject={transferProject}
         />

@@ -5,6 +5,7 @@ const useResetCommitment = () => {
   const { setCurrentAZ } = createCommitmentStoreActions();
   const { setIsCommitting } = createCommitmentStoreActions();
   const { setCommitment } = createCommitmentStoreActions();
+  const { setTransferredCommitment } = createCommitmentStoreActions();
   const { setToast } = createCommitmentStoreActions();
   const { setTransferCommitment } = createCommitmentStoreActions();
   const { setIsTransferring } = createCommitmentStoreActions();
@@ -21,6 +22,7 @@ const useResetCommitment = () => {
   function resetURLChangeState() {
     setIsCommitting(false);
     setCommitment(initialCommitmentObject);
+    setTransferredCommitment(initialCommitmentObject);
     setDeleteCommitment(null);
     setToast(null);
     resetCommitmentTransfer();

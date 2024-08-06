@@ -3,6 +3,7 @@ import { initialCommitmentObject } from "../constants";
 const createCommitmentStore = (set) => ({
   createCommitment: {
     commitment: { ...initialCommitmentObject },
+    transferredCommitment: { ...initialCommitmentObject },
     // Requery API
     refetchCommitmentAPI: false,
     // Toggle the edit mode and the commitment button.
@@ -36,6 +37,13 @@ const createCommitmentStore = (set) => ({
           createCommitment: {
             ...state.createCommitment,
             commitment: { ...commitment },
+          },
+        })),
+      setTransferredCommitment: (transferredCommitment) =>
+        set((state) => ({
+          createCommitment: {
+            ...state.createCommitment,
+            transferredCommitment: { ...transferredCommitment },
           },
         })),
       setRefetchCommitmentAPI: (refetchCommitmentAPI) =>
