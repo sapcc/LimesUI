@@ -308,6 +308,7 @@ const EditPanel = (props) => {
   }
 
   function onTransferModalProjectClose() {
+    setCommitment(initialCommitmentObject);
     setTransferFromAndToProject(null);
   }
 
