@@ -43,8 +43,6 @@ const TransferReceiveModal = (props) => {
   });
   const { data, isFetching, isError, error } = commitmentData;
   const unit = new Unit(data?.unit);
-  console.log(currentProject, serviceType, currentResource, currentAZ);
-  console.log(data);
 
   React.useEffect(() => {
     setGetCommitment(false);
