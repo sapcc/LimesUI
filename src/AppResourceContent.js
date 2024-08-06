@@ -17,7 +17,9 @@ const AppResourceContent = (props) => {
   const { setRefetchProjectAPI } = projectStoreActions();
   const { refetchCommitmentAPI } = createCommitmentStore();
   const { setRefetchCommitmentAPI } = createCommitmentStoreActions();
+  const { setCurrentProject } = createCommitmentStoreActions();
   const { commitments } = projectStore();
+  const { setCommitmentIsFetching } = createCommitmentStoreActions();
   const { setProjectData } = projectStoreActions();
   const { restructureReport } = globalStoreActions();
   const { setCommitments } = projectStoreActions();
@@ -31,7 +33,8 @@ const AppResourceContent = (props) => {
   const { data: projectAPIData } = projectQueryResult;
   const {
     data: commitmentAPIData,
-    isLoading: commitmentIsLoading,
+    isLoading: commitmentLoads,
+    isFetching: commitmentIsFetching,
     isError: commitmentIsError,
     error: commitmentError,
   } = commitQueryResult;
@@ -49,10 +52,20 @@ const AppResourceContent = (props) => {
   }, [refetchCommitmentAPI]);
 
   React.useEffect(() => {
+    setCommitmentIsFetching(commitmentIsFetching);
+  }, [commitmentIsFetching]);
+
+  React.useEffect(() => {
     // Initial Commitment-API data fetch.
     if (!projectAPIData) return;
     setProjectData(restructureReport(projectAPIData.project));
   }, [projectAPIData]);
+
+  // Need to set the current project to serve the transfer commitment API.
+  React.useEffect(() => {
+    if (!projectData) return;
+    setCurrentProject(projectData);
+  }, [projectData]);
 
   React.useEffect(() => {
     if (!commitmentAPIData) return;
@@ -63,7 +76,7 @@ const AppResourceContent = (props) => {
     <Message>{commitmentError.message}</Message>
   ) : cluster.isError ? (
     <Message>{cluster.error.message}</Message>
-  ) : commitmentIsLoading || !cluster.data ? (
+  ) : commitmentLoads || !cluster.data ? (
     <LoadingIndicator className={"m-auto"} />
   ) : (
     commitments && (

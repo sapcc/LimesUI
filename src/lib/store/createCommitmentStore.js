@@ -13,6 +13,7 @@ const createCommitmentStore = (set) => ({
     isSubmitting: false,
     // Indicate loading state on commitment save
     commitmentIsLoading: false,
+    commitmentIsFetching: false,
     // Set toast on API errors
     toast: { message: null, variant: "" },
     // Display current selected AZ tab.
@@ -23,8 +24,10 @@ const createCommitmentStore = (set) => ({
     transferCommitment: false,
     // The user choses a concrete commitment to move.
     isTransferring: false,
-    // The project to tranfer to
+    // The project to tranfer to (cluster/domain level)
     transferProject: null,
+    // transfer commitments on project level.
+    transferFromAndToProject: null,
     // contains the commitment to delete.
     deleteCommitment: null,
     actions: {
@@ -67,6 +70,13 @@ const createCommitmentStore = (set) => ({
             commitmentIsLoading: loading,
           },
         })),
+      setCommitmentIsFetching: (fetching) =>
+        set((state) => ({
+          createCommitment: {
+            ...state.createCommitment,
+            commitmentIsFetching: fetching,
+          },
+        })),
       setToast: (toast, variant = "danger") =>
         set((state) => ({
           createCommitment: {
@@ -90,6 +100,13 @@ const createCommitmentStore = (set) => ({
           createCommitment: {
             ...state.createCommitment,
             transferCommitment: transferCommitment,
+          },
+        })),
+      setTransferFromAndToProject: (isTrasferring) =>
+        set((state) => ({
+          createCommitment: {
+            ...state.createCommitment,
+            transferFromAndToProject: isTrasferring,
           },
         })),
       setCurrentProject: (project) =>

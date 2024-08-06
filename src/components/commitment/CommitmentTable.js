@@ -4,6 +4,7 @@ import {
   DataGridHeadCell,
   DataGridRow,
   IntroBox,
+  LoadingIndicator,
 } from "juno-ui-components";
 import CommitmentTableDetails from "./CommitmentTableDetails";
 import useCommitmentFilter from "../../hooks/useCommitmentFilter";
@@ -14,6 +15,7 @@ const CommitmentTable = (props) => {
   const unit = props.resource.unit;
   const { filterCommitments } = useCommitmentFilter();
   const { commitment: newCommitment } = createCommitmentStore();
+  const { commitmentIsFetching } = createCommitmentStore();
   const { isCommitting } = createCommitmentStore();
   const {
     serviceType,
@@ -61,6 +63,8 @@ const CommitmentTable = (props) => {
     },
   ];
 
+  const gridColumnTemplate = "15% 15% 14% 14% 14% 10% 18%";
+
   //Add or remove edit commitment row.
   const filteredCommitments = React.useMemo(() => {
     const filteredData = filterCommitments(currentResource, currentAZ);
@@ -72,8 +76,13 @@ const CommitmentTable = (props) => {
     return filteredData;
   }, [commitmentData, currentAZ, currentResource, isCommitting]);
 
-  return filteredCommitments.length > 0 ? (
-    <DataGrid columns={commitmentHeadCells.length} columnMaxSize="1fr">
+  return commitmentIsFetching ? (
+    <LoadingIndicator className="m-auto" />
+  ) : filteredCommitments.length > 0 ? (
+    <DataGrid
+      columns={commitmentHeadCells.length}
+      gridColumnTemplate={gridColumnTemplate}
+    >
       <DataGridRow>
         {commitmentHeadCells.map((headCell) => (
           <DataGridHeadCell key={headCell.key}>

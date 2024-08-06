@@ -13,6 +13,7 @@
           "duration": "1 year",
           "requested_at": 1699956655,
           "confirmed_at": 1699957274,
+          "can_be_deleted": true,
           "expires_at": 1731579674
         },
         {
@@ -92,6 +93,17 @@
           "requested_at": 1699956655,
           "confirmed_at": 1699957274,
           "expires_at": 1731579674
+        },
+        {
+          "id": 123,
+          "service_type": "compute",
+          "resource_name": "instances",
+          "availability_zone": "qa-de-1a",
+          "amount": 10,
+          "unit": "",
+          "duration": "3 years",
+          "confirmed_at": 1699957274,
+          "requested_at": 1699979577
         }
       ]
     }

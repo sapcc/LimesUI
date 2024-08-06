@@ -15,10 +15,12 @@ import AvailabilityZoneNav from "./AvailabilityZoneNav";
 import CommitmentTable from "../commitment/CommitmentTable";
 import CommitmentModal from "../commitment/CommitmentModal";
 import TransferModal from "../project/TransferModal";
+import TransferTokenModal from "../project/TransferTokenModal";
+import TransferReceiveModal from "../project/TransferReceiveModal";
 import ProjectManager from "../project/ProjectManager";
 import DomainManager from "../domain/DomainManager";
 import useResetCommitment from "../../hooks/useResetCommitment";
-import { initialCommitmentObject } from "../../lib/constants";
+import { initialCommitmentObject, TransferStatus } from "../../lib/constants";
 import DeleteModal from "../commitment/DeleteModal";
 
 const EditPanel = (props) => {
@@ -62,6 +64,8 @@ const EditPanel = (props) => {
   const { currentAZ } = createCommitmentStore();
   const { commitment } = createCommitmentStore();
   const { transferProject } = createCommitmentStore();
+  const { transferFromAndToProject } = createCommitmentStore();
+  const { setTransferFromAndToProject } = createCommitmentStoreActions();
   const { deleteCommitment } = createCommitmentStore();
   const { setTransferProject } = createCommitmentStoreActions();
   const { setRefetchClusterAPI } = clusterStoreActions();
@@ -162,6 +166,8 @@ const EditPanel = (props) => {
   }
 
   // Transferring a commitment requires to mark the commitment as transferrable and then transfer it to it's target.
+  // Cluster and domain level transfer the commitment immediately after
+  // On project level we move between projects. First we initiate the transfer. On the target project we receive with the token input.
   function startCommitmentTransfer(project, commitment) {
     const sourceProjectID = currentProject.metadata.id;
     const sourceDomainID = scope.isCluster()
@@ -181,6 +187,13 @@ const EditPanel = (props) => {
       },
       {
         onSuccess: (data) => {
+          // On project level we end here and do not process the transfer directly.
+          if (scope.isProject()) {
+            resetCommitmentTransfer();
+            setRefetchProjectAPI(true);
+            setRefetchCommitmentAPI(true);
+            return;
+          }
           const receivedCommitment = data.commitment;
           const transferToken = data.commitment.transfer_token;
           transferCommitment(project, receivedCommitment, transferToken);
@@ -208,10 +221,11 @@ const EditPanel = (props) => {
       },
       {
         onSuccess: () => {
-          setToast(
-            "Order of projects might have updated. Please sort the table.",
-            "info"
-          );
+          !scope.isProject() &&
+            setToast(
+              "Order of projects might have updated. Please sort the table.",
+              "info"
+            );
           resetCommitmentTransfer();
           setRefetchClusterAPI(true);
           setRefetchDomainAPI(true);
@@ -293,6 +307,10 @@ const EditPanel = (props) => {
     setTransferProject(null);
   }
 
+  function onTransferModalProjectClose() {
+    setTransferFromAndToProject(null);
+  }
+
   function onDeleteClose() {
     setDeleteCommitment(null);
   }
@@ -334,6 +352,7 @@ const EditPanel = (props) => {
           resource={currentResource}
           currentAZ={currentAZ}
           commitmentData={commitments}
+          scope={scope}
         />
       )}
       {scope.isDomain() && (
@@ -368,6 +387,37 @@ const EditPanel = (props) => {
           onModalClose={onPostModalClose}
         />
       )}
+      {scope.isProject() &&
+        transferFromAndToProject == TransferStatus.START &&
+        commitment && (
+          <TransferModal
+            title="Transfer Commitment"
+            subText="Transfer"
+            onModalClose={onTransferModalProjectClose}
+            onTransfer={startCommitmentTransfer}
+            commitment={commitment}
+          />
+        )}
+      {scope.isProject() && transferFromAndToProject == TransferStatus.VIEW && (
+        <TransferTokenModal
+          title="Transfer Commitment"
+          onModalClose={onTransferModalProjectClose}
+          commitment={commitment}
+        />
+      )}
+      {scope.isProject() &&
+        transferFromAndToProject == TransferStatus.RECEIVE && (
+          <TransferReceiveModal
+            title="Receive Commitment"
+            subText="Receive"
+            currentProject={currentProject}
+            serviceType={serviceType}
+            currentResource={currentResource}
+            currentAZ={currentAZ}
+            transferCommitment={transferCommitment}
+            onModalClose={onTransferModalProjectClose}
+          />
+        )}
       {transferProject && commitment && (
         <TransferModal
           title="Transfer Commitment"

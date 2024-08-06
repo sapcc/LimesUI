@@ -8,6 +8,7 @@ const useResetCommitment = () => {
   const { setToast } = createCommitmentStoreActions();
   const { setTransferCommitment } = createCommitmentStoreActions();
   const { setIsTransferring } = createCommitmentStoreActions();
+  const { setTransferFromAndToProject } = createCommitmentStoreActions();
   const { setDeleteCommitment } = createCommitmentStoreActions();
 
   // Handle closure of edit panel.
@@ -30,6 +31,7 @@ const useResetCommitment = () => {
     setCommitment(initialCommitmentObject);
     setTransferCommitment(false);
     setIsTransferring(false);
+    setTransferFromAndToProject(null);
   }
 
   return { resetCommitment, resetURLChangeState, resetCommitmentTransfer };

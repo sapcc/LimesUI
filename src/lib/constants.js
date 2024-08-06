@@ -14,6 +14,17 @@ export const initialCommitmentObject = {
   duration: "",
 };
 
+// Transfer commitment on project level
+// Required are the following states:
+// 1. A view where a transfer can be initiated
+// 2. A view to copy the transfer token at the source project
+// 3. A view to enter the transfer token at the target project
+export const TransferStatus = Object.freeze({
+  START: 1,
+  VIEW: 2,
+  RECEIVE: 3,
+});
+
 // Distinguish EditPanels with different purposes. F.e.: Max-Quota Editing or Commitment creation.
 export const PanelType = Object.freeze({
   quota: { name: "quota" },

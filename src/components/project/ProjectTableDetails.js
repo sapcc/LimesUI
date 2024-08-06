@@ -51,6 +51,7 @@ const ProjectTableDetails = (props) => {
   const { isCommitting } = createCommitmentStore();
   const { transferCommitment } = createCommitmentStore();
   const { isTransferring } = createCommitmentStore();
+  const { setCommitmentIsFetching } = createCommitmentStoreActions();
   const { setIsCommitting } = createCommitmentStoreActions();
   const { setTransferCommitment } = createCommitmentStoreActions();
   const { resetCommitmentTransfer } = useResetCommitment();
@@ -62,7 +63,7 @@ const ProjectTableDetails = (props) => {
     queryKey: ["commitmentData", projectID, domainID],
     enabled: showCommitments,
   });
-  const { data: commitmentData, isLoading } = commitQueryResult;
+  const { data: commitmentData, isLoading, isFetching } = commitQueryResult;
   const [moveCommitment, setMoveCommitment] = React.useState(false);
   const [originProject, setOriginProject] = React.useState(false);
 
@@ -70,6 +71,10 @@ const ProjectTableDetails = (props) => {
     if (!showCommitments || !commitmentData) return;
     setCommitments(commitmentData.commitments);
   }, [showCommitments, commitmentData]);
+
+  React.useEffect(() => {
+    setCommitmentIsFetching(isFetching);
+  }, [isFetching]);
 
   React.useEffect(() => {
     if (!refetchCommitmentAPI || !showCommitments) return;

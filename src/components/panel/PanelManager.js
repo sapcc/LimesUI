@@ -2,16 +2,13 @@ import React from "react";
 import { Panel } from "juno-ui-components";
 import EditPanel from "./EditPanel";
 import { useParams, useNavigate } from "react-router";
-import {
-  t,
-  getCurrentResource,
-  tracksQuota,
-} from "../../lib/utils";
+import { t, getCurrentResource, tracksQuota } from "../../lib/utils";
 import { initialCommitmentObject } from "../../lib/constants";
 import {
   createCommitmentStore,
   createCommitmentStoreActions,
   domainStoreActions,
+  globalStore,
 } from "../StoreProvider";
 
 // Panel needs to be rendered first to enable the fading UI animation.
@@ -20,6 +17,7 @@ const PanelManager = (props) => {
   const { isEditing } = createCommitmentStore();
   const { currentProject } = createCommitmentStore();
   const project = React.useRef(currentProject);
+  const { scope } = globalStore();
   const { setIsEditing } = createCommitmentStoreActions();
   const { setCommitment } = createCommitmentStoreActions();
   const { setTransferCommitment } = createCommitmentStoreActions();
@@ -50,6 +48,7 @@ const PanelManager = (props) => {
     };
   }, []);
 
+  // This is a workaround hence the return statement of a useEffect apparently clears the store data first.
   React.useEffect(() => {
     project.current = currentProject;
   }, [currentProject]);
@@ -64,7 +63,7 @@ const PanelManager = (props) => {
     setTransferCommitment(false);
     setIsTransferring(false);
     // Reset showCommitment on project
-    if (currentProject) {
+    if (!scope.isProject() && currentProject) {
       setShowCommitments(currentProject.metadata.id, false);
     }
   }

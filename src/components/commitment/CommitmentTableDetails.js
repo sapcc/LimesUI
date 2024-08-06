@@ -13,10 +13,11 @@ import { formatTime, formatTimeISO8160 } from "../../lib/utils";
 import {
   createCommitmentStore,
   createCommitmentStoreActions,
+  globalStore,
 } from "../StoreProvider";
 import CommitmentTooltip from "./CommitmentTooltip";
 import { initialCommitmentObject } from "../../lib/constants";
-import { COMMITMENTID } from "../../lib/constants";
+import { COMMITMENTID, TransferStatus } from "../../lib/constants";
 import useCommitmentFilter from "../../hooks/useCommitmentFilter";
 import useResetCommitment from "../../hooks/useResetCommitment";
 
@@ -51,11 +52,14 @@ const CommitmentTableDetails = (props) => {
   const { setIsSubmitting } = createCommitmentStoreActions();
   const { resetCommitmentTransfer } = useResetCommitment();
   const { setIsTransferring } = createCommitmentStoreActions();
+  const { setTransferFromAndToProject } = createCommitmentStoreActions();
   const { setDeleteCommitment } = createCommitmentStoreActions();
   const { setToast } = createCommitmentStoreActions();
+  const { scope } = globalStore();
   const [invalidDuration, setInValidDuration] = React.useState(false);
   const [invalidInput, setInvalidInput] = React.useState(false);
   const unit = new Unit(unitName);
+  const commitmentInTrasfer = commitment.transfer_status ? true : false;
   const initialParsedAmount = unit.format(amount, { ascii: true });
   const inputRef = React.useRef(initialParsedAmount);
 
@@ -115,8 +119,15 @@ const CommitmentTableDetails = (props) => {
 
   // Transfer commitment (Cluster/Domain View)
   function transferCommit() {
-    setCommitment(props.commitment);
     setIsTransferring(true);
+    setCommitment(props.commitment);
+  }
+
+  function transferCommitOnProjectLevel() {
+    setTransferFromAndToProject(
+      commitmentInTrasfer ? TransferStatus.VIEW : TransferStatus.START
+    );
+    setCommitment(props.commitment);
   }
 
   // If a commitment is selected, hide all other move buttons from the UI.
@@ -263,8 +274,8 @@ const CommitmentTableDetails = (props) => {
         ) : (
           <Stack className="gap-1">
             <Stack>{setCommitmentLabel()}</Stack>
-            {commitment?.can_be_deleted && (
-              <Stack className={"m-auto mr-0"}>
+            <Stack className={"mr-0 gap-1"}>
+              {commitment?.can_be_deleted && (
                 <Button
                   onClick={() => {
                     onCommitmentDelete();
@@ -273,8 +284,18 @@ const CommitmentTableDetails = (props) => {
                   icon={"cancel"}
                   variant="primary-danger"
                 />
-              </Stack>
-            )}
+              )}
+              {scope.isProject() && isConfirmed && (
+                <Button
+                  size="small"
+                  icon="openInBrowser"
+                  variant={commitmentInTrasfer ? "primary" : "default"}
+                  onClick={() => {
+                    transferCommitOnProjectLevel();
+                  }}
+                />
+              )}
+            </Stack>
           </Stack>
         )}
       </DataGridCell>

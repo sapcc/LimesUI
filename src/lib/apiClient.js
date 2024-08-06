@@ -16,7 +16,9 @@ const useQueryClientFn = (isMockApi) => {
   async function responseHandler(response, addStatusCode = true) {
     if (!response.ok) {
       const text = await response.text();
-      const errorText = addStatusCode ? `${text} (Code: ${response.status})` : `${text}`
+      const errorText = addStatusCode
+        ? `${text} (Code: ${response.status})`
+        : `${text}`;
       throw new Error(errorText);
     }
     return response.json();
@@ -295,6 +297,26 @@ const useQueryClientFn = (isMockApi) => {
       },
     });
   }, [queryClient]);
+
+  // CommitmentByToken is used for commitment transfers.
+  React.useEffect(() => {
+    queryClient.setQueryDefaults(["commitmentByToken"], {
+      queryFn: async ({ queryKey }) => {
+        const transferToken = queryKey[1];
+        const url = `${endpoint}/v1/commitments/${transferToken}`;
+        const response = await fetchProxy(url, {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+            "X-Limes-V2-API-Preview": "per-az",
+            "X-Auth-Token": token,
+          },
+          ...{ mock: isMockApi },
+        });
+        return responseHandler(response);
+      },
+    });
+  }, [queryClient, endpoint, token]);
 };
 
 export default useQueryClientFn;

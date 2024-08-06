@@ -11,6 +11,7 @@ import {
   Stack,
   TextInput,
 } from "juno-ui-components";
+import { globalStore } from "../StoreProvider";
 import { valueWithUnit } from "../../lib/unit";
 import { Unit } from "../../lib/unit";
 
@@ -26,9 +27,10 @@ const TransferModal = (props) => {
     transferProject,
     commitment,
   } = props;
-  const { metadata: originMeta } = currentProject;
-  const { metadata: targetMeta } = transferProject;
+  const { metadata: originMeta } = currentProject || {};
+  const { metadata: targetMeta } = transferProject || {};
   const unit = new Unit(commitment.unit);
+  const { scope } = globalStore();
   const [splitCommitment, setSplitCommitment] = React.useState(false);
   const [invalidInput, setInvalidInput] = React.useState(false);
   const inputRef = React.useRef("");
@@ -104,14 +106,18 @@ const TransferModal = (props) => {
           <DataGridCell className={label}>Duration:</DataGridCell>
           <DataGridCell>{commitment.duration}</DataGridCell>
         </DataGridRow>
-        <DataGridRow>
-          <DataGridCell className={label}>Origin:</DataGridCell>
-          <DataGridCell>{originMeta.name}</DataGridCell>
-        </DataGridRow>
-        <DataGridRow>
-          <DataGridCell className={label}>Target:</DataGridCell>
-          <DataGridCell>{targetMeta.name}</DataGridCell>
-        </DataGridRow>
+        {!scope.isProject() && (
+          <DataGridRow>
+            <DataGridCell className={label}>Origin:</DataGridCell>
+            <DataGridCell>{originMeta.name}</DataGridCell>
+          </DataGridRow>
+        )}
+        {!scope.isProject() && (
+          <DataGridRow>
+            <DataGridCell className={label}>Target:</DataGridCell>
+            <DataGridCell>{targetMeta.name}</DataGridCell>
+          </DataGridRow>
+        )}
         <DataGridRow>
           <DataGridCell className={label}>Customize:</DataGridCell>
           <DataGridCell>
