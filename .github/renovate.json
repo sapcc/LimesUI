@@ -1,6 +1,6 @@
 {
   "extends": [
-    "config:base",
+    "config:recommended",
     "default:pinDigestsDisabled",
     "mergeConfidence:all-badges",
     "docker:disable"
@@ -15,7 +15,9 @@
   },
   "dependencyDashboardOSVVulnerabilitySummary": "all",
   "osvVulnerabilityAlerts": true,
-  "postUpdateOptions": [ "npmDedupe" ],
+  "postUpdateOptions": [
+    "npmDedupe"
+  ],
   "prHourlyLimit": 0,
   "schedule": [
     "on Friday"
