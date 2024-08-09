@@ -7,6 +7,7 @@ const useReceivedCommitment = ({ token, shouldFetch }) => {
     queryKey: ["commitmentByToken", token],
     refetchOnWindowFocus: false,
     retry: false,
+    gcTime: 0, // Disable Caching. We don't want to display commitments that have been transferred already.
     enabled: false,
   });
   const { data, isFetching, isError, error } = commitByToken;
