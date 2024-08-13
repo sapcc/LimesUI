@@ -22,6 +22,8 @@ const PhysicalUsage = (props) => {
   const displayText = `Physical Usage: ${unit.format(physicalUsage)}`;
   const isSnapshot = name == "snapshot_capacity";
 
+  if (!isSnapshot) return;
+
   function createBadge() {
     return (
       <Stack className="items-center" gap="1">
