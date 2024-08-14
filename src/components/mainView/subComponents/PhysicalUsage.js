@@ -8,6 +8,7 @@ import {
   TooltipTrigger,
 } from "juno-ui-components";
 import { Unit } from "../../../lib/unit";
+import { getUsageForAZLevel } from "../../../lib/resourceBarValues";
 
 const docLink =
   "https://documentation.global.cloud.sap/docs/customer/storage/file-storage/fs-howto/filestore-create-a-share-replica/";
@@ -15,7 +16,7 @@ const docLink =
 const PhysicalUsage = (props) => {
   const { resource, resourceName = null, unit: unitName } = props;
   const name = resourceName ?? resource.name;
-  const { usage } = resource;
+  const usage = getUsageForAZLevel(resource);
   const physicalUsage = resource?.physical_usage;
   const isWarning = physicalUsage > usage;
   const unit = new Unit(unitName);
