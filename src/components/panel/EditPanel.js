@@ -163,6 +163,7 @@ const EditPanel = (props) => {
     );
     setCommitment(initialCommitmentObject);
     setIsSubmitting(false);
+    setCanConfirm(null);
     setIsCommitting(false);
   }
 
