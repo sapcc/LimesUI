@@ -1,5 +1,5 @@
 import React from "react";
-import { Button } from "juno-ui-components";
+import { Button, Icon } from "juno-ui-components";
 import { createCommitmentStoreActions } from "../../StoreProvider";
 import { TransferStatus } from "../../../lib/constants";
 
@@ -13,12 +13,13 @@ const ReceiveCommitment = () => {
   return (
     <Button
       size="small"
-      icon="download"
-      label="Receive Commitment"
       onClick={() => {
         onTransfer();
       }}
-    />
+    >
+      <Icon className="mr-2" icon="download" title="Receive" size="18" />
+      <span>Receive Commitment</span>
+    </Button>
   );
 };
 

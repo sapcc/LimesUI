@@ -7,6 +7,7 @@ import {
   SelectOption,
   TextInput,
   Stack,
+  Icon,
 } from "juno-ui-components";
 import { valueWithUnit, Unit } from "../../lib/unit";
 import { formatTime, formatTimeISO8160 } from "../../lib/utils";
@@ -278,23 +279,27 @@ const CommitmentTableDetails = (props) => {
             <Stack className={"mr-0 gap-1"}>
               {commitment?.can_be_deleted && (
                 <Button
+                  className="py-[0.315rem] px-2]"
                   onClick={() => {
                     onCommitmentDelete();
                   }}
                   size="small"
-                  icon={"cancel"}
                   variant="primary-danger"
-                />
+                >
+                  <Icon icon="cancel" title="Delete" size="18" />
+                </Button>
               )}
               {scope.isProject() && isConfirmed && (
                 <Button
+                  className="py-[0.315rem] px-2]"
                   size="small"
-                  icon="openInBrowser"
                   variant={commitmentInTrasfer ? "primary" : "default"}
                   onClick={() => {
                     transferCommitOnProjectLevel();
                   }}
-                />
+                >
+                  <Icon icon="openInBrowser" title="Edit" size="18" />
+                </Button>
               )}
             </Stack>
           </Stack>
