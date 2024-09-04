@@ -287,7 +287,7 @@ const limesStore = (set, get) => ({
         const services = serviceList.map((srv) => [
           srv.area,
           srv.editableService,
-        ]);
+        ]).sort();
 
         services.forEach((srv) => {
           const area = srv[0];
@@ -297,6 +297,7 @@ const limesStore = (set, get) => ({
         // HANA BigVMResource needs to be added manually to the areas with the coressponding CEREBRO key.
         areas.set(CEREBROKEY, true);
         const editableAreas = Array.from(areas.keys());
+
 
         // `overview` is what the Overview component needs.
         const overview = {
@@ -312,7 +313,7 @@ const limesStore = (set, get) => ({
             serviceList.map((srv) => [srv.type, srv.max_scraped_at])
           ),
           areas: groupKeys(
-            serviceList.map((srv) => [srv.area || srv.type, srv.type])
+            serviceList.map((srv) => [srv.area || srv.type, srv.type]).sort()
           ),
           editableAreas: editableAreas,
           categories: groupKeys(
