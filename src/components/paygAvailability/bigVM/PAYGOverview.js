@@ -64,6 +64,18 @@ const PAYGOverview = () => {
           text={dismantleError(error)}
         />
       )}
+      {placeableVMs.length > 0 && (
+        <Message className="mb-4 font-medium" variant="info">
+          <div>
+            HANA resources estimated with Cerebro share their available capacity
+            with others in the same category.
+          </div>
+          <div>
+            Creating a HANA VM of one flavor might reduce the availability of
+            the others.
+          </div>
+        </Message>
+      )}
       {isLoading && <LoadingIndicator className={`m-auto`} />}
       {sortAreas(Object.keys(areas)).map((area) =>
         sortAreas(areas[area]).map((serviceType) =>
