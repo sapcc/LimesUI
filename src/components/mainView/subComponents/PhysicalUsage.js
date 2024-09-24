@@ -6,7 +6,7 @@ import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "juno-ui-components";
+} from "@cloudoperators/juno-ui-components";
 import { Unit } from "../../../lib/unit";
 import { getUsageForAZLevel } from "../../../lib/resourceBarValues";
 

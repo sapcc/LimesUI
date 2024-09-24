@@ -6,7 +6,7 @@ import {
   globalStoreActions,
 } from "./components/StoreProvider";
 import ContentRoutes from "./ContentRoutes";
-import { LoadingIndicator, Message } from "juno-ui-components";
+import { LoadingIndicator, Message } from "@cloudoperators/juno-ui-components";
 import useClusterAPI from "./hooks/useClusterAPI";
 
 const AppDomainContent = (props) => {

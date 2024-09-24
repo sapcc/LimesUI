@@ -9,7 +9,7 @@ import {
   ButtonRow,
   Stack,
   TextInput,
-} from "juno-ui-components";
+} from "@cloudoperators/juno-ui-components";
 import { valueWithUnit } from "../../lib/unit";
 import { Unit } from "../../lib/unit";
 

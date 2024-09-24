@@ -5,7 +5,7 @@ import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "juno-ui-components";
+} from "@cloudoperators/juno-ui-components";
 import { t } from "../../../lib/utils";
 import { Unit } from "../../../lib/unit";
 import { isAZUnaware } from "../../../lib/utils";

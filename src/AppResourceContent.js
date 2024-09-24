@@ -1,7 +1,7 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
 import useClusterAPI from "./hooks/useClusterAPI";
-import { LoadingIndicator, Message } from "juno-ui-components";
+import { LoadingIndicator, Message } from "@cloudoperators/juno-ui-components";
 import {
   createCommitmentStore,
   createCommitmentStoreActions,

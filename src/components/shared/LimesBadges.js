@@ -1,5 +1,5 @@
 import React from "react";
-import { Badge } from "juno-ui-components";
+import { Badge } from "@cloudoperators/juno-ui-components";
 import { unusedCommitments, uncommittedUsage } from "../../lib/utils";
 import { Unit, valueWithUnit } from "../../lib/unit";
 

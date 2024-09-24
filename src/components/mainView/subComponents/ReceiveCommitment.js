@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Icon } from "juno-ui-components";
+import { Button, Icon } from "@cloudoperators/juno-ui-components";
 import { createCommitmentStoreActions } from "../../StoreProvider";
 import { TransferStatus } from "../../../lib/constants";
 

@@ -11,7 +11,7 @@ import {
   Stack,
   TextInput,
   Checkbox,
-} from "juno-ui-components";
+} from "@cloudoperators/juno-ui-components";
 import { Unit, valueWithUnit } from "../../lib/unit";
 import { formatTimeISO8160 } from "../../lib/utils";
 import moment from "moment";

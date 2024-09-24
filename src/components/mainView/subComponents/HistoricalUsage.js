@@ -4,7 +4,7 @@ import {
   Tooltip,
   TooltipTrigger,
   TooltipContent,
-} from "juno-ui-components";
+} from "@cloudoperators/juno-ui-components";
 
 const HistoricalUsage = (props) => {
   const { resource } = props;

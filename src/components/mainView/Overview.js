@@ -14,7 +14,7 @@ import {
   Container,
   Button,
   Box,
-} from "juno-ui-components";
+} from "@cloudoperators/juno-ui-components";
 import { getScrapeTime } from "../../lib/getScrapeTime";
 
 const Overview = (props) => {

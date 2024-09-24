@@ -11,7 +11,7 @@ import {
   DataGridCell,
   ModalFooter,
   ButtonRow,
-} from "juno-ui-components";
+} from "@cloudoperators/juno-ui-components";
 import useReceivedCommitment from "./useReceivedCommitment";
 import { Unit, valueWithUnit } from "../../lib/unit";
 

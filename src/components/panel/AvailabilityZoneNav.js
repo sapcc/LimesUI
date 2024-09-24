@@ -1,5 +1,5 @@
 import React from "react";
-import { Tabs, Tab, TabList, TabPanel, Container } from "juno-ui-components";
+import { Tabs, Tab, TabList, TabPanel, Container } from "@cloudoperators/juno-ui-components";
 import useResetCommitment from "../../hooks/useResetCommitment";
 
 const AvailabilityZoneNav = (props) => {

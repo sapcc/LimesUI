@@ -5,7 +5,7 @@ import {
   DataGridRow,
   IntroBox,
   LoadingIndicator,
-} from "juno-ui-components";
+} from "@cloudoperators/juno-ui-components";
 import CommitmentTableDetails from "./CommitmentTableDetails";
 import useCommitmentFilter from "../../hooks/useCommitmentFilter";
 import { createCommitmentStore } from "../StoreProvider";

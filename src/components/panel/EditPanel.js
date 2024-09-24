@@ -1,6 +1,6 @@
 import React from "react";
 import { useMutation } from "@tanstack/react-query";
-import { PanelBody, Toast } from "juno-ui-components";
+import { PanelBody, Toast } from "@cloudoperators/juno-ui-components";
 import Resource from "../mainView/Resource";
 import {
   globalStore,

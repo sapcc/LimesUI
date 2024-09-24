@@ -1,5 +1,5 @@
 import React from "react";
-import { Panel } from "juno-ui-components";
+import { Panel } from "@cloudoperators/juno-ui-components";
 import EditPanel from "./EditPanel";
 import { useParams, useNavigate } from "react-router";
 import { t, getCurrentResource, tracksQuota } from "../../lib/utils";

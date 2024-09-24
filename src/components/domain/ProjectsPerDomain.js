@@ -9,7 +9,7 @@ import {
   projectStoreActions,
 } from "../StoreProvider";
 import ProjectTable from "../project/ProjectTable";
-import { LoadingIndicator } from "juno-ui-components";
+import { LoadingIndicator } from "@cloudoperators/juno-ui-components";
 
 const ProjectsPerDomain = (props) => {
   // Fetch project data for all domains

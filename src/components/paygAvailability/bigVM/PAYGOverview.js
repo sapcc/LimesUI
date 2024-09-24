@@ -1,6 +1,6 @@
 import React from "react";
 import { clusterStore } from "../../StoreProvider";
-import { Message, LoadingIndicator } from "juno-ui-components";
+import { Message, LoadingIndicator } from "@cloudoperators/juno-ui-components";
 import { byUIString, byNameIn } from "../../../lib/utils";
 import PAYGCategory from "./PAYGCategory";
 import { useQuery } from "@tanstack/react-query";

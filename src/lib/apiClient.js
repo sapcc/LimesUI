@@ -1,6 +1,6 @@
 import React from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { fetchProxy } from "utils";
+import { fetchProxy } from "@cloudoperators/juno-utils";
 import { apiStore, apiStoreActions } from "../components/StoreProvider";
 import { getCerebroBaseURL } from "./scope";
 

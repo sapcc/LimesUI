@@ -1,5 +1,5 @@
 import React from "react";
-import { Tooltip, TooltipTrigger, TooltipContent } from "juno-ui-components";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@cloudoperators/juno-ui-components";
 
 const CommitmentTooltip = (props) => {
   const { displayText, toolTipContent } = { ...props };

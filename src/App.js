@@ -5,7 +5,7 @@ import {
   AppShellProvider,
   Message,
   LoadingIndicator,
-} from "juno-ui-components";
+} from "@cloudoperators/juno-ui-components";
 import StoreProvider, {
   apiStore,
   apiStoreActions,
@@ -13,7 +13,7 @@ import StoreProvider, {
 } from "./components/StoreProvider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import styles from "./styles.scss";
-import { fetchProxyInitDB } from "utils";
+import { fetchProxyInitDB } from "@cloudoperators/juno-utils";
 import projectApiDB from "./lib/fixtures/limes_project_api.json";
 import cerebroApiDB from "./lib/fixtures/cerebro_api.json";
 import commitmentApiDB from "./lib/fixtures/limes_commitment_api.json";

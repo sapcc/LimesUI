@@ -7,7 +7,7 @@ import {
   domainStoreActions,
   domainStore,
 } from "../StoreProvider";
-import { LoadingIndicator } from "juno-ui-components";
+import { LoadingIndicator } from "@cloudoperators/juno-ui-components";
 
 const ProjectManager = (props) => {
   const {

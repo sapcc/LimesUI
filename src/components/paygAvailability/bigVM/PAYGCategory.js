@@ -1,5 +1,5 @@
 import React from "react";
-import { Grid, GridRow, GridColumn } from "juno-ui-components";
+import { Grid, GridRow, GridColumn } from "@cloudoperators/juno-ui-components";
 import { byUIString, t } from "../../../lib/utils";
 import { categoryTitle } from "../stylescss";
 import { globalStore } from "../../StoreProvider";

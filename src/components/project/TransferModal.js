@@ -10,7 +10,7 @@ import {
   Checkbox,
   Stack,
   TextInput,
-} from "juno-ui-components";
+} from "@cloudoperators/juno-ui-components";
 import { globalStore } from "../StoreProvider";
 import { valueWithUnit } from "../../lib/unit";
 import { Unit } from "../../lib/unit";

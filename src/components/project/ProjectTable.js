@@ -23,7 +23,7 @@ import {
   DataGridRow,
   LoadingIndicator,
   Button,
-} from "juno-ui-components";
+} from "@cloudoperators/juno-ui-components";
 import ProjectQuotaDetails from "./ProjectQuotaDetails";
 
 const projectTableHeadCells = [

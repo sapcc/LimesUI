@@ -8,7 +8,7 @@ import {
   TextInput,
   Stack,
   Icon,
-} from "juno-ui-components";
+} from "@cloudoperators/juno-ui-components";
 import { valueWithUnit, Unit } from "../../lib/unit";
 import { formatTime, formatTimeISO8160 } from "../../lib/utils";
 import {

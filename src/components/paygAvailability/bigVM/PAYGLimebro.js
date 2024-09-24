@@ -1,5 +1,5 @@
 import React from "react";
-import { Grid, GridRow, GridColumn, Box } from "juno-ui-components";
+import { Grid, GridRow, GridColumn, Box } from "@cloudoperators/juno-ui-components";
 import { t } from "../../../lib/utils";
 import PAYGResource from "./PAYGResource";
 

@@ -6,7 +6,7 @@ import {
   Stack,
   TextInput,
   Button,
-} from "juno-ui-components";
+} from "@cloudoperators/juno-ui-components";
 import { Unit, valueWithUnit } from "../../lib/unit";
 
 // NOTE: setMaxQuota is not available on resources that have a parentResource.

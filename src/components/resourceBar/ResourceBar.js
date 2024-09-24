@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Stack } from "juno-ui-components";
+import { Stack } from "@cloudoperators/juno-ui-components";
 
 const LABEL_MARGIN = 10;
 const resourceBarWrapper = ``;

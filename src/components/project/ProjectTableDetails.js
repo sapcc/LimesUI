@@ -21,7 +21,7 @@ import {
   Icon,
   LoadingIndicator,
   Button,
-} from "juno-ui-components";
+} from "@cloudoperators/juno-ui-components";
 import { DomainBadges, ProjectBadges } from "../shared/LimesBadges";
 import useResetCommitment from "../../hooks/useResetCommitment";
 

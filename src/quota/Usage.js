@@ -5,7 +5,7 @@ import {
   Icon,
   Stack,
   Spinner,
-} from "juno-ui-components";
+} from "@cloudoperators/juno-ui-components";
 import StoreProvider, {
   apiStore,
   apiStoreActions,
