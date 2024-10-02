@@ -31,7 +31,6 @@ const ConversionModal = (props) => {
   const [currentConversion, setCurrentConversion] = React.useState(null);
   const unit = new Unit(commitment.unit);
   const [conversionAmount, setConversionAmount] = React.useState();
-  const [maxConversion, setMaxConversion] = React.useState();
   const [targetAmount, setTargetAmount] = React.useState();
   const [insufficientAmount, setInsufficientAmount] = React.useState(false);
   const getConversions = useQuery({
@@ -53,17 +52,19 @@ const ConversionModal = (props) => {
     }
     const formattedAmount = unit.format(amount, { ascii: true });
     setConversionAmount(formattedAmount);
-    setMaxConversion(amount);
   }, [currentConversion]);
 
   // set target amount based on desired conversion.
   React.useEffect(() => {
-    if (!conversionAmount || insufficientAmount) return;
+    if (!conversionAmount || insufficientAmount) {
+      setInvalidConversion(true);
+      return;
+    }
     const parsedInput = unit.parse(conversionAmount);
     const invalidConversion = parsedInput % currentConversion.from != 0;
     if (
       parsedInput.error ||
-      parsedInput > maxConversion ||
+      parsedInput > commitment.amount ||
       parsedInput <= 0 ||
       invalidConversion
     ) {
@@ -95,7 +96,7 @@ const ConversionModal = (props) => {
     // defense in depth.
     if (
       parsedInput.error ||
-      parsedInput > maxConversion ||
+      parsedInput > commitment.amount ||
       parsedInput <= 0 ||
       invalidConversion
     ) {
@@ -169,6 +170,10 @@ const ConversionModal = (props) => {
                   })}
                 </Select>
               </DataGridCell>
+              <DataGridRow>
+                <DataGridCell className={label}>Amount:</DataGridCell>
+                <DataGridCell>{commitment.amount}</DataGridCell>
+              </DataGridRow>
               <DataGridRow>
                 <DataGridCell className={label}>Converts from:</DataGridCell>
                 <DataGridCell>{currentConversion?.from}</DataGridCell>
