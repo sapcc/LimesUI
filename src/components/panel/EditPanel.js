@@ -13,15 +13,16 @@ import {
 } from "../StoreProvider";
 import AvailabilityZoneNav from "./AvailabilityZoneNav";
 import CommitmentTable from "../commitment/CommitmentTable";
-import CommitmentModal from "../commitment/CommitmentModal";
-import TransferModal from "../project/TransferModal";
-import TransferTokenModal from "../project/TransferTokenModal";
-import TransferReceiveModal from "../project/TransferReceiveModal";
+import CommitmentModal from "../commitment/Modals/CommitmentModal";
+import TransferModal from "../commitment/Modals/TransferModal";
+import TransferTokenModal from "../commitment/Modals/TransferTokenModal";
+import TransferReceiveModal from "../commitment/Modals/TransferReceiveModal";
 import ProjectManager from "../project/ProjectManager";
 import DomainManager from "../domain/DomainManager";
 import useResetCommitment from "../../hooks/useResetCommitment";
 import { initialCommitmentObject, TransferStatus } from "../../lib/constants";
-import DeleteModal from "../commitment/DeleteModal";
+import DeleteModal from "../commitment/Modals/DeleteModal";
+import ConversionModal from "../commitment/Modals/ConversionModal";
 
 const EditPanel = (props) => {
   const { scope } = globalStore();
@@ -53,6 +54,9 @@ const EditPanel = (props) => {
   const commitmentDelete = useMutation({
     mutationKey: ["deleteCommitment"],
   });
+  const convert = useMutation({
+    mutationKey: ["convertCommitment"],
+  });
   const maxQuota = useMutation({
     mutationKey: ["setMaxQuota"],
   });
@@ -66,6 +70,8 @@ const EditPanel = (props) => {
   const { transferProject } = createCommitmentStore();
   const { transferFromAndToProject } = createCommitmentStore();
   const { setTransferFromAndToProject } = createCommitmentStoreActions();
+  const { conversionCommitment } = createCommitmentStore();
+  const { setConversionCommitment } = createCommitmentStoreActions();
   const { deleteCommitment } = createCommitmentStore();
   const { setTransferProject } = createCommitmentStoreActions();
   const { setRefetchClusterAPI } = clusterStoreActions();
@@ -271,6 +277,33 @@ const EditPanel = (props) => {
     );
   }
 
+  // Convert commitment
+  function convertCommitment(commitment, payload) {
+    const targetDomainID = currentProject?.metadata.domainID || null;
+    const targetProjectID = currentProject?.metadata.id || null;
+
+    convert.mutate(
+      {
+        payload: payload,
+        domainID: targetDomainID,
+        projectID: targetProjectID,
+        commitmentID: commitment.id,
+      },
+      {
+        onSuccess: () => {
+          setRefetchClusterAPI(true);
+          setRefetchDomainAPI(true);
+          setRefetchProjectAPI(true);
+          setRefetchCommitmentAPI(true);
+          setConversionCommitment(null);
+        },
+        onError: (error) => {
+          setToast(error.toString());
+        },
+      }
+    );
+  }
+
   // maxQuota can be set for a project with n services and m resources.
   function setMaxQuota(project, domainID, projectID) {
     if (!project) return;
@@ -316,6 +349,10 @@ const EditPanel = (props) => {
 
   function onDeleteClose() {
     setDeleteCommitment(null);
+  }
+
+  function onConversionClose() {
+    setConversionCommitment(null);
   }
 
   function dismissToast() {
@@ -430,6 +467,15 @@ const EditPanel = (props) => {
           commitment={transferredCommitment}
           currentProject={currentProject}
           transferProject={transferProject}
+        />
+      )}
+      {conversionCommitment && (
+        <ConversionModal
+          title="Convert Commitment"
+          subText="Convert"
+          commitment={conversionCommitment}
+          onModalClose={onConversionClose}
+          onConvert={convertCommitment}
         />
       )}
       {deleteCommitment && (

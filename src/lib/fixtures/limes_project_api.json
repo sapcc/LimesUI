@@ -151,7 +151,7 @@
             }
           },
           {
-            "name": "instances_hv_s2_c14_m256",
+            "name": "instances_hana_c120_m960",
             "category": "per_flavor",
             "quota_distribution_model": "hierarchical",
             "per_az": {
@@ -165,6 +165,13 @@
                 "usage": 0
               }
             },
+            "commitment_config": {
+              "durations": [
+                "1 year",
+                "2 years",
+                "3 years"
+              ]
+            },
             "quota": 0,
             "usable_quota": 0,
             "usage": 0,
@@ -173,7 +180,7 @@
             }
           },
           {
-            "name": "instances_hv_s2_c20_m384",
+            "name": "instances_hana_c60_m480",
             "category": "per_flavor",
             "quota_distribution_model": "hierarchical",
             "per_az": {
@@ -186,6 +193,13 @@
               "qa-de-1d": {
                 "usage": 0
               }
+            },
+            "commitment_config": {
+              "durations": [
+                "1 year",
+                "2 years",
+                "3 years"
+              ]
             },
             "quota": 0,
             "usable_quota": 0,

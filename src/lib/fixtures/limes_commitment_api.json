@@ -104,6 +104,17 @@
           "duration": "3 years",
           "confirmed_at": 1699957274,
           "requested_at": 1699979577
+        },
+        {
+          "id": 124,
+          "service_type": "compute",
+          "resource_name": "instances_hana_c120_m960",
+          "availability_zone": "qa-de-1a",
+          "amount": 11,
+          "unit": "",
+          "duration": "3 years",
+          "confirmed_at": 1699957274,
+          "requested_at": 1699979577
         }
       ]
     }

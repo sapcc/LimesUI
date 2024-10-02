@@ -7,19 +7,17 @@ import {
   SelectOption,
   TextInput,
   Stack,
-  Icon,
 } from "@cloudoperators/juno-ui-components";
+import Actions from "./Operations/Actions";
 import { valueWithUnit, Unit } from "../../lib/unit";
 import { formatTime, formatTimeISO8160 } from "../../lib/utils";
 import {
   createCommitmentStore,
   createCommitmentStoreActions,
-  globalStore,
 } from "../StoreProvider";
 import CommitmentTooltip from "./CommitmentTooltip";
 import { initialCommitmentObject } from "../../lib/constants";
-import { COMMITMENTID, TransferStatus } from "../../lib/constants";
-import useCommitmentFilter from "../../hooks/useCommitmentFilter";
+import { COMMITMENTID } from "../../lib/constants";
 import useResetCommitment from "../../hooks/useResetCommitment";
 
 const CommitmentTableDetails = (props) => {
@@ -30,7 +28,6 @@ const CommitmentTableDetails = (props) => {
     duration,
     created_at,
     confirmed_at,
-    confirmed_at: isConfirmed,
     confirm_by,
     expires_at,
     creator_name,
@@ -47,21 +44,16 @@ const CommitmentTableDetails = (props) => {
   const { transferCommitment } = createCommitmentStore();
   const { isTransferring } = createCommitmentStore();
   const [showTransfer, setShowTransfer] = React.useState(true);
-  const { isPlanned, isPending } = useCommitmentFilter();
   const { setCommitment } = createCommitmentStoreActions();
   const { setTransferredCommitment } = createCommitmentStoreActions();
   const { setIsCommitting } = createCommitmentStoreActions();
   const { setIsSubmitting } = createCommitmentStoreActions();
   const { resetCommitmentTransfer } = useResetCommitment();
   const { setIsTransferring } = createCommitmentStoreActions();
-  const { setTransferFromAndToProject } = createCommitmentStoreActions();
-  const { setDeleteCommitment } = createCommitmentStoreActions();
   const { setToast } = createCommitmentStoreActions();
-  const { scope } = globalStore();
   const [invalidDuration, setInValidDuration] = React.useState(false);
   const [invalidInput, setInvalidInput] = React.useState(false);
   const unit = new Unit(unitName);
-  const commitmentInTrasfer = commitment.transfer_status ? true : false;
   const initialParsedAmount = unit.format(amount, { ascii: true });
   const inputRef = React.useRef(initialParsedAmount);
 
@@ -125,13 +117,6 @@ const CommitmentTableDetails = (props) => {
     setTransferredCommitment(props.commitment);
   }
 
-  function transferCommitOnProjectLevel() {
-    setTransferFromAndToProject(
-      commitmentInTrasfer ? TransferStatus.VIEW : TransferStatus.START
-    );
-    setTransferredCommitment(props.commitment);
-  }
-
   // If a commitment is selected, hide all other move buttons from the UI.
   React.useEffect(() => {
     if (newCommitment.id == COMMITMENTID) {
@@ -140,22 +125,6 @@ const CommitmentTableDetails = (props) => {
       setShowTransfer(newCommitment?.id == id);
     }
   }, [isTransferring]);
-
-  function setCommitmentLabel() {
-    let label;
-    isConfirmed
-      ? (label = "Committed")
-      : isPending(commitment)
-      ? (label = "Pending")
-      : isPlanned(commitment)
-      ? (label = "Planned")
-      : (label = "");
-    return label;
-  }
-
-  function onCommitmentDelete() {
-    setDeleteCommitment(commitment);
-  }
 
   return (
     <DataGridRow>
@@ -274,35 +243,7 @@ const CommitmentTableDetails = (props) => {
             </Button>
           </Stack>
         ) : (
-          <Stack className="gap-1">
-            <Stack>{setCommitmentLabel()}</Stack>
-            <Stack className={"mr-0 gap-1"}>
-              {commitment?.can_be_deleted && (
-                <Button
-                  className="py-[0.315rem] px-2]"
-                  onClick={() => {
-                    onCommitmentDelete();
-                  }}
-                  size="small"
-                  variant="primary-danger"
-                >
-                  <Icon icon="cancel" title="Delete" size="18" />
-                </Button>
-              )}
-              {scope.isProject() && isConfirmed && (
-                <Button
-                  className="py-[0.315rem] px-2]"
-                  size="small"
-                  variant={commitmentInTrasfer ? "primary" : "default"}
-                  onClick={() => {
-                    transferCommitOnProjectLevel();
-                  }}
-                >
-                  <Icon icon="openInBrowser" title="Edit" size="18" />
-                </Button>
-              )}
-            </Stack>
-          </Stack>
+          <Actions commitment={commitment} />
         )}
       </DataGridCell>
     </DataGridRow>

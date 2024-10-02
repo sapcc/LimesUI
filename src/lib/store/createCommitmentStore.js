@@ -29,6 +29,8 @@ const createCommitmentStore = (set) => ({
     transferProject: null,
     // transfer commitments on project level.
     transferFromAndToProject: null,
+    // contains the commitment to convert.
+    conversionCommitment: null,
     // contains the commitment to delete.
     deleteCommitment: null,
     actions: {
@@ -136,6 +138,13 @@ const createCommitmentStore = (set) => ({
           createCommitment: {
             ...state.createCommitment,
             transferProject: transferProject,
+          },
+        })),
+      setConversionCommitment: (commitment) =>
+        set((state) => ({
+          createCommitment: {
+            ...state.createCommitment,
+            conversionCommitment: commitment,
           },
         })),
       setDeleteCommitment: (commitment) =>

@@ -12,10 +12,10 @@ import {
   TextInput,
   Checkbox,
 } from "@cloudoperators/juno-ui-components";
-import { Unit, valueWithUnit } from "../../lib/unit";
-import { formatTimeISO8160 } from "../../lib/utils";
+import { Unit, valueWithUnit } from "../../../lib/unit";
+import { formatTimeISO8160 } from "../../../lib/utils";
 import moment from "moment";
-import CommitmentCalendar from "./CommitmentCalendar";
+import CommitmentCalendar from "../CommitmentCalendar";
 
 const label = "font-semibold";
 

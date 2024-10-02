@@ -10,8 +10,8 @@ import {
   Stack,
   TextInput,
 } from "@cloudoperators/juno-ui-components";
-import { valueWithUnit } from "../../lib/unit";
-import { Unit } from "../../lib/unit";
+import { valueWithUnit } from "../../../lib/unit";
+import { Unit } from "../../../lib/unit";
 
 const label = "font-semibold";
 
@@ -26,7 +26,7 @@ const DeleteModal = (props) => {
     inputRef.current = e.target.value;
   }
 
-  function onConfirm(commitment) {
+  function onConfirm() {
     if (inputRef.current.toLowerCase() !== subText.toLowerCase()) {
       setInvalidInput(true);
       return;
@@ -40,7 +40,7 @@ const DeleteModal = (props) => {
         <Button
           label="confirm"
           variant={"primary-danger"}
-          onClick={() => onConfirm(commitment)}
+          onClick={() => onConfirm()}
         />
         <Button
           data-cy="modalCancel"

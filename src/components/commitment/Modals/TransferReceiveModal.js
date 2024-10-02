@@ -13,7 +13,7 @@ import {
   ButtonRow,
 } from "@cloudoperators/juno-ui-components";
 import useReceivedCommitment from "./useReceivedCommitment";
-import { Unit, valueWithUnit } from "../../lib/unit";
+import { Unit, valueWithUnit } from "../../../lib/unit";
 
 const label = "font-semibold";
 

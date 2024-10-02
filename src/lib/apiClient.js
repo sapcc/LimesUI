@@ -142,6 +142,45 @@ const useQueryClientFn = (isMockApi) => {
       },
     });
 
+    if (!queryClient || !endpoint || !token) return;
+    queryClient.setQueryDefaults(["getConversions"], {
+      queryFn: async ({ queryKey }) => {
+        const { service_type, resource_name } = queryKey[1];
+        const url = `${endpoint}/v1/commitment-conversion/${service_type}/${resource_name}`;
+        const response = await fetchProxy(url, {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+            "X-Auth-Token": token,
+          },
+          ...{ mock: isMockApi },
+        });
+        return responseHandler(response);
+      },
+    });
+    queryClient.setMutationDefaults(["convertCommitment"], {
+      // Receives the target domainID and projectID to transfer the commitment to.
+      mutationFn: async ({
+        domainID: domID,
+        projectID: projID,
+        commitmentID,
+        payload,
+      }) => {
+        projID ? (pid = projID) : (pid = projectID);
+        domID ? (did = domID) : (did = domainID);
+        const url = `${endpoint}/v1/domains/${did}/projects/${pid}/commitments/${commitmentID}/convert`;
+        const response = await fetchProxy(url, {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "X-Auth-Token": token,
+          },
+          body: JSON.stringify(payload),
+        });
+        return responseHandler(response);
+      },
+    });
+
     setApiReady(true);
   }, [queryClient, endpoint, token, projectID, domainID]);
 
@@ -267,7 +306,7 @@ const useQueryClientFn = (isMockApi) => {
         return responseHandler(response);
       },
     });
-  }, [queryClient, endpoint, token, domainID]);
+  }, [queryClient, endpoint, token]);
 
   // Cerebro API Client
   React.useEffect(() => {

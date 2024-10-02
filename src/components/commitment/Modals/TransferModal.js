@@ -11,9 +11,9 @@ import {
   Stack,
   TextInput,
 } from "@cloudoperators/juno-ui-components";
-import { globalStore } from "../StoreProvider";
-import { valueWithUnit } from "../../lib/unit";
-import { Unit } from "../../lib/unit";
+import { globalStore } from "../../StoreProvider";
+import { valueWithUnit } from "../../../lib/unit";
+import { Unit } from "../../../lib/unit";
 
 const label = "font-semibold";
 
