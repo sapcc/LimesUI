@@ -16,7 +16,6 @@ import {
 } from "@cloudoperators/juno-ui-components";
 import { t } from "../../../lib/utils";
 import { useQuery } from "@tanstack/react-query";
-import { createCommitmentStoreActions } from "../../StoreProvider";
 import { Unit } from "../../../lib/unit";
 
 const label = "font-semibold";
@@ -24,7 +23,6 @@ const label = "font-semibold";
 const ConversionModal = (props) => {
   const { title, subText, onModalClose, commitment, onConvert } = props;
   const { service_type, resource_name } = commitment;
-  const { setConversionCommitment } = createCommitmentStoreActions();
   const inputRef = React.useRef("");
   const [invalidInput, setInvalidInput] = React.useState(false);
   const [invalidConversion, setInvalidConversion] = React.useState(false);
@@ -148,7 +146,7 @@ const ConversionModal = (props) => {
       open={true}
       modalFooter={modalFooter}
       onCancel={() => {
-        setConversionCommitment(null);
+        onModalClose();
       }}
     >
       {isError ? (
