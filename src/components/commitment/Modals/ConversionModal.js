@@ -74,7 +74,7 @@ const ConversionModal = (props) => {
     }
     const targetAmount =
       (parsedAmount / currentConversion.from) * currentConversion.to;
-    setTargetAmount(unit.format(targetAmount, { ascii: true }));
+    setTargetAmount(targetAmount);
   }, [conversion]);
 
   function onInput(e) {
