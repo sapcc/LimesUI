@@ -74,7 +74,7 @@ const ConversionModal = (props) => {
     }
     const targetAmount =
       (parsedAmount / currentConversion.from) * currentConversion.to;
-    setTargetAmount(targetAmount);
+    setTargetAmount(unit.format(targetAmount, { ascii: true }));
   }, [conversion]);
 
   function onInput(e) {
@@ -100,6 +100,7 @@ const ConversionModal = (props) => {
       return;
     }
     const parsedInput = unit.parse(conversion.amount);
+    const parsedAmount = unit.parse(targetAmount);
     // defense in depth.
     if (
       parsedInput.error ||
@@ -115,7 +116,7 @@ const ConversionModal = (props) => {
         target_service: currentConversion.target_service,
         target_resource: currentConversion.target_resource,
         source_amount: parsedInput,
-        target_amount: targetAmount,
+        target_amount: parsedAmount,
       },
     };
     onConvert(commitment, payload);
