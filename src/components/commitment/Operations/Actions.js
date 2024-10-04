@@ -59,13 +59,15 @@ const Actions = (props) => {
           />
         )}
       </Stack>
-      <ContextMenu>
-        <div className={"absolute -right-1 -top-24"}>
-          {commitmentActions.map((action) => {
-            return <div key={action.key}> {action.menuItem} </div>;
-          })}
-        </div>
-      </ContextMenu>
+      {commitmentActions.length > 0 && (
+        <ContextMenu>
+          <div className={"absolute -right-1 -top-24"}>
+            {commitmentActions.map((action) => {
+              return <div key={action.key}> {action.menuItem} </div>;
+            })}
+          </div>
+        </ContextMenu>
+      )}
     </Stack>
   );
 };

@@ -30,9 +30,11 @@ const ConversionModal = (props) => {
   const [invalidConversion, setInvalidConversion] = React.useState(false);
   const [currentConversion, setCurrentConversion] = React.useState(null);
   const unit = new Unit(commitment.unit);
-  const [conversionAmount, setConversionAmount] = React.useState();
+  // Needs to be an object. The same suggested conversion value on select of a different conversion type would not trigger a rerender.
+  const [conversion, setConversion] = React.useState({ amount: null });
   const [targetAmount, setTargetAmount] = React.useState();
   const [insufficientAmount, setInsufficientAmount] = React.useState(false);
+  const [emptyInput, setEmptyInput] = React.useState(false);
   const getConversions = useQuery({
     queryKey: ["getConversions", { service_type, resource_name }],
   });
@@ -47,20 +49,24 @@ const ConversionModal = (props) => {
       currentConversion.from;
     if (commitment.amount < amount) {
       setInsufficientAmount(true);
-      setConversionAmount(null);
+      setConversion({ amount: null });
       return;
     }
     const formattedAmount = unit.format(amount, { ascii: true });
-    setConversionAmount(formattedAmount);
+    setConversion({ amount: formattedAmount });
+    setEmptyInput(false);
   }, [currentConversion]);
 
   // set target amount based on desired conversion.
   React.useEffect(() => {
-    if (!conversionAmount || insufficientAmount) {
-      setInvalidConversion(true);
+    if (!conversion.amount) {
+      setEmptyInput(true);
       return;
     }
-    const parsedInput = unit.parse(conversionAmount);
+    if (insufficientAmount) {
+      return;
+    }
+    const parsedInput = unit.parse(conversion.amount);
     const invalidConversion = parsedInput % currentConversion.from != 0;
     if (
       parsedInput.error ||
@@ -74,7 +80,7 @@ const ConversionModal = (props) => {
     const targetAmount =
       (parsedInput / currentConversion.from) * currentConversion.to;
     setTargetAmount(targetAmount);
-  }, [conversionAmount, insufficientAmount]);
+  }, [conversion, insufficientAmount]);
 
   function onInput(e) {
     setInvalidInput(false);
@@ -83,7 +89,8 @@ const ConversionModal = (props) => {
 
   function onConversionInput(e) {
     setInvalidConversion(false);
-    setConversionAmount(e.target.value);
+    setEmptyInput(false);
+    setConversion({ amount: e.target.value });
   }
 
   function onConfirm() {
@@ -92,7 +99,7 @@ const ConversionModal = (props) => {
       setInvalidInput(true);
       return;
     }
-    const parsedInput = unit.parse(conversionAmount);
+    const parsedInput = unit.parse(conversion.amount);
     // defense in depth.
     if (
       parsedInput.error ||
@@ -197,15 +204,17 @@ const ConversionModal = (props) => {
                     width="auto"
                     disabled={insufficientAmount}
                     autoFocus
-                    value={conversionAmount}
+                    value={conversion.amount}
                     errortext={
                       invalidConversion && "Please enter a valid amount."
                     }
                     successtext={
                       !invalidConversion &&
+                      !emptyInput &&
                       targetAmount &&
                       `target amount: ${targetAmount}`
                     }
+                    helptext={emptyInput && "Please enter your desired amount."}
                     onChange={(e) => {
                       onConversionInput(e);
                     }}
