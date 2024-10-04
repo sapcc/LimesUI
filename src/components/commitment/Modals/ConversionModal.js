@@ -34,7 +34,6 @@ const ConversionModal = (props) => {
   const [conversion, setConversion] = React.useState({ amount: null });
   const [targetAmount, setTargetAmount] = React.useState();
   const [insufficientAmount, setInsufficientAmount] = React.useState(false);
-  const [emptyInput, setEmptyInput] = React.useState(false);
   const getConversions = useQuery({
     queryKey: ["getConversions", { service_type, resource_name }],
   });
@@ -47,40 +46,36 @@ const ConversionModal = (props) => {
     const amount =
       Math.floor(commitment.amount / currentConversion.from) *
       currentConversion.from;
-    if (commitment.amount < amount) {
+    const formattedAmount = unit.format(amount, { ascii: true });
+    if (amount == 0) {
+      setConversion({ amount: formattedAmount });
+      setTargetAmount(null);
       setInsufficientAmount(true);
-      setConversion({ amount: null });
       return;
     }
-    const formattedAmount = unit.format(amount, { ascii: true });
     setConversion({ amount: formattedAmount });
-    setEmptyInput(false);
   }, [currentConversion]);
 
   // set target amount based on desired conversion.
   React.useEffect(() => {
-    if (!conversion.amount) {
-      setEmptyInput(true);
+    if (!currentConversion || insufficientAmount) {
       return;
     }
-    if (insufficientAmount) {
-      return;
-    }
-    const parsedInput = unit.parse(conversion.amount);
-    const invalidConversion = parsedInput % currentConversion.from != 0;
+    const parsedAmount = unit.parse(conversion.amount);
+    const invalidConversion = parsedAmount % currentConversion.from != 0;
     if (
-      parsedInput.error ||
-      parsedInput > commitment.amount ||
-      parsedInput <= 0 ||
+      parsedAmount.error ||
+      parsedAmount > commitment.amount ||
+      parsedAmount <= 0 ||
       invalidConversion
     ) {
       setInvalidConversion(true);
       return;
     }
     const targetAmount =
-      (parsedInput / currentConversion.from) * currentConversion.to;
-    setTargetAmount(targetAmount);
-  }, [conversion, insufficientAmount]);
+      (parsedAmount / currentConversion.from) * currentConversion.to;
+    setTargetAmount(unit.format(targetAmount, { ascii: true }));
+  }, [conversion]);
 
   function onInput(e) {
     setInvalidInput(false);
@@ -89,8 +84,13 @@ const ConversionModal = (props) => {
 
   function onConversionInput(e) {
     setInvalidConversion(false);
-    setEmptyInput(false);
     setConversion({ amount: e.target.value });
+  }
+
+  function onSelectChange(conversion) {
+    setInvalidConversion(false);
+    setInsufficientAmount(false);
+    setCurrentConversion(conversion);
   }
 
   function onConfirm() {
@@ -164,9 +164,7 @@ const ConversionModal = (props) => {
               <DataGridCell className={"px-0"}>
                 <Select
                   onChange={(conversion) => {
-                    setInvalidConversion(false);
-                    setInsufficientAmount(false);
-                    setCurrentConversion(conversion);
+                    onSelectChange(conversion);
                   }}
                 >
                   {conversions?.map((conversion) => {
@@ -210,11 +208,9 @@ const ConversionModal = (props) => {
                     }
                     successtext={
                       !invalidConversion &&
-                      !emptyInput &&
                       targetAmount &&
                       `target amount: ${targetAmount}`
                     }
-                    helptext={emptyInput && "Please enter your desired amount."}
                     onChange={(e) => {
                       onConversionInput(e);
                     }}
