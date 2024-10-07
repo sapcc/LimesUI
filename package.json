@@ -103,7 +103,7 @@
     }
   },
   "dependencies": {
-    "@cloudoperators/juno-ui-components": "2.22.0",
+    "@cloudoperators/juno-ui-components": "2.22.1",
     "@cloudoperators/juno-utils": "*",
     "cypress": "^13.6.1",
     "esbuild": "^0.23.0",
