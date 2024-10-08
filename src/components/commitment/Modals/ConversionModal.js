@@ -157,9 +157,15 @@ const ConversionModal = (props) => {
         <>
           <DataGrid columns={2} columnMaxSize="1fr">
             <DataGridRow>
-              <DataGridCell className={label}>
-                Available Conversions:
-              </DataGridCell>
+              <DataGridCell className={label}>Source:</DataGridCell>
+              <DataGridCell>{t(resource_name)}</DataGridCell>
+            </DataGridRow>
+            <DataGridRow>
+              <DataGridCell className={label}>Amount:</DataGridCell>
+              <DataGridCell>{commitment.amount}</DataGridCell>
+            </DataGridRow>
+            <DataGridRow>
+              <DataGridCell className={label}>Target:</DataGridCell>
               <DataGridCell className={"px-0"}>
                 <Select
                   onChange={(conversion) => {
@@ -175,66 +181,56 @@ const ConversionModal = (props) => {
                 </Select>
               </DataGridCell>
               <DataGridRow>
-                <DataGridCell className={label}>Amount:</DataGridCell>
-                <DataGridCell>{commitment.amount}</DataGridCell>
-              </DataGridRow>
-              <DataGridRow>
-                <DataGridCell className={label}>Converts from:</DataGridCell>
-                <DataGridCell>{currentConversion?.from}</DataGridCell>
-              </DataGridRow>
-              <DataGridRow>
-                <DataGridCell className={label}>Converts to:</DataGridCell>
-                <DataGridCell>{currentConversion?.to}</DataGridCell>
+                <DataGridCell className={label}>Conversion Ratio:</DataGridCell>
+                {currentConversion && (
+                  <DataGridCell>
+                    {currentConversion.from} : {currentConversion.to}
+                  </DataGridCell>
+                )}
               </DataGridRow>
             </DataGridRow>
           </DataGrid>
-          {currentConversion && (
-            <Stack
-              direction="vertical"
-              alignment="center"
-              className="mb-1 mt-5"
-            >
-              <div>
-                <Stack>{"Amount to convert: "}</Stack>
-                <Stack>
-                  <TextInput
-                    width="auto"
-                    disabled={insufficientAmount}
-                    autoFocus
-                    value={conversion.amount}
-                    errortext={
-                      invalidConversion && "Please enter a valid amount."
-                    }
-                    successtext={
-                      !invalidConversion &&
-                      targetAmount &&
-                      `target amount: ${targetAmount}`
-                    }
-                    onChange={(e) => {
-                      onConversionInput(e);
-                    }}
-                  />
-                </Stack>
-              </div>
-              <div>
-                <Stack className={"mt-5"}>
-                  To confirm, type:&nbsp;
-                  <span className={label}>{subText}</span>
-                </Stack>
-                <Stack>
-                  <TextInput
-                    width="auto"
-                    disabled={insufficientAmount}
-                    autoFocus
-                    errortext={
-                      invalidInput && "Please enter the highlighted term above."
-                    }
-                    onChange={(e) => onInput(e)}
-                  />
-                </Stack>
-              </div>
-            </Stack>
-          )}
+          <Stack direction="vertical" alignment="center" className="mb-1 mt-5">
+            <div>
+              <Stack>{"Amount to convert: "}</Stack>
+              <Stack>
+                <TextInput
+                  width="auto"
+                  disabled={insufficientAmount || !currentConversion}
+                  autoFocus
+                  value={conversion.amount}
+                  errortext={
+                    invalidConversion && "Please enter a valid amount."
+                  }
+                  successtext={
+                    !invalidConversion &&
+                    targetAmount &&
+                    `target amount: ${targetAmount}`
+                  }
+                  onChange={(e) => {
+                    onConversionInput(e);
+                  }}
+                />
+              </Stack>
+            </div>
+            <div>
+              <Stack className={"mt-5"}>
+                To confirm, type:&nbsp;
+                <span className={label}>{subText}</span>
+              </Stack>
+              <Stack>
+                <TextInput
+                  width="auto"
+                  disabled={insufficientAmount || !currentConversion}
+                  autoFocus
+                  errortext={
+                    invalidInput && "Please enter the highlighted term above."
+                  }
+                  onChange={(e) => onInput(e)}
+                />
+              </Stack>
+            </div>
+          </Stack>
         </>
       )}
     </Modal>
