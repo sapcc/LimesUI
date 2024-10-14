@@ -168,6 +168,7 @@ const ConversionModal = (props) => {
               <DataGridCell className={label}>Target:</DataGridCell>
               <DataGridCell className={"px-0"}>
                 <Select
+                  disabled={!conversions}
                   onChange={(conversion) => {
                     onSelectChange(conversion);
                   }}
