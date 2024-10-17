@@ -12,6 +12,7 @@ const useResetCommitment = () => {
   const { setTransferFromAndToProject } = createCommitmentStoreActions();
   const { setDeleteCommitment } = createCommitmentStoreActions();
   const { setConversionCommitment } = createCommitmentStoreActions();
+  const { setUpdateDurationCommitment } = createCommitmentStoreActions();
 
   // Handle closure of edit panel.
   function resetCommitment(az) {
@@ -26,6 +27,7 @@ const useResetCommitment = () => {
     setTransferredCommitment(initialCommitmentObject);
     setDeleteCommitment(null);
     setConversionCommitment(null);
+    setUpdateDurationCommitment(null);
     setToast(null);
     resetCommitmentTransfer();
   }

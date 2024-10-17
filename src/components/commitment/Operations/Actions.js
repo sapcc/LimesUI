@@ -5,6 +5,7 @@ import { ContextMenu, Icon, Stack } from "@cloudoperators/juno-ui-components";
 import useDeleteAction from "./useDeleteAction";
 import useTransferAction from "./useTransferAction";
 import useConversionAction from "./useConversionAction";
+import useUpdateDurationAction from "./useUpdateDurationAction";
 
 const Actions = (props) => {
   const { commitment } = props;
@@ -28,8 +29,9 @@ const Actions = (props) => {
     ]);
   }
 
-  useTransferAction({ commitment, updateActions });
   useConversionAction({ commitment, updateActions });
+  useTransferAction({ commitment, updateActions });
+  useUpdateDurationAction({ commitment, updateActions });
   useDeleteAction({ commitment, updateActions });
 
   function setCommitmentLabel() {

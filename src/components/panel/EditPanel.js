@@ -14,15 +14,16 @@ import {
 import AvailabilityZoneNav from "./AvailabilityZoneNav";
 import CommitmentTable from "../commitment/CommitmentTable";
 import CommitmentModal from "../commitment/Modals/CommitmentModal";
+import ConversionModal from "../commitment/Modals/ConversionModal";
+import DeleteModal from "../commitment/Modals/DeleteModal";
 import TransferModal from "../commitment/Modals/TransferModal";
 import TransferTokenModal from "../commitment/Modals/TransferTokenModal";
 import TransferReceiveModal from "../commitment/Modals/TransferReceiveModal";
+import UpdateDurationModal from "../commitment/Modals/UpdateDuration/UpdateDurationModal";
 import ProjectManager from "../project/ProjectManager";
 import DomainManager from "../domain/DomainManager";
 import useResetCommitment from "../../hooks/useResetCommitment";
 import { initialCommitmentObject, TransferStatus } from "../../lib/constants";
-import DeleteModal from "../commitment/Modals/DeleteModal";
-import ConversionModal from "../commitment/Modals/ConversionModal";
 
 const EditPanel = (props) => {
   const { scope } = globalStore();
@@ -57,34 +58,39 @@ const EditPanel = (props) => {
   const convert = useMutation({
     mutationKey: ["convertCommitment"],
   });
+  const updateDuration = useMutation({
+    mutationKey: ["updateCommitmentDuration"],
+  });
   const maxQuota = useMutation({
     mutationKey: ["setMaxQuota"],
   });
   const { resetCommitmentTransfer } = useResetCommitment();
   const { commitment: newCommitment } = createCommitmentStore();
   const { toast } = createCommitmentStore();
-  const { isSubmitting } = createCommitmentStore();
-  const { currentProject } = createCommitmentStore();
   const { currentAZ } = createCommitmentStore();
+  const { conversionCommitment } = createCommitmentStore();
+  const { currentProject } = createCommitmentStore();
+  const { deleteCommitment } = createCommitmentStore();
   const { transferredCommitment } = createCommitmentStore();
   const { transferProject } = createCommitmentStore();
   const { transferFromAndToProject } = createCommitmentStore();
-  const { setTransferFromAndToProject } = createCommitmentStoreActions();
-  const { conversionCommitment } = createCommitmentStore();
+  const { updateDurationCommitment } = createCommitmentStore();
+  const { setCommitment } = createCommitmentStoreActions();
+  const { setCurrentAZ } = createCommitmentStoreActions();
   const { setConversionCommitment } = createCommitmentStoreActions();
-  const { deleteCommitment } = createCommitmentStore();
+  const { setDeleteCommitment } = createCommitmentStoreActions();
+  const { setIsCommitting } = createCommitmentStoreActions();
+  const { isSubmitting } = createCommitmentStore();
+  const { setIsSubmitting } = createCommitmentStoreActions();
+  const { setToast } = createCommitmentStoreActions();
+  const { setTransferredCommitment } = createCommitmentStoreActions();
+  const { setTransferFromAndToProject } = createCommitmentStoreActions();
   const { setTransferProject } = createCommitmentStoreActions();
+  const { setUpdateDurationCommitment } = createCommitmentStoreActions();
   const { setRefetchClusterAPI } = clusterStoreActions();
   const { setRefetchDomainAPI } = domainStoreActions();
   const { setRefetchCommitmentAPI } = createCommitmentStoreActions();
-  const { setCommitment } = createCommitmentStoreActions();
-  const { setTransferredCommitment } = createCommitmentStoreActions();
   const { setCommitmentIsLoading } = createCommitmentStoreActions();
-  const { setIsSubmitting } = createCommitmentStoreActions();
-  const { setIsCommitting } = createCommitmentStoreActions();
-  const { setDeleteCommitment } = createCommitmentStoreActions();
-  const { setToast } = createCommitmentStoreActions();
-  const { setCurrentAZ } = createCommitmentStoreActions();
 
   React.useEffect(() => {
     if (!currentAZ) {
@@ -304,6 +310,32 @@ const EditPanel = (props) => {
     );
   }
 
+  function updateCommitmentDuration(commitment, payload) {
+    const targetDomainID = currentProject?.metadata.domainID || null;
+    const targetProjectID = currentProject?.metadata.id || null;
+
+    updateDuration.mutate(
+      {
+        payload: payload,
+        domainID: targetDomainID,
+        projectID: targetProjectID,
+        commitmentID: commitment.id,
+      },
+      {
+        onSuccess: () => {
+          setRefetchClusterAPI(true);
+          setRefetchDomainAPI(true);
+          setRefetchProjectAPI(true);
+          setRefetchCommitmentAPI(true);
+          setUpdateDurationCommitment(null);
+        },
+        onError: (error) => {
+          setToast(error.toString());
+        },
+      }
+    );
+  }
+
   // maxQuota can be set for a project with n services and m resources.
   function setMaxQuota(project, domainID, projectID) {
     if (!project) return;
@@ -345,6 +377,10 @@ const EditPanel = (props) => {
   function onTransferModalProjectClose() {
     setTransferredCommitment(initialCommitmentObject);
     setTransferFromAndToProject(null);
+  }
+
+  function onUpdateDurationClose() {
+    setUpdateDurationCommitment(null);
   }
 
   function onDeleteClose() {
@@ -486,6 +522,16 @@ const EditPanel = (props) => {
           az={currentAZ}
           onModalClose={onDeleteClose}
           onDelete={deleteCommitmentAPI}
+        />
+      )}
+      {updateDurationCommitment && (
+        <UpdateDurationModal
+          title="Update Commitment Duration"
+          subText="Update"
+          resource={currentResource}
+          commitment={updateDurationCommitment}
+          onModalClose={onUpdateDurationClose}
+          onUpdate={updateCommitmentDuration}
         />
       )}
     </PanelBody>

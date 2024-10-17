@@ -181,6 +181,28 @@ const useQueryClientFn = (isMockApi) => {
       },
     });
 
+    queryClient.setMutationDefaults(["updateCommitmentDuration"], {
+      mutationFn: async ({
+        domainID: domID,
+        projectID: projID,
+        commitmentID,
+        payload,
+      }) => {
+        projID ? (pid = projID) : (pid = projectID);
+        domID ? (did = domID) : (did = domainID);
+        const url = `${endpoint}/v1/domains/${did}/projects/${pid}/commitments/${commitmentID}/update-duration`;
+        const response = await fetchProxy(url, {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "X-Auth-Token": token,
+          },
+          body: JSON.stringify(payload),
+        });
+        return responseHandler(response);
+      },
+    });
+
     setApiReady(true);
   }, [queryClient, endpoint, token, projectID, domainID]);
 

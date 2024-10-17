@@ -33,6 +33,8 @@ const createCommitmentStore = (set) => ({
     conversionCommitment: null,
     // contains the commitment to delete.
     deleteCommitment: null,
+    // contains the commitment to update the duration on.
+    updateDurationCommitment: null,
     actions: {
       setCommitment: (commitment) =>
         set((state) => ({
@@ -152,6 +154,13 @@ const createCommitmentStore = (set) => ({
           createCommitment: {
             ...state.createCommitment,
             deleteCommitment: commitment,
+          },
+        })),
+      setUpdateDurationCommitment: (commitment) =>
+        set((state) => ({
+          createCommitment: {
+            ...state.createCommitment,
+            updateDurationCommitment: commitment,
           },
         })),
     },
