@@ -63,9 +63,11 @@ const Actions = (props) => {
       </Stack>
       {commitmentActions.length > 0 && (
         <ContextMenu>
-          {commitmentActions.map((action) => {
-            return <div key={action.key}> {action.menuItem} </div>;
-          })}
+          <div className="border-solid border-2 border-juno-grey-light-9">
+            {commitmentActions.map((action) => {
+              return <div key={action.key}> {action.menuItem} </div>;
+            })}
+          </div>
         </ContextMenu>
       )}
     </Stack>
