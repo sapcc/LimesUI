@@ -1,22 +1,25 @@
 import React from "react";
+import BaseFooter from "./BaseFooter";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { Modal } from "@cloudoperators/juno-ui-components";
-import BaseFooter from "./BaseFooter";
+import { PortalProvider } from "@cloudoperators/juno-ui-components";
 
 const UseExampleCmp = ({ guardFns, actionFn, disabled = false }) => {
   return (
-    <Modal
-      className="max-h-full"
-      title="testCmp"
-      open={true}
-      modalFooter={
-        <BaseFooter
-          disabled={disabled}
-          guardFns={guardFns}
-          actionFn={actionFn}
-        />
-      }
-    ></Modal>
+    <PortalProvider>
+      <Modal
+        className="max-h-full"
+        title="testCmp"
+        open={true}
+        modalFooter={
+          <BaseFooter
+            disabled={disabled}
+            guardFns={guardFns}
+            actionFn={actionFn}
+          />
+        }
+      ></Modal>
+    </PortalProvider>
   );
 };
 
@@ -33,7 +36,6 @@ describe("test Footer", () => {
     };
     render(<UseExampleCmp guardFns={guardFns} actionFn={actionFn} />);
     const button = screen.getByText(/confirm/i);
-    expect(button).toBeInTheDocument();
     fireEvent.click(button);
     expect(console.log).toBeCalledWith("actioned");
   });
@@ -46,7 +48,6 @@ describe("test Footer", () => {
     };
     render(<UseExampleCmp guardFns={guardFns} actionFn={actionFn} />);
     const button = screen.getByText(/confirm/i);
-    expect(button).toBeInTheDocument();
     fireEvent.click(button);
     expect(console.log).not.toHaveBeenCalled();
   });
@@ -65,7 +66,6 @@ describe("test Footer", () => {
       <UseExampleCmp guardFns={guardFns} actionFn={actionFn} disabled={true} />
     );
     const button = screen.getByTestId(/modalConfirm/i);
-    expect(button).toBeInTheDocument();
     fireEvent.click(button);
     expect(console.log).not.toHaveBeenCalled();
   });

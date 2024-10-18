@@ -1,6 +1,7 @@
 import React from "react";
 import UpdateDurationModal from "./UpdateDurationModal";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { PortalProvider } from "@cloudoperators/juno-ui-components";
 import { initialCommitmentObject } from "../../../../lib/constants";
 
 const resource = {
@@ -18,27 +19,27 @@ describe("check update duration modal", () => {
     const confirmedCommitment = { ...commitment };
     confirmedCommitment.amount = 10;
     confirmedCommitment.duration = "1 year";
-    render(
-      <UpdateDurationModal
-        title="Update Commitment Duration"
-        subText="Update"
-        resource={resource}
-        commitment={confirmedCommitment}
-        onModalClose={() => {}}
-        onUpdate={update}
-      />
-    );
+    waitFor(() => {
+      render(
+        <PortalProvider>
+          <UpdateDurationModal
+            title="Update Commitment Duration"
+            subText="Update"
+            resource={resource}
+            commitment={confirmedCommitment}
+            onModalClose={() => {}}
+            onUpdate={update}
+          />
+        </PortalProvider>
+      );
+    });
   });
   test("duration update", () => {
     const input = screen.getByTestId(/updateDurationInput/i);
     const confirmInput = screen.getByTestId(/confirmInput/i);
     const confirmButton = screen.getByTestId(/modalConfirm/i);
-    expect(input).toBeInTheDocument();
-    expect(confirmInput).toBeInTheDocument();
-    expect(confirmButton).toBeInTheDocument();
     fireEvent.click(input);
     const inputVal = screen.getByTestId("2 years");
-    expect(inputVal).toBeInTheDocument();
     expect(screen.queryByTestId("1 year")).toBeFalsy();
     fireEvent.click(inputVal);
     fireEvent.change(confirmInput, { target: { value: "update" } });

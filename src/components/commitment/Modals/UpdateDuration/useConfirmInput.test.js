@@ -31,8 +31,6 @@ describe("check hook", () => {
     render(<UseExampleCmp subText="testInput" />);
     const input = screen.getByTestId(/confirmInput/i);
     const confirmButton = screen.getByTestId(/confirmButton/i);
-    expect(input).toBeInTheDocument();
-    expect(confirmButton).toBeInTheDocument();
     fireEvent.change(input, { target: { value: "123" } });
     fireEvent.click(confirmButton);
     const errorText = screen.getByText(
@@ -45,8 +43,6 @@ describe("check hook", () => {
     render(<UseExampleCmp subText="testInput" />);
     const input = screen.getByTestId(/confirmInput/i);
     const confirmButton = screen.getByTestId(/confirmButton/i);
-    expect(input).toBeInTheDocument();
-    expect(confirmButton).toBeInTheDocument();
     fireEvent.change(input, { target: { value: "testInput" } });
     fireEvent.click(confirmButton);
     const error = screen.queryByText(

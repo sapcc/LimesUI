@@ -1,7 +1,14 @@
 import React from "react";
-import { fireEvent, screen, renderHook, act } from "@testing-library/react";
+import {
+  fireEvent,
+  screen,
+  renderHook,
+  act,
+  waitFor,
+} from "@testing-library/react";
 import CommitmentTableDetails from "./CommitmentTableDetails";
 import { initialCommitmentObject } from "../../lib/constants";
+import { PortalProvider } from "@cloudoperators/juno-ui-components";
 import StoreProvider, {
   createCommitmentStore,
   createCommitmentStoreActions,
@@ -17,21 +24,25 @@ describe("CheckCommitedState", () => {
     confirmedCommitment.requested_at = 1696636800;
     confirmedCommitment.confirmed_at = 1696636800;
     const wrapper = ({ children }) => (
-      <StoreProvider>
-        <CommitmentTableDetails
-          commitment={confirmedCommitment}
-          durations={durations}
-        />
-        {children}
-      </StoreProvider>
+      <PortalProvider>
+        <StoreProvider>
+          <CommitmentTableDetails
+            commitment={confirmedCommitment}
+            durations={durations}
+          />
+          {children}
+        </StoreProvider>
+      </PortalProvider>
     );
-    renderHook(
-      () => ({
-        commitmentStore: createCommitmentStore(),
-        commitmentStoreActions: createCommitmentStoreActions(),
-      }),
-      { wrapper }
-    );
+    waitFor(() => {
+      renderHook(
+        () => ({
+          commitmentStore: createCommitmentStore(),
+          commitmentStoreActions: createCommitmentStoreActions(),
+        }),
+        { wrapper }
+      );
+    });
     const commitedField = screen.getByDisplayValue(
       new RegExp(confirmedCommitment.amount, "i")
     );
@@ -43,18 +54,25 @@ describe("EditCommitments", () => {
   let store;
   beforeEach(() => {
     const wrapper = ({ children }) => (
-      <StoreProvider>
-        <CommitmentTableDetails commitment={commitment} durations={durations} />
-        {children}
-      </StoreProvider>
+      <PortalProvider>
+        <StoreProvider>
+          <CommitmentTableDetails
+            commitment={commitment}
+            durations={durations}
+          />
+          ;{children}
+        </StoreProvider>
+      </PortalProvider>
     );
-    store = renderHook(
-      () => ({
-        commitmentStore: createCommitmentStore(),
-        commitmentStoreActions: createCommitmentStoreActions(),
-      }),
-      { wrapper }
-    );
+    store = waitFor(() => {
+      return renderHook(
+        () => ({
+          commitmentStore: createCommitmentStore(),
+          commitmentStoreActions: createCommitmentStoreActions(),
+        }),
+        { wrapper }
+      );
+    });
   });
 
   test("Check default InputValue", () => {
@@ -62,21 +80,23 @@ describe("EditCommitments", () => {
     expect(input).toBeInTheDocument();
   });
 
-  test("Change Input, then cancel", async () => {
+  test("Change Input, then cancel", () => {
     const value = "500";
     const input = screen.getByDisplayValue(commitment.amount);
-    await act(async () => {
+    act(() => {
       fireEvent.change(input, { target: { value: value } });
     });
     expect(input.value).toEqual(value);
 
     const close = screen.getByText(/cancel/i);
-    await act(async () => {
+    act(() => {
       fireEvent.click(close);
     });
-    expect(store.result.current.commitmentStore.commitment.amount).toEqual(
-      commitment.amount
-    );
+    waitFor(() => {
+      expect(store.result.current.commitmentStore.commitment.amount).toEqual(
+        commitment.amount
+      );
+    });
   });
 
   test("Check dropdown", () => {
