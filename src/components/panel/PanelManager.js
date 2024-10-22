@@ -25,6 +25,7 @@ const PanelManager = (props) => {
   const { setToast } = createCommitmentStoreActions();
   const { setIsCommitting } = createCommitmentStoreActions();
   const { setIsSubmitting } = createCommitmentStoreActions();
+  const { setShowConversionOption } = createCommitmentStoreActions();
   const { setTransferProject } = createCommitmentStoreActions();
   const { setDeleteCommitment } = createCommitmentStoreActions();
   const navigate = useNavigate();
@@ -59,6 +60,7 @@ const PanelManager = (props) => {
     // create commitment
     setIsEditing(false);
     setIsCommitting(false);
+    setShowConversionOption(false);
     // transfer commitment
     setTransferCommitment(false);
     setIsTransferring(false);

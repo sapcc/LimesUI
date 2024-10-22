@@ -19,7 +19,9 @@ const useGetConversions = ({ serviceType, resourceName }) => {
     if (isError) {
       setToast(error.toString());
     }
-    setShowConversionOption(true);
+    if (data) {
+      setShowConversionOption(true);
+    }
   }, [data, isError]);
 
   return conversionResult;

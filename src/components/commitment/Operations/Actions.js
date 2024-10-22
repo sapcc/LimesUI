@@ -26,7 +26,7 @@ const Actions = (props) => {
     setCommitmentActions((commitmentActions) => [
       ...commitmentActions,
       newAction,
-    ]);
+    ].sort((a,b) => a.key.localeCompare(b.key)));
   }
 
   useConversionAction({ commitment, updateActions });

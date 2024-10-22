@@ -57,6 +57,7 @@ describe("test useGetConversions", () => {
       "conversionA",
       "conversionB",
     ]);
+    expect(result.current.commitmentStore.showConversionOption).toBe(true);
   });
   test("should not return values on non hana resources", async () => {
     const { result } = await waitFor(() => {
@@ -75,7 +76,7 @@ describe("test useGetConversions", () => {
       );
     });
     expect(result.current.conversions.data).toBe(undefined);
-    expect(result.current.commitmentStore.showConversionOption).toBe(true);
+    expect(result.current.commitmentStore.showConversionOption).toBe(false);
   });
 
   test("should set a toast on failed request", async () => {
@@ -94,6 +95,7 @@ describe("test useGetConversions", () => {
         }
       );
     });
+    expect(result.current.commitmentStore.showConversionOption).toBe(false);
     expect(result.current.commitmentStore.toast.message).toEqual(
       "Error: failed to fetch content"
     );
