@@ -35,9 +35,55 @@ describe("test Footer", () => {
       console.log("actioned");
     };
     render(<UseExampleCmp guardFns={guardFns} actionFn={actionFn} />);
-    const button = screen.getByText(/confirm/i);
+    const button = screen.getByTestId(/modalConfirm/i);
     fireEvent.click(button);
     expect(console.log).toBeCalledWith("actioned");
+  });
+
+  test("negative function execution", () => {
+    console.log = jest.fn();
+    const guardFns = [
+      () => {
+        return false;
+      },
+    ];
+    const actionFn = () => {
+      console.log("actioned");
+    };
+    render(<UseExampleCmp guardFns={guardFns} actionFn={actionFn} />);
+    const button = screen.getByTestId(/modalConfirm/i);
+    fireEvent.click(button);
+    expect(console.log).not.toBeCalledWith("actioned");
+  });
+
+  test("no props and cancel modal", () => {
+    render(<UseExampleCmp />);
+    const confirm = screen.getByTestId(/modalConfirm/i);
+    const close = screen.getByTestId(/modalCancel/i);
+    fireEvent.click(confirm);
+    expect(confirm).toBeInTheDocument();
+    fireEvent.click(close);
+    expect(close).toBeInTheDocument();
+  });
+
+  test("no action fn input", () => {
+    const guardFns = [
+      () => {
+        return true;
+      },
+    ];
+    render(<UseExampleCmp guardFns={guardFns} />);
+    const confirm = screen.getByTestId(/modalConfirm/i);
+    fireEvent.click(confirm);
+    expect(confirm).toBeInTheDocument();
+  });
+
+  test("guardFns contain no function", () => {
+    const guardFns = [true];
+    render(<UseExampleCmp guardFns={guardFns} />);
+    const confirm = screen.getByTestId(/modalConfirm/i);
+    fireEvent.click(confirm);
+    expect(confirm).toBeInTheDocument();
   });
 
   test("invalid guardFn input", () => {
@@ -47,7 +93,7 @@ describe("test Footer", () => {
       console.log("actioned");
     };
     render(<UseExampleCmp guardFns={guardFns} actionFn={actionFn} />);
-    const button = screen.getByText(/confirm/i);
+    const button = screen.getByTestId(/modalConfirm/i);
     fireEvent.click(button);
     expect(console.log).not.toHaveBeenCalled();
   });

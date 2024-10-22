@@ -3,7 +3,6 @@ import {
   fireEvent,
   screen,
   renderHook,
-  act,
   waitFor,
 } from "@testing-library/react";
 import CommitmentTableDetails from "./CommitmentTableDetails";
@@ -34,7 +33,7 @@ describe("CheckCommitedState", () => {
         </StoreProvider>
       </PortalProvider>
     );
-    waitFor(() => {
+    await waitFor(() => {
       renderHook(
         () => ({
           commitmentStore: createCommitmentStore(),
@@ -43,16 +42,14 @@ describe("CheckCommitedState", () => {
         { wrapper }
       );
     });
-    const commitedField = screen.getByDisplayValue(
-      new RegExp(confirmedCommitment.amount, "i")
-    );
+    const commitedField = screen.getByDisplayValue(confirmedCommitment.amount);
     expect(commitedField).toBeInTheDocument();
   });
 });
 
 describe("EditCommitments", () => {
   let store;
-  beforeEach(() => {
+  beforeEach(async () => {
     const wrapper = ({ children }) => (
       <PortalProvider>
         <StoreProvider>
@@ -60,11 +57,11 @@ describe("EditCommitments", () => {
             commitment={commitment}
             durations={durations}
           />
-          ;{children}
+          {children}
         </StoreProvider>
       </PortalProvider>
     );
-    store = waitFor(() => {
+    store = await waitFor(() => {
       return renderHook(
         () => ({
           commitmentStore: createCommitmentStore(),
@@ -83,27 +80,22 @@ describe("EditCommitments", () => {
   test("Change Input, then cancel", () => {
     const value = "500";
     const input = screen.getByDisplayValue(commitment.amount);
-    act(() => {
-      fireEvent.change(input, { target: { value: value } });
-    });
+    fireEvent.change(input, { target: { value: value } });
     expect(input.value).toEqual(value);
-
     const close = screen.getByText(/cancel/i);
-    act(() => {
-      fireEvent.click(close);
-    });
-    waitFor(() => {
-      expect(store.result.current.commitmentStore.commitment.amount).toEqual(
-        commitment.amount
-      );
-    });
+    fireEvent.click(close);
+    expect(store.result.current.commitmentStore.commitment.amount).toEqual(
+      commitment.amount
+    );
   });
 
-  test("Check dropdown", () => {
+  test("Check dropdown", async () => {
     const input = screen.getByText(/select/i);
     fireEvent.click(input);
     const year1 = screen.getByText(new RegExp(durations[0], "i"));
     fireEvent.click(year1);
-    expect(year1.textContent).toEqual(durations[0]);
+    await waitFor(() => {
+      expect(year1.textContent).toEqual(durations[0]);
+    });
   });
 });

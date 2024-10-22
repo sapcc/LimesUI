@@ -145,8 +145,8 @@ const useQueryClientFn = (isMockApi) => {
     if (!queryClient || !endpoint || !token) return;
     queryClient.setQueryDefaults(["getConversions"], {
       queryFn: async ({ queryKey }) => {
-        const { service_type, resource_name } = queryKey[1];
-        const url = `${endpoint}/v1/commitment-conversion/${service_type}/${resource_name}`;
+        const { serviceType, resourceName } = queryKey[1];
+        const url = `${endpoint}/v1/commitment-conversion/${serviceType}/${resourceName}`;
         const response = await fetchProxy(url, {
           method: "GET",
           headers: {

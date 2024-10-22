@@ -1,5 +1,4 @@
 import React from "react";
-import { Message, LoadingIndicator } from "@cloudoperators/juno-ui-components";
 import { useQuery } from "@tanstack/react-query";
 
 const useReceivedCommitment = ({ token, shouldFetch }) => {

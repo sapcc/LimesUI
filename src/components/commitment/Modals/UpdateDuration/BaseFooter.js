@@ -10,14 +10,13 @@ const BaseFooter = (props) => {
     disabled = false,
     onModalClose = () => {},
     variant = "primary",
-    guardFns = () => [{}],
+    guardFns = [() => {}],
     actionFn = () => {
       return;
     },
   } = props;
 
   function onConfirm() {
-    if (!Array.isArray(guardFns)) return;
     for (const guardFn of guardFns) {
       if (typeof guardFn !== "function") return;
       if (!guardFn()) {

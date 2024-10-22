@@ -1,5 +1,5 @@
 import React from "react";
-import { Modal, CodeBlock, Code } from "@cloudoperators/juno-ui-components";
+import { Modal, CodeBlock } from "@cloudoperators/juno-ui-components";
 
 const label = "font-semibold";
 

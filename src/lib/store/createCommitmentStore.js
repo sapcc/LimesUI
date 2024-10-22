@@ -31,6 +31,7 @@ const createCommitmentStore = (set) => ({
     transferFromAndToProject: null,
     // contains the commitment to convert.
     conversionCommitment: null,
+    showConversionOption: false,
     // contains the commitment to delete.
     deleteCommitment: null,
     // contains the commitment to update the duration on.
@@ -147,6 +148,13 @@ const createCommitmentStore = (set) => ({
           createCommitment: {
             ...state.createCommitment,
             conversionCommitment: commitment,
+          },
+        })),
+      setShowConversionOption: (showConversionOption) =>
+        set((state) => ({
+          createCommitment: {
+            ...state.createCommitment,
+            showConversionOption: showConversionOption,
           },
         })),
       setDeleteCommitment: (commitment) =>

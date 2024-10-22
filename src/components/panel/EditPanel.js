@@ -22,6 +22,7 @@ import TransferReceiveModal from "../commitment/Modals/TransferReceiveModal";
 import UpdateDurationModal from "../commitment/Modals/UpdateDuration/UpdateDurationModal";
 import ProjectManager from "../project/ProjectManager";
 import DomainManager from "../domain/DomainManager";
+import useGetConversions from "./PanelHooks/useGetConversions";
 import useResetCommitment from "../../hooks/useResetCommitment";
 import { initialCommitmentObject, TransferStatus } from "../../lib/constants";
 
@@ -36,6 +37,7 @@ const EditPanel = (props) => {
   } = {
     ...props,
   };
+  const resourceName = currentResource.name;
   const minConfirmDate = currentResource?.commitment_config?.min_confirm_by;
   const [canConfirm, setCanConfirm] = React.useState(null);
   const { commitments } = projectStore();
@@ -91,6 +93,7 @@ const EditPanel = (props) => {
   const { setRefetchDomainAPI } = domainStoreActions();
   const { setRefetchCommitmentAPI } = createCommitmentStoreActions();
   const { setCommitmentIsLoading } = createCommitmentStoreActions();
+  const conversionResults = useGetConversions({ serviceType, resourceName });
 
   React.useEffect(() => {
     if (!currentAZ) {
@@ -510,6 +513,7 @@ const EditPanel = (props) => {
           title="Convert Commitment"
           subText="Convert"
           commitment={conversionCommitment}
+          conversionResults={conversionResults}
           onModalClose={onConversionClose}
           onConvert={convertCommitment}
         />

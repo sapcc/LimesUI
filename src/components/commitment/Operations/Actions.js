@@ -30,9 +30,9 @@ const Actions = (props) => {
   }
 
   useConversionAction({ commitment, updateActions });
-  useTransferAction({ commitment, updateActions });
-  useUpdateDurationAction({ commitment, updateActions });
   useDeleteAction({ commitment, updateActions });
+  useUpdateDurationAction({ commitment, updateActions });
+  useTransferAction({ commitment, updateActions });
 
   function setCommitmentLabel() {
     let label;

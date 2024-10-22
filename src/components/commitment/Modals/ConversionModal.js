@@ -15,14 +15,22 @@ import {
   TextInput,
 } from "@cloudoperators/juno-ui-components";
 import { t } from "../../../lib/utils";
-import { useQuery } from "@tanstack/react-query";
 import { Unit } from "../../../lib/unit";
 
 const label = "font-semibold";
 
 const ConversionModal = (props) => {
-  const { title, subText, onModalClose, commitment, onConvert } = props;
-  const { service_type, resource_name } = commitment;
+  const {
+    title,
+    subText,
+    onModalClose,
+    commitment,
+    conversionResults,
+    onConvert,
+  } = props;
+  const { resource_name } = commitment;
+  const { data, isLoading, isError, error } = conversionResults;
+  const { conversions } = data || { conversions: null };
   const inputRef = React.useRef("");
   const [invalidInput, setInvalidInput] = React.useState(false);
   const [invalidConversion, setInvalidConversion] = React.useState(false);
@@ -32,11 +40,6 @@ const ConversionModal = (props) => {
   const [conversion, setConversion] = React.useState({ amount: null });
   const [targetAmount, setTargetAmount] = React.useState();
   const [insufficientAmount, setInsufficientAmount] = React.useState(false);
-  const getConversions = useQuery({
-    queryKey: ["getConversions", { service_type, resource_name }],
-  });
-  const { data: conversionData, isLoading, isError, error } = getConversions;
-  const { conversions } = { ...conversionData };
 
   // initialize conversion.
   React.useEffect(() => {
