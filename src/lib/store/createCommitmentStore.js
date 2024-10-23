@@ -36,6 +36,7 @@ const createCommitmentStore = (set) => ({
     deleteCommitment: null,
     // contains the commitment to update the duration on.
     updateDurationCommitment: null,
+    validDurations: new Map(),
     actions: {
       setCommitment: (commitment) =>
         set((state) => ({
@@ -171,6 +172,24 @@ const createCommitmentStore = (set) => ({
             updateDurationCommitment: commitment,
           },
         })),
+      addValidDuration: (durationSet) =>
+        set((state) => ({
+          createCommitment: {
+            ...state.createCommitment,
+            validDurations: state.createCommitment.validDurations.set(
+              durationSet?.id,
+              durationSet?.durations
+            ),
+          },
+        })),
+      resetValidDurations: () => {
+        set((state) => ({
+          createCommitment: {
+            ...state.createCommitment,
+            validDurations: new Map(),
+          },
+        }));
+      },
     },
   },
 });

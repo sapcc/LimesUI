@@ -26,6 +26,7 @@ const CommitmentTable = (props) => {
   } = {
     ...props,
   };
+  const resourceName = currentResource?.name;
   const { per_az: availabilityZones } = props.resource;
   const isAZAware =
     availabilityZones.length == 1 && availabilityZones[0][0] == "any";
@@ -67,14 +68,14 @@ const CommitmentTable = (props) => {
 
   //Add or remove edit commitment row.
   const filteredCommitments = React.useMemo(() => {
-    const filteredData = filterCommitments(currentResource, currentAZ);
+    const filteredData = filterCommitments(resourceName, currentAZ);
     if (!isCommitting) {
       return filteredData;
     }
     newCommitment.unit = unit;
     filteredData.unshift(newCommitment);
     return filteredData;
-  }, [commitmentData, currentAZ, currentResource, isCommitting]);
+  }, [commitmentData, currentAZ, resourceName, isCommitting]);
 
   return commitmentIsFetching ? (
     <LoadingIndicator className="m-auto" />

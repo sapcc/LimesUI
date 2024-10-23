@@ -37,6 +37,7 @@ const CommitmentTableDetails = (props) => {
   const durations = props.durations;
   const serviceType = props.serviceType;
   const currentResource = props.currentResource;
+  const resourceName = currentResource?.name;
   const currentAZ = props.currentAZ;
   const isAddingCommitment = id === COMMITMENTID ? true : false;
   const { commitment: newCommitment } = createCommitmentStore();
@@ -96,7 +97,7 @@ const CommitmentTableDetails = (props) => {
     setCommitment({
       ...newCommitment,
       service_type: serviceType,
-      resource_name: currentResource,
+      resource_name: resourceName,
       availability_zone: currentAZ,
       amount: parsedInput,
     });
@@ -243,7 +244,7 @@ const CommitmentTableDetails = (props) => {
             </Button>
           </Stack>
         ) : (
-          <Actions commitment={commitment} />
+          <Actions commitment={commitment} resource={currentResource} />
         )}
       </DataGridCell>
     </DataGridRow>

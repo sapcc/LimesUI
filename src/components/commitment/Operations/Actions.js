@@ -8,7 +8,7 @@ import useConversionAction from "./useConversionAction";
 import useUpdateDurationAction from "./useUpdateDurationAction";
 
 const Actions = (props) => {
-  const { commitment } = props;
+  const { commitment, resource } = props;
   const { confirmed_at: isConfirmed } = commitment;
   const { isPlanned, isPending } = useCommitmentFilter();
   const [commitmentActions, setCommitmentActions] = React.useState([]);
@@ -31,7 +31,7 @@ const Actions = (props) => {
 
   useConversionAction({ commitment, updateActions });
   useDeleteAction({ commitment, updateActions });
-  useUpdateDurationAction({ commitment, updateActions });
+  useUpdateDurationAction({ commitment, resource, updateActions });
   useTransferAction({ commitment, updateActions });
 
   function setCommitmentLabel() {

@@ -1,12 +1,19 @@
 import React from "react";
 import UpdateDurationModal from "./UpdateDurationModal";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import {
+  act,
+  renderHook,
+  screen,
+  fireEvent,
+  waitFor,
+} from "@testing-library/react";
 import { PortalProvider } from "@cloudoperators/juno-ui-components";
+import StoreProvider, {
+  createCommitmentStore,
+  createCommitmentStoreActions,
+} from "../../../StoreProvider";
 import { initialCommitmentObject } from "../../../../lib/constants";
 
-const resource = {
-  commitment_config: { durations: ["1 year", "2 years", "3 years"] },
-};
 const commitment = { ...initialCommitmentObject };
 
 describe("check update duration modal", () => {
@@ -14,36 +21,57 @@ describe("check update duration modal", () => {
     expect(commitment.duration).toBe("1 year");
     expect(payload.duration).toBe("2 years");
   });
+  let store;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     const confirmedCommitment = { ...commitment };
+    confirmedCommitment.id = 1;
     confirmedCommitment.amount = 10;
     confirmedCommitment.duration = "1 year";
-    waitFor(() => {
-      render(
-        <PortalProvider>
+    const wrapper = ({ children }) => (
+      <PortalProvider>
+        <StoreProvider>
           <UpdateDurationModal
             title="Update Commitment Duration"
             subText="Update"
-            resource={resource}
             commitment={confirmedCommitment}
             onModalClose={() => {}}
             onUpdate={update}
           />
-        </PortalProvider>
+          {children}
+        </StoreProvider>
+      </PortalProvider>
+    );
+    store = await waitFor(() => {
+      return renderHook(
+        () => ({
+          commitmentStore: createCommitmentStore(),
+          commitmentStoreActions: createCommitmentStoreActions(),
+        }),
+        { wrapper }
       );
     });
   });
-  test("duration update", () => {
+  test("duration update", async () => {
+    await act(() => {
+      store.result.current.commitmentStoreActions.addValidDuration({
+        id: 1,
+        durations: ["2 years", "3 years"],
+      });
+    });
     const input = screen.getByTestId(/updateDurationInput/i);
     const confirmInput = screen.getByTestId(/confirmInput/i);
     const confirmButton = screen.getByTestId(/modalConfirm/i);
     fireEvent.click(input);
     const inputVal = screen.getByTestId("2 years");
-    expect(screen.queryByTestId("1 year")).toBeFalsy();
+    await waitFor(() => {
+      expect(screen.queryByTestId("1 year")).toBeFalsy();
+    });
     fireEvent.click(inputVal);
     fireEvent.change(confirmInput, { target: { value: "update" } });
     fireEvent.click(confirmButton);
-    expect(update).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(update).toHaveBeenCalled();
+    });
   });
 });

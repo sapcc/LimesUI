@@ -18,6 +18,7 @@ const PanelManager = (props) => {
   const { currentProject } = createCommitmentStore();
   const project = React.useRef(currentProject);
   const { scope } = globalStore();
+  const { resetValidDurations } = createCommitmentStoreActions();
   const { setIsEditing } = createCommitmentStoreActions();
   const { setCommitment } = createCommitmentStoreActions();
   const { setTransferCommitment } = createCommitmentStoreActions();
@@ -61,6 +62,7 @@ const PanelManager = (props) => {
     setIsEditing(false);
     setIsCommitting(false);
     setShowConversionOption(false);
+    resetValidDurations();
     // transfer commitment
     setTransferCommitment(false);
     setIsTransferring(false);

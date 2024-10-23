@@ -427,7 +427,7 @@ const EditPanel = (props) => {
         <CommitmentTable
           serviceType={serviceType}
           currentCategory={currentCategory}
-          currentResource={currentResource.name}
+          currentResource={currentResource}
           resource={currentResource}
           currentAZ={currentAZ}
           commitmentData={commitments}

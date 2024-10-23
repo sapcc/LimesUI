@@ -1,16 +1,30 @@
 import React from "react";
 import MenuItemBuilder from "./MenuItemBuilder";
 import { createCommitmentStoreActions } from "../../StoreProvider";
+import { parseCommitmentDuration } from "../../../lib/parseCommitmentDurations";
 
 const useUpdateDurationAction = (props) => {
-  const { commitment, updateActions } = props;
+  const { commitment, resource, updateActions } = props;
+  const commitmentDuration = commitment?.duration || null;
+  const durations = resource?.commitment_config?.durations ?? [];
   const { setUpdateDurationCommitment } = createCommitmentStoreActions();
+  const { addValidDuration } = createCommitmentStoreActions();
+
+  const validDurations = React.useMemo(() => {
+    return durations.filter(
+      (duration) =>
+        parseCommitmentDuration(duration) >
+        parseCommitmentDuration(commitmentDuration)
+    );
+  }, [resource]);
 
   function updateDuration() {
     setUpdateDurationCommitment(commitment);
   }
 
   React.useEffect(() => {
+    if (validDurations.length == 0) return;
+    addValidDuration({ id: commitment.id, durations: validDurations });
     const menuItem = (
       <MenuItemBuilder callBack={updateDuration}>
         <MenuItemBuilder.Icon icon="edit" />
@@ -18,7 +32,7 @@ const useUpdateDurationAction = (props) => {
       </MenuItemBuilder>
     );
     updateActions("updateDuration", menuItem, null);
-  }, [commitment]);
+  }, [commitment, validDurations]);
 };
 
 export default useUpdateDurationAction;
