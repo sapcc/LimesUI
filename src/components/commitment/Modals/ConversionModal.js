@@ -14,6 +14,8 @@ import {
   Stack,
   TextInput,
 } from "@cloudoperators/juno-ui-components";
+import BaseFooter from "./BaseComponents/BaseFooter";
+import useConfirmInput from "./BaseComponents/useConfirmInput";
 import { t } from "../../../lib/utils";
 import { Unit } from "../../../lib/unit";
 
@@ -28,16 +30,17 @@ const ConversionModal = (props) => {
     conversionResults,
     onConvert,
   } = props;
+  const { ConfirmInput, inputProps, checkInput } = useConfirmInput({
+    confirmationText: subText,
+  });
   const { resource_name } = commitment;
   const { data, isLoading, isError, error } = conversionResults;
   const { conversions } = data || { conversions: null };
-  const inputRef = React.useRef("");
-  const [invalidInput, setInvalidInput] = React.useState(false);
   const [invalidConversion, setInvalidConversion] = React.useState(false);
   const [currentConversion, setCurrentConversion] = React.useState(null);
   const unit = new Unit(commitment.unit);
   // Needs to be an object. The same suggested conversion value on select of a different conversion type would not trigger a rerender.
-  const [conversion, setConversion] = React.useState({ amount: null });
+  const [conversion, setConversion] = React.useState({ amount: "" });
   const [targetAmount, setTargetAmount] = React.useState();
   const [insufficientAmount, setInsufficientAmount] = React.useState(false);
 
@@ -78,11 +81,6 @@ const ConversionModal = (props) => {
     setTargetAmount(unit.format(targetAmount, { ascii: true }));
   }, [conversion]);
 
-  function onInput(e) {
-    setInvalidInput(false);
-    inputRef.current = e.target.value;
-  }
-
   function onConversionInput(e) {
     setInvalidConversion(false);
     setConversion({ amount: e.target.value });
@@ -96,10 +94,6 @@ const ConversionModal = (props) => {
 
   function onConfirm() {
     if (!currentConversion) return;
-    if (inputRef.current.toLowerCase() !== subText.toLowerCase()) {
-      setInvalidInput(true);
-      return;
-    }
     const parsedInput = unit.parse(conversion.amount);
     const parsedAmount = unit.parse(targetAmount);
     // defense in depth.
@@ -123,31 +117,19 @@ const ConversionModal = (props) => {
     onConvert(commitment, payload);
   }
 
-  const modalFooter = (
-    <ModalFooter className="justify-end">
-      <ButtonRow>
-        <Button
-          label="confirm"
-          disabled={insufficientAmount}
-          variant={"primary"}
-          onClick={() => onConfirm()}
-        />
-        <Button
-          data-cy="modalCancel"
-          label="Cancel"
-          variant="subdued"
-          onClick={() => onModalClose()}
-        />
-      </ButtonRow>
-    </ModalFooter>
-  );
-
   return (
     <Modal
       className="max-h-full"
       title={title}
       open={true}
-      modalFooter={modalFooter}
+      modalFooter={
+        <BaseFooter
+          disabled={insufficientAmount}
+          onModalClose={onModalClose}
+          guardFns={[checkInput]}
+          actionFn={onConfirm}
+        />
+      }
       onCancel={() => {
         onModalClose();
       }}
@@ -171,15 +153,26 @@ const ConversionModal = (props) => {
               <DataGridCell className={label}>Target:</DataGridCell>
               <DataGridCell className={"px-0"}>
                 <Select
+                  data-testid="conversionSelect"
                   disabled={!conversions}
-                  onChange={(conversion) => {
-                    onSelectChange(conversion);
+                  onChange={(targetResource) => {
+                    onSelectChange(
+                      conversions.find(
+                        (conversion) =>
+                          conversion.target_resource == targetResource
+                      )
+                    );
                   }}
                 >
                   {conversions?.map((conversion) => {
                     const targetResource = t(conversion.target_resource);
                     return (
-                      <SelectOption value={conversion} label={targetResource} />
+                      <SelectOption
+                        data-testid={targetResource}
+                        key={targetResource}
+                        value={conversion.target_resource}
+                        label={targetResource}
+                      />
                     );
                   })}
                 </Select>
@@ -199,6 +192,7 @@ const ConversionModal = (props) => {
               <Stack>{"Amount to convert: "}</Stack>
               <Stack>
                 <TextInput
+                  data-testid="conversionInput"
                   width="auto"
                   disabled={insufficientAmount || !currentConversion}
                   autoFocus
@@ -217,23 +211,11 @@ const ConversionModal = (props) => {
                 />
               </Stack>
             </div>
-            <div>
-              <Stack className={"mt-5"}>
-                To confirm, type:&nbsp;
-                <span className={label}>{subText}</span>
-              </Stack>
-              <Stack>
-                <TextInput
-                  width="auto"
-                  disabled={insufficientAmount || !currentConversion}
-                  autoFocus
-                  errortext={
-                    invalidInput && "Please enter the highlighted term above."
-                  }
-                  onChange={(e) => onInput(e)}
-                />
-              </Stack>
-            </div>
+            <ConfirmInput
+              disabled={insufficientAmount || !currentConversion}
+              subText={subText}
+              {...inputProps}
+            />
           </Stack>
         </>
       )}

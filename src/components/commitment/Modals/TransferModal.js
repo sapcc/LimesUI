@@ -1,17 +1,15 @@
 import React from "react";
 import {
   Modal,
-  ModalFooter,
   DataGrid,
   DataGridRow,
   DataGridCell,
-  ButtonRow,
-  Button,
   Checkbox,
   Stack,
   TextInput,
 } from "@cloudoperators/juno-ui-components";
-import { globalStore } from "../../StoreProvider";
+import BaseFooter from "./BaseComponents/BaseFooter";
+import useConfirmInput from "./BaseComponents/useConfirmInput";
 import { valueWithUnit } from "../../../lib/unit";
 import { Unit } from "../../../lib/unit";
 
@@ -26,23 +24,19 @@ const TransferModal = (props) => {
     currentProject,
     transferProject,
     commitment,
+    isProjectView,
   } = props;
   const { metadata: originMeta } = currentProject || {};
   const { metadata: targetMeta } = transferProject || {};
   const unit = new Unit(commitment.unit);
-  const { scope } = globalStore();
+  const { ConfirmInput, inputProps, checkInput } = useConfirmInput({
+    confirmationText: subText,
+  });
   const [splitCommitment, setSplitCommitment] = React.useState(false);
-  const [invalidInput, setInvalidInput] = React.useState(false);
-  const inputRef = React.useRef("");
   const [invalidSplitInput, setInvalidSplitInput] = React.useState(false);
   const splitInputRef = React.useRef(
     unit.format(commitment.amount, { ascii: true })
   );
-
-  function onInput(e) {
-    setInvalidInput(false);
-    inputRef.current = e.target.value;
-  }
 
   function onSplitInput(e) {
     setInvalidSplitInput(false);
@@ -50,10 +44,6 @@ const TransferModal = (props) => {
   }
 
   function onConfirm() {
-    if (inputRef.current.toLowerCase() !== subText.toLowerCase()) {
-      setInvalidInput(true);
-      return;
-    }
     if (splitCommitment) {
       const parsedInput = unit.parse(splitInputRef.current);
       if (
@@ -69,30 +59,18 @@ const TransferModal = (props) => {
     onTransfer(transferProject, commitment);
   }
 
-  const modalFooter = (
-    <ModalFooter className="justify-end">
-      <ButtonRow>
-        <Button
-          label="confirm"
-          variant={"primary"}
-          onClick={() => onConfirm()}
-        />
-        <Button
-          data-cy="modalCancel"
-          label="Cancel"
-          variant="subdued"
-          onClick={() => onModalClose()}
-        />
-      </ButtonRow>
-    </ModalFooter>
-  );
-
   return (
     <Modal
       className="max-h-full"
       title={title}
       open={true}
-      modalFooter={modalFooter}
+      modalFooter={
+        <BaseFooter
+          onModalClose={onModalClose}
+          guardFns={[checkInput]}
+          actionFn={onConfirm}
+        />
+      }
       onCancel={() => {
         onModalClose();
       }}
@@ -106,16 +84,16 @@ const TransferModal = (props) => {
           <DataGridCell className={label}>Duration:</DataGridCell>
           <DataGridCell>{commitment.duration}</DataGridCell>
         </DataGridRow>
-        {!scope.isProject() && (
+        {!isProjectView && (
           <DataGridRow>
             <DataGridCell className={label}>Origin:</DataGridCell>
-            <DataGridCell>{originMeta.name}</DataGridCell>
+            <DataGridCell>{originMeta?.name}</DataGridCell>
           </DataGridRow>
         )}
-        {!scope.isProject() && (
+        {!isProjectView && (
           <DataGridRow>
             <DataGridCell className={label}>Target:</DataGridCell>
-            <DataGridCell>{targetMeta.name}</DataGridCell>
+            <DataGridCell>{targetMeta?.name}</DataGridCell>
           </DataGridRow>
         )}
         <DataGridRow>
@@ -132,41 +110,25 @@ const TransferModal = (props) => {
         </DataGridRow>
       </DataGrid>
       <Stack direction="vertical" alignment="center" className="mb-1 mt-5">
-        <div>
-          {splitCommitment && (
-            <div>
-              <Stack>{"Amount to transfer: "}</Stack>
-              <Stack>
-                <TextInput
-                  width="auto"
-                  autoFocus
-                  value={splitInputRef.current}
-                  errortext={
-                    invalidSplitInput && "Please enter a valid amount."
-                  }
-                  onChange={(e) => {
-                    onSplitInput(e);
-                  }}
-                />{" "}
-              </Stack>
-            </div>
-          )}
-          <Stack className={splitCommitment ? "mt-5 mb-1" : "mb-1"}>
-            To confirm, type:&nbsp;
-            <span className={label}>{subText}</span>
-          </Stack>
-          <Stack>
-            <TextInput
-              width="auto"
-              autoFocus
-              errortext={
-                invalidInput && "Please enter the highlighted term above."
-              }
-              onChange={(e) => onInput(e)}
-            />
-          </Stack>
-        </div>
+        {splitCommitment && (
+          <div>
+            <Stack>{"Amount to transfer: "}</Stack>
+            <Stack>
+              <TextInput
+                data-testid="splitInput"
+                width="auto"
+                autoFocus
+                value={splitInputRef.current}
+                errortext={invalidSplitInput && "Please enter a valid amount."}
+                onChange={(e) => {
+                  onSplitInput(e);
+                }}
+              />{" "}
+            </Stack>
+          </div>
+        )}
       </Stack>
+      <ConfirmInput subText={subText} {...inputProps} />
     </Modal>
   );
 };

@@ -1,63 +1,41 @@
 import React from "react";
 import {
   Modal,
-  ModalFooter,
   DataGrid,
   DataGridRow,
   DataGridCell,
-  Button,
-  ButtonRow,
-  Stack,
-  TextInput,
 } from "@cloudoperators/juno-ui-components";
+import BaseFooter from "./BaseComponents/BaseFooter";
+import useConfirmInput from "./BaseComponents/useConfirmInput";
 import { valueWithUnit } from "../../../lib/unit";
 import { Unit } from "../../../lib/unit";
 
 const label = "font-semibold";
 
 const DeleteModal = (props) => {
-  const { title, subText, onModalClose, commitment, az, onDelete } = props;
+  const { action, az, title, subText, onModalClose, commitment } = props;
   const unit = new Unit(commitment.unit);
-  const inputRef = React.useRef("");
-  const [invalidInput, setInvalidInput] = React.useState(false);
+  const { ConfirmInput, inputProps, checkInput } = useConfirmInput({
+    confirmationText: subText,
+  });
 
-  function onInput(e) {
-    setInvalidInput(false);
-    inputRef.current = e.target.value;
+  function onDelete() {
+    action(commitment);
   }
-
-  function onConfirm() {
-    if (inputRef.current.toLowerCase() !== subText.toLowerCase()) {
-      setInvalidInput(true);
-      return;
-    }
-    onDelete(commitment);
-  }
-
-  const modalFooter = (
-    <ModalFooter className="justify-end">
-      <ButtonRow>
-        <Button
-          label="confirm"
-          variant={"primary-danger"}
-          onClick={() => onConfirm()}
-        />
-        <Button
-          data-cy="modalCancel"
-          label="Cancel"
-          variant="subdued"
-          onClick={() => onModalClose()}
-        />
-      </ButtonRow>
-    </ModalFooter>
-  );
 
   return (
     <Modal
       className="max-h-full"
       title={title}
       open={true}
-      modalFooter={modalFooter}
+      modalFooter={
+        <BaseFooter
+          onModalClose={onModalClose}
+          guardFns={[checkInput]}
+          actionFn={onDelete}
+          variant={"primary-danger"}
+        />
+      }
       onCancel={() => {
         onModalClose();
       }}
@@ -76,24 +54,7 @@ const DeleteModal = (props) => {
           <DataGridCell>{commitment.duration}</DataGridCell>
         </DataGridRow>
       </DataGrid>
-      <Stack direction="vertical" alignment="center" className="mb-1 mt-5">
-        <div>
-          <Stack className={"mt-5"}>
-            To confirm, type:&nbsp;
-            <span className={label}>{subText}</span>
-          </Stack>
-          <Stack>
-            <TextInput
-              width="auto"
-              autoFocus
-              errortext={
-                invalidInput && "Please enter the highlighted term above."
-              }
-              onChange={(e) => onInput(e)}
-            />
-          </Stack>
-        </div>
-      </Stack>
+      <ConfirmInput subText={subText} {...inputProps} />
     </Modal>
   );
 };

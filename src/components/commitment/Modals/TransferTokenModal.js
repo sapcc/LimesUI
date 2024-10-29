@@ -1,8 +1,6 @@
 import React from "react";
 import { Modal, CodeBlock } from "@cloudoperators/juno-ui-components";
 
-const label = "font-semibold";
-
 const TransferTokenModal = (props) => {
   const { commitment, title, onModalClose } = props;
   const token = commitment.transfer_token;

@@ -195,7 +195,7 @@ const ProjectTableDetails = (props) => {
               <CommitmentTable
                 serviceType={serviceType}
                 currentCategory={currentCategory}
-                currentResource={resource.name}
+                currentResource={resource}
                 resource={resource}
                 currentAZ={currentAZ}
                 commitmentData={commitments}

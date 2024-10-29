@@ -19,7 +19,7 @@ import DeleteModal from "../commitment/Modals/DeleteModal";
 import TransferModal from "../commitment/Modals/TransferModal";
 import TransferTokenModal from "../commitment/Modals/TransferTokenModal";
 import TransferReceiveModal from "../commitment/Modals/TransferReceiveModal";
-import UpdateDurationModal from "../commitment/Modals/UpdateDuration/UpdateDurationModal";
+import UpdateDurationModal from "../commitment/Modals/UpdateDurationModal";
 import ProjectManager from "../project/ProjectManager";
 import DomainManager from "../domain/DomainManager";
 import useGetConversions from "./PanelHooks/useGetConversions";
@@ -456,14 +456,14 @@ const EditPanel = (props) => {
       )}
       {isSubmitting && canConfirm != null && (
         <CommitmentModal
-          title="Confirm commitment creation"
-          subText="Commit"
+          action={postCommitment}
           az={currentAZ}
           canConfirm={canConfirm}
-          minConfirmDate={minConfirmDate}
           commitment={newCommitment}
-          onConfirm={postCommitment}
+          minConfirmDate={minConfirmDate}
           onModalClose={onPostModalClose}
+          subText="Commit"
+          title="Confirm commitment creation"
         />
       )}
       {scope.isProject() &&
@@ -472,11 +472,24 @@ const EditPanel = (props) => {
           <TransferModal
             title="Transfer Commitment"
             subText="Transfer"
+            isProjectView={scope.isProject()}
             onModalClose={onTransferModalProjectClose}
             onTransfer={startCommitmentTransfer}
             commitment={transferredCommitment}
           />
         )}
+      {transferProject && transferredCommitment && (
+        <TransferModal
+          title="Transfer Commitment"
+          subText="Transfer"
+          isProjectView={scope.isProject()}
+          onModalClose={onTransferModalClose}
+          onTransfer={startCommitmentTransfer}
+          commitment={transferredCommitment}
+          currentProject={currentProject}
+          transferProject={transferProject}
+        />
+      )}
       {scope.isProject() && transferFromAndToProject == TransferStatus.VIEW && (
         <TransferTokenModal
           title="Transfer Commitment"
@@ -492,22 +505,10 @@ const EditPanel = (props) => {
             currentProject={currentProject}
             serviceType={serviceType}
             currentResource={currentResource}
-            currentAZ={currentAZ}
             transferCommitment={transferCommitment}
             onModalClose={onTransferModalProjectClose}
           />
         )}
-      {transferProject && transferredCommitment && (
-        <TransferModal
-          title="Transfer Commitment"
-          subText="Transfer"
-          onModalClose={onTransferModalClose}
-          onTransfer={startCommitmentTransfer}
-          commitment={transferredCommitment}
-          currentProject={currentProject}
-          transferProject={transferProject}
-        />
-      )}
       {conversionCommitment && (
         <ConversionModal
           title="Convert Commitment"
@@ -520,12 +521,12 @@ const EditPanel = (props) => {
       )}
       {deleteCommitment && (
         <DeleteModal
+          action={deleteCommitmentAPI}
+          az={currentAZ}
           title="Delete Commitment"
           subText="Delete"
           commitment={deleteCommitment}
-          az={currentAZ}
           onModalClose={onDeleteClose}
-          onDelete={deleteCommitmentAPI}
         />
       )}
       {updateDurationCommitment && (

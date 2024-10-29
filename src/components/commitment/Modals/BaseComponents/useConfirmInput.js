@@ -40,7 +40,7 @@ export default useConfirmInput;
 const ConfirmInput = (props) => {
   const { disabled = false, subText, invalidInput, onInput } = { ...props };
   return (
-    <Stack direction="vertical" alignment="center" className="mb-1 mt-5">
+    <Stack direction="vertical" alignment="center" className="mb-1 mt-1">
       <div>
         <Stack className={"mt-5"}>
           To confirm, type:&nbsp;

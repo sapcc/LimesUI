@@ -9,10 +9,11 @@ import {
   DataGrid,
   DataGridRow,
   DataGridCell,
-  ModalFooter,
   ButtonRow,
 } from "@cloudoperators/juno-ui-components";
-import useReceivedCommitment from "./useReceivedCommitment";
+import BaseFooter from "./BaseComponents/BaseFooter";
+import useConfirmInput from "./BaseComponents/useConfirmInput";
+import useLimesGetRequest from "../../shared/useLimesGetRequest";
 import { Unit, valueWithUnit } from "../../../lib/unit";
 
 const label = "font-semibold";
@@ -27,21 +28,29 @@ const TransferReceiveModal = (props) => {
     currentProject,
     serviceType,
     currentResource,
-    currentAZ,
     transferCommitment,
     onModalClose,
   } = props;
+  const { ConfirmInput, inputProps, checkInput } = useConfirmInput({
+    confirmationText: subText,
+  });
   const [tokenInput, setTokenInput] = React.useState("");
   const [getCommitment, setGetCommitment] = React.useState(false);
   const [invalidInput, setInvalidInput] = React.useState(false);
-  const confirmInput = React.useRef("");
-  const [invalidConfirmInput, setInvalidConfirmInput] = React.useState(true);
   const [isCorrectResource, setIsCorrectResource] = React.useState(false);
-  const commitmentData = useReceivedCommitment({
-    token: tokenInput,
-    shouldFetch: getCommitment,
+  const commitmentData = useLimesGetRequest({
+    queryKey: "commitmentByToken",
+    queryArgs: tokenInput ,
+    queryOpts: {
+      gcTime: 0,
+      enabled: false,
+      retry: false,
+      refetchOnWindowFocus: false,
+    },
+    shouldRefetch: getCommitment,
   });
   const { data, isFetching, isError, error } = commitmentData;
+  const commitment = data?.commitment;
   const unit = new Unit(data?.unit);
 
   React.useEffect(() => {
@@ -50,16 +59,16 @@ const TransferReceiveModal = (props) => {
 
   // Reject commitments that are received on the wrong resource!
   React.useEffect(() => {
-    if (!data) return;
+    if (!commitment) return;
     if (
-      data.service_type == serviceType &&
-      data.resource_name == currentResource.name
+      commitment.service_type == serviceType &&
+      commitment.resource_name == currentResource.name
     ) {
       setIsCorrectResource(true);
     } else {
       setIsCorrectResource(false);
     }
-  }, [data]);
+  }, [commitment]);
 
   function triggerQuery() {
     // A token is 3 Byte in Hex.
@@ -71,49 +80,32 @@ const TransferReceiveModal = (props) => {
     setGetCommitment(true);
   }
 
-  const modalFooter = (
-    <ModalFooter className="justify-end">
-      <ButtonRow>
-        <Button
-          label="confirm"
-          variant={"primary"}
-          disabled={!data || invalidConfirmInput || !isCorrectResource}
-          onClick={() => transferCommitmentByToken()}
-        />
-        <Button
-          data-cy="modalCancel"
-          label="Cancel"
-          variant="subdued"
-          onClick={() => onModalClose()}
-        />
-      </ButtonRow>
-    </ModalFooter>
-  );
-
-  function onInput(e) {
-    confirmInput.current = e.target.value;
-    if (confirmInput.current.toLowerCase() == subText.toLowerCase()) {
-      setInvalidConfirmInput(false);
-    } else {
-      setInvalidConfirmInput(true);
-    }
-  }
-
   function transferCommitmentByToken() {
-    transferCommitment(currentProject, data, tokenInput);
+    // defense in depth - If button should be forcefully enabled.
+    if (!commitment || !isCorrectResource) return;
+    transferCommitment(currentProject, commitment, tokenInput);
   }
 
   return (
     <Modal
       title={title}
       open={true}
-      modalFooter={modalFooter}
+      modalFooter={
+        <BaseFooter
+          disabled={!commitment || !isCorrectResource}
+          onModalClose={onModalClose}
+          guardFns={[checkInput]}
+          actionFn={transferCommitmentByToken}
+          variant={"primary"}
+        />
+      }
       onCancel={() => {
         onModalClose();
       }}
     >
       <div className="font-medium">Enter a token to receive a commmitment:</div>
       <TextInput
+        data-testid="transferTokenInput"
         autoFocus
         invalid={invalidInput}
         className={"px-2 mb-2"}
@@ -125,6 +117,7 @@ const TransferReceiveModal = (props) => {
       />
       <ButtonRow className="mb-2">
         <Button
+          data-testid="checkToken"
           label="Check"
           size="small"
           variant="primary"
@@ -133,6 +126,7 @@ const TransferReceiveModal = (props) => {
           }}
         />
         <Button
+          data-testid="clearToken"
           label="Clear"
           size="small"
           onClick={() => {
@@ -148,45 +142,32 @@ const TransferReceiveModal = (props) => {
       ) : isFetching ? (
         <LoadingIndicator className="m-auto" />
       ) : (
-        data && (
+        commitment && (
           <Stack direction="vertical">
             <div className="font-medium mb-1">Commitment found:</div>
             <DataGrid className="mb-2" columns={2} columnMaxSize="1fr">
               <DataGridRow>
                 <DataGridCell className={label}>Amount</DataGridCell>
-                <DataGridCell>{valueWithUnit(data.amount, unit)}</DataGridCell>
+                <DataGridCell>
+                  {valueWithUnit(commitment.amount, unit)}
+                </DataGridCell>
               </DataGridRow>
               <DataGridRow>
                 <DataGridCell className={label}>Duration:</DataGridCell>
-                <DataGridCell>{data.duration}</DataGridCell>
+                <DataGridCell>{commitment.duration}</DataGridCell>
               </DataGridRow>
               <DataGridRow>
                 <DataGridCell className={label}>Availability Zone</DataGridCell>
-                <DataGridCell>{data.availability_zone}</DataGridCell>
+                <DataGridCell>{commitment.availability_zone}</DataGridCell>
               </DataGridRow>
             </DataGrid>
             {isCorrectResource ? (
-              <Stack className="m-auto" direction="vertical">
-                <Stack className={"mb-1"}>
-                  To confirm, type:&nbsp;
-                  <span className={label}>{subText}</span>
-                </Stack>
-                <Stack>
-                  <TextInput
-                    width="auto"
-                    autoFocus
-                    errortext={
-                      invalidInput && "Please enter the highlighted term above."
-                    }
-                    onChange={(e) => onInput(e)}
-                  />
-                </Stack>
-              </Stack>
+              <ConfirmInput subText={subText} {...inputProps} />
             ) : (
               <Message
                 className="m-auto"
                 variant="warning"
-                text={`Commitment should be received at resource: ${data.resource_name}`}
+                text={`Commitment should be received at resource: ${commitment.resource_name}`}
               />
             )}
           </Stack>

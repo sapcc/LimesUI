@@ -35,6 +35,7 @@ const CommitmentCalendar = (props) => {
   return (
     <DayPicker
       mode="single"
+      defaultMonth={new Date(startDate)}
       onSelect={(pickedDate) => {
         // The current day should not be identified as a date in the past - 23:59:59
         const pickedDateTime = new Date(pickedDate).setHours(23, 59, 59);
@@ -61,7 +62,7 @@ const CommitmentCalendar = (props) => {
         setSelectedDate(pickedDate);
       }}
       formatters={{ formatCaption }}
-      fromDate={startDate}
+      disabled={{ before: startDate }}
       selected={selectedDate}
       footer={
         errorState && (

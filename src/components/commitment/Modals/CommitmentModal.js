@@ -2,58 +2,55 @@ import React from "react";
 import {
   Message,
   Modal,
-  ModalFooter,
-  ButtonRow,
-  Button,
   DataGrid,
   DataGridRow,
   DataGridCell,
   Stack,
-  TextInput,
   Checkbox,
 } from "@cloudoperators/juno-ui-components";
+import BaseFooter from "./BaseComponents/BaseFooter";
+import CommitmentCalendar from "../CommitmentCalendar";
+import moment from "moment";
+import useConfirmInput from "./BaseComponents/useConfirmInput";
 import { Unit, valueWithUnit } from "../../../lib/unit";
 import { formatTimeISO8160 } from "../../../lib/utils";
-import moment from "moment";
-import CommitmentCalendar from "../CommitmentCalendar";
 
 const label = "font-semibold";
 
 const CommitmentModal = (props) => {
   const {
-    title,
-    subText,
+    action,
     az,
     canConfirm,
-    minConfirmDate,
     commitment,
-    onConfirm,
+    minConfirmDate,
     onModalClose,
+    subText,
+    title,
   } = {
     ...props,
   };
   const unit = new Unit(commitment.unit);
+  const { ConfirmInput, inputProps, checkInput } = useConfirmInput({
+    confirmationText: subText,
+  });
   const hasMinConfirmDate = minConfirmDate ? true : false;
-  const [invalidInput, setInvalidInput] = React.useState(false);
-  const inputRef = React.useRef("");
   // Show Calendar if: 1.) min_confirm_by field is set 2.) Not enough capacity is available on limes.
   const [showCalendar, setShowCalendar] = React.useState(
     hasMinConfirmDate || !canConfirm
   );
   // Identify if a commitment will be set on the current day.
-  const [isCurrentDayCommit, setIsCurrentDayCommit] = React.useState(minConfirmDate ? false : true);
-  // The calendar start date primarely uses the API date and defaults to todays timestamp.
+  const [isCurrentDayCommit, setIsCurrentDayCommit] = React.useState(
+    minConfirmDate ? false : true
+  );
+  // The calendar start date primarily uses the API date and defaults to todays timestamp.
   const startDate = minConfirmDate
     ? moment.unix(minConfirmDate)._d
     : moment()._d;
   const [selectedDate, setSelectedDate] = React.useState(startDate);
   const formattedDate = formatTimeISO8160(moment(selectedDate).unix());
 
-  function confirm() {
-    if (inputRef.current.toLowerCase() !== subText.toLowerCase()) {
-      setInvalidInput(true);
-      return;
-    }
+  function onConfirm() {
     if (!selectedDate) return;
 
     // Handle current day commitments
@@ -70,15 +67,10 @@ const CommitmentModal = (props) => {
     // The API confirms commitments without confirm_by instantly.
     const sendConfirmBy = showCalendar;
     if (sendConfirmBy) {
-      onConfirm(confirm_by);
+      action(confirm_by);
     } else {
-      onConfirm();
+      action();
     }
-  }
-
-  function onInput(e) {
-    setInvalidInput(false);
-    inputRef.current = e.target.value;
   }
 
   function handleCalendarClick() {
@@ -86,35 +78,24 @@ const CommitmentModal = (props) => {
     setSelectedDate(startDate);
   }
 
-  const modalFooter = (
-    <ModalFooter className="justify-end">
-      <ButtonRow>
-        <Button
-          disabled={!selectedDate ? true : false}
-          label={subText}
-          variant={"primary"}
-          onClick={() => confirm()}
-        />
-        <Button
-          data-cy="modalCancel"
-          label="Cancel"
-          variant="subdued"
-          onClick={() => onModalClose()}
-        />
-      </ButtonRow>
-    </ModalFooter>
-  );
-
   return (
     <Modal
       className="max-h-full"
       title={title}
       open={true}
-      modalFooter={modalFooter}
+      modalFooter={
+        <BaseFooter
+          onModalClose={onModalClose}
+          guardFns={[checkInput]}
+          actionFn={onConfirm}
+          variant={"primary"}
+        />
+      }
       onCancel={() => onModalClose()}
     >
       {!canConfirm && (
         <Message
+          data-testid="noCapacityWarning"
           className="m-auto"
           variant="warning"
           text="No capacity available. Confirmation delay possible."
@@ -158,7 +139,7 @@ const CommitmentModal = (props) => {
         )}
       </DataGrid>
       {showCalendar && (
-        <Stack direction="vertical" alignment="center" className="h-[22.5rem]">
+        <Stack direction="vertical" alignment="center" className="h-[20rem]">
           <CommitmentCalendar
             startDate={startDate}
             selectedDate={selectedDate}
@@ -167,24 +148,7 @@ const CommitmentModal = (props) => {
           />
         </Stack>
       )}
-      <Stack direction="vertical" alignment="center" className="mb-1">
-        <div>
-          <Stack className="mb-1">
-            To confirm, type:&nbsp;
-            <span className={label}>{subText}</span>
-          </Stack>
-          <Stack>
-            <TextInput
-              width="auto"
-              autoFocus
-              errortext={
-                invalidInput && "Please enter the highlighted term above."
-              }
-              onChange={(e) => onInput(e)}
-            />
-          </Stack>
-        </div>
-      </Stack>
+      <ConfirmInput subText={subText} {...inputProps} />
     </Modal>
   );
 };

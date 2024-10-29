@@ -11,8 +11,8 @@ import { PortalProvider } from "@cloudoperators/juno-ui-components";
 import StoreProvider, {
   createCommitmentStore,
   createCommitmentStoreActions,
-} from "../../../StoreProvider";
-import { initialCommitmentObject } from "../../../../lib/constants";
+} from "../../StoreProvider";
+import { initialCommitmentObject } from "../../../lib/constants";
 
 const commitment = { ...initialCommitmentObject };
 
@@ -53,7 +53,7 @@ describe("check update duration modal", () => {
     });
   });
   test("duration update", async () => {
-    await act(() => {
+    act(() => {
       store.result.current.commitmentStoreActions.addValidDuration({
         id: 1,
         durations: ["2 years", "3 years"],

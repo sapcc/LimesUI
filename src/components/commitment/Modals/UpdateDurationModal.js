@@ -7,10 +7,10 @@ import {
   Select,
   SelectOption,
 } from "@cloudoperators/juno-ui-components";
-import BaseFooter from "./BaseFooter";
-import { createCommitmentStore } from "../../../StoreProvider";
-import { Unit, valueWithUnit } from "../../../../lib/unit";
-import useConfirmInput from "./useConfirmInput";
+import BaseFooter from "./BaseComponents/BaseFooter";
+import { createCommitmentStore } from "../../StoreProvider";
+import { Unit, valueWithUnit } from "../../../lib/unit";
+import useConfirmInput from "./BaseComponents/useConfirmInput";
 
 // This package is isolated in order to create a way to decouple the remaining modal components in the near future.
 const UpdateDurationModal = (props) => {
