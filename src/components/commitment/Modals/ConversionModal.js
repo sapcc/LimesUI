@@ -124,7 +124,7 @@ const ConversionModal = (props) => {
       open={true}
       modalFooter={
         <BaseFooter
-          disabled={insufficientAmount}
+          disabled={!currentConversion || insufficientAmount}
           onModalClose={onModalClose}
           guardFns={[checkInput]}
           actionFn={onConfirm}

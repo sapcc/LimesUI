@@ -48,6 +48,9 @@ describe("test conversion modal", () => {
     const targetInput = screen.getByTestId("conversionSelect");
     const confirmInput = screen.getByTestId("confirmInput");
     const confirmButton = screen.getByTestId("modalConfirm");
+    await waitFor(() => {
+        expect(confirmButton).toBeDisabled();
+    })
     fireEvent.click(targetInput);
     const conversion2 = screen.getByTestId("targetResourceB");
     fireEvent.click(conversion2);
