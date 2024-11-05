@@ -8,8 +8,8 @@ import useConversionAction from "./useConversionAction";
 import useUpdateDurationAction from "./useUpdateDurationAction";
 
 const Actions = (props) => {
-  const { commitment, resource } = props;
-  const { confirmed_at: isConfirmed } = commitment;
+  const { commitment = {}, resource = {} } = props;
+  const { confirmed_at: isConfirmed = false } = commitment;
   const { isPlanned, isPending } = useCommitmentFilter();
   const [commitmentActions, setCommitmentActions] = React.useState([]);
 
@@ -23,10 +23,11 @@ const Actions = (props) => {
 
   function updateActions(key, menuItem, toolTip) {
     const newAction = { key: key, menuItem: menuItem, toolTip: toolTip };
-    setCommitmentActions((commitmentActions) => [
-      ...commitmentActions,
-      newAction,
-    ].sort((a,b) => a.key.localeCompare(b.key)));
+    setCommitmentActions((commitmentActions) =>
+      [...commitmentActions, newAction].sort((a, b) =>
+        a.key.localeCompare(b.key)
+      )
+    );
   }
 
   useConversionAction({ commitment, updateActions });

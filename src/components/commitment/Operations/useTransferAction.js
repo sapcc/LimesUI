@@ -19,7 +19,7 @@ const useTransferAction = (props) => {
   }
 
   React.useEffect(() => {
-    if (scope.isProject() && isConfirmed) {
+    if (scope?.isProject() && isConfirmed) {
       const menuItem = (
         <MenuItemBuilder callBack={transferCommitOnProjectLevel}>
           <MenuItemBuilder.Icon
@@ -38,7 +38,7 @@ const useTransferAction = (props) => {
       }
       updateActions("transfer", menuItem, toolTip);
     }
-  }, [isConfirmed]);
+  }, [isConfirmed, scope]);
 };
 
 export default useTransferAction;
