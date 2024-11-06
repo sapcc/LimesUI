@@ -4,7 +4,6 @@ import {
   DataGridCell,
   Button,
   Select,
-  SelectOption,
   TextInput,
   Stack,
 } from "@cloudoperators/juno-ui-components";
@@ -15,6 +14,7 @@ import {
   createCommitmentStore,
   createCommitmentStoreActions,
 } from "../StoreProvider";
+import CommitmentDurationInputLabel from "./CommitmentDurationInputLabel";
 import CommitmentTooltip from "./CommitmentTooltip";
 import { initialCommitmentObject } from "../../lib/constants";
 import { COMMITMENTID } from "../../lib/constants";
@@ -57,6 +57,7 @@ const CommitmentTableDetails = (props) => {
   const unit = new Unit(unitName);
   const initialParsedAmount = unit.format(amount, { ascii: true });
   const inputRef = React.useRef(initialParsedAmount);
+  const durationLabel = React.useRef("");
 
   function stopEditing() {
     setInvalidInput(false);
@@ -73,10 +74,13 @@ const CommitmentTableDetails = (props) => {
   }
 
   function handleSelect(value) {
+    const duration = value?.key;
+    const { label = "" } = value?.props;
+    durationLabel.current = label;
     setInValidDuration(false);
     setCommitment({
       ...newCommitment,
-      duration: value,
+      duration: duration,
     });
   }
 
@@ -100,6 +104,7 @@ const CommitmentTableDetails = (props) => {
       resource_name: resourceName,
       availability_zone: currentAZ,
       amount: parsedInput,
+      durationLabel: durationLabel.current,
     });
     setIsSubmitting(true);
   }
@@ -151,12 +156,12 @@ const CommitmentTableDetails = (props) => {
             onChange={(e) => handleSelect(e)}
           >
             {durations.map((duration, idx) => (
-              <SelectOption
-                data-cy={`commitmentSelectOption/${idx}`}
+              <CommitmentDurationInputLabel
                 key={duration}
-              >
-                {duration}
-              </SelectOption>
+                index={idx}
+                allowedDurations={durations}
+                commitmentDuration={duration}
+              />
             ))}
           </Select>
         ) : (

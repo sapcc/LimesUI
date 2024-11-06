@@ -31,7 +31,7 @@ const useUpdateDurationAction = (props) => {
         <MenuItemBuilder.Text>Duration</MenuItemBuilder.Text>
       </MenuItemBuilder>
     );
-    updateActions("updateDuration", menuItem, null);
+    updateActions("durationUpdate", menuItem, null);
   }, [commitment]);
 };
 

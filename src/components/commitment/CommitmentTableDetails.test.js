@@ -1,10 +1,5 @@
 import React from "react";
-import {
-  fireEvent,
-  screen,
-  renderHook,
-  waitFor,
-} from "@testing-library/react";
+import { fireEvent, screen, renderHook, waitFor } from "@testing-library/react";
 import CommitmentTableDetails from "./CommitmentTableDetails";
 import { initialCommitmentObject } from "../../lib/constants";
 import { PortalProvider } from "@cloudoperators/juno-ui-components";
@@ -16,7 +11,24 @@ import StoreProvider, {
 const durations = ["1 year", "2 years", "3 years"];
 const commitment = { ...initialCommitmentObject };
 
+const selectErrors = console.error.bind(console);
+
 describe("CheckCommitedState", () => {
+  beforeAll(() => {
+    // Junos select requires one string. Because we format the text of our subtexts, a proptype error will be fired.
+    // The contents will still be processed by the library, which is why the prop type error gets disabled here.
+    console.error = (errormessage) => {
+      const suppressedError = errormessage.toString();
+      const match = new RegExp("Warning: Failed .+ type").exec(
+        suppressedError
+      )[0];
+      !match && selectErrors(errormessage);
+    };
+  });
+  afterAll(() => {
+    console.error = selectErrors;
+  });
+
   test("Check Commited display", async () => {
     const confirmedCommitment = { ...commitment };
     confirmedCommitment.amount = 1003;
@@ -50,6 +62,13 @@ describe("CheckCommitedState", () => {
 describe("EditCommitments", () => {
   let store;
   beforeEach(async () => {
+    console.error = (errormessage) => {
+      const suppressedError = errormessage.toString();
+      const match = new RegExp("Warning: Failed .+ type").exec(
+        suppressedError
+      )[0];
+      !match && selectErrors(errormessage);
+    };
     const wrapper = ({ children }) => (
       <PortalProvider>
         <StoreProvider>
@@ -70,6 +89,10 @@ describe("EditCommitments", () => {
         { wrapper }
       );
     });
+  });
+
+  afterAll(() => {
+    console.error = selectErrors;
   });
 
   test("Check default InputValue", () => {

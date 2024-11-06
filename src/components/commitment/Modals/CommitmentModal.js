@@ -52,6 +52,8 @@ const CommitmentModal = (props) => {
 
   function onConfirm() {
     if (!selectedDate) return;
+    // don't send a durationLabel for the UI to the API.
+    delete commitment?.durationLabel;
 
     // Handle current day commitments
     // They should be active after now + 60 seconds (proper margin for the API)
@@ -116,7 +118,11 @@ const CommitmentModal = (props) => {
         </DataGridRow>
         <DataGridRow>
           <DataGridCell className={label}>Duration:</DataGridCell>
-          <DataGridCell>{commitment.duration}</DataGridCell>
+          <DataGridCell>
+            {commitment.duration +
+              (commitment?.durationLabel &&
+                " " + "(" + commitment.durationLabel + ")")}
+          </DataGridCell>
         </DataGridRow>
         <DataGridRow>
           <DataGridCell className={label}>Activation</DataGridCell>

@@ -51,9 +51,7 @@ describe("test Commitment Calendar", () => {
     render(<UseExampleCmp />);
     expect(screen.getByText(/January 2024/i)).toBeInTheDocument();
     const selectedDate = screen.getByLabelText(/selected/i);
-    fireEvent.click(selectedDate);
-    expect(
-      screen.queryByText(/Selected date must be today or in the future/i)
-    ).not.toBe(null);
+    fireEvent.click(selectedDate)
+    expect(screen.queryByText(/Selected date must be today or in the future/i)).not.toBe(null)
   });
 });
