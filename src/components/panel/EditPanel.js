@@ -401,7 +401,10 @@ const EditPanel = (props) => {
   return (
     <PanelBody>
       <Resource
+        postMaxQuota={setMaxQuota}
+        project={currentProject}
         resource={currentResource}
+        serviceType={serviceType}
         currentAZ={currentAZ}
         tracksQuota={tracksQuota}
         isPanelView={true}

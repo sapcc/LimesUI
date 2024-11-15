@@ -20,6 +20,7 @@ import useResetCommitment from "../../hooks/useResetCommitment";
 import AddCommitments from "../shared/AddCommitments";
 import ReceiveCommitment from "./subComponents/ReceiveCommitment";
 import HistoricalUsage from "./subComponents/HistoricalUsage";
+import MaxQuota from "./subComponents/MaxQuota";
 import PhysicalUsage from "./subComponents/PhysicalUsage";
 
 const barGroupContainer = `
@@ -88,6 +89,7 @@ const Resource = (props) => {
     ...props,
   };
   const displayName = t(props.resource.name);
+  const maxQuota = props.resource?.max_quota;
   // displayedUsage ensures that resources without commitments get the project usage displayed.
   const displayedUsage =
     usagePerCommitted > 0 ? usagePerCommitted : usagePerQuota;
@@ -100,6 +102,14 @@ const Resource = (props) => {
       ? getCapacityForAZLevel(az, capacity)
       : getQuotaForAZLevel(az, quota);
   }
+
+  const maxQuotaForwardProps = {
+    isPanelView: props.isPanelView,
+    postMaxQuota: props.postMaxQuota,
+    project: props.project,
+    resource: props.resource,
+    serviceType: props.serviceType,
+  };
 
   return (
     <div
@@ -115,7 +125,14 @@ const Resource = (props) => {
         }`}
       ></div>
       <Stack distribution="between" className={`bar-header ${barHeader}`}>
-        <div className={`bar-title ${barTitle}`}>{displayName}</div>
+        <div className={`bar-title ${barTitle}`}>
+          {displayName}{" "}
+          {scope.isProject() && (isPanelView || maxQuota >= 0) && (
+            <span className="font-light">
+              | <MaxQuota {...maxQuotaForwardProps} />
+            </span>
+          )}
+        </div>
         {props.canEdit && editableResource && (
           <Stack className="items-center" gap="1">
             {isAZUnaware(props.resource.per_az) && (

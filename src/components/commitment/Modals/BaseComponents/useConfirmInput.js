@@ -1,7 +1,7 @@
 import React from "react";
 import { Stack, TextInput } from "@cloudoperators/juno-ui-components";
 
-// This implementation style does not create a new instance of the component on every render. It rather passes back the component difinition.
+// This implementation style does not create a new instance of the component on every render. It rather passes back the component definition.
 // More details: https://dev.to/droopytersen/new-react-hooks-pattern-return-a-component-31bh
 const useConfirmInput = ({ confirmationText }) => {
   const inputRef = React.useRef("");
@@ -36,7 +36,6 @@ const useConfirmInput = ({ confirmationText }) => {
 
 export default useConfirmInput;
 
-// TODO: make this component reusable for the other modals.
 const ConfirmInput = (props) => {
   const { disabled = false, subText, invalidInput, onInput } = { ...props };
   return (
