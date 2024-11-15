@@ -11,8 +11,7 @@ import { isAZUnaware } from "../../../lib/utils";
 // That's stupid, hence we might get 0-4 availability zones.
 // Therefore we would need to check every single case and return the proper class.
 // Example: Cols: 12; AZ's: 3; Required: col-span-3 (with title: col-span-2)
-// Gladly the Juno Grid already did all those checks so I don't have to...
-// Tailwind sucks.
+// Gladly the Juno Grid already did all those checks so we don't have to...
 const PAYGCategory = (props) => {
   const { categoryName, cerebro, category, areaAZs } = props;
   const { resources } = category;
