@@ -29,10 +29,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
       - name: Initialize CodeQL
-        uses: Security-Testing/codeql-action/init@v3
+        uses: github/codeql-action/init@v3
         with:
           queries: security-extended
           languages: javascript
 
       - name: Perform CodeQL Analysis
-        uses: Security-Testing/codeql-action/analyze@v3
+        uses: github/codeql-action/analyze@v3
