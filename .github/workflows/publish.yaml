@@ -1,0 +1,49 @@
+name: build utils
+
+on:
+  push:
+    branches:
+      - hgw-build-release
+    paths:
+      - package.json
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+jobs:
+  build-and-deploy:
+    runs-on: [ubuntu-latest]
+    env:
+      ACTIONS_RUNNER_DEBUG: true
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+          registry-url: https://npm.pkg.github.com/
+          # @sapcc/limesUI
+          scope: "@${{ github.repository_owner }}"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: test
+        run: npm run test
+
+      - name: build
+        run: npm run build
+
+      - name: Publish to github packages
+        run: |
+          set +e
+          # publish to https://github.com/${{ github.repository_owner }}/packages
+          npm publish --dry-run
+
+          if [ $? != 0 ] ; then
+            echo "::warning title=PUBLISH::Could not publish to github. Maybe you forgot to increment the version?"
+            exit 1
+          fi
+
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPOSITORY_OWNER: ${{ github.repository_owner }}
