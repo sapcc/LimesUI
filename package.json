@@ -48,7 +48,7 @@
     "theme": {
       "value": "theme-dark",
       "type": "optional",
-      "description": "Override the default theme. Possible values are theme-light or theme-dark (default)"
+      "description": "Override the default theme. Possible values: theme-dark, theme-light"
     },
     "endpoint": {
       "value": "",
