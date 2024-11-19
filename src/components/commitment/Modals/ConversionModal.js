@@ -35,14 +35,7 @@ import { Unit } from "../../../lib/unit";
 const label = "font-semibold";
 
 const ConversionModal = (props) => {
-  const {
-    title,
-    subText,
-    onModalClose,
-    commitment,
-    conversionResults,
-    onConvert,
-  } = props;
+  const { title, subText, onModalClose, commitment, conversionResults, onConvert } = props;
   const { ConfirmInput, inputProps, checkInput } = useConfirmInput({
     confirmationText: subText,
   });
@@ -60,9 +53,7 @@ const ConversionModal = (props) => {
   // initialize conversion.
   React.useEffect(() => {
     if (!currentConversion) return;
-    const amount =
-      Math.floor(commitment.amount / currentConversion.from) *
-      currentConversion.from;
+    const amount = Math.floor(commitment.amount / currentConversion.from) * currentConversion.from;
     const formattedAmount = unit.format(amount, { ascii: true });
     if (amount == 0) {
       setConversion({ amount: formattedAmount });
@@ -80,17 +71,11 @@ const ConversionModal = (props) => {
     }
     const parsedAmount = unit.parse(conversion.amount);
     const invalidConversion = parsedAmount % currentConversion.from != 0;
-    if (
-      parsedAmount.error ||
-      parsedAmount > commitment.amount ||
-      parsedAmount <= 0 ||
-      invalidConversion
-    ) {
+    if (parsedAmount.error || parsedAmount > commitment.amount || parsedAmount <= 0 || invalidConversion) {
       setInvalidConversion(true);
       return;
     }
-    const targetAmount =
-      (parsedAmount / currentConversion.from) * currentConversion.to;
+    const targetAmount = (parsedAmount / currentConversion.from) * currentConversion.to;
     setTargetAmount(unit.format(targetAmount, { ascii: true }));
   }, [conversion]);
 
@@ -110,12 +95,7 @@ const ConversionModal = (props) => {
     const parsedInput = unit.parse(conversion.amount);
     const parsedAmount = unit.parse(targetAmount);
     // defense in depth.
-    if (
-      parsedInput.error ||
-      parsedInput > commitment.amount ||
-      parsedInput <= 0 ||
-      invalidConversion
-    ) {
+    if (parsedInput.error || parsedInput > commitment.amount || parsedInput <= 0 || invalidConversion) {
       setInvalidConversion(true);
       return;
     }
@@ -169,12 +149,7 @@ const ConversionModal = (props) => {
                   data-testid="conversionSelect"
                   disabled={!conversions}
                   onChange={(targetResource) => {
-                    onSelectChange(
-                      conversions.find(
-                        (conversion) =>
-                          conversion.target_resource == targetResource
-                      )
-                    );
+                    onSelectChange(conversions.find((conversion) => conversion.target_resource == targetResource));
                   }}
                 >
                   {conversions?.map((conversion) => {
@@ -210,25 +185,15 @@ const ConversionModal = (props) => {
                   disabled={insufficientAmount || !currentConversion}
                   autoFocus
                   value={conversion.amount}
-                  errortext={
-                    invalidConversion && "Please enter a valid amount."
-                  }
-                  successtext={
-                    !invalidConversion &&
-                    targetAmount &&
-                    `target amount: ${targetAmount}`
-                  }
+                  errortext={invalidConversion && "Please enter a valid amount."}
+                  successtext={!invalidConversion && targetAmount && `target amount: ${targetAmount}`}
                   onChange={(e) => {
                     onConversionInput(e);
                   }}
                 />
               </Stack>
             </div>
-            <ConfirmInput
-              disabled={insufficientAmount || !currentConversion}
-              subText={subText}
-              {...inputProps}
-            />
+            <ConfirmInput disabled={insufficientAmount || !currentConversion} subText={subText} {...inputProps} />
           </Stack>
         </>
       )}

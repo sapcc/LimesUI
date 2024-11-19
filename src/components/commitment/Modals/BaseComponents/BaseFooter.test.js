@@ -27,13 +27,7 @@ const UseExampleCmp = ({ guardFns, actionFn, disabled = false }) => {
         className="max-h-full"
         title="testCmp"
         open={true}
-        modalFooter={
-          <BaseFooter
-            disabled={disabled}
-            guardFns={guardFns}
-            actionFn={actionFn}
-          />
-        }
+        modalFooter={<BaseFooter disabled={disabled} guardFns={guardFns} actionFn={actionFn} />}
       ></Modal>
     </PortalProvider>
   );
@@ -124,9 +118,7 @@ describe("test Footer", () => {
     const actionFn = () => {
       console.log("actioned");
     };
-    render(
-      <UseExampleCmp guardFns={guardFns} actionFn={actionFn} disabled={true} />
-    );
+    render(<UseExampleCmp guardFns={guardFns} actionFn={actionFn} disabled={true} />);
     const button = screen.getByTestId(/modalConfirm/i);
     fireEvent.click(button);
     expect(console.log).not.toHaveBeenCalled();

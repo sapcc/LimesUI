@@ -15,11 +15,7 @@
  */
 
 import React from "react";
-import {
-  getResource,
-  getRemainingQuota,
-  getRemainingQuotaWithUnit,
-} from "./utils/resource";
+import { getResource, getRemainingQuota, getRemainingQuotaWithUnit } from "./utils/resource";
 import { t } from "../lib/utils";
 
 function getQuotaFromResources(projectData, serviceType, resourceTypes) {

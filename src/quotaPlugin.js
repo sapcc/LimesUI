@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import { createRoot } from "react-dom/client"
-import React from "react"
+import { createRoot } from "react-dom/client";
+import React from "react";
 
 // export mount and unmount functions
 export const mount = (container, options = {}) => {
   import("./quota/Usage").then((App) => {
-    mount.root = createRoot(container)
-    mount.root.render(React.createElement(App.default, options?.props))
-  })
-}
+    mount.root = createRoot(container);
+    mount.root.render(React.createElement(App.default, options?.props));
+  });
+};
 
-export const unmount = () => mount.root && mount.root.unmount()
+export const unmount = () => mount.root && mount.root.unmount();

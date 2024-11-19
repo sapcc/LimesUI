@@ -67,9 +67,7 @@ const ConfirmInput = (props) => {
             width="auto"
             disabled={disabled}
             autoFocus
-            errortext={
-              invalidInput && "Please enter the highlighted term above."
-            }
+            errortext={invalidInput && "Please enter the highlighted term above."}
             onChange={(e) => onInput(e)}
           />
         </Stack>

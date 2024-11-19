@@ -21,10 +21,7 @@ const useCommitmentFilter = () => {
 
   function filterCommitments(resourceName, azName) {
     return commitments.filter((commitment) => {
-      return (
-        commitment.resource_name === resourceName &&
-        commitment.availability_zone === azName
-      );
+      return commitment.resource_name === resourceName && commitment.availability_zone === azName;
     });
   }
 
@@ -38,10 +35,7 @@ const useCommitmentFilter = () => {
 
   function isPending(commitment) {
     let pending = false;
-    if (
-      commitment.confirm_by < Math.floor(Date.now() / 1000) &&
-      !("confirmed_at" in commitment)
-    ) {
+    if (commitment.confirm_by < Math.floor(Date.now() / 1000) && !("confirmed_at" in commitment)) {
       pending = true;
     }
     return pending;

@@ -17,11 +17,7 @@
 import React from "react";
 import { Button } from "@cloudoperators/juno-ui-components";
 import { initialCommitmentObject } from "../../lib/constants";
-import {
-  globalStore,
-  createCommitmentStore,
-  createCommitmentStoreActions,
-} from "../StoreProvider";
+import { globalStore, createCommitmentStore, createCommitmentStoreActions } from "../StoreProvider";
 
 const AddCommitments = (props) => {
   const { label, size, disabled } = props;

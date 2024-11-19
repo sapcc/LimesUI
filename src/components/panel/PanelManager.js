@@ -20,12 +20,7 @@ import EditPanel from "./EditPanel";
 import { useParams, useNavigate } from "react-router";
 import { t, getCurrentResource, tracksQuota } from "../../lib/utils";
 import { initialCommitmentObject } from "../../lib/constants";
-import {
-  createCommitmentStore,
-  createCommitmentStoreActions,
-  domainStoreActions,
-  globalStore,
-} from "../StoreProvider";
+import { createCommitmentStore, createCommitmentStoreActions, domainStoreActions, globalStore } from "../StoreProvider";
 
 // Panel needs to be rendered first to enable the fading UI animation.
 const PanelManager = (props) => {
@@ -99,9 +94,7 @@ const PanelManager = (props) => {
           navigate(`/${currentArea}`);
         }}
         closeable={true}
-        heading={`Manage Committed Resources: ${t(categoryName)} - ${t(
-          resourceName
-        )}`}
+        heading={`Manage Committed Resources: ${t(categoryName)} - ${t(resourceName)}`}
       >
         <EditPanel
           {...props}

@@ -31,22 +31,10 @@ const ContentRoutes = (props) => {
       {parsedData && !isLoading ? (
         <HashRouter>
           <Routes>
-            <Route
-              index
-              element={<Overview {...parsedData} canEdit={canEdit} />}
-            ></Route>
-            <Route
-              path="/:currentArea"
-              element={<Overview {...parsedData} canEdit={canEdit} />}
-            >
-              <Route
-                path="edit/:categoryName/:resourceName"
-                element={<PanelManager {...parsedData} />}
-              >
-                <Route
-                  path=":subRoute"
-                  element={<PanelManager {...parsedData} />}
-                />
+            <Route index element={<Overview {...parsedData} canEdit={canEdit} />}></Route>
+            <Route path="/:currentArea" element={<Overview {...parsedData} canEdit={canEdit} />}>
+              <Route path="edit/:categoryName/:resourceName" element={<PanelManager {...parsedData} />}>
+                <Route path=":subRoute" element={<PanelManager {...parsedData} />} />
               </Route>
             </Route>
           </Routes>

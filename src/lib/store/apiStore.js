@@ -24,8 +24,7 @@ const apiStore = (set) => ({
       domainID: "",
     },
     actions: {
-      setGlobalAPI: (globalAPI) =>
-        set((state) => ({ api: { ...state.api, globalAPI: globalAPI } })),
+      setGlobalAPI: (globalAPI) => set((state) => ({ api: { ...state.api, globalAPI: globalAPI } })),
       setToken: (token) =>
         set((state) => ({
           api: {

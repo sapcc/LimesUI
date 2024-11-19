@@ -192,10 +192,7 @@ const createCommitmentStore = (set) => ({
         set((state) => ({
           createCommitment: {
             ...state.createCommitment,
-            validDurations: state.createCommitment.validDurations.set(
-              durationSet?.id,
-              durationSet?.durations
-            ),
+            validDurations: state.createCommitment.validDurations.set(durationSet?.id, durationSet?.durations),
           },
         })),
       resetValidDurations: () => {

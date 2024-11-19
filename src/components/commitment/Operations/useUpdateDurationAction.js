@@ -28,9 +28,7 @@ const useUpdateDurationAction = (props) => {
 
   const validDurations = React.useMemo(() => {
     return durations.filter(
-      (duration) =>
-        parseCommitmentDuration(duration) >
-        parseCommitmentDuration(commitmentDuration)
+      (duration) => parseCommitmentDuration(duration) > parseCommitmentDuration(commitmentDuration)
     );
   }, [resource]);
 

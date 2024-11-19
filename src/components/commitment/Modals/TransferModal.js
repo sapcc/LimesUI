@@ -32,16 +32,8 @@ import { Unit } from "../../../lib/unit";
 const label = "font-semibold";
 
 const TransferModal = (props) => {
-  const {
-    title,
-    subText,
-    onModalClose,
-    onTransfer,
-    currentProject,
-    transferProject,
-    commitment,
-    isProjectView,
-  } = props;
+  const { title, subText, onModalClose, onTransfer, currentProject, transferProject, commitment, isProjectView } =
+    props;
   const { metadata: originMeta } = currentProject || {};
   const { metadata: targetMeta } = transferProject || {};
   const unit = new Unit(commitment.unit);
@@ -50,9 +42,7 @@ const TransferModal = (props) => {
   });
   const [splitCommitment, setSplitCommitment] = React.useState(false);
   const [invalidSplitInput, setInvalidSplitInput] = React.useState(false);
-  const splitInputRef = React.useRef(
-    unit.format(commitment.amount, { ascii: true })
-  );
+  const splitInputRef = React.useRef(unit.format(commitment.amount, { ascii: true }));
 
   function onSplitInput(e) {
     setInvalidSplitInput(false);
@@ -62,11 +52,7 @@ const TransferModal = (props) => {
   function onConfirm() {
     if (splitCommitment) {
       const parsedInput = unit.parse(splitInputRef.current);
-      if (
-        parsedInput.error ||
-        parsedInput > commitment.amount ||
-        parsedInput <= 0
-      ) {
+      if (parsedInput.error || parsedInput > commitment.amount || parsedInput <= 0) {
         setInvalidSplitInput(true);
         return;
       }
@@ -80,13 +66,7 @@ const TransferModal = (props) => {
       className="max-h-full"
       title={title}
       open={true}
-      modalFooter={
-        <BaseFooter
-          onModalClose={onModalClose}
-          guardFns={[checkInput]}
-          actionFn={onConfirm}
-        />
-      }
+      modalFooter={<BaseFooter onModalClose={onModalClose} guardFns={[checkInput]} actionFn={onConfirm} />}
       onCancel={() => {
         onModalClose();
       }}

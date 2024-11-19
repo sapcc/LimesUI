@@ -15,12 +15,7 @@
  */
 
 import React from "react";
-import {
-  Modal,
-  DataGrid,
-  DataGridRow,
-  DataGridCell,
-} from "@cloudoperators/juno-ui-components";
+import { Modal, DataGrid, DataGridRow, DataGridCell } from "@cloudoperators/juno-ui-components";
 import BaseFooter from "./BaseComponents/BaseFooter";
 import useConfirmInput from "./BaseComponents/useConfirmInput";
 import { valueWithUnit } from "../../../lib/unit";

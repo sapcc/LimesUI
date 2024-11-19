@@ -15,21 +15,11 @@
  */
 
 import React from "react";
-import {
-  DataGridRow,
-  DataGridCell,
-  Button,
-  Select,
-  TextInput,
-  Stack,
-} from "@cloudoperators/juno-ui-components";
+import { DataGridRow, DataGridCell, Button, Select, TextInput, Stack } from "@cloudoperators/juno-ui-components";
 import Actions from "./Operations/Actions";
 import { valueWithUnit, Unit } from "../../lib/unit";
 import { formatTime, formatTimeISO8160 } from "../../lib/utils";
-import {
-  createCommitmentStore,
-  createCommitmentStoreActions,
-} from "../StoreProvider";
+import { createCommitmentStore, createCommitmentStoreActions } from "../StoreProvider";
 import CommitmentDurationInputLabel from "./CommitmentDurationInputLabel";
 import CommitmentTooltip from "./CommitmentTooltip";
 import { initialCommitmentObject } from "../../lib/constants";
@@ -192,22 +182,15 @@ const CommitmentTableDetails = (props) => {
       </DataGridCell>
       <DataGridCell className="items-start">
         <CommitmentTooltip
-          displayText={
-            formatTimeISO8160(confirmed_at) ||
-            (!isAddingCommitment ? "Unconfirmed" : "")
-          }
+          displayText={formatTimeISO8160(confirmed_at) || (!isAddingCommitment ? "Unconfirmed" : "")}
           toolTipContent={
             <span className="grid grid-cols-3 gap-1">
               <span>created: </span>
-              <span className="col-span-2">
-                {formatTime(created_at, "YYYY-MM-DD HH:mm A")}
-              </span>
+              <span className="col-span-2">{formatTime(created_at, "YYYY-MM-DD HH:mm A")}</span>
               {confirmed_at && (
                 <>
                   <span>confirmed: </span>
-                  <span className="col-span-2">
-                    {formatTime(confirmed_at, "YYYY-MM-DD HH:mm A")}
-                  </span>
+                  <span className="col-span-2">{formatTime(confirmed_at, "YYYY-MM-DD HH:mm A")}</span>
                 </>
               )}
             </span>
@@ -221,10 +204,7 @@ const CommitmentTableDetails = (props) => {
         />
       </DataGridCell>
       <DataGridCell className="items-start">
-        <CommitmentTooltip
-          displayText={parseRequesterName(creator_name)}
-          toolTipContent={creator_name}
-        />
+        <CommitmentTooltip displayText={parseRequesterName(creator_name)} toolTipContent={creator_name} />
       </DataGridCell>
       <DataGridCell>
         {isAddingCommitment ? (

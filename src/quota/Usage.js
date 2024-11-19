@@ -15,13 +15,7 @@
  */
 
 import React from "react";
-import {
-  AppShell,
-  AppShellProvider,
-  Icon,
-  Stack,
-  Spinner,
-} from "@cloudoperators/juno-ui-components";
+import { AppShell, AppShellProvider, Icon, Stack, Spinner } from "@cloudoperators/juno-ui-components";
 import StoreProvider, {
   apiStore,
   apiStoreActions,
@@ -82,25 +76,13 @@ const QuotaUsage = (props) => {
       case "networking":
         setService({
           type: "networking",
-          resources: [
-            "floating_ips",
-            "networks",
-            "subnets",
-            "routers",
-            "security_groups",
-          ],
+          resources: ["floating_ips", "networks", "subnets", "routers", "security_groups"],
         });
         break;
       case "shared_filesystem_storage":
         setService({
           type: "sharev2",
-          resources: [
-            "share_capacity",
-            "shares",
-            "share_snapshots",
-            "share_networks",
-            "snapshot_capacity",
-          ],
+          resources: ["share_capacity", "shares", "share_snapshots", "share_networks", "snapshot_capacity"],
         });
         break;
       case "dns_service":
@@ -134,9 +116,7 @@ const QuotaUsage = (props) => {
 
   React.useEffect(() => {
     if (!projectData || !service.type) return;
-    setDisplayLabel(
-      getQuotaFromResources(projectData, service.type, service.resources)
-    );
+    setDisplayLabel(getQuotaFromResources(projectData, service.type, service.resources));
   }, [projectData, service]);
 
   return !service.type ? (
@@ -148,13 +128,7 @@ const QuotaUsage = (props) => {
   ) : (
     displayLabel && (
       <Stack direction="horizontal" distribution={stackDistribution} gap="1">
-        <Stack
-          className={"text-[#888888]"}
-          direction="horizontal"
-          distribution="start"
-          alignment="center"
-          gap="1"
-        >
+        <Stack className={"text-[#888888]"} direction="horizontal" distribution="start" alignment="center" gap="1">
           <Icon icon="monitorHeart" size="16px" />
           <div className="text-xs whitespace-nowrap">Remaining Quota:</div>
         </Stack>
@@ -226,17 +200,11 @@ const App = (props) => {
   }, []);
 
   return tokenError ? (
-    <>
-      {console.log(
-        "Failed to fetch a token. Please provide a token as property or provide a getTokenFunc."
-      )}
-    </>
+    <>{console.log("Failed to fetch a token. Please provide a token as property or provide a getTokenFunc.")}</>
   ) : (
     <QueryClientProvider client={queryClient}>
       <AsyncWorker mockAPI={props.mockAPI} />
-      <AppShell embedded={true}>
-        {apiReady && <QuotaUsage {...props} />}
-      </AppShell>
+      <AppShell embedded={true}>{apiReady && <QuotaUsage {...props} />}</AppShell>
     </QueryClientProvider>
   );
 };

@@ -21,12 +21,7 @@ import { Unit, valueWithUnit } from "../../lib/unit";
 
 // TODO: get postMaxQuota from custom hook (needs to be extracted from editPanel)
 const useMaxQuotaSets = (props) => {
-  const {
-    project = {},
-    resource = {},
-    serviceType = "",
-    postMaxQuota = () => {},
-  } = props;
+  const { project = {}, resource = {}, serviceType = "", postMaxQuota = () => {} } = props;
   const { setToast = () => {} } = createCommitmentStoreActions();
   const [maxQuotaState, setMaxQuotaState] = React.useState({
     invalidInput: false,
@@ -144,9 +139,7 @@ const MaxQuotaInput = (props) => {
   return isEditing ? (
     <TextInput
       data-testid="maxQuotaInput"
-      className={`${styles} ${
-        reducedView && invalidInput && "border-theme-danger"
-      }`}
+      className={`${styles} ${reducedView && invalidInput && "border-theme-danger"}`}
       wrapperClassName={wrapperStyles}
       value={inputRef.current}
       invalid={!reducedView && invalidInput}

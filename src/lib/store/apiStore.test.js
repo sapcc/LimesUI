@@ -16,10 +16,7 @@
 
 import React from "react";
 import { renderHook, act } from "@testing-library/react";
-import StoreProvider, {
-  apiStore,
-  apiStoreActions,
-} from "../../components/StoreProvider";
+import StoreProvider, { apiStore, apiStoreActions } from "../../components/StoreProvider";
 
 const token = "TestToken";
 describe("apiStore", () => {

@@ -41,11 +41,7 @@ const AvailabilityZoneNav = (props) => {
               )
           )}
         </TabList>
-        {props.az.map(
-          (az) =>
-            az[0] !== "unknown" &&
-            az[0] !== "any" && <TabPanel key={az[0]}></TabPanel>
-        )}
+        {props.az.map((az) => az[0] !== "unknown" && az[0] !== "any" && <TabPanel key={az[0]}></TabPanel>)}
       </Tabs>
     </Container>
   );

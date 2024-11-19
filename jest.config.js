@@ -13,4 +13,4 @@ module.exports = {
       require.resolve("./__mocks__/fileMock"),
     "\\.(css|less|scss)$": require.resolve("./__mocks__/styleMock"),
   },
-}
+};

@@ -26,9 +26,7 @@ describe("test duration input label", () => {
     // The contents will still be processed by the library, which is why the prop type error gets disabled here.
     console.error = (errormessage) => {
       const suppressedError = errormessage.toString();
-      const match = new RegExp("Warning: Failed .+ type").exec(
-        suppressedError
-      )[0];
+      const match = new RegExp("Warning: Failed .+ type").exec(suppressedError)[0];
       !match && selectErrors(errormessage);
     };
   });

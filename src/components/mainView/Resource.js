@@ -107,16 +107,13 @@ const Resource = (props) => {
   const displayName = t(props.resource.name);
   const maxQuota = props.resource?.max_quota;
   // displayedUsage ensures that resources without commitments get the project usage displayed.
-  const displayedUsage =
-    usagePerCommitted > 0 ? usagePerCommitted : usagePerQuota;
+  const displayedUsage = usagePerCommitted > 0 ? usagePerCommitted : usagePerQuota;
   const { resetCommitment } = useResetCommitment();
   // Bar length on project/domain level is Quota. On Cluster level it is capacity.
   const capacityOrQuota = scope.isCluster() ? capacity || 0 : originalQuota;
 
   function getQuotaOrCapacityForAZResource(az, capacity, quota) {
-    return scope.isCluster()
-      ? getCapacityForAZLevel(az, capacity)
-      : getQuotaForAZLevel(az, quota);
+    return scope.isCluster() ? getCapacityForAZLevel(az, capacity) : getQuotaForAZLevel(az, quota);
   }
 
   const maxQuotaForwardProps = {
@@ -128,17 +125,9 @@ const Resource = (props) => {
   };
 
   return (
-    <div
-      className={
-        !props.isPanelView ? `bar-card ${barGroupContainer}` : `bar-card-panel`
-      }
-    >
+    <div className={!props.isPanelView ? `bar-card ${barGroupContainer}` : `bar-card-panel`}>
       <div
-        className={` ${
-          props.isPanelView
-            ? `az-panel-container ${azPanelContent}`
-            : `az-main-container ${azContent}`
-        }`}
+        className={` ${props.isPanelView ? `az-panel-container ${azPanelContent}` : `az-main-container ${azContent}`}`}
       ></div>
       <Stack distribution="between" className={`bar-header ${barHeader}`}>
         <div className={`bar-title ${barTitle}`}>
@@ -152,25 +141,11 @@ const Resource = (props) => {
         {props.canEdit && editableResource && (
           <Stack className="items-center" gap="1">
             {isAZUnaware(props.resource.per_az) && (
-              <ProjectBadges
-                az={props.resource.per_az[0][1]}
-                unit={unitName}
-                displayValues={true}
-              />
+              <ProjectBadges az={props.resource.per_az[0][1]} unit={unitName} displayValues={true} />
             )}
-            {!scope.isProject() && (
-              <div className="mr-1 font-normal text-sm m-auto">Manage:</div>
-            )}
-            <Link
-              to={`/${props.area}/edit/${props.categoryName}/${props.resource.name}`}
-              state={props}
-            >
-              <Button
-                data-cy={`edit/${props.resource.name}`}
-                size="small"
-                variant="subdued"
-                icon="edit"
-              >
+            {!scope.isProject() && <div className="mr-1 font-normal text-sm m-auto">Manage:</div>}
+            <Link to={`/${props.area}/edit/${props.categoryName}/${props.resource.name}`} state={props}>
+              <Button data-cy={`edit/${props.resource.name}`} size="small" variant="subdued" icon="edit">
                 {scope.isProject() ? "Manage" : "Commitments"}
               </Button>
             </Link>
@@ -195,53 +170,31 @@ const Resource = (props) => {
       </Stack>
       <ResourceBarBuilder
         unit={unitName}
-        usage={
-          scope.isProject()
-            ? displayedUsage
-            : getTotalUsageForLeftBar(props.resource)
-        }
-        usageBurstSum={
-          scope.isProject()
-            ? usagePerQuota
-            : getTotalUsageForRightBar(props.resource)
-        }
+        usage={scope.isProject() ? displayedUsage : getTotalUsageForLeftBar(props.resource)}
+        usageBurstSum={scope.isProject() ? usagePerQuota : getTotalUsageForRightBar(props.resource)}
         commitment={totalCommitments}
         quota={capacityOrQuota}
         tracksQuota={tracksQuota}
         isPanelView={isPanelView}
         editableResource={editableResource}
       />
-      {isAZUnaware(props.resource.per_az) && (
-        <PhysicalUsage resource={props.resource} unit={unitName} />
-      )}
-      <div
-        className={
-          props.isPanelView &&
-          `az-container ${azPanelContent} ${props.isPanelView && "gap-2"}`
-        }
-      >
+      {isAZUnaware(props.resource.per_az) && <PhysicalUsage resource={props.resource} unit={unitName} />}
+      <div className={props.isPanelView && `az-container ${azPanelContent} ${props.isPanelView && "gap-2"}`}>
         {props.resource.per_az?.map((az) => {
           const azName = az[0];
           const commitmentsInAZ = az[1];
-          const azQuotaOrCapacity = getQuotaOrCapacityForAZResource(
-            az[1],
-            capacity,
-            originalQuota
-          );
+          const azQuotaOrCapacity = getQuotaOrCapacityForAZResource(az[1], capacity, originalQuota);
           return (
             azName !== "any" && (
               <div
                 key={azName}
                 className={`az-bar ${
                   props.isPanelView
-                    ? `az-bar ${barGroupContainer} ${
-                        !subRoute && azName !== "unknown" && azContentHover
-                      }`
+                    ? `az-bar ${barGroupContainer} ${!subRoute && azName !== "unknown" && azContentHover}`
                     : `az-bar ${azOverviewBar}`
                 }`}
                 onClick={() => {
-                  if (!props.isPanelView || subRoute || azName == "unknown")
-                    return;
+                  if (!props.isPanelView || subRoute || azName == "unknown") return;
                   resetCommitment(az);
                 }}
               >
@@ -250,24 +203,12 @@ const Resource = (props) => {
                     {azName}
                     <HistoricalUsage resource={az[1]} />
                   </Stack>
-                  <ProjectBadges
-                    az={commitmentsInAZ}
-                    unit={unitName}
-                    displayValues={true}
-                  />
+                  <ProjectBadges az={commitmentsInAZ} unit={unitName} displayValues={true} />
                 </div>
                 <ResourceBarBuilder
                   unit={unitName}
-                  usage={
-                    scope.isProject()
-                      ? getUsageForAZLevel(commitmentsInAZ)
-                      : getUsageForLeftBar(commitmentsInAZ)
-                  }
-                  usageBurstSum={
-                    scope.isProject()
-                      ? null
-                      : getUsageForRightBar(commitmentsInAZ)
-                  }
+                  usage={scope.isProject() ? getUsageForAZLevel(commitmentsInAZ) : getUsageForLeftBar(commitmentsInAZ)}
+                  usageBurstSum={scope.isProject() ? null : getUsageForRightBar(commitmentsInAZ)}
                   isAZ={true}
                   commitment={az.commitmentSum}
                   quota={azQuotaOrCapacity}
@@ -275,11 +216,7 @@ const Resource = (props) => {
                   isPanelView={isPanelView}
                   editableResource={editableResource}
                 />
-                <PhysicalUsage
-                  resource={az[1]}
-                  resourceName={props.resource.name}
-                  unit={unitName}
-                />
+                <PhysicalUsage resource={az[1]} resourceName={props.resource.name} unit={unitName} />
               </div>
             )
           );

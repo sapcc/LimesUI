@@ -30,9 +30,7 @@ import { isAZUnaware } from "../../../lib/utils";
 const PAYGCategory = (props) => {
   const { categoryName, cerebro, category, areaAZs } = props;
   const { resources } = category;
-  const editableResources = resources.filter(
-    (res) => res.editableResource === true
-  );
+  const editableResources = resources.filter((res) => res.editableResource === true);
 
   // Disable Baremetal Flavors
   if (categoryName === "per_flavor_baremetal") return;
@@ -80,9 +78,7 @@ const PAYGCategory = (props) => {
 
     return [validAvailabilityZones, hasMixedAZAwareness];
   }, [categoryName]);
-  const azColumnWidth = Math.floor(
-    12 / filterAvailabilityZones(areaAZs).length
-  );
+  const azColumnWidth = Math.floor(12 / filterAvailabilityZones(areaAZs).length);
   const forwardProps = {
     validAvailabilityZones,
     azColumnWidth,
@@ -99,20 +95,14 @@ const PAYGCategory = (props) => {
                 return (
                   <GridColumn cols={azColumnWidth} key={az}>
                     <div className="font-bold mb-2">
-                      {hasMixedAZAwareness && idx == 0
-                        ? PAYG_AZUNAWARE_KEY + " / " + az
-                        : az}
+                      {hasMixedAZAwareness && idx == 0 ? PAYG_AZUNAWARE_KEY + " / " + az : az}
                     </div>
                   </GridColumn>
                 );
               })}
             </GridRow>
           </Grid>
-          <PAYGLimebro
-            resources={editableResources.sort(byUIString)}
-            cerebro={cerebro}
-            {...forwardProps}
-          />
+          <PAYGLimebro resources={editableResources.sort(byUIString)} cerebro={cerebro} {...forwardProps} />
         </>
       )}
     </div>

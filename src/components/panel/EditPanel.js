@@ -44,13 +44,7 @@ import { initialCommitmentObject, TransferStatus } from "../../lib/constants";
 
 const EditPanel = (props) => {
   const { scope } = globalStore();
-  const {
-    serviceType,
-    currentResource,
-    tracksQuota,
-    currentCategory,
-    subRoute,
-  } = {
+  const { serviceType, currentResource, tracksQuota, currentCategory, subRoute } = {
     ...props,
   };
   const resourceName = currentResource.name;
@@ -132,9 +126,7 @@ const EditPanel = (props) => {
     setCommitmentIsLoading(true);
     const payload = { ...newCommitment, id: "" };
     const currentProjectID = currentProject?.metadata?.id;
-    const currentDomainID = scope.isCluster()
-      ? currentProject.metadata.domainID
-      : null;
+    const currentDomainID = scope.isCluster() ? currentProject.metadata.domainID : null;
     confirm.mutate(
       {
         payload: {
@@ -159,13 +151,9 @@ const EditPanel = (props) => {
 
   function postCommitment(confirm_by = null) {
     const currentProjectID = currentProject?.metadata?.id;
-    const currentDomainID = scope.isCluster()
-      ? currentProject.metadata.domainID
-      : null;
+    const currentDomainID = scope.isCluster() ? currentProject.metadata.domainID : null;
     setCommitmentIsLoading(true);
-    const payload = confirm_by
-      ? { ...newCommitment, id: "", confirm_by: confirm_by }
-      : { ...newCommitment, id: "" };
+    const payload = confirm_by ? { ...newCommitment, id: "", confirm_by: confirm_by } : { ...newCommitment, id: "" };
     commit.mutate(
       {
         payload: {
@@ -176,10 +164,7 @@ const EditPanel = (props) => {
       {
         onSuccess: () => {
           (scope.isDomain() || scope.isCluster()) &&
-            setToast(
-              "Order of projects might have updated. Please sort the table.",
-              "info"
-            );
+            setToast("Order of projects might have updated. Please sort the table.", "info");
           setRefetchClusterAPI(true);
           setRefetchDomainAPI(true);
           setRefetchProjectAPI(true);
@@ -203,9 +188,7 @@ const EditPanel = (props) => {
   // On project level we move between projects. First we initiate the transfer. On the target project we receive with the token input.
   function startCommitmentTransfer(project, commitment) {
     const sourceProjectID = currentProject.metadata.id;
-    const sourceDomainID = scope.isCluster()
-      ? currentProject.metadata.domainID
-      : null;
+    const sourceDomainID = scope.isCluster() ? currentProject.metadata.domainID : null;
     startTransfer.mutate(
       {
         payload: {
@@ -254,11 +237,7 @@ const EditPanel = (props) => {
       },
       {
         onSuccess: () => {
-          !scope.isProject() &&
-            setToast(
-              "Order of projects might have updated. Please sort the table.",
-              "info"
-            );
+          !scope.isProject() && setToast("Order of projects might have updated. Please sort the table.", "info");
           resetCommitmentTransfer();
           setRefetchClusterAPI(true);
           setRefetchDomainAPI(true);
@@ -428,20 +407,10 @@ const EditPanel = (props) => {
       />
       <div className={"sticky top-0 z-[100] bg-juno-grey-light-1 h-8"}>
         {toast.message && (
-          <Toast
-            className={"pb-0"}
-            text={toast.message}
-            variant={toast.variant}
-            onDismiss={() => dismissToast()}
-          />
+          <Toast className={"pb-0"} text={toast.message} variant={toast.variant} onDismiss={() => dismissToast()} />
         )}
       </div>
-      {!subRoute && (
-        <AvailabilityZoneNav
-          az={currentResource.per_az}
-          currentAZ={currentAZ}
-        />
-      )}
+      {!subRoute && <AvailabilityZoneNav az={currentResource.per_az} currentAZ={currentAZ} />}
       {scope.isProject() && commitments && (
         <CommitmentTable
           serviceType={serviceType}
@@ -485,18 +454,16 @@ const EditPanel = (props) => {
           title="Confirm commitment creation"
         />
       )}
-      {scope.isProject() &&
-        transferFromAndToProject == TransferStatus.START &&
-        transferredCommitment && (
-          <TransferModal
-            title="Transfer Commitment"
-            subText="Transfer"
-            isProjectView={scope.isProject()}
-            onModalClose={onTransferModalProjectClose}
-            onTransfer={startCommitmentTransfer}
-            commitment={transferredCommitment}
-          />
-        )}
+      {scope.isProject() && transferFromAndToProject == TransferStatus.START && transferredCommitment && (
+        <TransferModal
+          title="Transfer Commitment"
+          subText="Transfer"
+          isProjectView={scope.isProject()}
+          onModalClose={onTransferModalProjectClose}
+          onTransfer={startCommitmentTransfer}
+          commitment={transferredCommitment}
+        />
+      )}
       {transferProject && transferredCommitment && (
         <TransferModal
           title="Transfer Commitment"
@@ -516,18 +483,17 @@ const EditPanel = (props) => {
           commitment={transferredCommitment}
         />
       )}
-      {scope.isProject() &&
-        transferFromAndToProject == TransferStatus.RECEIVE && (
-          <TransferReceiveModal
-            title="Receive Commitment"
-            subText="Receive"
-            currentProject={currentProject}
-            serviceType={serviceType}
-            currentResource={currentResource}
-            transferCommitment={transferCommitment}
-            onModalClose={onTransferModalProjectClose}
-          />
-        )}
+      {scope.isProject() && transferFromAndToProject == TransferStatus.RECEIVE && (
+        <TransferReceiveModal
+          title="Receive Commitment"
+          subText="Receive"
+          currentProject={currentProject}
+          serviceType={serviceType}
+          currentResource={currentResource}
+          transferCommitment={transferCommitment}
+          onModalClose={onTransferModalProjectClose}
+        />
+      )}
       {conversionCommitment && (
         <ConversionModal
           title="Convert Commitment"

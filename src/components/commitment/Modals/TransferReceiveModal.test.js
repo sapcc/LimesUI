@@ -18,12 +18,7 @@ import React from "react";
 import TransferReceiveModal from "./TransferReceiveModal";
 import { PortalProvider } from "@cloudoperators/juno-ui-components";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import {
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-} from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { initialCommitmentObject } from "../../../lib/constants";
 
 const transferToken = "5ce23c72246fb03942ce004beb7302bb5f640776b9593211";

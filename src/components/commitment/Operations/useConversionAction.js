@@ -30,9 +30,7 @@ const useConversionAction = (props) => {
 
   React.useEffect(() => {
     if (!showConversionOption) return;
-    const validFlavors = new RegExp("^instances_hana.").exec(
-      resource_name
-    )?.[0];
+    const validFlavors = new RegExp("^instances_hana.").exec(resource_name)?.[0];
     if (!validFlavors) return;
     const menuItem = (
       <MenuItemBuilder callBack={convertCommitment}>

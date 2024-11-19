@@ -40,9 +40,7 @@ const Actions = (props) => {
   function updateActions(key, menuItem, toolTip) {
     const newAction = { key: key, menuItem: menuItem, toolTip: toolTip };
     setCommitmentActions((commitmentActions) =>
-      [...commitmentActions, newAction].sort((a, b) =>
-        a.key.localeCompare(b.key)
-      )
+      [...commitmentActions, newAction].sort((a, b) => a.key.localeCompare(b.key))
     );
   }
 
@@ -56,10 +54,10 @@ const Actions = (props) => {
     isConfirmed
       ? (label = "Committed")
       : isPending(commitment)
-      ? (label = "Pending")
-      : isPlanned(commitment)
-      ? (label = "Planned")
-      : (label = "");
+        ? (label = "Pending")
+        : isPlanned(commitment)
+          ? (label = "Planned")
+          : (label = "");
     return label;
   }
 

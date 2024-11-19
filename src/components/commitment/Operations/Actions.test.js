@@ -15,19 +15,9 @@
  */
 
 import React from "react";
-import {
-  createCommitmentStore,
-  createCommitmentStoreActions,
-  globalStoreActions,
-} from "../../StoreProvider";
+import { createCommitmentStore, createCommitmentStoreActions, globalStoreActions } from "../../StoreProvider";
 import { initialCommitmentObject } from "../../../lib/constants";
-import {
-  act,
-  fireEvent,
-  renderHook,
-  screen,
-  waitFor,
-} from "@testing-library/react";
+import { act, fireEvent, renderHook, screen, waitFor } from "@testing-library/react";
 import { Scope } from "../../../lib/scope";
 import { PortalProvider } from "@cloudoperators/juno-ui-components";
 import StoreProvider from "../../StoreProvider";

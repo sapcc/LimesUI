@@ -23,28 +23,18 @@ const MaxQuota = (props) => {
   const { isPanelView = false } = props;
   const maxQuota = resource?.max_quota;
   const unit = new Unit(resource.unit);
-  const { MaxQuotaInput, maxQuotaInputProps, MaxQuotaEdit, maxQuotaEditProps } =
-    useMaxQuotaSets({
-      project: project,
-      resource: resource,
-      serviceType: serviceType,
-      postMaxQuota: postMaxQuota,
-    });
+  const { MaxQuotaInput, maxQuotaInputProps, MaxQuotaEdit, maxQuotaEditProps } = useMaxQuotaSets({
+    project: project,
+    resource: resource,
+    serviceType: serviceType,
+    postMaxQuota: postMaxQuota,
+  });
 
   return isPanelView ? (
     <span className={"gap-1 inline-flex"}>
       Max Quota:{" "}
-      <MaxQuotaInput
-        {...maxQuotaInputProps}
-        reducedView={true}
-        styles="h-[1.75rem] py-0"
-        wrapperStyles="w-28"
-      />{" "}
-      <MaxQuotaEdit
-        {...maxQuotaEditProps}
-        iconOnlyView={true}
-        subduedView={true}
-      />
+      <MaxQuotaInput {...maxQuotaInputProps} reducedView={true} styles="h-[1.75rem] py-0" wrapperStyles="w-28" />{" "}
+      <MaxQuotaEdit {...maxQuotaEditProps} iconOnlyView={true} subduedView={true} />
     </span>
   ) : (
     <span>Max Quota: {valueWithUnit(maxQuota, unit)}</span>

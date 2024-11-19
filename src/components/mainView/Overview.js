@@ -22,15 +22,7 @@ import { useParams, useNavigate, useLocation, Outlet } from "react-router-dom";
 import { t, byUIString } from "../../lib/utils";
 import { ADVANCEDVIEW, CEREBROKEY } from "../../lib/constants";
 import PAYGOverview from "../paygAvailability/bigVM/PAYGOverview";
-import {
-  Tabs,
-  Tab,
-  TabList,
-  TabPanel,
-  Container,
-  Button,
-  Box,
-} from "@cloudoperators/juno-ui-components";
+import { Tabs, Tab, TabList, TabPanel, Container, Button, Box } from "@cloudoperators/juno-ui-components";
 import { getScrapeTime } from "../../lib/getScrapeTime";
 
 const Overview = (props) => {
@@ -39,12 +31,8 @@ const Overview = (props) => {
   const location = useLocation();
   const editableAreas = props.overview.editableAreas;
   const { isEditing } = createCommitmentStore();
-  const [advancedView, setAdvancedView] = React.useState(
-    JSON.parse(localStorage.getItem(ADVANCEDVIEW)) || false
-  );
-  const allAreas = advancedView
-    ? Object.keys(props.overview.areas)
-    : editableAreas;
+  const [advancedView, setAdvancedView] = React.useState(JSON.parse(localStorage.getItem(ADVANCEDVIEW)) || false);
+  const allAreas = advancedView ? Object.keys(props.overview.areas) : editableAreas;
   const { currentArea = allAreas[0] } = useParams();
   const [currentTabIdx, setCurrentTabIdx] = React.useState(0);
   const { resetURLChangeState } = useResetCommitment();
@@ -156,11 +144,7 @@ const Overview = (props) => {
       <Tabs selectedIndex={currentTabIdx} onSelect={() => {}}>
         <TabList>
           {allAreas.map((area) => (
-            <Tab
-              disabled={isEditing}
-              onClick={() => onTabChange(area)}
-              key={area}
-            >
+            <Tab disabled={isEditing} onClick={() => onTabChange(area)} key={area}>
               {t(area)}
             </Tab>
           ))}
@@ -169,10 +153,7 @@ const Overview = (props) => {
               size="small"
               variant="primary"
               onClick={() => {
-                localStorage.setItem(
-                  ADVANCEDVIEW,
-                  JSON.stringify(!advancedView)
-                );
+                localStorage.setItem(ADVANCEDVIEW, JSON.stringify(!advancedView));
                 setAdvancedView(!advancedView);
               }}
               className={"w-24 self-center"}

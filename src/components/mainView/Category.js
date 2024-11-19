@@ -15,11 +15,7 @@
  */
 
 import React from "react";
-import {
-  t,
-  sortByLogicalOrderAndName,
-  tracksQuota,
-} from "../../lib/utils";
+import { t, sortByLogicalOrderAndName, tracksQuota } from "../../lib/utils";
 import Resource from "./Resource";
 
 const categoryTitle = `
@@ -46,28 +42,15 @@ const Category = (props) => {
     canEdit,
   };
 
-  const editableResources = resources.filter(
-    (res) => res.editableResource === true
-  );
+  const editableResources = resources.filter((res) => res.editableResource === true);
 
   return (
     (editableResources.length > 0 || advancedView) && (
       <div className="category-container mb-4">
-        <h1 className={`category-title ${categoryTitle}`}>
-          {t(props.categoryName)}
-        </h1>
+        <h1 className={`category-title ${categoryTitle}`}>{t(props.categoryName)}</h1>
         <div className={`category-content ${categoryContent}`}>
-          {sortByLogicalOrderAndName(
-            advancedView ? resources : editableResources
-          ).map((res) => {
-            return (
-              <Resource
-                key={res.name}
-                resource={res}
-                {...forwardProps}
-                tracksQuota={tracksQuota(res)}
-              />
-            );
+          {sortByLogicalOrderAndName(advancedView ? resources : editableResources).map((res) => {
+            return <Resource key={res.name} resource={res} {...forwardProps} tracksQuota={tracksQuota(res)} />;
           })}
         </div>
       </div>

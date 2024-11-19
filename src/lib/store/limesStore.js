@@ -80,9 +80,7 @@ const limesStore = (set, get) => ({
             const domainProjects = [...state.domain.projects];
             projects.sort((a, b) => {
               return (
-                domainProjects.findIndex(
-                  (p) => p.metadata.id == a.metadata.id
-                ) -
+                domainProjects.findIndex((p) => p.metadata.id == a.metadata.id) -
                 domainProjects.findIndex((p) => p.metadata.id == b.metadata.id)
               );
             });
@@ -94,9 +92,7 @@ const limesStore = (set, get) => ({
               const previousProjectIndex = state.domain.projects.findIndex(
                 (oldProject) => project.metadata.id == oldProject.metadata.id
               );
-              project.showCommitments =
-                state.domain.projects[previousProjectIndex]?.showCommitments ||
-                false;
+              project.showCommitments = state.domain.projects[previousProjectIndex]?.showCommitments || false;
             } else {
               project.showCommitments = false;
             }
@@ -114,14 +110,8 @@ const limesStore = (set, get) => ({
           const { resources: resourcesB } = Object.values(b.categories)[0];
           const resourceA = resourcesA[0];
           const resourceB = resourcesB[0];
-          let maxA = getMaxCommitmentsOrUsage(
-            resourceA.totalCommitments,
-            resourceA.usage
-          );
-          let maxB = getMaxCommitmentsOrUsage(
-            resourceB.totalCommitments,
-            resourceB.usage
-          );
+          let maxA = getMaxCommitmentsOrUsage(resourceA.totalCommitments, resourceA.usage);
+          let maxB = getMaxCommitmentsOrUsage(resourceB.totalCommitments, resourceB.usage);
 
           // Set no quota projects to the bottom of the table.
           if (maxA == 0 && maxB == 0) {
@@ -140,12 +130,8 @@ const limesStore = (set, get) => ({
         });
 
         function getMaxCommitmentsOrUsage(commitments, usage) {
-          const unused = unusedCommitments(commitments, usage)
-            ? commitments - usage
-            : 0;
-          const uncommitted = uncommittedUsage(commitments, usage)
-            ? usage - commitments
-            : 0;
+          const unused = unusedCommitments(commitments, usage) ? commitments - usage : 0;
+          const uncommitted = uncommittedUsage(commitments, usage) ? usage - commitments : 0;
           return Math.max(unused, uncommitted);
         }
 
@@ -153,9 +139,7 @@ const limesStore = (set, get) => ({
       },
       setSortedProjects: (projects) =>
         set((state) => {
-          const sortedProjects = state.domain.actions.sortProjects([
-            ...projects,
-          ]);
+          const sortedProjects = state.domain.actions.sortProjects([...projects]);
           return {
             ...state,
             domain: { ...state.domain, projects: sortedProjects },
@@ -164,9 +148,7 @@ const limesStore = (set, get) => ({
       setShowCommitments: (projectID, value) =>
         set((state) => {
           const projects = [...state.domain.projects];
-          const index = projects.findIndex(
-            (project) => project.metadata.id == projectID
-          );
+          const index = projects.findIndex((project) => project.metadata.id == projectID);
           projects[index].showCommitments = value;
           return {
             ...state,
@@ -249,11 +231,7 @@ const limesStore = (set, get) => ({
         // `categories` is what the Category component needs.
         const categories = {};
         for (let srv of serviceList) {
-          const {
-            resources: resourceList,
-            type: serviceType,
-            ...serviceData
-          } = srv;
+          const { resources: resourceList, type: serviceType, ...serviceData } = srv;
 
           for (let res of resourceList) {
             categories[res.category || serviceType] = {
@@ -300,10 +278,7 @@ const limesStore = (set, get) => ({
 
         // Identify areas that contain editable services
         const areas = new Map();
-        const services = serviceList.map((srv) => [
-          srv.area,
-          srv.editableService,
-        ]).sort();
+        const services = serviceList.map((srv) => [srv.area, srv.editableService]).sort();
 
         services.forEach((srv) => {
           const area = srv[0];
@@ -314,30 +289,16 @@ const limesStore = (set, get) => ({
         areas.set(CEREBROKEY, true);
         const editableAreas = Array.from(areas.keys());
 
-
         // `overview` is what the Overview component needs.
         const overview = {
           //This field is only filled for project scope, and {} otherwise.
-          scrapedAt: objectFromEntries(
-            serviceList.map((srv) => [srv.type, srv.scraped_at])
-          ),
+          scrapedAt: objectFromEntries(serviceList.map((srv) => [srv.type, srv.scraped_at])),
           //These two fields are only filled for cluster/domain scope, and {} otherwise.
-          minScrapedAt: objectFromEntries(
-            serviceList.map((srv) => [srv.type, srv.min_scraped_at])
-          ),
-          maxScrapedAt: objectFromEntries(
-            serviceList.map((srv) => [srv.type, srv.max_scraped_at])
-          ),
-          areas: groupKeys(
-            serviceList.map((srv) => [srv.area || srv.type, srv.type]).sort()
-          ),
+          minScrapedAt: objectFromEntries(serviceList.map((srv) => [srv.type, srv.min_scraped_at])),
+          maxScrapedAt: objectFromEntries(serviceList.map((srv) => [srv.type, srv.max_scraped_at])),
+          areas: groupKeys(serviceList.map((srv) => [srv.area || srv.type, srv.type]).sort()),
           editableAreas: editableAreas,
-          categories: groupKeys(
-            Object.entries(categories).map(([catName, cat]) => [
-              cat.serviceType,
-              catName,
-            ])
-          ),
+          categories: groupKeys(Object.entries(categories).map(([catName, cat]) => [cat.serviceType, catName])),
         };
         overview.areas[CEREBROKEY] = ["cerebro"];
 
@@ -417,10 +378,7 @@ function addTotalCommitments(res) {
   let totalCommitments = 0;
   // Determine per AZ if it contains any sort of commitment
   res.per_az?.forEach((az) => {
-    const hasCommitments =
-      az[1].committed || az[1].planned_commitments || az[1].pending_commitments
-        ? true
-        : false;
+    const hasCommitments = az[1].committed || az[1].planned_commitments || az[1].pending_commitments ? true : false;
     az.hasCommitments = hasCommitments;
   });
   // Sum of all commitments over all AZ's.

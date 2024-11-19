@@ -25,13 +25,9 @@ const PAYGLimebro = (props) => {
   const { validAvailabilityZones, azColumnWidth } = props;
 
   function getMatchingCerebroResource(resource, azName) {
-    const cerebroAZ = cerebro.find(
-      (entity) => entity.availabilityZone == azName
-    );
+    const cerebroAZ = cerebro.find((entity) => entity.availabilityZone == azName);
     // Identify the resource from cerebro.
-    const matchingFlavor = cerebroAZ?.flavors.find(
-      (flavor) => Object.keys(flavor)[0] == t(resource.name)
-    );
+    const matchingFlavor = cerebroAZ?.flavors.find((flavor) => Object.keys(flavor)[0] == t(resource.name));
     return matchingFlavor;
   }
 
@@ -45,15 +41,11 @@ const PAYGLimebro = (props) => {
             <GridColumn key={azName} cols={azColumnWidth}>
               <Box className={`border-l-4`}>
                 {resources.map((resource) => {
-                  const az =
-                    resource.per_az.find((az) => az[0] == azName) || {};
+                  const az = resource.per_az.find((az) => az[0] == azName) || {};
                   let matchingCerebroResource;
                   // Check for cerebro data being present.
                   if (cerebro.length > 0) {
-                    matchingCerebroResource = getMatchingCerebroResource(
-                      resource,
-                      azName
-                    );
+                    matchingCerebroResource = getMatchingCerebroResource(resource, azName);
                   }
                   return (
                     <PAYGResource

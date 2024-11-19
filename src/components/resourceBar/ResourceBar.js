@@ -68,8 +68,7 @@ const disabledLable = `
   font-bold
 `;
 
-const usageExceedsCapacity =
-  "repeating-linear-gradient(55deg,#c9302c ,#c9302c  8px,#d9534f 8px,#d9534f 16px)";
+const usageExceedsCapacity = "repeating-linear-gradient(55deg,#c9302c ,#c9302c  8px,#d9534f 8px,#d9534f 16px)";
 
 const ResourceBar = (props) => {
   const outerDivRef = React.useRef(null);
@@ -100,16 +99,8 @@ const ResourceBar = (props) => {
     // First handle the creation of an empty bar.
     if (capacity == 0 && fill == 0) {
       return (
-        <Stack
-          direction="vertical"
-          distribution="between"
-          style={{ width: commitment > 0 ? "70%" : "100%" }}
-        >
-          <span
-            className={`progress-bar-label ${disabledLable} ${
-              props.isAz ? "text-xs" : "text-sm"
-            }`}
-          >
+        <Stack direction="vertical" distribution="between" style={{ width: commitment > 0 ? "70%" : "100%" }}>
+          <span className={`progress-bar-label ${disabledLable} ${props.isAz ? "text-xs" : "text-sm"}`}>
             {showsCapacity ? "No capacity" : "No quota"}
           </span>
           <div
@@ -126,8 +117,7 @@ const ResourceBar = (props) => {
     if (fill > 0 && widthPercent < 0.5) {
       widthPercent = 0.5;
     }
-    let widthCommitment =
-      Math.round((1000 * extraFillValue) / extraCapacityValue) / 10;
+    let widthCommitment = Math.round((1000 * extraFillValue) / extraCapacityValue) / 10;
 
     // special cases:
     // purple: Occurs when usage > commitments. Do not display purple if resource is not managable.
@@ -163,9 +153,7 @@ const ResourceBar = (props) => {
     }
 
     const label = (
-      <span
-        className={`progress-bar-label ${barLable} ${props.isAZ && "text-xs"}`}
-      >
+      <span className={`progress-bar-label ${barLable} ${props.isAZ && "text-xs"}`}>
         {fillLabel}/{capacityLabel}{" "}
         {commitment > 0 ? (
           <span className="font-normal">committed</span>
@@ -176,9 +164,7 @@ const ResourceBar = (props) => {
     );
 
     const extraLable = (
-      <span
-        className={`progress-bar-label ${barLable} ${props.isAZ && "text-xs"}`}
-      >
+      <span className={`progress-bar-label ${barLable} ${props.isAZ && "text-xs"}`}>
         {extraFillLabel}/{extraCapacityLabel}
       </span>
     );
@@ -196,21 +182,10 @@ const ResourceBar = (props) => {
       filled = "progress-bar progress-bar-disabled has-label";
     }
     const resourceBar = (
-      <Stack
-        distribution="between"
-        className={`process-bar-container ${barConainer}`}
-      >
-        <Stack
-          direction="vertical"
-          distribution="between"
-          style={{ width: commitment > 0 ? "70%" : "100%" }}
-        >
+      <Stack distribution="between" className={`process-bar-container ${barConainer}`}>
+        <Stack direction="vertical" distribution="between" style={{ width: commitment > 0 ? "70%" : "100%" }}>
           {label}
-          <div
-            className={`main-bar ${baseResourceBar} ${emptyResourceBar} ${
-              isAZ ? "h-4 p-0" : "h-8 p-0.5"
-            }`}
-          >
+          <div className={`main-bar ${baseResourceBar} ${emptyResourceBar} ${isAZ ? "h-4 p-0" : "h-8 p-0.5"}`}>
             <div
               key="filled"
               className={`main-fill ${filled} ${filledResourceBar}`}
@@ -220,11 +195,7 @@ const ResourceBar = (props) => {
         </Stack>
 
         {commitment ? (
-          <Stack
-            direction="vertical"
-            distribution="between"
-            style={{ width: "30%" }}
-          >
+          <Stack direction="vertical" distribution="between" style={{ width: "30%" }}>
             {extraLable}
             <div
               className={`extra-bar ${baseResourceBar} ${emptyExtraResourceBar} ${

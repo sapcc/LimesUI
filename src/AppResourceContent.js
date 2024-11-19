@@ -95,13 +95,7 @@ const AppResourceContent = (props) => {
   ) : commitmentLoads || !cluster.data ? (
     <LoadingIndicator className={"m-auto"} />
   ) : (
-    commitments && (
-      <ContentRoutes
-        queryResult={projectQueryResult}
-        parsedData={projectData}
-        canEdit={props.canEdit}
-      />
-    )
+    commitments && <ContentRoutes queryResult={projectQueryResult} parsedData={projectData} canEdit={props.canEdit} />
   );
 };
 

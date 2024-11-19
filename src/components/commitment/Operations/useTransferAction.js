@@ -28,9 +28,7 @@ const useTransferAction = (props) => {
   const { setTransferFromAndToProject } = createCommitmentStoreActions();
 
   function transferCommitOnProjectLevel() {
-    setTransferFromAndToProject(
-      commitmentInTrasfer ? TransferStatus.VIEW : TransferStatus.START
-    );
+    setTransferFromAndToProject(commitmentInTrasfer ? TransferStatus.VIEW : TransferStatus.START);
     setTransferredCommitment(commitment);
   }
 
@@ -41,9 +39,7 @@ const useTransferAction = (props) => {
           <MenuItemBuilder.Icon
             icon="upload"
             title="Transfer"
-            color={
-              commitmentInTrasfer ? "jn-text-theme-info" : "jn-global-text"
-            }
+            color={commitmentInTrasfer ? "jn-text-theme-info" : "jn-global-text"}
           />
           <MenuItemBuilder.Text>Transfer</MenuItemBuilder.Text>
         </MenuItemBuilder>

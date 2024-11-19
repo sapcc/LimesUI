@@ -21,13 +21,12 @@ import { PortalProvider } from "@cloudoperators/juno-ui-components";
 import StoreProvider from "../StoreProvider";
 
 const ExampleCMP = ({ project, resource, serviceType, postMaxQuota }) => {
-  const { MaxQuotaInput, maxQuotaInputProps, MaxQuotaEdit, maxQuotaEditProps } =
-    useMaxQuotaSets({
-      project: project,
-      resource: resource,
-      serviceType: serviceType,
-      postMaxQuota: postMaxQuota,
-    });
+  const { MaxQuotaInput, maxQuotaInputProps, MaxQuotaEdit, maxQuotaEditProps } = useMaxQuotaSets({
+    project: project,
+    resource: resource,
+    serviceType: serviceType,
+    postMaxQuota: postMaxQuota,
+  });
   return (
     <div>
       <MaxQuotaInput {...maxQuotaInputProps} />
@@ -58,12 +57,7 @@ describe("test useMaxQuotaSets", () => {
     render(
       <PortalProvider>
         <StoreProvider>
-          <ExampleCMP
-            project={project}
-            resource={resource}
-            serviceType={"serviceA"}
-            postMaxQuota={postMaxQuota}
-          />
+          <ExampleCMP project={project} resource={resource} serviceType={"serviceA"} postMaxQuota={postMaxQuota} />
         </StoreProvider>
       </PortalProvider>
     );
@@ -84,11 +78,7 @@ describe("test useMaxQuotaSets", () => {
     render(
       <PortalProvider>
         <StoreProvider>
-          <ExampleCMP
-            project={project}
-            resource={resource}
-            serviceType={"serviceA"}
-          />
+          <ExampleCMP project={project} resource={resource} serviceType={"serviceA"} />
         </StoreProvider>
       </PortalProvider>
     );
@@ -109,11 +99,7 @@ describe("test useMaxQuotaSets", () => {
     render(
       <PortalProvider>
         <StoreProvider>
-          <ExampleCMP
-            project={project}
-            resource={resource}
-            serviceType={"serviceA"}
-          />
+          <ExampleCMP project={project} resource={resource} serviceType={"serviceA"} />
         </StoreProvider>
       </PortalProvider>
     );
@@ -134,12 +120,7 @@ describe("test useMaxQuotaSets", () => {
     render(
       <PortalProvider>
         <StoreProvider>
-          <ExampleCMP
-            project={project}
-            resource={resource}
-            serviceType={"serviceA"}
-            postMaxQuota={postMaxQuota}
-          />
+          <ExampleCMP project={project} resource={resource} serviceType={"serviceA"} postMaxQuota={postMaxQuota} />
         </StoreProvider>
       </PortalProvider>
     );

@@ -35,10 +35,7 @@ const scales = {
 
 const units = objectFromEntries(
   arrayFlatMap(Object.entries(bases), ([base, props]) =>
-    scales[props.scale].prefixes.map((prefix, idx) => [
-      prefix + base,
-      { base, steps: idx },
-    ])
+    scales[props.scale].prefixes.map((prefix, idx) => [prefix + base, { base, steps: idx }])
   )
 );
 
@@ -82,10 +79,7 @@ export class Unit {
   format(value, options = {}) {
     //convert value into bigger units if available
     let steps = this.unitData.steps;
-    while (
-      value >= this.scaleData.step &&
-      steps + 1 < this.scaleData.prefixes.length
-    ) {
+    while (value >= this.scaleData.step && steps + 1 < this.scaleData.prefixes.length) {
       value /= this.scaleData.step;
       steps += 1;
     }
@@ -134,16 +128,12 @@ export class Unit {
     }
 
     //strip base unit if provided (e.g. "KiB" -> "Ki", e.g. "B" => "")
-    const unitMatch = new RegExp(`^(.*)${this.unitData.base}$`, "i").exec(
-      baseMatch[2]
-    );
+    const unitMatch = new RegExp(`^(.*)${this.unitData.base}$`, "i").exec(baseMatch[2]);
     const givenPrefix = unitMatch === null ? baseMatch[2] : unitMatch[1];
 
     //recognize prefix (or synonym)
     const prefix = resolveSynonym(givenPrefix).toLowerCase();
-    let steps = this.scaleData.prefixes.findIndex(
-      (val) => val.toLowerCase() == prefix
-    );
+    let steps = this.scaleData.prefixes.findIndex((val) => val.toLowerCase() == prefix);
     if (steps === -1) {
       // unknown unit or prefix
       return { error: "syntax" };

@@ -26,21 +26,16 @@ queryClient.setQueryDefaults(["example"], {
   },
 });
 
-const wrapper = ({ children }) => (
-  <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-);
+const wrapper = ({ children }) => <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
 
 describe("test useLimesGetRequest", () => {
   beforeEach(() => {
     queryClient.clear();
   });
   test("should fetch data", async () => {
-    const { result } = renderHook(
-      () => useLimesGetRequest({ queryKey: "example" }),
-      {
-        wrapper,
-      }
-    );
+    const { result } = renderHook(() => useLimesGetRequest({ queryKey: "example" }), {
+      wrapper,
+    });
     await waitFor(() => {
       expect(result.current.data).not.toBe(undefined);
       expect(result.current.data.commitment.amount).toEqual(10);

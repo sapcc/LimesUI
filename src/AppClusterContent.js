@@ -21,13 +21,7 @@ import useClusterAPI from "./hooks/useClusterAPI";
 const AppClusterContent = (props) => {
   const { cluster } = useClusterAPI({ isDetail: false });
 
-  return (
-    <ContentRoutes
-      queryResult={cluster}
-      parsedData={cluster.data}
-      canEdit={props.canEdit}
-    />
-  );
+  return <ContentRoutes queryResult={cluster} parsedData={cluster.data} canEdit={props.canEdit} />;
 };
 
 export default AppClusterContent;

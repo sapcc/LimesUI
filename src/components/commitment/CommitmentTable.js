@@ -33,22 +33,13 @@ const CommitmentTable = (props) => {
   const { commitment: newCommitment } = createCommitmentStore();
   const { commitmentIsFetching } = createCommitmentStore();
   const { isCommitting } = createCommitmentStore();
-  const {
-    serviceType,
-    currentCategory,
-    currentResource,
-    currentAZ,
-    commitmentData,
-  } = {
+  const { serviceType, currentCategory, currentResource, currentAZ, commitmentData } = {
     ...props,
   };
   const resourceName = currentResource?.name;
   const { per_az: availabilityZones } = props.resource;
-  const isAZAware =
-    availabilityZones.length == 1 && availabilityZones[0][0] == "any";
-  const noCommitmentsText = `No commitments found${
-    !isAZAware ? " in this availability zone" : ""
-  }.`;
+  const isAZAware = availabilityZones.length == 1 && availabilityZones[0][0] == "any";
+  const noCommitmentsText = `No commitments found${!isAZAware ? " in this availability zone" : ""}.`;
   const commitmentHeadCells = [
     {
       key: "amount",
@@ -96,15 +87,10 @@ const CommitmentTable = (props) => {
   return commitmentIsFetching ? (
     <LoadingIndicator className="m-auto" />
   ) : filteredCommitments.length > 0 ? (
-    <DataGrid
-      columns={commitmentHeadCells.length}
-      gridColumnTemplate={gridColumnTemplate}
-    >
+    <DataGrid columns={commitmentHeadCells.length} gridColumnTemplate={gridColumnTemplate}>
       <DataGridRow>
         {commitmentHeadCells.map((headCell) => (
-          <DataGridHeadCell key={headCell.key}>
-            {headCell.label}
-          </DataGridHeadCell>
+          <DataGridHeadCell key={headCell.key}>{headCell.label}</DataGridHeadCell>
         ))}
       </DataGridRow>
 

@@ -38,15 +38,7 @@ const label = "font-semibold";
 // First, the commitment will be checked by its existence with the transfer token
 // Then, the commitment infos will be presented to the user asking him for a transfer.
 const TransferReceiveModal = (props) => {
-  const {
-    title,
-    subText,
-    currentProject,
-    serviceType,
-    currentResource,
-    transferCommitment,
-    onModalClose,
-  } = props;
+  const { title, subText, currentProject, serviceType, currentResource, transferCommitment, onModalClose } = props;
   const { ConfirmInput, inputProps, checkInput } = useConfirmInput({
     confirmationText: subText,
   });
@@ -56,7 +48,7 @@ const TransferReceiveModal = (props) => {
   const [isCorrectResource, setIsCorrectResource] = React.useState(false);
   const commitmentData = useLimesGetRequest({
     queryKey: "commitmentByToken",
-    queryArgs: tokenInput ,
+    queryArgs: tokenInput,
     queryOpts: {
       gcTime: 0,
       enabled: false,
@@ -76,10 +68,7 @@ const TransferReceiveModal = (props) => {
   // Reject commitments that are received on the wrong resource!
   React.useEffect(() => {
     if (!commitment) return;
-    if (
-      commitment.service_type == serviceType &&
-      commitment.resource_name == currentResource.name
-    ) {
+    if (commitment.service_type == serviceType && commitment.resource_name == currentResource.name) {
       setIsCorrectResource(true);
     } else {
       setIsCorrectResource(false);
@@ -164,9 +153,7 @@ const TransferReceiveModal = (props) => {
             <DataGrid className="mb-2" columns={2} columnMaxSize="1fr">
               <DataGridRow>
                 <DataGridCell className={label}>Amount</DataGridCell>
-                <DataGridCell>
-                  {valueWithUnit(commitment.amount, unit)}
-                </DataGridCell>
+                <DataGridCell>{valueWithUnit(commitment.amount, unit)}</DataGridCell>
               </DataGridRow>
               <DataGridRow>
                 <DataGridCell className={label}>Duration:</DataGridCell>

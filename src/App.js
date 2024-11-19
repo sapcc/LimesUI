@@ -16,17 +16,8 @@
 
 import React from "react";
 
-import {
-  AppShell,
-  AppShellProvider,
-  Message,
-  LoadingIndicator,
-} from "@cloudoperators/juno-ui-components";
-import StoreProvider, {
-  apiStore,
-  apiStoreActions,
-  globalStoreActions,
-} from "./components/StoreProvider";
+import { AppShell, AppShellProvider, Message, LoadingIndicator } from "@cloudoperators/juno-ui-components";
+import StoreProvider, { apiStore, apiStoreActions, globalStoreActions } from "./components/StoreProvider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import styles from "./styles.scss";
 import { fetchProxyInitDB } from "@cloudoperators/juno-utils";
@@ -122,11 +113,9 @@ const App = (props = {}) => {
           // example: $2 in "/(.*)/projects/(.*)" => {projectID}
           rewriteRoutes: {
             "/v1/clusters/current*": "/cluster/qa_cluster",
-            "/v1/domains/(.*)/projects/(.*)/commitments":
-              "/projectCommitments/$2/commitments",
+            "/v1/domains/(.*)/projects/(.*)/commitments": "/projectCommitments/$2/commitments",
             "/v1/domains/(.*)/projects/(.*)": "/projects/$2",
-            "(.*)/(.*)/resources/project/bigvm_resources":
-              "/cerebro/bigvm_resources",
+            "(.*)/(.*)/resources/project/bigvm_resources": "/cerebro/bigvm_resources",
           },
         }
       );
@@ -134,10 +123,7 @@ const App = (props = {}) => {
   }, [props.mockAPI]);
 
   return tokenError ? (
-    <Message>
-      Failed to fetch a token. Please provide a token as property or provide a
-      getTokenFunc.
-    </Message>
+    <Message>Failed to fetch a token. Please provide a token as property or provide a getTokenFunc.</Message>
   ) : (
     <QueryClientProvider client={queryClient}>
       <style>{dayPickerStyle}</style>
@@ -146,11 +132,7 @@ const App = (props = {}) => {
         pageHeader="Converged Cloud | App limesUI"
         embedded={props.embedded === "true" || props.embedded === true}
       >
-        {apiReady ? (
-          <Resource {...props} />
-        ) : (
-          <LoadingIndicator className={"m-auto"} />
-        )}
+        {apiReady ? <Resource {...props} /> : <LoadingIndicator className={"m-auto"} />}
       </AppShell>
     </QueryClientProvider>
   );
