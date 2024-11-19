@@ -23,9 +23,8 @@ jobs:
         run: go install github.com/google/addlicense@latest
       - name: check license headers
         run: >
-          files=$(addlicense --check -- src/);
-          if [[ $(echo $files | wc -c) -ne 0 ]]; then
-              echo $files;
+          if [[ $(addlicense --check -- src/ | wc -c) -ne 0 ]]; then
+              addlicense --check -- src/
               exit 1;
           else
               echo "license check succeeded."
