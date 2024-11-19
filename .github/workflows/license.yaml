@@ -12,7 +12,7 @@ permissions:
   contents: read
 jobs:
   checks:
-    name: Checks
+    name: License Headers
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
@@ -26,8 +26,9 @@ jobs:
         run: go install github.com/google/addlicense@latest
       - name: check license headers
         run: >
-          if [[ $(addlicense --check -- src/ | wc -c) -ne 0 ]]; then
-              addlicense --check -- src/
+          files=$(addlicense --check -- src/)
+          if [[ $files | wc -c) -ne 0 ]]; then
+              echo $files
               exit 1
           else
               echo "license check succeeded."
