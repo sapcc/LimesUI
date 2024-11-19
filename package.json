@@ -43,6 +43,7 @@
   "scripts": {
     "build": "NODE_ENV=production node esbuild.config.js",
     "license-headers": "addlicense -c 'SAP SE' src/",
+    "lint": "npx eslint",
     "start": "PORT=$APP_PORT NODE_ENV=development node esbuild.config.js --serve --watch",
     "test": "jest"
   },
