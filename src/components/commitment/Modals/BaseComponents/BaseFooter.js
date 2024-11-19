@@ -15,11 +15,7 @@
  */
 
 import React from "react";
-import {
-  Button,
-  ButtonRow,
-  ModalFooter,
-} from "@cloudoperators/juno-ui-components";
+import { Button, ButtonRow, ModalFooter } from "@cloudoperators/juno-ui-components";
 
 const BaseFooter = (props) => {
   const {

@@ -15,12 +15,7 @@
  */
 
 import React from "react";
-import {
-  Icon,
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-} from "@cloudoperators/juno-ui-components";
+import { Icon, Tooltip, TooltipTrigger, TooltipContent } from "@cloudoperators/juno-ui-components";
 
 const HistoricalUsage = (props) => {
   const { resource } = props;
@@ -37,8 +32,7 @@ const HistoricalUsage = (props) => {
         </TooltipTrigger>
         <TooltipContent>
           <span className="text-sm p-0">
-            Usage increased by{" "}
-            {((azUsage / (minUsage || 1) - 1) * 100).toFixed(2)} % recently
+            Usage increased by {((azUsage / (minUsage || 1) - 1) * 100).toFixed(2)} % recently
           </span>
         </TooltipContent>
       </Tooltip>

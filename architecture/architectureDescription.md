@@ -93,8 +93,9 @@ The following image displays an overview of the store structure:
 ![Store-Structure](./images/sore-overview.png)
 
 Each store contains:
+
 - Store: The area where the variables are stored.
-- StoreActions: Getter and Setters that the components can use to modify the variable values. 
+- StoreActions: Getter and Setters that the components can use to modify the variable values.
 
 The Store Creator defines which stores are visible for the Store Provider. The Store Provider then exposes the desired store variables to the application.
 
@@ -122,6 +123,7 @@ The store is utilized in a cascading form.
 The Cluster-Store stores the domains. The flattened domain objects get attached to the domain store. The data can then be sorted there and can be provided to the underlying components. The commitments that should then be displayed for a selected project are stored in the project store.
 
 ## API Queries
+
 The API queries utilize the `useQuery` library which provide hooks to create the queries with. The following image displays the structure of how it is implemented:
 
 ![API-Queries](./images/api-queries.png)

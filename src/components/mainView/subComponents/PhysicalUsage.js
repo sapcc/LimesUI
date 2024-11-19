@@ -15,14 +15,7 @@
  */
 
 import React from "react";
-import {
-  Box,
-  Icon,
-  Stack,
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@cloudoperators/juno-ui-components";
+import { Box, Icon, Stack, Tooltip, TooltipContent, TooltipTrigger } from "@cloudoperators/juno-ui-components";
 import { Unit } from "../../../lib/unit";
 import { getUsageForAZLevel } from "../../../lib/resourceBarValues";
 
@@ -51,11 +44,7 @@ const PhysicalUsage = (props) => {
   }
 
   return physicalUsage ? (
-    <Box
-      className={`max-w-max px-1 py-0 mt-1 ${
-        isWarning && "bg-theme-warning bg-opacity-25"
-      }`}
-    >
+    <Box className={`max-w-max px-1 py-0 mt-1 ${isWarning && "bg-theme-warning bg-opacity-25"}`}>
       {isSnapshot && isWarning ? (
         <Stack className="items-center">
           <Tooltip triggerEvent="click">

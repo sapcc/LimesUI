@@ -20,14 +20,7 @@ import { clusterStore, clusterStoreActions } from "../StoreProvider";
 import ProjectsPerDomain from "./ProjectsPerDomain";
 
 const DomainManager = (props) => {
-  const {
-    serviceType,
-    currentCategory,
-    currentResource,
-    currentAZ,
-    subRoute,
-    setMaxQuota,
-  } = props;
+  const { serviceType, currentCategory, currentResource, currentAZ, subRoute, setMaxQuota } = props;
   const { domainData } = clusterStore();
   const { setDomainData } = clusterStoreActions();
   const domainQueryResult = useQuery({

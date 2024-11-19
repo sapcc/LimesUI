@@ -15,10 +15,7 @@
  */
 
 import React from "react";
-import {
-  getQuotaForAZLevel,
-  getUsageForAZLevel,
-} from "../../lib/resourceBarValues";
+import { getQuotaForAZLevel, getUsageForAZLevel } from "../../lib/resourceBarValues";
 import ResourceBarBuilder from "../resourceBar/ResourceBarBuilder";
 import CommitmentTable from "../commitment/CommitmentTable";
 import AddCommitments from "../shared/AddCommitments";
@@ -30,14 +27,7 @@ import {
   createCommitmentStoreActions,
 } from "../StoreProvider";
 import { useQuery } from "@tanstack/react-query";
-import {
-  DataGridRow,
-  DataGridCell,
-  Stack,
-  Icon,
-  LoadingIndicator,
-  Button,
-} from "@cloudoperators/juno-ui-components";
+import { DataGridRow, DataGridCell, Stack, Icon, LoadingIndicator, Button } from "@cloudoperators/juno-ui-components";
 import { DomainBadges, ProjectBadges } from "../shared/LimesBadges";
 import useResetCommitment from "../../hooks/useResetCommitment";
 
@@ -164,22 +154,12 @@ const ProjectTableDetails = (props) => {
         <DataGridCell>
           {!isTransferring || originProject ? (
             <div>
-              <AddCommitments
-                label="Add"
-                disabled={!showCommitments || transferCommitment || isLoading}
-                size="small"
-              />
+              <AddCommitments label="Add" disabled={!showCommitments || transferCommitment || isLoading} size="small" />
               <Button
                 className={"ml-1"}
                 data-cy="moveCommitment"
                 variant="primary"
-                disabled={
-                  !showCommitments ||
-                  !moveCommitment ||
-                  transferCommitment ||
-                  isCommitting ||
-                  isLoading
-                }
+                disabled={!showCommitments || !moveCommitment || transferCommitment || isCommitting || isLoading}
                 size="small"
                 onClick={() => {
                   setTransferCommitment(true);
@@ -205,9 +185,7 @@ const ProjectTableDetails = (props) => {
         <div className={`${colSpan} mt-2 mb-5`}>
           {commitments && !isLoading ? (
             <>
-              {az.hasCommitments && (
-                <p className="font-semibold mb-5">Commitments:</p>
-              )}
+              {az.hasCommitments && <p className="font-semibold mb-5">Commitments:</p>}
               <CommitmentTable
                 serviceType={serviceType}
                 currentCategory={currentCategory}

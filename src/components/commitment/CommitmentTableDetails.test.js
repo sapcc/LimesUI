@@ -19,10 +19,7 @@ import { fireEvent, screen, renderHook, waitFor } from "@testing-library/react";
 import CommitmentTableDetails from "./CommitmentTableDetails";
 import { initialCommitmentObject } from "../../lib/constants";
 import { PortalProvider } from "@cloudoperators/juno-ui-components";
-import StoreProvider, {
-  createCommitmentStore,
-  createCommitmentStoreActions,
-} from "../StoreProvider";
+import StoreProvider, { createCommitmentStore, createCommitmentStoreActions } from "../StoreProvider";
 
 const durations = ["1 year", "2 years", "3 years"];
 const commitment = { ...initialCommitmentObject };
@@ -35,9 +32,7 @@ describe("CheckCommitedState", () => {
     // The contents will still be processed by the library, which is why the prop type error gets disabled here.
     console.error = (errormessage) => {
       const suppressedError = errormessage.toString();
-      const match = new RegExp("Warning: Failed .+ type").exec(
-        suppressedError
-      )[0];
+      const match = new RegExp("Warning: Failed .+ type").exec(suppressedError)[0];
       !match && selectErrors(errormessage);
     };
   });
@@ -53,10 +48,7 @@ describe("CheckCommitedState", () => {
     const wrapper = ({ children }) => (
       <PortalProvider>
         <StoreProvider>
-          <CommitmentTableDetails
-            commitment={confirmedCommitment}
-            durations={durations}
-          />
+          <CommitmentTableDetails commitment={confirmedCommitment} durations={durations} />
           {children}
         </StoreProvider>
       </PortalProvider>
@@ -80,18 +72,13 @@ describe("EditCommitments", () => {
   beforeEach(async () => {
     console.error = (errormessage) => {
       const suppressedError = errormessage.toString();
-      const match = new RegExp("Warning: Failed .+ type").exec(
-        suppressedError
-      )[0];
+      const match = new RegExp("Warning: Failed .+ type").exec(suppressedError)[0];
       !match && selectErrors(errormessage);
     };
     const wrapper = ({ children }) => (
       <PortalProvider>
         <StoreProvider>
-          <CommitmentTableDetails
-            commitment={commitment}
-            durations={durations}
-          />
+          <CommitmentTableDetails commitment={commitment} durations={durations} />
           {children}
         </StoreProvider>
       </PortalProvider>
@@ -123,9 +110,7 @@ describe("EditCommitments", () => {
     expect(input.value).toEqual(value);
     const close = screen.getByText(/cancel/i);
     fireEvent.click(close);
-    expect(store.result.current.commitmentStore.commitment.amount).toEqual(
-      commitment.amount
-    );
+    expect(store.result.current.commitmentStore.commitment.amount).toEqual(commitment.amount);
   });
 
   test("Check dropdown", async () => {

@@ -49,9 +49,7 @@ describe("check hook", () => {
     const confirmButton = screen.getByTestId(/confirmButton/i);
     fireEvent.change(input, { target: { value: "123" } });
     fireEvent.click(confirmButton);
-    const errorText = screen.getByText(
-      /Please enter the highlighted term above./i
-    );
+    const errorText = screen.getByText(/Please enter the highlighted term above./i);
     expect(errorText).toBeInTheDocument();
   });
 
@@ -61,9 +59,7 @@ describe("check hook", () => {
     const confirmButton = screen.getByTestId(/confirmButton/i);
     fireEvent.change(input, { target: { value: "testInput" } });
     fireEvent.click(confirmButton);
-    const error = screen.queryByText(
-      /Please enter the highlighted term above./i
-    );
+    const error = screen.queryByText(/Please enter the highlighted term above./i);
     expect(error).toBeNull();
   });
 

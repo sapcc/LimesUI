@@ -15,10 +15,7 @@
  */
 
 import React from "react";
-import StoreProvider, {
-  createCommitmentStore,
-  createCommitmentStoreActions,
-} from "../../StoreProvider";
+import StoreProvider, { createCommitmentStore, createCommitmentStoreActions } from "../../StoreProvider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import useGetConversions from "./useGetConversions";
 import { renderHook, waitFor } from "@testing-library/react";
@@ -69,10 +66,7 @@ describe("test useGetConversions", () => {
         }
       );
     });
-    expect(result.current.conversions.data).toEqual([
-      "conversionA",
-      "conversionB",
-    ]);
+    expect(result.current.conversions.data).toEqual(["conversionA", "conversionB"]);
     expect(result.current.commitmentStore.showConversionOption).toBe(true);
   });
   test("should not return values on non hana resources", async () => {
@@ -112,8 +106,6 @@ describe("test useGetConversions", () => {
       );
     });
     expect(result.current.commitmentStore.showConversionOption).toBe(false);
-    expect(result.current.commitmentStore.toast.message).toEqual(
-      "Error: failed to fetch content"
-    );
+    expect(result.current.commitmentStore.toast.message).toEqual("Error: failed to fetch content");
   });
 });

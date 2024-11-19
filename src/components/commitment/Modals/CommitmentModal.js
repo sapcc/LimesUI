@@ -34,16 +34,7 @@ import { formatTimeISO8160 } from "../../../lib/utils";
 const label = "font-semibold";
 
 const CommitmentModal = (props) => {
-  const {
-    action,
-    az,
-    canConfirm,
-    commitment,
-    minConfirmDate,
-    onModalClose,
-    subText,
-    title,
-  } = {
+  const { action, az, canConfirm, commitment, minConfirmDate, onModalClose, subText, title } = {
     ...props,
   };
   const unit = new Unit(commitment.unit);
@@ -52,17 +43,11 @@ const CommitmentModal = (props) => {
   });
   const hasMinConfirmDate = minConfirmDate ? true : false;
   // Show Calendar if: 1.) min_confirm_by field is set 2.) Not enough capacity is available on limes.
-  const [showCalendar, setShowCalendar] = React.useState(
-    hasMinConfirmDate || !canConfirm
-  );
+  const [showCalendar, setShowCalendar] = React.useState(hasMinConfirmDate || !canConfirm);
   // Identify if a commitment will be set on the current day.
-  const [isCurrentDayCommit, setIsCurrentDayCommit] = React.useState(
-    minConfirmDate ? false : true
-  );
+  const [isCurrentDayCommit, setIsCurrentDayCommit] = React.useState(minConfirmDate ? false : true);
   // The calendar start date primarily uses the API date and defaults to todays timestamp.
-  const startDate = minConfirmDate
-    ? moment.unix(minConfirmDate)._d
-    : moment()._d;
+  const startDate = minConfirmDate ? moment.unix(minConfirmDate)._d : moment()._d;
   const [selectedDate, setSelectedDate] = React.useState(startDate);
   const formattedDate = formatTimeISO8160(moment(selectedDate).unix());
 
@@ -102,12 +87,7 @@ const CommitmentModal = (props) => {
       title={title}
       open={true}
       modalFooter={
-        <BaseFooter
-          onModalClose={onModalClose}
-          guardFns={[checkInput]}
-          actionFn={onConfirm}
-          variant={"primary"}
-        />
+        <BaseFooter onModalClose={onModalClose} guardFns={[checkInput]} actionFn={onConfirm} variant={"primary"} />
       }
       onCancel={() => onModalClose()}
     >
@@ -119,11 +99,7 @@ const CommitmentModal = (props) => {
           text="No capacity available. Confirmation delay possible."
         />
       )}
-      <DataGrid
-        columns={2}
-        className={!showCalendar ? "mb-6" : "mb-0"}
-        columnMaxSize="1fr"
-      >
+      <DataGrid columns={2} className={!showCalendar ? "mb-6" : "mb-0"} columnMaxSize="1fr">
         <DataGridRow>
           <DataGridCell className={label}>Availability Zone:</DataGridCell>
           <DataGridCell>{az}</DataGridCell>
@@ -135,9 +111,7 @@ const CommitmentModal = (props) => {
         <DataGridRow>
           <DataGridCell className={label}>Duration:</DataGridCell>
           <DataGridCell>
-            {commitment.duration +
-              (commitment?.durationLabel &&
-                " " + "(" + commitment.durationLabel + ")")}
+            {commitment.duration + (commitment?.durationLabel && " " + "(" + commitment.durationLabel + ")")}
           </DataGridCell>
         </DataGridRow>
         <DataGridRow>

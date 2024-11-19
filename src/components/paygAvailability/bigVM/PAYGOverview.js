@@ -73,23 +73,13 @@ const PAYGOverview = () => {
 
   return (
     <>
-      {isError && (
-        <Message
-          className="mb-2"
-          variant="warning"
-          text={dismantleError(error)}
-        />
-      )}
+      {isError && <Message className="mb-2" variant="warning" text={dismantleError(error)} />}
       {placeableVMs.length > 0 && (
         <Message className="mb-4 font-medium" variant="info">
           <div>
-            HANA resources estimated with Cerebro share their available capacity
-            with others in the same category.
+            HANA resources estimated with Cerebro share their available capacity with others in the same category.
           </div>
-          <div>
-            Creating a HANA VM of one flavor might reduce the availability of
-            the others.
-          </div>
+          <div>Creating a HANA VM of one flavor might reduce the availability of the others.</div>
         </Message>
       )}
       {isLoading && <LoadingIndicator className={`m-auto`} />}

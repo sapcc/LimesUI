@@ -15,13 +15,7 @@
  */
 
 import React from "react";
-import {
-  Stack,
-  Icon,
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@cloudoperators/juno-ui-components";
+import { Stack, Icon, Tooltip, TooltipContent, TooltipTrigger } from "@cloudoperators/juno-ui-components";
 import { t } from "../../../lib/utils";
 import { Unit } from "../../../lib/unit";
 import { isAZUnaware } from "../../../lib/utils";
@@ -76,17 +70,10 @@ const PAYGResource = (props) => {
     return availableCerebroFlavors - unusedCommitments;
   }
 
-  const availableResources = azUnaware
-    ? getAZUnawareAvailability()
-    : getAvailableResourcesFromCerebro();
+  const availableResources = azUnaware ? getAZUnawareAvailability() : getAvailableResourcesFromCerebro();
 
   return (
-    <Stack
-      key={resource.name}
-      direction="horizontal"
-      gap="1"
-      className="items-center"
-    >
+    <Stack key={resource.name} direction="horizontal" gap="1" className="items-center">
       <span
         className={`box-border h-2 w-2 ${
           availableResources > 0 ? "bg-theme-success" : "bg-theme-warning"
@@ -98,10 +85,7 @@ const PAYGResource = (props) => {
         {azUnaware && createTooltip(resource, "Resource is AZ unaware.")}
       </Stack>
       <span className="text-xs">
-        {availableResources < 0
-          ? unit.format(0)
-          : unit.format(availableResources)}{" "}
-        available
+        {availableResources < 0 ? unit.format(0) : unit.format(availableResources)} available
       </span>
     </Stack>
   );

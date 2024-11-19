@@ -15,14 +15,7 @@
  */
 
 import React from "react";
-import {
-  DataGrid,
-  DataGridRow,
-  DataGridCell,
-  Modal,
-  Select,
-  SelectOption,
-} from "@cloudoperators/juno-ui-components";
+import { DataGrid, DataGridRow, DataGridCell, Modal, Select, SelectOption } from "@cloudoperators/juno-ui-components";
 import BaseFooter from "./BaseComponents/BaseFooter";
 import { createCommitmentStore } from "../../StoreProvider";
 import { Unit, valueWithUnit } from "../../../lib/unit";
@@ -53,13 +46,7 @@ const UpdateDurationModal = (props) => {
         className="max-h-full"
         title={title}
         open={true}
-        modalFooter={
-          <BaseFooter
-            onModalClose={onModalClose}
-            guardFns={[checkInput]}
-            actionFn={onConfirm}
-          />
-        }
+        modalFooter={<BaseFooter onModalClose={onModalClose} guardFns={[checkInput]} actionFn={onConfirm} />}
         onCancel={() => {
           onModalClose();
         }}
@@ -67,14 +54,10 @@ const UpdateDurationModal = (props) => {
         <DataGrid columns={2} columnMaxSize="1fr">
           <DataGridRow>
             <DataGridCell className="font-semibold">Amount</DataGridCell>
-            <DataGridCell>
-              {valueWithUnit(commitment.amount, unit)}
-            </DataGridCell>
+            <DataGridCell>{valueWithUnit(commitment.amount, unit)}</DataGridCell>
           </DataGridRow>
           <DataGridRow>
-            <DataGridCell className="font-semibold">
-              Available Durations
-            </DataGridCell>
+            <DataGridCell className="font-semibold">Available Durations</DataGridCell>
             <DataGridCell>
               <Select
                 data-testid="updateDurationInput"

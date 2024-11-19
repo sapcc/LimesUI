@@ -36,9 +36,7 @@ const MenuItemBuilder = ({ children, callBack }) => {
   );
 };
 
-const MenuIcon = ({ style, ...other }) => (
-  <Icon size="16" {...style} {...other} />
-);
+const MenuIcon = ({ style, ...other }) => <Icon size="16" {...style} {...other} />;
 MenuIcon.displayName = "Icon";
 MenuItemBuilder.Icon = MenuIcon;
 

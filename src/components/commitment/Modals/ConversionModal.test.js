@@ -65,8 +65,8 @@ describe("test conversion modal", () => {
     const confirmInput = screen.getByTestId("confirmInput");
     const confirmButton = screen.getByTestId("modalConfirm");
     await waitFor(() => {
-        expect(confirmButton).toBeDisabled();
-    })
+      expect(confirmButton).toBeDisabled();
+    });
     fireEvent.click(targetInput);
     const conversion2 = screen.getByTestId("targetResourceB");
     fireEvent.click(conversion2);
@@ -116,9 +116,7 @@ describe("test conversion modal", () => {
     });
     fireEvent.change(conversionInput, { target: { value: 2 } });
     await waitFor(() => {
-      expect(
-        screen.getByText(/please enter a valid amount./i)
-      ).toBeInTheDocument();
+      expect(screen.getByText(/please enter a valid amount./i)).toBeInTheDocument();
     });
     fireEvent.change(conversionInput, { target: { value: 3 } });
     await waitFor(() => {

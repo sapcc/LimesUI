@@ -16,11 +16,7 @@
 
 import React from "react";
 import { globalStore } from "../StoreProvider";
-import {
-  DataGridCell,
-  DataGridRow,
-  Stack,
-} from "@cloudoperators/juno-ui-components";
+import { DataGridCell, DataGridRow, Stack } from "@cloudoperators/juno-ui-components";
 import useMaxQuotaSets from "../shared/useMaxQuotaSets";
 import { Unit, valueWithUnit } from "../../lib/unit";
 
@@ -33,21 +29,18 @@ const ProjectQuotaDetails = (props) => {
   const quota = resource.quota;
   const { scope } = globalStore();
   const unit = new Unit(resource.unit);
-  const { MaxQuotaInput, maxQuotaInputProps, MaxQuotaEdit, maxQuotaEditProps } =
-    useMaxQuotaSets({
-      project: project,
-      resource: resource,
-      serviceType: serviceType,
-      postMaxQuota: setMaxQuota,
-    });
+  const { MaxQuotaInput, maxQuotaInputProps, MaxQuotaEdit, maxQuotaEditProps } = useMaxQuotaSets({
+    project: project,
+    resource: resource,
+    serviceType: serviceType,
+    postMaxQuota: setMaxQuota,
+  });
 
   return (
     <DataGridRow>
       <DataGridCell>
         <Stack direction={"vertical"} className="w-full">
-          <div className="truncate">
-            {scope?.isCluster() ? metadata.fullName : projectName}
-          </div>
+          <div className="truncate">{scope?.isCluster() ? metadata.fullName : projectName}</div>
           <div className="text-xs truncate">{projectID}</div>
         </Stack>
       </DataGridCell>

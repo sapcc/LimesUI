@@ -71,9 +71,7 @@ const CommitmentCalendar = (props) => {
         }
 
         // Timestamp needs to match server time in UTC.
-        pickedDate.setHours(
-          pickedDate.getHours() + Math.abs(pickedDate.getTimezoneOffset() / 60)
-        );
+        pickedDate.setHours(pickedDate.getHours() + Math.abs(pickedDate.getTimezoneOffset() / 60));
 
         setSelectedDate(pickedDate);
       }}
@@ -81,11 +79,7 @@ const CommitmentCalendar = (props) => {
       disabled={{ before: startDate }}
       selected={selectedDate}
       footer={
-        errorState && (
-          <div className="text-xs text-theme-error">
-            Selected date must be today or in the future.
-          </div>
-        )
+        errorState && <div className="text-xs text-theme-error">Selected date must be today or in the future.</div>
       }
     />
   );

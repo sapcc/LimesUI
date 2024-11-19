@@ -50,9 +50,7 @@ describe("test Commitment Calendar", () => {
     Date.now = jest.fn(() => new Date("2024-01-01T00:00:00.000Z"));
     render(<UseExampleCmp />);
     expect(screen.getByText(/January 2024/i)).toBeInTheDocument();
-    const previousMonthSelect = screen.getByLabelText(
-      /Go to the Previous Month/i
-    );
+    const previousMonthSelect = screen.getByLabelText(/Go to the Previous Month/i);
     fireEvent.click(previousMonthSelect);
     expect(screen.getByText(/December 2023/i)).toBeInTheDocument();
     const nextMonthSelect = screen.getByLabelText(/Go to the Next Month/i);
@@ -67,7 +65,7 @@ describe("test Commitment Calendar", () => {
     render(<UseExampleCmp />);
     expect(screen.getByText(/January 2024/i)).toBeInTheDocument();
     const selectedDate = screen.getByLabelText(/selected/i);
-    fireEvent.click(selectedDate)
-    expect(screen.queryByText(/Selected date must be today or in the future/i)).not.toBe(null)
+    fireEvent.click(selectedDate);
+    expect(screen.queryByText(/Selected date must be today or in the future/i)).not.toBe(null);
   });
 });

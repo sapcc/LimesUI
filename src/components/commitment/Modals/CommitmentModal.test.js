@@ -26,9 +26,7 @@ describe("test commitment creation modal", () => {
   test("no capacity commitment creation with no minConfirm date should be 60 seconds in the future", () => {
     Date.now = jest.fn(() => new Date("2024-01-01T00:00:00.000Z"));
     const onConfirm = jest.fn((confirm_by) => {
-      expect(confirm_by).toEqual(
-        moment(new Date("2024-01-01T00:01:00.000Z")).utc().unix()
-      );
+      expect(confirm_by).toEqual(moment(new Date("2024-01-01T00:01:00.000Z")).utc().unix());
     });
     const onClose = jest.fn(() => {});
     const newCommitment = { ...initialCommitmentObject };
@@ -61,9 +59,7 @@ describe("test commitment creation modal", () => {
   test("same day commit", () => {
     Date.now = jest.fn(() => new Date("2024-01-01T00:00:00.000Z"));
     const onConfirm = jest.fn((confirm_by) => {
-      expect(confirm_by).toEqual(
-        moment(new Date("2024-01-01T00:00:00.000Z")).utc().unix()
-      );
+      expect(confirm_by).toEqual(moment(new Date("2024-01-01T00:00:00.000Z")).utc().unix());
     });
     const onClose = jest.fn(() => {});
     const newCommitment = { ...initialCommitmentObject };
@@ -76,9 +72,7 @@ describe("test commitment creation modal", () => {
           subText="Commit"
           az={"az1"}
           canConfirm={true}
-          minConfirmDate={moment(new Date("2024-01-01T00:00:00.000Z"))
-            .utc()
-            .unix()}
+          minConfirmDate={moment(new Date("2024-01-01T00:00:00.000Z")).utc().unix()}
           commitment={newCommitment}
           action={onConfirm}
           onModalClose={onClose}
@@ -97,9 +91,7 @@ describe("test commitment creation modal", () => {
   test("create commitment in the future", () => {
     Date.now = jest.fn(() => new Date("2024-01-01T00:00:00.000Z"));
     const onConfirm = jest.fn((confirm_by) => {
-      expect(confirm_by).toEqual(
-        moment(new Date("2024-01-31T00:00:00.000Z")).utc().unix()
-      );
+      expect(confirm_by).toEqual(moment(new Date("2024-01-31T00:00:00.000Z")).utc().unix());
     });
     const onClose = jest.fn(() => {});
     const newCommitment = { ...initialCommitmentObject };
@@ -112,9 +104,7 @@ describe("test commitment creation modal", () => {
           subText="Commit"
           az={"az1"}
           canConfirm={true}
-          minConfirmDate={moment(new Date("2024-01-02T00:00:00.000Z"))
-            .utc()
-            .unix()}
+          minConfirmDate={moment(new Date("2024-01-02T00:00:00.000Z")).utc().unix()}
           commitment={newCommitment}
           action={onConfirm}
           onModalClose={onClose}
@@ -142,9 +132,7 @@ describe("test commitment creation modal", () => {
   test("open and close calendar", () => {
     Date.now = jest.fn(() => new Date("2024-01-01T00:00:00.000Z"));
     const onConfirm = jest.fn((confirm_by) => {
-      expect(confirm_by).toEqual(
-        moment(new Date("2024-01-01T00:00:00.000Z")).utc().unix()
-      );
+      expect(confirm_by).toEqual(moment(new Date("2024-01-01T00:00:00.000Z")).utc().unix());
     });
     const onClose = jest.fn(() => {});
     const newCommitment = { ...initialCommitmentObject };

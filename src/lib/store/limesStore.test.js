@@ -16,18 +16,12 @@
 
 import React from "react";
 import { renderHook, act } from "@testing-library/react";
-import StoreProvider, {
-  projectStore,
-  projectStoreActions,
-  globalStoreActions,
-} from "../../components/StoreProvider";
+import StoreProvider, { projectStore, projectStoreActions, globalStoreActions } from "../../components/StoreProvider";
 
 // Expected is a dual bar display at the UI
 // Because only qa-de-1a has commitments: usagePerCommitted only takes this into account
 // The remaining AZ's don't have commitments: They get added to usagePerQuota
-const usagePerCommitted = 10;
 const totalCommitments = 30;
-const usagePerQuota = 50;
 
 const projectData = {
   project: {
@@ -89,46 +83,32 @@ describe("limesStore", () => {
   describe("project", () => {
     test("restructure report - new model", () => {
       act(() => {
-        const structuredData =
-          store.result.current.globalStoreActions.restructureReport(projectData.project);
+        const structuredData = store.result.current.globalStoreActions.restructureReport(projectData.project);
         store.result.current.projectStoreActions.setProjectData(structuredData);
       });
-      expect(
-        store.result.current.projectStore.projectData.categories.compute
-          .resources[0].quota
-      ).toEqual(60);
-      expect(store.result.current.projectStore.projectData.metadata.id).toEqual(
-        "123"
-      );
-      expect(
-        store.result.current.projectStore.projectData.overview.areas.compute[0]
-      ).toEqual("compute");
+      expect(store.result.current.projectStore.projectData.categories.compute.resources[0].quota).toEqual(60);
+      expect(store.result.current.projectStore.projectData.metadata.id).toEqual("123");
+      expect(store.result.current.projectStore.projectData.overview.areas.compute[0]).toEqual("compute");
     });
 
     test("restructure report - old model", () => {
       act(() => {
         const copy = { ...projectData };
         copy.project.services[0].resources[0].quota = 100;
-        const structuredData =
-          store.result.current.globalStoreActions.restructureReport(copy.project);
+        const structuredData = store.result.current.globalStoreActions.restructureReport(copy.project);
         store.result.current.projectStoreActions.setProjectData(structuredData);
       });
-      expect(
-        store.result.current.projectStore.projectData.categories.compute
-          .resources[0].quota
-      ).toEqual(100);
+      expect(store.result.current.projectStore.projectData.categories.compute.resources[0].quota).toEqual(100);
     });
 
     test("values of added attributes", () => {
       act(() => {
-        const structuredData =
-          store.result.current.globalStoreActions.restructureReport(projectData.project);
+        const structuredData = store.result.current.globalStoreActions.restructureReport(projectData.project);
         store.result.current.projectStoreActions.setProjectData(structuredData);
       });
-      expect(
-        store.result.current.projectStore.projectData.categories.compute
-          .resources[0].totalCommitments
-      ).toEqual(totalCommitments);
+      expect(store.result.current.projectStore.projectData.categories.compute.resources[0].totalCommitments).toEqual(
+        totalCommitments
+      );
     });
   });
 
@@ -137,9 +117,7 @@ describe("limesStore", () => {
       act(() => {
         store.result.current.projectStoreActions.setCommitments(commitments);
       });
-      expect(store.result.current.projectStore.commitments[0].created_at).toEqual(
-        2
-      );
+      expect(store.result.current.projectStore.commitments[0].created_at).toEqual(2);
     });
   });
 });

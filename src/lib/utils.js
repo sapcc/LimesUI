@@ -40,8 +40,7 @@ export function formatTimeISO8160(unixTimeStamp) {
 
 // Used to provide a uniform time format throughout the UI.
 export function formatTime(unixTimeStamp, formatter) {
-  if (!moment.unix(unixTimeStamp).isValid() || unixTimeStamp == "")
-    return false;
+  if (!moment.unix(unixTimeStamp).isValid() || unixTimeStamp == "") return false;
   return moment.unix(unixTimeStamp).format(formatter);
 }
 
@@ -57,13 +56,13 @@ export const byUIString = (a, b) => {
 //named after their service come first.
 export const byNameIn = (serviceType) => (a, b) => {
   if (t(serviceType) == t(a)) {
-    return -1
+    return -1;
   }
   if (t(serviceType) == t(b)) {
-    return +1
+    return +1;
   }
-  return byUIString(a, b)
-}
+  return byUIString(a, b);
+};
 
 // A sorting method for resources in a category. This is not just a predicate
 // because we need to traverse the entire list to compute individual sorting
@@ -99,11 +98,7 @@ export const sortByLogicalOrderAndName = (resources) => {
 };
 
 export const tracksQuota = (res) => {
-  return (
-    res.quota !== undefined ||
-    res.domains_quota !== undefined ||
-    res.projects_quota !== undefined
-  );
+  return res.quota !== undefined || res.domains_quota !== undefined || res.projects_quota !== undefined;
 };
 
 // get specific resource from provided resource list.

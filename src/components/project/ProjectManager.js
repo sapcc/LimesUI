@@ -18,22 +18,11 @@ import React from "react";
 import ProjectTable from "./ProjectTable";
 import { useQuery } from "@tanstack/react-query";
 import { projectStore, projectStoreActions } from "../StoreProvider";
-import {
-  globalStoreActions,
-  domainStoreActions,
-  domainStore,
-} from "../StoreProvider";
+import { globalStoreActions, domainStoreActions, domainStore } from "../StoreProvider";
 import { LoadingIndicator } from "@cloudoperators/juno-ui-components";
 
 const ProjectManager = (props) => {
-  const {
-    serviceType,
-    currentCategory,
-    currentResource,
-    currentAZ,
-    subRoute,
-    setMaxQuota,
-  } = props;
+  const { serviceType, currentCategory, currentResource, currentAZ, subRoute, setMaxQuota } = props;
   const resourceName = currentResource.name;
   const { refetchProjectAPI } = projectStore();
   const { setRefetchProjectAPI } = projectStoreActions();
@@ -41,11 +30,7 @@ const ProjectManager = (props) => {
   const { setProjects } = domainStoreActions();
   const { restructureReport } = globalStoreActions();
   const projectsQueryResult = useQuery({
-    queryKey: [
-      "projectsInDomain",
-      serviceType,
-      resourceName,
-    ],
+    queryKey: ["projectsInDomain", serviceType, resourceName],
   });
   const { data: projectsInDomain, isLoading } = projectsQueryResult;
   const sortProjects = React.useRef(true);

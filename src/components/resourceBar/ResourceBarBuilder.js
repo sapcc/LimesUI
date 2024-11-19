@@ -39,15 +39,10 @@ const ResourceBarBuilder = (props) => {
   } = { ...props };
   const { scope } = globalStore();
   const unit = new Unit(unitName || "");
-  const clusterView = paygView
-    ? true
-    : clusterQuotaView
-    ? false
-    : scope.isCluster();
+  const clusterView = paygView ? true : clusterQuotaView ? false : scope.isCluster();
 
   // fillLabel: displays commitment or current usage.
-  const showCommitmentOrUsage =
-    usage > commitment && commitment > 0 ? commitment : usage;
+  const showCommitmentOrUsage = usage > commitment && commitment > 0 ? commitment : usage;
 
   // capacityLabel: displays commitments, quota or usage (on usageOnly resources)
   const commitmentOrQuota = commitment > 0 ? commitment : quota;

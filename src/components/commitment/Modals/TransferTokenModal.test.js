@@ -26,11 +26,7 @@ describe("test transfer token modal", () => {
     confirmedCommitment.transfer_token = "EXAMPLE_TOKEN";
     render(
       <PortalProvider>
-        <TransferTokenModal
-          title="Transfer Commitment"
-          subText="Transfer"
-          commitment={confirmedCommitment}
-        />
+        <TransferTokenModal title="Transfer Commitment" subText="Transfer" commitment={confirmedCommitment} />
       </PortalProvider>
     );
     expect(screen.getByText("EXAMPLE_TOKEN")).toBeInTheDocument();

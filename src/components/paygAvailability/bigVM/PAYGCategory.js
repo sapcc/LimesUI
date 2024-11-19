@@ -18,7 +18,6 @@ import React from "react";
 import { Grid, GridRow, GridColumn } from "@cloudoperators/juno-ui-components";
 import { byUIString, t } from "../../../lib/utils";
 import { categoryTitle } from "../stylescss";
-import { globalStore } from "../../StoreProvider";
 import { PAYG_AZUNAWARE_KEY } from "../../../lib/constants";
 import PAYGLimebro from "./PAYGLimebro";
 import { isAZUnaware } from "../../../lib/utils";
@@ -31,10 +30,7 @@ import { isAZUnaware } from "../../../lib/utils";
 const PAYGCategory = (props) => {
   const { categoryName, cerebro, category, areaAZs } = props;
   const { resources } = category;
-  const editableResources = resources.filter(
-    (res) => res.editableResource === true
-  );
-  const { scope } = globalStore();
+  const editableResources = resources.filter((res) => res.editableResource === true);
 
   // Disable Baremetal Flavors
   if (categoryName === "per_flavor_baremetal") return;
@@ -82,9 +78,7 @@ const PAYGCategory = (props) => {
 
     return [validAvailabilityZones, hasMixedAZAwareness];
   }, [categoryName]);
-  const azColumnWidth = Math.floor(
-    12 / filterAvailabilityZones(areaAZs).length
-  );
+  const azColumnWidth = Math.floor(12 / filterAvailabilityZones(areaAZs).length);
   const forwardProps = {
     validAvailabilityZones,
     azColumnWidth,
@@ -101,20 +95,14 @@ const PAYGCategory = (props) => {
                 return (
                   <GridColumn cols={azColumnWidth} key={az}>
                     <div className="font-bold mb-2">
-                      {hasMixedAZAwareness && idx == 0
-                        ? PAYG_AZUNAWARE_KEY + " / " + az
-                        : az}
+                      {hasMixedAZAwareness && idx == 0 ? PAYG_AZUNAWARE_KEY + " / " + az : az}
                     </div>
                   </GridColumn>
                 );
               })}
             </GridRow>
           </Grid>
-          <PAYGLimebro
-            resources={editableResources.sort(byUIString)}
-            cerebro={cerebro}
-            {...forwardProps}
-          />
+          <PAYGLimebro resources={editableResources.sort(byUIString)} cerebro={cerebro} {...forwardProps} />
         </>
       )}
     </div>

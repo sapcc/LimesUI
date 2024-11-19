@@ -16,18 +16,9 @@
 
 import React from "react";
 import UpdateDurationModal from "./UpdateDurationModal";
-import {
-  act,
-  renderHook,
-  screen,
-  fireEvent,
-  waitFor,
-} from "@testing-library/react";
+import { act, renderHook, screen, fireEvent, waitFor } from "@testing-library/react";
 import { PortalProvider } from "@cloudoperators/juno-ui-components";
-import StoreProvider, {
-  createCommitmentStore,
-  createCommitmentStoreActions,
-} from "../../StoreProvider";
+import StoreProvider, { createCommitmentStore, createCommitmentStoreActions } from "../../StoreProvider";
 import { initialCommitmentObject } from "../../../lib/constants";
 
 const commitment = { ...initialCommitmentObject };

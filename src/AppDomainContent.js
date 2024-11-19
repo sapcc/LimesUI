@@ -16,11 +16,7 @@
 
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
-import {
-  domainStore,
-  domainStoreActions,
-  globalStoreActions,
-} from "./components/StoreProvider";
+import { domainStore, domainStoreActions, globalStoreActions } from "./components/StoreProvider";
 import ContentRoutes from "./ContentRoutes";
 import { LoadingIndicator, Message } from "@cloudoperators/juno-ui-components";
 import useClusterAPI from "./hooks/useClusterAPI";
@@ -54,11 +50,7 @@ const AppDomainContent = (props) => {
   ) : cluster.isLoading || !cluster.data ? (
     <LoadingIndicator className={"m-auto"} />
   ) : (
-    <ContentRoutes
-      queryResult={domainQueryResult}
-      parsedData={domainData}
-      canEdit={props.canEdit}
-    />
+    <ContentRoutes queryResult={domainQueryResult} parsedData={domainData} canEdit={props.canEdit} />
   );
 };
 

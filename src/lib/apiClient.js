@@ -32,9 +32,7 @@ const useQueryClientFn = (isMockApi) => {
   async function responseHandler(response, addStatusCode = true) {
     if (!response.ok) {
       const text = await response.text();
-      const errorText = addStatusCode
-        ? `${text} (Code: ${response.status})`
-        : `${text}`;
+      const errorText = addStatusCode ? `${text} (Code: ${response.status})` : `${text}`;
       throw new Error(errorText);
     }
     return response.json();
@@ -98,11 +96,7 @@ const useQueryClientFn = (isMockApi) => {
     });
 
     queryClient.setMutationDefaults(["deleteCommitment"], {
-      mutationFn: async ({
-        domainID: domID,
-        projectID: projID,
-        commitmentID,
-      }) => {
+      mutationFn: async ({ domainID: domID, projectID: projID, commitmentID }) => {
         projID ? (pid = projID) : (pid = projectID);
         domID ? (did = domID) : (did = domainID);
         const url = `${endpoint}/v1/domains/${did}/projects/${pid}/commitments/${commitmentID}`;
@@ -176,12 +170,7 @@ const useQueryClientFn = (isMockApi) => {
     });
     queryClient.setMutationDefaults(["convertCommitment"], {
       // Receives the target domainID and projectID to transfer the commitment to.
-      mutationFn: async ({
-        domainID: domID,
-        projectID: projID,
-        commitmentID,
-        payload,
-      }) => {
+      mutationFn: async ({ domainID: domID, projectID: projID, commitmentID, payload }) => {
         projID ? (pid = projID) : (pid = projectID);
         domID ? (did = domID) : (did = domainID);
         const url = `${endpoint}/v1/domains/${did}/projects/${pid}/commitments/${commitmentID}/convert`;
@@ -198,12 +187,7 @@ const useQueryClientFn = (isMockApi) => {
     });
 
     queryClient.setMutationDefaults(["updateCommitmentDuration"], {
-      mutationFn: async ({
-        domainID: domID,
-        projectID: projID,
-        commitmentID,
-        payload,
-      }) => {
+      mutationFn: async ({ domainID: domID, projectID: projID, commitmentID, payload }) => {
         projID ? (pid = projID) : (pid = projectID);
         domID ? (did = domID) : (did = domainID);
         const url = `${endpoint}/v1/domains/${did}/projects/${pid}/commitments/${commitmentID}/update-duration`;
@@ -262,12 +246,7 @@ const useQueryClientFn = (isMockApi) => {
     });
     queryClient.setMutationDefaults(["startCommitmentTransfer"], {
       // payload contains amount and transferStatus (unlisted or public).
-      mutationFn: async ({
-        payload,
-        domainID: domID,
-        projectID,
-        commitmentID,
-      }) => {
+      mutationFn: async ({ payload, domainID: domID, projectID, commitmentID }) => {
         domID ? (dID = domID) : (dID = domainID);
         const url = `${endpoint}/v1/domains/${dID}/projects/${projectID}/commitments/${commitmentID}/start-transfer`;
         const response = await fetchProxy(url, {
@@ -283,12 +262,7 @@ const useQueryClientFn = (isMockApi) => {
     });
     queryClient.setMutationDefaults(["transferCommitment"], {
       // Receives the target domainID and projectID to transfer the commitment to.
-      mutationFn: async ({
-        domainID: domID,
-        projectID,
-        commitmentID,
-        transferToken,
-      }) => {
+      mutationFn: async ({ domainID: domID, projectID, commitmentID, transferToken }) => {
         domID ? (dID = domID) : (dID = domainID);
         const url = `${endpoint}/v1/domains/${dID}/projects/${projectID}/transfer-commitment/${commitmentID}`;
         const response = await fetchProxy(url, {
@@ -311,9 +285,7 @@ const useQueryClientFn = (isMockApi) => {
     queryClient.setQueryDefaults(["clusterData"], {
       queryFn: async ({ queryKey }) => {
         const isDetail = queryKey[1];
-        const url = isDetail
-          ? `${endpoint}/v1/clusters/current?detail`
-          : `${endpoint}/v1/clusters/current`;
+        const url = isDetail ? `${endpoint}/v1/clusters/current?detail` : `${endpoint}/v1/clusters/current`;
         const response = await fetchProxy(url, {
           method: "GET",
           headers: {
@@ -353,13 +325,9 @@ const useQueryClientFn = (isMockApi) => {
         // Don't retrieve a token in dev to ensure the mocks work.
         const token = isMockApi
           ? null
-          : [...document.querySelectorAll("meta")].find(
-              (n) => n.name.toLowerCase() == "csrf-token"
-            ).content;
+          : [...document.querySelectorAll("meta")].find((n) => n.name.toLowerCase() == "csrf-token").content;
         const host = isMockApi ? "host" : window.location.host;
-        const path = isMockApi
-          ? "/domain/project/resources/project"
-          : getCerebroBaseURL();
+        const path = isMockApi ? "/domain/project/resources/project" : getCerebroBaseURL();
 
         const url = `https://${host}${path}/bigvm_resources`;
         const response = await fetchProxy(url, {
