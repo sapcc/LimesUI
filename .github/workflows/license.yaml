@@ -25,8 +25,8 @@ jobs:
         run: >
           files=$(addlicense --check -- src/);
           if [[ $(echo $files | wc -c) -ne 0 ]]; then
-              echo $files
-              exit 1
+              echo $files;
+              exit 1;
           else
               echo "license check succeeded."
           fi
