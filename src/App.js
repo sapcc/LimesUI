@@ -37,6 +37,7 @@ import clusterApiDB from "./lib/fixtures/cluster_api.json";
 import dayPickerStyle from "react-day-picker/dist/style.css?inline";
 import AsyncWorker from "./AsyncWorker";
 import { Scope } from "./lib/scope";
+import { useEffect } from "react";
 
 /* --------------------------- */
 
