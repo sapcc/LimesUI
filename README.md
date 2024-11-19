@@ -1,6 +1,6 @@
 # limesUI App
 
-Provides a elektra interface for the new resource management and billing model for the CCloud OpenStack infrastructure. Utilizes the API endpoints provided by Limes.
+Provides an elektra interface for the new resource management and billing model for the CCloud OpenStack infrastructure. Utilizes the API endpoints provided by Limes.
 
 A more detailed description about the architecture can be found here:
 [Architecture](/architecture/architectureDescription.md)
