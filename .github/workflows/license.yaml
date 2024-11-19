@@ -26,7 +26,7 @@ jobs:
         run: go install github.com/google/addlicense@latest
       - name: check license headers
         run: >
-          files=$(addlicense --check -- src/)
+          files=$(addlicense --check -- src/);
           if [[ $files | wc -c) -ne 0 ]]; then
               echo $files
               exit 1
