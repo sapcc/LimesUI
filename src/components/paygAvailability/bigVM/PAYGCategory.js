@@ -18,7 +18,6 @@ import React from "react";
 import { Grid, GridRow, GridColumn } from "@cloudoperators/juno-ui-components";
 import { byUIString, t } from "../../../lib/utils";
 import { categoryTitle } from "../stylescss";
-import { globalStore } from "../../StoreProvider";
 import { PAYG_AZUNAWARE_KEY } from "../../../lib/constants";
 import PAYGLimebro from "./PAYGLimebro";
 import { isAZUnaware } from "../../../lib/utils";
@@ -34,7 +33,6 @@ const PAYGCategory = (props) => {
   const editableResources = resources.filter(
     (res) => res.editableResource === true
   );
-  const { scope } = globalStore();
 
   // Disable Baremetal Flavors
   if (categoryName === "per_flavor_baremetal") return;

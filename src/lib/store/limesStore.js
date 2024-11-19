@@ -289,7 +289,7 @@ const limesStore = (set, get) => ({
         //      = { foo: [1, 3], bar: [2] }
         const groupKeys = (entries) => {
           const result = {};
-          for (let [k, v] of entries) {
+          for (let [k, _] of entries) {
             result[k] = [];
           }
           for (let [k, v] of entries) {

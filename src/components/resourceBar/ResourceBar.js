@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect, useRef } from "react";
+import React from "react";
 import { Stack } from "@cloudoperators/juno-ui-components";
 
-const LABEL_MARGIN = 10;
 const resourceBarWrapper = ``;
 
 const barConainer = `

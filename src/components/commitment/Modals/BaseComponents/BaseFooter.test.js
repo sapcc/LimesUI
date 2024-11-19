@@ -53,7 +53,7 @@ describe("test Footer", () => {
     render(<UseExampleCmp guardFns={guardFns} actionFn={actionFn} />);
     const button = screen.getByTestId(/modalConfirm/i);
     fireEvent.click(button);
-    expect(console.log).toBeCalledWith("actioned");
+    expect(console.log).toHaveBeenCalledWith("actioned");
   });
 
   test("negative function execution", () => {
@@ -69,7 +69,7 @@ describe("test Footer", () => {
     render(<UseExampleCmp guardFns={guardFns} actionFn={actionFn} />);
     const button = screen.getByTestId(/modalConfirm/i);
     fireEvent.click(button);
-    expect(console.log).not.toBeCalledWith("actioned");
+    expect(console.log).not.toHaveBeenCalledWith("actioned");
   });
 
   test("no props and cancel modal", () => {

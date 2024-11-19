@@ -25,9 +25,7 @@ import StoreProvider, {
 // Expected is a dual bar display at the UI
 // Because only qa-de-1a has commitments: usagePerCommitted only takes this into account
 // The remaining AZ's don't have commitments: They get added to usagePerQuota
-const usagePerCommitted = 10;
 const totalCommitments = 30;
-const usagePerQuota = 50;
 
 const projectData = {
   project: {

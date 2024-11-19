@@ -153,7 +153,7 @@ describe("test Action Operation", () => {
         </StoreProvider>
       </PortalProvider>
     );
-    const { result } = await waitFor(() => {
+    await waitFor(() => {
       return renderHook(
         () => ({
           commitmentStore: createCommitmentStore(),

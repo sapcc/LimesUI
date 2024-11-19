@@ -174,7 +174,7 @@ const EditPanel = (props) => {
         queryKey: [currentProjectID, currentDomainID],
       },
       {
-        onSuccess: (data) => {
+        onSuccess: () => {
           (scope.isDomain() || scope.isCluster()) &&
             setToast(
               "Order of projects might have updated. Please sort the table.",
