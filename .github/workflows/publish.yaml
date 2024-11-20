@@ -31,13 +31,15 @@ jobs:
         run: npm run test
 
       - name: Build
-        run: npm run build
+        run: |
+          npm run build
+          ls -la
 
       - name: Publish to github packages
         run: |
           set +e
           # publish to https://github.com/${{ github.repository_owner }}/packages
-          npm publish --access=public #--dry-run
+          npm publish --access=public --dry-run
 
           if [ $? != 0 ] ; then
             echo "::warning title=PUBLISH::Could not publish to github. Maybe you forgot to increment the version?"
