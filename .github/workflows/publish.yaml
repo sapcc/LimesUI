@@ -2,7 +2,7 @@ name: package-release
 on:
   push:
     branches:
-      - andypf-package
+      - main
     paths:
       - package.json
   # Allows you to run this workflow manually from the Actions tab
@@ -39,7 +39,7 @@ jobs:
         run: |
           set +e
           # publish to https://github.com/${{ github.repository_owner }}/packages
-          npm publish --access=public --dry-run
+          npm publish --access=public #--dry-run
 
           if [ $? != 0 ] ; then
             echo "::warning title=PUBLISH::Could not publish to github. Maybe you forgot to increment the version?"
