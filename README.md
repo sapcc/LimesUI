@@ -27,7 +27,7 @@ npm install
 }
 ```
 
-A more detailed description about available available properties can be found in the [AppProps](/APP_PROPS.md) documentation.
+A more detailed description about available properties can be found in the [AppProps](./APP_PROPS.md) documentation.
 
 If the `mockAPI` attribute is set to `true` the endpint attribute becomes optional.
 
