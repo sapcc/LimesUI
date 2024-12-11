@@ -35,9 +35,9 @@ const CommitmentDurationInputLabel = ({ index = "", allowedDurations = [], commi
   }, [allowedDurations]);
 
   const label = React.useMemo(() => {
-    const isRabate = parseCommitmentDuration(commitmentDuration) >= parseCommitmentDuration("1 year");
+    const isRebate = parseCommitmentDuration(commitmentDuration) >= parseCommitmentDuration("1 year");
 
-    const label = !hasReservationActive ? "" : isRabate ? "rabate" : "reserved only";
+    const label = !hasReservationActive ? "" : isRebate ? "rebate" : "reserved only";
     return label;
   }, [commitmentDuration]);
 
