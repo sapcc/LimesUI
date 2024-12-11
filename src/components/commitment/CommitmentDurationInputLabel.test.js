@@ -39,7 +39,7 @@ describe("test duration input label", () => {
     const allowedDurations = ["3 days", "1 year"];
     const handleSelect = jest.fn((event) => {
       const { label = "" } = event?.props;
-      expect(label).toEqual("rabate");
+      expect(label).toEqual("rebate");
     });
     render(
       <PortalProvider>
@@ -56,7 +56,7 @@ describe("test duration input label", () => {
     const select = screen.getByTestId("selectID");
     fireEvent.click(select);
     await waitFor(() => {
-      expect(screen.queryByText(/rabate/i)).not.toBe(null);
+      expect(screen.queryByText(/rebate/i)).not.toBe(null);
     });
     const targetDuration = screen.getByTestId(/commitmentSelectOption\/1/i);
     fireEvent.click(targetDuration);
@@ -85,7 +85,7 @@ describe("test duration input label", () => {
       expect(screen.queryByText(/reserved only/i)).not.toBe(null);
     });
   });
-  test("> 1 year commitment should display rabate text", async () => {
+  test("> 1 year commitment should display rebate text", async () => {
     const duration = "1 year";
     const allowedDurations = ["3 days", "3 years"];
     render(
@@ -102,7 +102,7 @@ describe("test duration input label", () => {
     const select = screen.getByTestId("selectID");
     fireEvent.click(select);
     await waitFor(() => {
-      expect(screen.queryByText(/rabate/i)).not.toBe(null);
+      expect(screen.queryByText(/rebate/i)).not.toBe(null);
     });
   });
   test("no allowed duration < 1 year should not display any labels", async () => {
@@ -124,7 +124,7 @@ describe("test duration input label", () => {
     await waitFor(() => {
       expect(screen.queryByText(/1 year/i)).not.toBe(null);
       expect(screen.queryByText(/reserved only/i)).toBe(null);
-      expect(screen.queryByText(/rabate/i)).toBe(null);
+      expect(screen.queryByText(/rebate/i)).toBe(null);
     });
   });
 });
