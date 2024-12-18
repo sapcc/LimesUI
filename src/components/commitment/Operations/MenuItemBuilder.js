@@ -19,7 +19,8 @@ import { MenuItem } from "@cloudoperators/juno-ui-components";
 const MenuItemBuilder = (props) => {
   const { icon, text, callBack } = props;
 
-  // TODO: Junos newest version breaks the old handling of the MenuItem. If children are delivered, it will always be treated as a uninteractable <div>. Listeners will be ignored.
+  // Junos newest version breaks the old handling of the MenuItem. If children are delivered, it will always be treated as a uninteractable <div>. Listeners will be ignored.
+  // TODO: Add a test case which calls the modal the menuItem is supposed to call.
   // As a workaround we comply to these changes and implement a workaround which results in icons to always have the default color. This means the Transfor icon won't be indicating in which state it is now.
   return (
     <MenuItem
