@@ -79,7 +79,6 @@ const EditPanel = (props) => {
   const { resetCommitmentTransfer } = useResetCommitment();
   const { commitment: newCommitment } = createCommitmentStore();
   const { toast } = createCommitmentStore();
-  const { currentAZ } = createCommitmentStore();
   const { conversionCommitment } = createCommitmentStore();
   const { currentProject } = createCommitmentStore();
   const { deleteCommitment } = createCommitmentStore();
@@ -88,7 +87,6 @@ const EditPanel = (props) => {
   const { transferFromAndToProject } = createCommitmentStore();
   const { updateDurationCommitment } = createCommitmentStore();
   const { setCommitment } = createCommitmentStoreActions();
-  const { setCurrentAZ } = createCommitmentStoreActions();
   const { setConversionCommitment } = createCommitmentStoreActions();
   const { setDeleteCommitment } = createCommitmentStoreActions();
   const { setIsCommitting } = createCommitmentStoreActions();
@@ -104,15 +102,7 @@ const EditPanel = (props) => {
   const { setRefetchCommitmentAPI } = createCommitmentStoreActions();
   const { setCommitmentIsLoading } = createCommitmentStoreActions();
   const conversionResults = useGetConversions({ serviceType, resourceName });
-
-  React.useEffect(() => {
-    if (!currentAZ) {
-      setCurrentAZ(currentResource.per_az[0][0]);
-    }
-    return () => {
-      setCurrentAZ(null);
-    };
-  }, []);
+  const [currentAZ, setCurrentAZ] = React.useState(currentResource.per_az[0][0]);
 
   // Query can-confirm API. Determine if capacity is sufficient on limes.
   // If a minConfirmDate is set, skip the request. Limes handles capacity concerns.
@@ -404,13 +394,16 @@ const EditPanel = (props) => {
         tracksQuota={tracksQuota}
         isPanelView={true}
         subRoute={subRoute}
+        setCurrentAZ={setCurrentAZ}
       />
       <div className={"sticky top-0 z-[100] bg-juno-grey-light-1 h-8"}>
         {toast.message && (
           <Toast className={"pb-0"} text={toast.message} variant={toast.variant} onDismiss={() => dismissToast()} />
         )}
       </div>
-      {!subRoute && <AvailabilityZoneNav az={currentResource.per_az} currentAZ={currentAZ} />}
+      {!subRoute && (
+        <AvailabilityZoneNav az={currentResource.per_az} currentAZ={currentAZ} setCurrentAZ={setCurrentAZ} />
+      )}
       {scope.isProject() && commitments && (
         <CommitmentTable
           serviceType={serviceType}

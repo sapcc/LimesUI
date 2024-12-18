@@ -101,7 +101,7 @@ const Resource = (props) => {
     editableResource,
   } = props.resource;
   const { scope } = globalStore();
-  const { tracksQuota, isPanelView, subRoute } = {
+  const { tracksQuota, isPanelView, subRoute, setCurrentAZ } = {
     ...props,
   };
   const displayName = t(props.resource.name);
@@ -195,7 +195,8 @@ const Resource = (props) => {
                 }`}
                 onClick={() => {
                   if (!props.isPanelView || subRoute || azName == "unknown") return;
-                  resetCommitment(az);
+                  setCurrentAZ(azName);
+                  resetCommitment();
                 }}
               >
                 <div className={`az-title ${azTitle} flex justify-between`}>

@@ -44,8 +44,8 @@ export const getCerebroBaseURL = () => {
  */
 export class Scope {
   constructor(scopeData) {
-    this.domainID = scopeData.domainID;
-    this.projectID = scopeData.projectID;
+    this.domainID = scopeData?.domainID;
+    this.projectID = scopeData?.projectID;
   }
   appComponent() {
     if (this.projectID) return AppResourceContent;

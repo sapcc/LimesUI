@@ -18,7 +18,6 @@ import { createCommitmentStoreActions } from "../components/StoreProvider";
 import { initialCommitmentObject } from "../lib/constants";
 
 const useResetCommitment = () => {
-  const { setCurrentAZ } = createCommitmentStoreActions();
   const { setIsCommitting } = createCommitmentStoreActions();
   const { setCommitment } = createCommitmentStoreActions();
   const { setTransferredCommitment } = createCommitmentStoreActions();
@@ -31,8 +30,7 @@ const useResetCommitment = () => {
   const { setUpdateDurationCommitment } = createCommitmentStoreActions();
 
   // Handle closure of edit panel.
-  function resetCommitment(az) {
-    setCurrentAZ(az[0]);
+  function resetCommitment() {
     resetURLChangeState();
   }
 

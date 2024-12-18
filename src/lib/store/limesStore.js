@@ -16,6 +16,7 @@
 
 import { CEREBROKEY } from "../constants";
 import { unusedCommitments, uncommittedUsage } from "../../lib/utils";
+import { Scope } from "../scope";
 
 const limesStore = (set, get) => ({
   cluster: {
@@ -188,7 +189,7 @@ const limesStore = (set, get) => ({
     },
   },
   global: {
-    scope: null,
+    scope: new Scope(),
 
     actions: {
       setScope: (scope) => {

@@ -32,12 +32,7 @@ const useConversionAction = (props) => {
     if (!showConversionOption) return;
     const validFlavors = new RegExp("^instances_hana.").exec(resource_name)?.[0];
     if (!validFlavors) return;
-    const menuItem = (
-      <MenuItemBuilder callBack={convertCommitment}>
-        <MenuItemBuilder.Icon icon="edit" title="Convert" />
-        <MenuItemBuilder.Text>Convert</MenuItemBuilder.Text>
-      </MenuItemBuilder>
-    );
+    const menuItem = <MenuItemBuilder icon="edit" text="Convert" callBack={convertCommitment} />;
     updateActions("convert", menuItem, null);
   }, [resource_name, showConversionOption]);
 };

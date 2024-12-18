@@ -29,12 +29,7 @@ const useDeleteAction = (props) => {
 
   React.useEffect(() => {
     if (can_be_deleted) {
-      const menuItem = (
-        <MenuItemBuilder callBack={onCommitmentDelete}>
-          <MenuItemBuilder.Icon icon="cancel" title="Delete" />
-          <MenuItemBuilder.Text>Delete</MenuItemBuilder.Text>
-        </MenuItemBuilder>
-      );
+      const menuItem = <MenuItemBuilder icon="cancel" text="Delete" callBack={onCommitmentDelete} />;
       const toolTip = "deletable";
 
       updateActions("delete", menuItem, toolTip);
