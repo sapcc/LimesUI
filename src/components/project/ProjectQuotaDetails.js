@@ -40,7 +40,7 @@ const ProjectQuotaDetails = (props) => {
     <DataGridRow>
       <DataGridCell>
         <Stack direction={"vertical"} className="w-full">
-          <div className="truncate">{scope?.isCluster() ? metadata.fullName : projectName}</div>
+          <div className="truncate">{scope.isCluster() ? metadata.fullName : projectName}</div>
           <div className="text-xs truncate">{projectID}</div>
         </Stack>
       </DataGridCell>
