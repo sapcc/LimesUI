@@ -28,18 +28,21 @@ const AvailabilityZoneNav = (props) => {
       <Tabs selectedIndex={azIndex} onSelect={() => {}}>
         <TabList>
           {props.az.map((az) => {
-            const azName = az[0]
-            return azName !== "unknown" && azName !== "any" && (
-              <Tab
-                data-testid={`tab/${azName}`}
-                key={azName}
-                onClick={() => {
-                  setCurrentAZ(azName);
-                  resetCommitment();
-                }}
-              >
-                {az[0]}
-              </Tab>
+            const azName = az[0];
+            return (
+              azName !== "unknown" &&
+              azName !== "any" && (
+                <Tab
+                  data-testid={`tab/${azName}`}
+                  key={azName}
+                  onClick={() => {
+                    setCurrentAZ(azName);
+                    resetCommitment();
+                  }}
+                >
+                  {az[0]}
+                </Tab>
+              )
             );
           })}
         </TabList>
