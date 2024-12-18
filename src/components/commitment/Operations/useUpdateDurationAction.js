@@ -39,12 +39,7 @@ const useUpdateDurationAction = (props) => {
   React.useEffect(() => {
     if (validDurations.length == 0) return;
     addValidDuration({ id: commitment.id, durations: validDurations });
-    const menuItem = (
-      <MenuItemBuilder callBack={updateDuration}>
-        <MenuItemBuilder.Icon icon="edit" />
-        <MenuItemBuilder.Text>Duration</MenuItemBuilder.Text>
-      </MenuItemBuilder>
-    );
+    const menuItem = <MenuItemBuilder icon="edit" text="Duration" callBack={updateDuration} />;
     updateActions("durationUpdate", menuItem, null);
   }, [commitment]);
 };

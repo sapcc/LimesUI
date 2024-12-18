@@ -35,14 +35,11 @@ const useTransferAction = (props) => {
   React.useEffect(() => {
     if (scope.isProject() && isConfirmed) {
       const menuItem = (
-        <MenuItemBuilder callBack={transferCommitOnProjectLevel}>
-          <MenuItemBuilder.Icon
-            icon="upload"
-            title="Transfer"
-            color={commitmentInTrasfer ? "jn-text-theme-info" : "jn-global-text"}
-          />
-          <MenuItemBuilder.Text>Transfer</MenuItemBuilder.Text>
-        </MenuItemBuilder>
+        <MenuItemBuilder
+          icon="upload"
+          text={commitmentInTrasfer ? "Transferring" : "Transfer"}
+          callBack={transferCommitOnProjectLevel}
+        />
       );
       let toolTip = null;
       if (commitmentInTrasfer) {

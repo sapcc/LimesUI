@@ -56,7 +56,7 @@ describe("test Action Operation", () => {
     });
     fireEvent.click(contextMenu);
     await waitFor(() => {
-      expect(screen.queryByTitle(/delete/i)).not.toBe(null);
+      expect(screen.queryByText("Delete")).not.toBe(null);
     });
   });
 
@@ -88,9 +88,9 @@ describe("test Action Operation", () => {
     const contextMenu = await waitFor(() => {
       return screen.getByTitle(/more/i);
     });
-    fireEvent.click(contextMenu);
     await waitFor(() => {
-      expect(screen.queryByTitle(/convert/i)).not.toBe(null);
+      fireEvent.click(contextMenu);
+      expect(screen.queryByText(/convert/i)).not.toBe(null);
     });
   });
 
@@ -126,7 +126,7 @@ describe("test Action Operation", () => {
     });
     fireEvent.click(contextMenu);
     await waitFor(() => {
-      expect(screen.queryByTitle(/transfer/i)).not.toBe(null);
+      expect(screen.queryByText(/transfer/i)).not.toBe(null);
     });
   });
   test("should render duration update action", async () => {
@@ -159,7 +159,7 @@ describe("test Action Operation", () => {
     });
     fireEvent.click(contextMenu);
     await waitFor(() => {
-      expect(screen.queryByTitle(/edit/i)).not.toBe(null);
+      expect(screen.queryByText(/edit/i)).not.toBe(null);
     });
   });
 });
