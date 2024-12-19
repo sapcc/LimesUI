@@ -28,7 +28,7 @@ import {
   getTotalUsageForRightBar,
 } from "../../lib/resourceBarValues";
 import { Stack, Button } from "@cloudoperators/juno-ui-components";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { ProjectBadges } from "../shared/LimesBadges";
 import { isAZUnaware } from "../../lib/utils";
 import ResourceBarBuilder from "../resourceBar/ResourceBarBuilder";

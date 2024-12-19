@@ -16,7 +16,7 @@
 
 import React from "react";
 import { Container, LoadingIndicator, Message } from "@cloudoperators/juno-ui-components";
-import { HashRouter, Routes, Route } from "react-router-dom";
+import { HashRouter, Routes, Route } from "react-router";
 import Overview from "./components/mainView/Overview";
 import PanelManager from "./components/panel/PanelManager";
 
