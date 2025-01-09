@@ -18,7 +18,7 @@ import React from "react";
 import Category from "./Category";
 import { createCommitmentStore } from "../StoreProvider";
 import useResetCommitment from "../../hooks/useResetCommitment";
-import { useParams, useNavigate, useLocation, Outlet } from "react-router-dom";
+import { useParams, useNavigate, useLocation, Outlet } from "react-router";
 import { t, byUIString } from "../../lib/utils";
 import { ADVANCEDVIEW, CEREBROKEY } from "../../lib/constants";
 import PAYGOverview from "../paygAvailability/bigVM/PAYGOverview";
