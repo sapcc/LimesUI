@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 jobs:
   build-and-publish:
-    if: ${{ contains(github.head_ref, 'changeset-release') }}
+    if: ${{ contains(github.ref, 'changeset-release') }}
     runs-on: [ubuntu-latest]
     env:
       ACTIONS_RUNNER_DEBUG: true
