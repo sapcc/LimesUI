@@ -1,5 +1,11 @@
 # @sapcc/limes-ui
 
+## 1.3.9
+
+### Patch Changes
+
+- d72070e: adjust publish workflow to trigger on true release updates
+
 ## 1.3.8
 
 ### Patch Changes
