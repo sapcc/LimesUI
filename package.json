@@ -121,7 +121,7 @@
     "@cloudoperators/juno-ui-components": "2.35.1",
     "@cloudoperators/juno-url-state-provider": "*",
     "@cloudoperators/juno-utils": "*",
-    "cypress": "^13.6.1",
+    "cypress": "^14.0.0",
     "esbuild": "^0.24.0",
     "moment": "^2.29.4",
     "postcss-url": "^10.1.3",
