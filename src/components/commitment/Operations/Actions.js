@@ -25,8 +25,7 @@ import useUpdateDurationAction from "./useUpdateDurationAction";
 
 const Actions = (props) => {
   const { commitment = {}, resource = {} } = props;
-  const { confirmed_at: isConfirmed = false } = commitment;
-  const { isPlanned, isPending } = useCommitmentFilter();
+  const { getCommitmentLabel } = useCommitmentFilter();
   const [commitmentActions, setCommitmentActions] = React.useState([]);
 
   const hasTooltips = React.useMemo(() => {
@@ -49,22 +48,10 @@ const Actions = (props) => {
   useUpdateDurationAction({ commitment, resource, updateActions });
   useTransferAction({ commitment, updateActions });
 
-  function setCommitmentLabel() {
-    let label;
-    isConfirmed
-      ? (label = "Committed")
-      : isPending(commitment)
-        ? (label = "Pending")
-        : isPlanned(commitment)
-          ? (label = "Planned")
-          : (label = "");
-    return label;
-  }
-
   return (
     <Stack distribution="between">
       <Stack gap="1" alignment="center">
-        {setCommitmentLabel()}
+        {getCommitmentLabel(commitment)}
         {hasTooltips && (
           <CommitmentTooltip
             displayText={<Icon size="16" icon="info" />}

@@ -115,6 +115,25 @@ const useQueryClientFn = (isMockApi) => {
       },
     });
 
+    queryClient.setMutationDefaults(["renewCommitment"], {
+      mutationFn: async ({ payload }) => {
+        const url = `${endpoint}/v1/domains/${projectID}/projects/${domainID}/commitments/renew`;
+        const response = await fetch(url, {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "X-Auth-Token": token,
+          },
+          body: JSON.stringify(payload),
+        });
+        if (!response.ok) {
+          const text = await response.text();
+          throw new Error(`Network error: ${text} (Code: ${response.status})`);
+        }
+        return response;
+      },
+    });
+
     queryClient.setMutationDefaults(["canConfirm"], {
       mutationFn: async ({ payload, queryKey }) => {
         queryKey[0] ? (pid = queryKey[0]) : (pid = projectID);

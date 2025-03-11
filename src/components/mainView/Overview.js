@@ -22,7 +22,7 @@ import { useParams, useNavigate, useLocation, Outlet } from "react-router";
 import { t, byUIString } from "../../lib/utils";
 import { ADVANCEDVIEW, CEREBROKEY, COMMITMENTRENWALKEY } from "../../lib/constants";
 import PAYGOverview from "../paygAvailability/bigVM/PAYGOverview";
-import CommitmentRenewal from "../commitmentRenewal/Overview";
+import RenewalManager from "../commitmentRenewal/RenewalManager";
 import { Tabs, Tab, TabList, TabPanel, Container, Button, Box } from "@cloudoperators/juno-ui-components";
 import { getScrapeTime } from "../../lib/getScrapeTime";
 
@@ -126,7 +126,7 @@ const Overview = (props) => {
   }
 
   function renderRenewal() {
-    return <CommitmentRenewal />;
+    return <RenewalManager />;
   }
 
   let currentTab;
