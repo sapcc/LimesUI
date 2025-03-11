@@ -123,7 +123,7 @@ const CommitmentRenewal = (props) => {
   }
 
   function onRenew(commitments) {
-    let payload = {commitment_ids: []};
+    let payload = { commitment_ids: [] };
     commitments.forEach((c) => payload.commitment_ids.push(c.id));
     commitmentRenew.mutate(
       {
@@ -142,9 +142,7 @@ const CommitmentRenewal = (props) => {
 
   return (
     <div>
-      {toast && (
-        <Toast className={"pb-0"} text={toast} variant="error" onDismiss={() => setToast(null)} />
-      )}
+      {toast && <Toast className={"pb-0"} text={toast} variant="error" onDismiss={() => setToast(null)} />}
       <div className={categoryTitle}>Renewable Commitments</div>
       <Stack className="mb-4" alignment="center" gap="2">
         <div className="whitespace-nowrap">Renew commitments for:</div>
