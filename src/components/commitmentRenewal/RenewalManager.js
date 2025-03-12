@@ -26,7 +26,6 @@ const RenewalManager = () => {
   const { commitments } = projectStore();
   const { isActive, getCommitmentLabel } = useCommitmentFilter();
   const now = moment().utc().unix();
-
   const [renewableCommitments, inconsistentCommitments] = React.useMemo(() => {
     let renewableCommitments = commitments.filter(
       (c) =>

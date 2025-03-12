@@ -24,6 +24,7 @@ import {
   Select,
   SelectOption,
   Stack,
+  Message,
   Toast,
 } from "@cloudoperators/juno-ui-components/index";
 import RenewModal from "../commitment/Modals/RenewModal";
@@ -35,6 +36,8 @@ import { createCommitmentStoreActions } from "../StoreProvider";
 
 const CommitmentRenewal = (props) => {
   const { renewable = [], inconsistent = [] } = props;
+  const hasRenewable = renewable.length > 0;
+  const hasInconsistencies = inconsistent.length > 0;
   const [displayedRenewables, setDisplayedRenewables] = React.useState(renewable);
   const [showModal, setShowModal] = React.useState(false);
   const [toast, setToast] = React.useState(null);
@@ -143,50 +146,62 @@ const CommitmentRenewal = (props) => {
   return (
     <div>
       {toast && <Toast className={"pb-0"} text={toast} variant="error" onDismiss={() => setToast(null)} />}
-      <div className={categoryTitle}>Renewable Commitments</div>
-      <Stack className="mb-4" alignment="center" gap="2">
-        <div className="whitespace-nowrap">Renew commitments for:</div>
-        <Select
-          className="w-48"
-          width="auto"
-          defaultValue={selectedCategory.current}
-          onValueChange={(value) => onRenewSelectionChange(value)}
-        >
-          {Object.keys(renewablePerService).map((renewable) => (
-            <SelectOption key={renewable} value={renewable} label={t(renewable)} />
-          ))}
-        </Select>
-        <Button
-          className="w-10"
-          icon="openInNew"
-          variant="primary"
-          onClick={() => {
-            setShowModal(true);
-            commitmentsForModal.current = renewablePerService[selectedCategory.current];
-          }}
-        />
-      </Stack>
-      <DataGrid columns={renewableHeadCells.length} className={"mb-10"}>
-        <DataGridRow>
-          {renewableHeadCells.map((headCell) => (
-            <DataGridHeadCell key={headCell.key}>{headCell.label}</DataGridHeadCell>
-          ))}
-        </DataGridRow>
-        {displayedRenewables.map((c) => {
-          return getTableData(c, true);
-        })}
-      </DataGrid>
-      <div className={categoryTitle}>Inconsistencies</div>
-      <DataGrid columns={inconsistencyHeadCells.length}>
-        <DataGridRow>
-          {inconsistencyHeadCells.map((headCell) => (
-            <DataGridHeadCell key={headCell.key}>{headCell.label}</DataGridHeadCell>
-          ))}
-        </DataGridRow>
-        {inconsistent.map((c) => {
-          return getTableData(c, false);
-        })}
-      </DataGrid>
+      {hasRenewable ? (
+        <div>
+          <div className={categoryTitle}>Renewable Commitments</div>
+          <Stack className="mb-4" alignment="center" gap="2">
+            <div className="whitespace-nowrap">Renew commitments for:</div>
+            <Select
+              className="w-48"
+              width="auto"
+              defaultValue={selectedCategory.current}
+              onValueChange={(value) => onRenewSelectionChange(value)}
+            >
+              {Object.keys(renewablePerService).map((renewable) => (
+                <SelectOption key={renewable} value={renewable} label={t(renewable)} />
+              ))}
+            </Select>
+            <Button
+              className="w-10"
+              icon="openInNew"
+              variant="primary"
+              onClick={() => {
+                setShowModal(true);
+                commitmentsForModal.current = renewablePerService[selectedCategory.current];
+              }}
+            />
+          </Stack>
+          <DataGrid columns={renewableHeadCells.length} className={"mb-10"}>
+            <DataGridRow>
+              {renewableHeadCells.map((headCell) => (
+                <DataGridHeadCell key={headCell.key}>{headCell.label}</DataGridHeadCell>
+              ))}
+            </DataGridRow>
+            {displayedRenewables.map((c) => {
+              return getTableData(c, true);
+            })}
+          </DataGrid>
+        </div>
+      ) : (
+        <Message className="mb-4 font-medium" variant="info">
+          No expiring commitments found for this project.
+        </Message>
+      )}
+      {hasInconsistencies && (
+        <div>
+          <div className={categoryTitle}>Inconsistencies</div>
+          <DataGrid columns={inconsistencyHeadCells.length}>
+            <DataGridRow>
+              {inconsistencyHeadCells.map((headCell) => (
+                <DataGridHeadCell key={headCell.key}>{headCell.label}</DataGridHeadCell>
+              ))}
+            </DataGridRow>
+            {inconsistent.map((c) => {
+              return getTableData(c, false);
+            })}
+          </DataGrid>
+        </div>
+      )}
       {showModal && (
         <RenewModal
           title="Renew Commitments"
