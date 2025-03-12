@@ -29,7 +29,9 @@ const RenewalManager = () => {
   const [renewableCommitments, inconsistentCommitments] = React.useMemo(() => {
     let renewableCommitments = commitments.filter(
       (c) =>
-        moment(now).isAfter(moment(c.expires_at).subtract(3, "months")) && moment(now).isBefore(moment(c.expires_at))
+        !c.was_extended &&
+        moment(now).isAfter(moment(c.expires_at).subtract(3, "months")) &&
+        moment(now).isBefore(moment(c.expires_at))
     );
 
     let inconsistentCommitments = [];
