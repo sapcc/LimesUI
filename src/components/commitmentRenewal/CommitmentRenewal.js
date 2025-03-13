@@ -34,6 +34,9 @@ import { categoryTitle } from "../paygAvailability/stylescss";
 import { useMutation } from "@tanstack/react-query";
 import { createCommitmentStoreActions } from "../StoreProvider";
 
+export const inconsistentInfoText = "Resolve the listed inconsistencies first.";
+export const renewableInfoText = "No renewable commitments found for this project.";
+
 const CommitmentRenewal = (props) => {
   const { renewable = [], inconsistent = [] } = props;
   const hasRenewable = renewable.length > 0;
@@ -80,14 +83,16 @@ const CommitmentRenewal = (props) => {
   inconsistencyHeadCells.push({ key: "reason", label: "Reason" });
 
   const renewablePerService = React.useMemo(() => {
-    let result = renewable.reduce((map, c) => {
-      if (!map[c.service_type]) {
-        map[c.service_type] = [];
+    const renewableResult = renewable.reduce((obj, c) => {
+      if (!obj[c.service_type]) {
+        obj[c.service_type] = [];
       }
-      map[c.service_type].push(c);
-      return map;
+      obj[c.service_type].push(c);
+      return obj;
     }, {});
-    result[allCategoriesLabel] = renewable;
+    let allCategories = {};
+    allCategories[allCategoriesLabel] = renewable;
+    const result = Object.assign(allCategories, renewableResult);
     return result;
   }, [renewable]);
 
@@ -109,6 +114,7 @@ const CommitmentRenewal = (props) => {
         {showRenewable && (
           <DataGridCell>
             <Button
+              data-testid={"renew" + c.id}
               className="w-10"
               icon="openInNew"
               size="small"
@@ -152,16 +158,18 @@ const CommitmentRenewal = (props) => {
           <Stack className="mb-4" alignment="center" gap="2">
             <div className="whitespace-nowrap">Renew commitments for:</div>
             <Select
+              data-testid={"renewSelect"}
               className="w-48"
               width="auto"
               defaultValue={selectedCategory.current}
               onValueChange={(value) => onRenewSelectionChange(value)}
             >
               {Object.keys(renewablePerService).map((renewable) => (
-                <SelectOption key={renewable} value={renewable} label={t(renewable)} />
+                <SelectOption data-testid={renewable} key={renewable} value={renewable} label={t(renewable)} />
               ))}
             </Select>
             <Button
+              data-testid="renewMultiple"
               className="w-10"
               icon="openInNew"
               variant="primary"
@@ -184,7 +192,8 @@ const CommitmentRenewal = (props) => {
         </div>
       ) : (
         <Message className="mb-4 font-medium" variant="info">
-          No expiring commitments found for this project.
+          <div>{renewableInfoText}</div>
+          {hasInconsistencies && <div>{inconsistentInfoText}</div>}
         </Message>
       )}
       {hasInconsistencies && (

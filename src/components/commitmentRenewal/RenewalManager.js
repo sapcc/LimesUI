@@ -51,9 +51,20 @@ const RenewalManager = () => {
       const index = renewableCommitments.indexOf(c);
       renewableCommitments.splice(index, 1);
     });
-
+    renewableCommitments = renewableCommitments.sort(compareCommitmentsByCategory);
+    inconsistentCommitments = inconsistentCommitments.sort(compareCommitmentsByCategory);
     return [renewableCommitments, inconsistentCommitments];
   }, [commitments]);
+
+  function compareCommitmentsByCategory(a, b) {
+    if (a.service_type < b.service_type) {
+      return -1;
+    }
+    if (a.service_type > b.service_type) {
+      return 1;
+    }
+    return 0;
+  }
 
   return <CommitmentRenewal renewable={renewableCommitments} inconsistent={inconsistentCommitments} />;
 };

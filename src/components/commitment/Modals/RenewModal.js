@@ -55,7 +55,7 @@ const RenewModal = (props) => {
         <DataGrid columns={2} columnMaxSize="1fr">
           <DataGridRow>
             <DataGridCell className={label}>Resource:</DataGridCell>
-            <DataGridCell>{commitments[0].resource_name}</DataGridCell>
+            <DataGridCell data-testid={"renewResource"}>{commitments[0].resource_name}</DataGridCell>
           </DataGridRow>
           <DataGridRow>
             <DataGridCell className={label}>Amount:</DataGridCell>
