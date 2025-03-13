@@ -151,7 +151,7 @@ describe("Commitment renewal tests", () => {
     fireEvent.click(cancelModal4);
   });
 
-  test("Inconistencies but no renewables", async() => {
+  test("Inconistencies but no renewables", async () => {
     const now = moment().utc();
     const expire = now.add(2, "months").unix();
     const inconsistentCommitments = [
