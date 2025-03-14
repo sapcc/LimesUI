@@ -34,8 +34,12 @@ import { categoryTitle } from "../paygAvailability/stylescss";
 import { useMutation } from "@tanstack/react-query";
 import { createCommitmentStoreActions } from "../StoreProvider";
 
-export const inconsistentInfoText = "Resolve the listed inconsistencies first.";
 export const renewableInfoText = "No renewable commitments found for this project.";
+export const inconsistentInfoText = "Resolve the listed inconsistencies first.";
+export const inconsistentInfoHint = [
+  "This page can contain information about expiring commitments in an inconsistent state.",
+  "It is recommended to check this page if you receive information about expiring commitments.",
+];
 
 const CommitmentRenewal = (props) => {
   const { renewable = [], inconsistent = [] } = props;
@@ -154,6 +158,13 @@ const CommitmentRenewal = (props) => {
       {toast && <Toast className={"pb-0"} text={toast} variant="error" onDismiss={() => setToast(null)} />}
       {hasRenewable ? (
         <div>
+          {!hasInconsistencies && (
+            <Message data-testid="inconsistentInfoHint" className="mb-2">
+              {inconsistentInfoHint.map((hint, i) => (
+                <div key={i}>{hint}</div>
+              ))}
+            </Message>
+          )}
           <div className={categoryTitle}>Renewable Commitments</div>
           <Stack className="mb-4" alignment="center" gap="2">
             <div className="whitespace-nowrap">Renew commitments for:</div>

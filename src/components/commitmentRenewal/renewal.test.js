@@ -198,4 +198,50 @@ describe("Commitment renewal tests", () => {
     expect(screen.getByText(renewableInfoText)).toBeInTheDocument();
     expect(screen.getByText(inconsistentInfoText)).toBeInTheDocument();
   });
+
+  test("Renewables but no inconistencies", async () => {
+    const now = moment().utc();
+    const expire = now.add(2, "months").unix();
+    const renewableCommitmnets = [
+      {
+        id: 1,
+        service_type: "service_1",
+        resource_name: "resource_1",
+        availability_zone: "az_1",
+        amount: 1,
+        duration: "1 year",
+        expires_at: expire,
+      },
+      {
+        id: 2,
+        service_type: "service_2",
+        resource_name: "resource_2",
+        availability_zone: "az_2",
+        amount: 1024,
+        unit: "MiB",
+        duration: "1 year",
+        expires_at: expire,
+      },
+    ];
+    const wrapper = ({ children }) => (
+      <PortalProvider>
+        <StoreProvider>
+          <QueryClientProvider client={queryClient}>
+            <CommitmentRenewal renewable={renewableCommitmnets} />
+            {children}
+          </QueryClientProvider>
+        </StoreProvider>
+      </PortalProvider>
+    );
+    await waitFor(() => {
+      return renderHook(
+        () => ({
+          commitmentStoreActions: createCommitmentStoreActions(),
+        }),
+        { wrapper }
+      );
+    });
+
+    expect(screen.queryByTestId("inconsistentInfoHint")).toBeInTheDocument();
+  });
 });
