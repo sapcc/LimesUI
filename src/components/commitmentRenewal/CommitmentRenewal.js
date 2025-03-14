@@ -38,7 +38,7 @@ export const renewableInfoText = "No renewable commitments found for this projec
 export const inconsistentInfoText = "Resolve the listed inconsistencies first.";
 export const inconsistentInfoHint = [
   "This page can contain information about expiring commitments in an inconsistent state.",
-  "It is recommended to check this page if you receive information about expiring commitments.",
+  "It is recommended to check this page if you receive a notification about expiring commitments.",
 ];
 
 const CommitmentRenewal = (props) => {
