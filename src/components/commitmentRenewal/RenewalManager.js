@@ -63,6 +63,12 @@ const RenewalManager = () => {
     if (a.service_type > b.service_type) {
       return 1;
     }
+    if (a.expires_at < b.expires_at) {
+      return -1;
+    }
+    if (a.expires_at > b.expires_at) {
+      return 1;
+    }
     return 0;
   }
 
