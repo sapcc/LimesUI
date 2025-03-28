@@ -1,6 +1,6 @@
 {
   "name": "@sapcc/limes-ui",
-  "version": "1.3.9",
+  "version": "1.3.10",
   "author": "VoigtS",
   "license": "MIT",
   "source": "src/index.js",
@@ -118,7 +118,7 @@
     }
   },
   "dependencies": {
-    "@cloudoperators/juno-ui-components": "2.38.0",
+    "@cloudoperators/juno-ui-components": "2.38.2",
     "@cloudoperators/juno-url-state-provider": "*",
     "@cloudoperators/juno-utils": "*",
     "cypress": "^14.0.0",
