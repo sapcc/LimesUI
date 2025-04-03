@@ -134,7 +134,7 @@ const build = async () => {
               let content;
               // handle scss, convert to css
               if (args.path.endsWith(".scss")) {
-                const result = sass.renderSync({ file: args.path });
+                const result = sass.compile(args.path);
                 content = result.css;
               } else {
                 // read file content

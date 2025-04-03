@@ -17,6 +17,7 @@
 import React from "react";
 import CommitmentRenewal from "./CommitmentRenewal";
 import moment from "moment";
+import { parseCommitmentDuration } from "../../lib/parseCommitmentDurations";
 import { projectStore } from "../StoreProvider";
 import useCommitmentFilter from "../../hooks/useCommitmentFilter";
 
@@ -30,17 +31,13 @@ const RenewalManager = () => {
     let renewableCommitments = commitments.filter(
       (c) =>
         !c.was_extended &&
+        parseCommitmentDuration(c.duration) >= parseCommitmentDuration("1 year") &&
         moment(now).isAfter(moment(c.expires_at).subtract(3, "months")) &&
         moment(now).isBefore(moment(c.expires_at))
     );
 
     let inconsistentCommitments = [];
     renewableCommitments.forEach((c) => {
-      if (c.transfer_status) {
-        c.reason = "in transfer";
-        inconsistentCommitments.push(c);
-        return;
-      }
       if (!isActive(c)) {
         c.reason = getCommitmentLabel(c);
         inconsistentCommitments.push(c);
