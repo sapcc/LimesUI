@@ -32,7 +32,7 @@ const RenewalManager = () => {
     if (!commitments) return [[], []];
     let renewableCommitments = commitments.filter(
       (c) =>
-        !c.was_extended &&
+        !c.was_renewed &&
         parseCommitmentDuration(c.duration) >= parseCommitmentDuration("1 year") &&
         now.isAfter(moment.unix(c.expires_at).subtract(3, "months")) &&
         now.isBefore(moment.unix(c.expires_at))

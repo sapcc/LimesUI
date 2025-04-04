@@ -45,41 +45,20 @@ const CommitmentRenewal = (props) => {
   const { renewable = [], inconsistent = [] } = props;
   const hasRenewable = renewable.length > 0;
   const hasInconsistencies = inconsistent.length > 0;
-  const [displayedRenewables, setDisplayedRenewables] = React.useState(renewable);
   const [showModal, setShowModal] = React.useState(false);
   const [toast, setToast] = React.useState(null);
   const allCategoriesLabel = "All Categories";
-  const selectedCategory = React.useRef(allCategoriesLabel);
+  const [selectedCategory, setSelectedCategory] = React.useState(allCategoriesLabel);
   const commitmentsForModal = React.useRef();
-  const commitmentRenew = useMutation({
-    mutationKey: ["renewCommitment"],
-  });
+  const commitmentRenew = useMutation({ mutationKey: ["renewCommitment"] });
   const { setRefetchCommitmentAPI } = createCommitmentStoreActions();
   const headCells = [
-    {
-      key: "Category",
-      label: "Category",
-    },
-    {
-      key: "resourceName",
-      label: "Resource",
-    },
-    {
-      key: "amount",
-      label: "Amount",
-    },
-    {
-      key: "duration",
-      label: "Duration",
-    },
-    {
-      key: "confirmedAt",
-      label: "Confirmed at",
-    },
-    {
-      key: "expiresAt",
-      label: "Expires at",
-    },
+    { key: "Category", label: "Category" },
+    { key: "resourceName", label: "Resource" },
+    { key: "amount", label: "Amount" },
+    { key: "duration", label: "Duration" },
+    { key: "confirmedAt", label: "Confirmed at" },
+    { key: "expiresAt", label: "Expires at" },
   ];
   let renewableHeadCells = [...headCells];
   renewableHeadCells.push({ key: "renew", label: "Renew" });
@@ -101,8 +80,7 @@ const CommitmentRenewal = (props) => {
   }, [renewable]);
 
   function onRenewSelectionChange(value) {
-    selectedCategory.current = value;
-    setDisplayedRenewables(renewablePerService[value]);
+    setSelectedCategory(value);
   }
 
   function getTableData(c, showRenewable) {
@@ -135,27 +113,31 @@ const CommitmentRenewal = (props) => {
     );
   }
 
-  function onRenew(commitments) {
-    let payload = { commitment_ids: [] };
-    commitments.forEach((c) => payload.commitment_ids.push(c.id));
-    commitmentRenew.mutate(
-      {
-        payload: payload,
-      },
-      {
-        onSuccess: () => {
-          setRefetchCommitmentAPI(true);
-        },
-        onError: (error) => {
-          setToast(error.toString());
-        },
+  async function onRenew(commitments) {
+    const errors = [];
+    for (const c of commitments) {
+      try {
+        await commitmentRenew.mutateAsync({ commitmentID: c.id });
+      } catch (error) {
+        errors.push(error.toString());
       }
-    );
+    }
+    if (errors.length > 0) {
+      setToast(errors.join("\n"));
+    }
+    setRefetchCommitmentAPI(true);
+    setShowModal(false);
   }
 
   return (
     <div>
-      {toast && <Toast className={"pb-0"} text={toast} variant="error" onDismiss={() => setToast(null)} />}
+      {toast && (
+        <Toast
+          text={<span className="whitespace-pre-line">{toast}</span>}
+          variant="error"
+          onDismiss={() => setToast(null)}
+        />
+      )}
       {hasRenewable ? (
         <div>
           {!hasInconsistencies && (
@@ -172,7 +154,7 @@ const CommitmentRenewal = (props) => {
               data-testid={"renewSelect"}
               className="w-48"
               width="auto"
-              defaultValue={selectedCategory.current}
+              defaultValue={selectedCategory}
               onValueChange={(value) => onRenewSelectionChange(value)}
             >
               {Object.keys(renewablePerService).map((renewable) => (
@@ -186,7 +168,7 @@ const CommitmentRenewal = (props) => {
               variant="primary"
               onClick={() => {
                 setShowModal(true);
-                commitmentsForModal.current = renewablePerService[selectedCategory.current];
+                commitmentsForModal.current = renewablePerService[selectedCategory];
               }}
             />
           </Stack>
@@ -196,7 +178,7 @@ const CommitmentRenewal = (props) => {
                 <DataGridHeadCell key={headCell.key}>{headCell.label}</DataGridHeadCell>
               ))}
             </DataGridRow>
-            {displayedRenewables.map((c) => {
+            {renewablePerService[selectedCategory]?.map((c) => {
               return getTableData(c, true);
             })}
           </DataGrid>
