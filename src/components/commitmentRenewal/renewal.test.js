@@ -66,7 +66,7 @@ describe("Renewal Manger", () => {
         unit: "MiB",
         duration: "1 year",
         confirm_by: now,
-        expires_at: expireOutsideTimeFrame,
+        expires_at: expireWithinTimeframe,
       },
     ];
     const wrapper = ({ children }) => (
@@ -92,8 +92,8 @@ describe("Renewal Manger", () => {
     });
     await waitFor(() => {
       expect(screen.queryByText("resource_1")).toBeInTheDocument();
-      expect(screen.queryByText("resource_3")).not.toBeInTheDocument();
-      expect(screen.queryByText(inconsistentInfoText)).toBeInTheDocument();
+      expect(screen.queryByText("resource_2")).not.toBeInTheDocument();
+      expect(screen.queryByText("resource_3")).toBeInTheDocument();
     });
   });
 });
