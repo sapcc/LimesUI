@@ -19,6 +19,7 @@ import CommitmentRenewal from "./CommitmentRenewal";
 import moment from "moment";
 import { parseCommitmentDuration } from "../../lib/parseCommitmentDurations";
 import { projectStore } from "../StoreProvider";
+import { t } from "../../lib/utils";
 import useCommitmentFilter from "../../hooks/useCommitmentFilter";
 
 // RenewalManager fetches renwable commitments for the current scope.
@@ -55,10 +56,10 @@ const RenewalManager = () => {
   }, [commitments]);
 
   function compareCommitmentsByCategory(a, b) {
-    if (a.service_type < b.service_type) {
+    if (t(a.service_type) < t(b.service_type)) {
       return -1;
     }
-    if (a.service_type > b.service_type) {
+    if (t(a.service_type) > t(b.service_type)) {
       return 1;
     }
     if (a.expires_at < b.expires_at) {
