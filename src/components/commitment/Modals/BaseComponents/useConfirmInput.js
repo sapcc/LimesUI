@@ -66,7 +66,6 @@ const ConfirmInput = (props) => {
             data-testid="confirmInput"
             width="auto"
             disabled={disabled}
-            autoFocus
             errortext={invalidInput && "Please enter the highlighted term above."}
             onChange={(e) => onInput(e)}
           />
