@@ -17,23 +17,85 @@
 import React from "react";
 import CommitmentRenewal from "./CommitmentRenewal";
 import moment from "moment";
-import StoreProvider, { createCommitmentStoreActions } from "../StoreProvider";
+import StoreProvider, { createCommitmentStoreActions, projectStore, projectStoreActions } from "../StoreProvider";
 import { PortalProvider } from "@cloudoperators/juno-ui-components";
-import { fireEvent, renderHook, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, renderHook, screen, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { inconsistentInfoText, renewableInfoText } from "./CommitmentRenewal";
+import RenewalManager from "./RenewalManager";
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: 0,
-    },
-  },
-});
+const queryClient = new QueryClient({ defaultOptions: { queries: { retry: 0 } } });
 queryClient.setQueryDefaults(["renewCommitment"], {
   queryFn: () => {
     return;
   },
+});
+
+describe("Renewal Manger", () => {
+  test("Expect matching commitments to be displayed", async () => {
+    const now = moment().utc();
+    const expireWithinTimeframe = now.add(2, "months").unix();
+    const expireOutsideTimeFrame = now.add(1, "year").unix();
+    // Commitment 1 -> renewable; 2 -> not displayed; 3 -> inconsistent;
+    const commitments = [
+      {
+        id: 1,
+        service_type: "service_1",
+        resource_name: "resource_1",
+        availability_zone: "az_1",
+        amount: 1,
+        duration: "1 year",
+        expires_at: expireWithinTimeframe,
+      },
+      {
+        id: 2,
+        service_type: "service_2",
+        resource_name: "resource_2",
+        availability_zone: "az_2",
+        amount: 1024,
+        unit: "MiB",
+        duration: "1 year",
+        expires_at: expireOutsideTimeFrame,
+      },
+      {
+        id: 3,
+        service_type: "service_3",
+        resource_name: "resource_3",
+        availability_zone: "az_3",
+        amount: 1024,
+        unit: "MiB",
+        duration: "1 year",
+        confirm_by: now,
+        expires_at: expireOutsideTimeFrame,
+      },
+    ];
+    const wrapper = ({ children }) => (
+      <PortalProvider>
+        <StoreProvider>
+          <QueryClientProvider client={queryClient}>
+            <RenewalManager />
+            {children}
+          </QueryClientProvider>
+        </StoreProvider>
+      </PortalProvider>
+    );
+    const { result } = renderHook(
+      () => ({
+        commitmentStoreActions: createCommitmentStoreActions(),
+        projectStore: projectStore(),
+        projectStoreActions: projectStoreActions(),
+      }),
+      { wrapper }
+    );
+    act(() => {
+      result.current.projectStoreActions.setCommitments(commitments);
+    });
+    await waitFor(() => {
+      expect(screen.queryByText("resource_1")).toBeInTheDocument();
+      expect(screen.queryByText("resource_3")).not.toBeInTheDocument();
+      expect(screen.queryByText(inconsistentInfoText)).toBeInTheDocument();
+    });
+  });
 });
 
 describe("Commitment renewal tests", () => {
@@ -96,12 +158,7 @@ describe("Commitment renewal tests", () => {
       </PortalProvider>
     );
     await waitFor(() => {
-      return renderHook(
-        () => ({
-          commitmentStoreActions: createCommitmentStoreActions(),
-        }),
-        { wrapper }
-      );
+      return renderHook(() => ({ commitmentStoreActions: createCommitmentStoreActions() }), { wrapper });
     });
     const renewCommitmentBtn1 = screen.getByTestId("renew1");
     const renewCommitmentBtn2 = screen.getByTestId("renew2");
@@ -188,12 +245,7 @@ describe("Commitment renewal tests", () => {
       </PortalProvider>
     );
     await waitFor(() => {
-      return renderHook(
-        () => ({
-          commitmentStoreActions: createCommitmentStoreActions(),
-        }),
-        { wrapper }
-      );
+      return renderHook(() => ({ commitmentStoreActions: createCommitmentStoreActions() }), { wrapper });
     });
     expect(screen.getByText(renewableInfoText)).toBeInTheDocument();
     expect(screen.getByText(inconsistentInfoText)).toBeInTheDocument();
@@ -234,12 +286,7 @@ describe("Commitment renewal tests", () => {
       </PortalProvider>
     );
     await waitFor(() => {
-      return renderHook(
-        () => ({
-          commitmentStoreActions: createCommitmentStoreActions(),
-        }),
-        { wrapper }
-      );
+      return renderHook(() => ({ commitmentStoreActions: createCommitmentStoreActions() }), { wrapper });
     });
 
     expect(screen.queryByTestId("inconsistentInfoHint")).toBeInTheDocument();

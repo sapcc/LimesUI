@@ -26,14 +26,15 @@ import useCommitmentFilter from "../../hooks/useCommitmentFilter";
 const RenewalManager = () => {
   const { commitments } = projectStore();
   const { isActive, getCommitmentLabel } = useCommitmentFilter();
-  const now = moment().utc().unix();
+  const now = moment().utc();
   const [renewableCommitments, inconsistentCommitments] = React.useMemo(() => {
+    if (!commitments) return [[], []];
     let renewableCommitments = commitments.filter(
       (c) =>
         !c.was_extended &&
         parseCommitmentDuration(c.duration) >= parseCommitmentDuration("1 year") &&
-        moment(now).isAfter(moment(c.expires_at).subtract(3, "months")) &&
-        moment(now).isBefore(moment(c.expires_at))
+        now.isAfter(moment.unix(c.expires_at).subtract(3, "months")) &&
+        now.isBefore(moment.unix(c.expires_at))
     );
 
     let inconsistentCommitments = [];
