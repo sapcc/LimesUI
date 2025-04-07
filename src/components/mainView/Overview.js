@@ -168,7 +168,9 @@ const Overview = (props) => {
         </TabList>
 
         {allAreas.map((area) =>
-          !scope.isProject() && area === COMMITMENTRENEWALKEY ? null : <TabPanel key={area} className={"m-4"}></TabPanel>
+          !scope.isProject() && area === COMMITMENTRENEWALKEY ? null : (
+            <TabPanel key={area} className={"m-4"}></TabPanel>
+          )
         )}
       </Tabs>
       {currentTab}
