@@ -46,7 +46,7 @@ const useCommitmentFilter = () => {
   }
 
   function isPlanned(commitment) {
-    return commitment.confirm_by > Math.floor(Date.now() / 1000));
+    return commitment.confirm_by > Math.floor(Date.now() / 1000);
   }
 
   function isActive(commitment) {
