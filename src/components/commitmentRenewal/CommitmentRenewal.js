@@ -25,7 +25,6 @@ import {
   SelectOption,
   Stack,
   Message,
-  Toast,
 } from "@cloudoperators/juno-ui-components/index";
 import RenewModal from "../commitment/Modals/RenewModal";
 import { t, formatTimeISO8160 } from "../../lib/utils";
@@ -35,10 +34,10 @@ import { useMutation } from "@tanstack/react-query";
 import { createCommitmentStoreActions } from "../StoreProvider";
 
 export const renewableInfoText = "No renewable commitments found for this project.";
-export const inconsistentInfoText = "Resolve the listed inconsistencies first.";
+export const inconsistentInfoText = "Resolve the state of the listed commitments first.";
 export const inconsistentInfoHint = [
-  "This page can contain information about expiring commitments in an inconsistent state.",
-  "It is recommended to check this page if you receive a notification about expiring commitments.",
+  "You will usually not need to check this page proactively.",
+  "We will send mail notifications when active commitments are about to expire.",
 ];
 
 const CommitmentRenewal = (props) => {
@@ -135,16 +134,14 @@ const CommitmentRenewal = (props) => {
   return (
     <div>
       {toast && (
-        <Toast
-          text={<span className="whitespace-pre-line">{toast}</span>}
-          variant="error"
-          onDismiss={() => setToast(null)}
-        />
+        <Message variant="error" dismissible={true} onDismiss={() => setToast(null)}>
+          <span className="whitespace-pre-line">{toast}</span>
+        </Message>
       )}
       {hasRenewable ? (
         <div>
           {!hasInconsistencies && (
-            <Message data-testid="inconsistentInfoHint" className="mb-2">
+            <Message data-testid="inconsistentInfoHint" className="mb-2" dismissible={true}>
               {inconsistentInfoHint.map((hint, i) => (
                 <div key={i}>{hint}</div>
               ))}
@@ -188,14 +185,16 @@ const CommitmentRenewal = (props) => {
           </DataGrid>
         </div>
       ) : (
-        <Message className="mb-4 font-medium" variant="info">
+        <Message className="mb-4 font-medium" variant="info" dismissible={true}>
           <div>{renewableInfoText}</div>
           {hasInconsistencies && <div>{inconsistentInfoText}</div>}
         </Message>
       )}
       {hasInconsistencies && (
         <div>
-          <div className={categoryTitle}>Expiring commitments that were not confirmed and therefore cannot be renewed</div>
+          <div className={categoryTitle}>
+            Expiring commitments that were not confirmed and therefore cannot be renewed
+          </div>
           <DataGrid columns={inconsistencyHeadCells.length}>
             <DataGridRow>
               {inconsistencyHeadCells.map((headCell) => (
