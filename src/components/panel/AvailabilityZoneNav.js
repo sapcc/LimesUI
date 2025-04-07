@@ -19,6 +19,7 @@ import AddCommitments from "../shared/AddCommitments";
 import ReceiveCommitment from "./ReceiveCommitment";
 import { Stack, Tabs, Tab, TabList, TabPanel, Container } from "@cloudoperators/juno-ui-components";
 import useResetCommitment from "../../hooks/useResetCommitment";
+import MergeCommitment from "../shared/MergeCommitments";
 
 const AvailabilityZoneNav = (props) => {
   const azIndex = props.az.findIndex((az) => az[0] === props.currentAZ);
@@ -50,6 +51,7 @@ const AvailabilityZoneNav = (props) => {
           {scope.isProject() && (
             <Stack className="h-8 my-auto ml-auto mr-2" gap="1">
               <ReceiveCommitment />
+              <MergeCommitment />
               <AddCommitments label="Add" />
             </Stack>
           )}
