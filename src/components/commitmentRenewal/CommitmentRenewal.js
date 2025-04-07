@@ -35,7 +35,7 @@ import { createCommitmentStoreActions } from "../StoreProvider";
 
 export const renewableInfoText = "No renewable commitments found for this project.";
 export const renewableInfoHint = [
-  "You will usually not need to check this page proactively.",
+  "You typically won't need to check this page proactively.",
   "We will send mail notifications when active commitments are about to expire.",
 ];
 export const inconsistentInfoText = "Resolve the state of the listed commitments first.";
