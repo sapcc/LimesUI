@@ -44,38 +44,20 @@ import { initialCommitmentObject, TransferStatus } from "../../lib/constants";
 
 const EditPanel = (props) => {
   const { scope } = globalStore();
-  const { serviceType, currentResource, tracksQuota, currentCategory, subRoute } = {
-    ...props,
-  };
+  const { serviceType, currentResource, tracksQuota, currentCategory, subRoute } = { ...props };
   const resourceName = currentResource.name;
   const minConfirmDate = currentResource?.commitment_config?.min_confirm_by;
   const [canConfirm, setCanConfirm] = React.useState(null);
   const { commitments } = projectStore();
   const { setRefetchProjectAPI } = projectStoreActions();
-  const commit = useMutation({
-    mutationKey: ["newCommitment"],
-  });
-  const confirm = useMutation({
-    mutationKey: ["canConfirm"],
-  });
-  const startTransfer = useMutation({
-    mutationKey: ["startCommitmentTransfer"],
-  });
-  const transfer = useMutation({
-    mutationKey: ["transferCommitment"],
-  });
-  const commitmentDelete = useMutation({
-    mutationKey: ["deleteCommitment"],
-  });
-  const convert = useMutation({
-    mutationKey: ["convertCommitment"],
-  });
-  const updateDuration = useMutation({
-    mutationKey: ["updateCommitmentDuration"],
-  });
-  const maxQuota = useMutation({
-    mutationKey: ["setMaxQuota"],
-  });
+  const commit = useMutation({ mutationKey: ["newCommitment"] });
+  const confirm = useMutation({ mutationKey: ["canConfirm"] });
+  const startTransfer = useMutation({ mutationKey: ["startCommitmentTransfer"] });
+  const transfer = useMutation({ mutationKey: ["transferCommitment"] });
+  const commitmentDelete = useMutation({ mutationKey: ["deleteCommitment"] });
+  const convert = useMutation({ mutationKey: ["convertCommitment"] });
+  const updateDuration = useMutation({ mutationKey: ["updateCommitmentDuration"] });
+  const maxQuota = useMutation({ mutationKey: ["setMaxQuota"] });
   const { resetCommitmentTransfer } = useResetCommitment();
   const { commitment: newCommitment } = createCommitmentStore();
   const { toast } = createCommitmentStore();
@@ -118,12 +100,7 @@ const EditPanel = (props) => {
     const currentProjectID = currentProject?.metadata?.id;
     const currentDomainID = scope.isCluster() ? currentProject.metadata.domainID : null;
     confirm.mutate(
-      {
-        payload: {
-          commitment: payload,
-        },
-        queryKey: [currentProjectID, currentDomainID],
-      },
+      { payload: { commitment: payload }, queryKey: [currentProjectID, currentDomainID] },
       {
         onSuccess: (data) => {
           setCanConfirm(data.result);
@@ -147,12 +124,7 @@ const EditPanel = (props) => {
       ? { ...newCommitment, id: "", confirm_by: confirm_by, notify_on_confirm: notifyOnConfirm }
       : { ...newCommitment, id: "" };
     commit.mutate(
-      {
-        payload: {
-          commitment: payload,
-        },
-        queryKey: [currentProjectID, currentDomainID],
-      },
+      { payload: { commitment: payload }, queryKey: [currentProjectID, currentDomainID] },
       {
         onSuccess: () => {
           (scope.isDomain() || scope.isCluster()) &&
@@ -183,12 +155,7 @@ const EditPanel = (props) => {
     const sourceDomainID = scope.isCluster() ? currentProject.metadata.domainID : null;
     startTransfer.mutate(
       {
-        payload: {
-          commitment: {
-            amount: commitment.amount,
-            transfer_status: "unlisted",
-          },
-        },
+        payload: { commitment: { amount: commitment.amount, transfer_status: "unlisted" } },
         domainID: sourceDomainID,
         projectID: sourceProjectID,
         commitmentID: commitment.id,
@@ -253,11 +220,7 @@ const EditPanel = (props) => {
     const targetDomainID = currentProject?.metadata.domainID || null;
     const targetProjectID = currentProject?.metadata.id || null;
     commitmentDelete.mutate(
-      {
-        domainID: targetDomainID,
-        projectID: targetProjectID,
-        commitmentID: commitment.id,
-      },
+      { domainID: targetDomainID, projectID: targetProjectID, commitmentID: commitment.id },
       {
         onSuccess: () => {
           setRefetchClusterAPI(true);
@@ -279,12 +242,7 @@ const EditPanel = (props) => {
     const targetProjectID = currentProject?.metadata.id || null;
 
     convert.mutate(
-      {
-        payload: payload,
-        domainID: targetDomainID,
-        projectID: targetProjectID,
-        commitmentID: commitment.id,
-      },
+      { payload: payload, domainID: targetDomainID, projectID: targetProjectID, commitmentID: commitment.id },
       {
         onSuccess: () => {
           setRefetchClusterAPI(true);
@@ -305,12 +263,7 @@ const EditPanel = (props) => {
     const targetProjectID = currentProject?.metadata.id || null;
 
     updateDuration.mutate(
-      {
-        payload: payload,
-        domainID: targetDomainID,
-        projectID: targetProjectID,
-        commitmentID: commitment.id,
-      },
+      { payload: payload, domainID: targetDomainID, projectID: targetProjectID, commitmentID: commitment.id },
       {
         onSuccess: () => {
           setRefetchClusterAPI(true);
@@ -333,11 +286,7 @@ const EditPanel = (props) => {
     const targetProjectID = projectID;
 
     maxQuota.mutate(
-      {
-        payload: project,
-        targetDomain: targetDomainID,
-        targetProject: targetProjectID,
-      },
+      { payload: project, targetDomain: targetDomainID, targetProject: targetProjectID },
       {
         onSuccess: () => {
           setRefetchProjectAPI(true);
@@ -404,7 +353,12 @@ const EditPanel = (props) => {
         )}
       </div>
       {!subRoute && (
-        <AvailabilityZoneNav az={currentResource.per_az} currentAZ={currentAZ} setCurrentAZ={setCurrentAZ} />
+        <AvailabilityZoneNav
+          az={currentResource.per_az}
+          currentAZ={currentAZ}
+          setCurrentAZ={setCurrentAZ}
+          scope={scope}
+        />
       )}
       {scope.isProject() && commitments && (
         <CommitmentTable

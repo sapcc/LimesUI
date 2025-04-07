@@ -33,8 +33,6 @@ import { ProjectBadges } from "../shared/LimesBadges";
 import { isAZUnaware } from "../../lib/utils";
 import ResourceBarBuilder from "../resourceBar/ResourceBarBuilder";
 import useResetCommitment from "../../hooks/useResetCommitment";
-import AddCommitments from "../shared/AddCommitments";
-import ReceiveCommitment from "./subComponents/ReceiveCommitment";
 import HistoricalUsage from "./subComponents/HistoricalUsage";
 import MaxQuota from "./subComponents/MaxQuota";
 import PhysicalUsage from "./subComponents/PhysicalUsage";
@@ -159,12 +157,6 @@ const Resource = (props) => {
                 </Button>
               </Link>
             )}
-          </Stack>
-        )}
-        {scope.isProject() && props.isPanelView && (
-          <Stack gap="1">
-            <ReceiveCommitment />
-            <AddCommitments label="Add Commitment" />
           </Stack>
         )}
       </Stack>

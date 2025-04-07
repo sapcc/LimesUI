@@ -15,12 +15,14 @@
  */
 
 import React from "react";
-import { Tabs, Tab, TabList, TabPanel, Container } from "@cloudoperators/juno-ui-components";
+import AddCommitments from "../shared/AddCommitments";
+import ReceiveCommitment from "./ReceiveCommitment";
+import { Stack, Tabs, Tab, TabList, TabPanel, Container } from "@cloudoperators/juno-ui-components";
 import useResetCommitment from "../../hooks/useResetCommitment";
 
 const AvailabilityZoneNav = (props) => {
   const azIndex = props.az.findIndex((az) => az[0] === props.currentAZ);
-  const { setCurrentAZ } = props;
+  const { scope, setCurrentAZ } = props;
   const { resetCommitment } = useResetCommitment();
 
   return (
@@ -45,6 +47,12 @@ const AvailabilityZoneNav = (props) => {
               )
             );
           })}
+          {scope.isProject() && (
+            <Stack className="h-8 my-auto ml-auto mr-2" gap="1">
+              <ReceiveCommitment />
+              <AddCommitments label="Add" />
+            </Stack>
+          )}
         </TabList>
         {props.az.map((az) => az[0] !== "unknown" && az[0] !== "any" && <TabPanel key={az[0]}></TabPanel>)}
       </Tabs>
