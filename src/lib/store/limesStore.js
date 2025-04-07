@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { CEREBROKEY, COMMITMENTRENWALKEY } from "../constants";
+import { CEREBROKEY, COMMITMENTRENEWALKEY } from "../constants";
 import { unusedCommitments, uncommittedUsage } from "../../lib/utils";
 import { Scope } from "../scope";
 
@@ -289,7 +289,7 @@ const limesStore = (set, get) => ({
         // HANA BigVMResource needs to be added manually to the areas with the coressponding CEREBRO key.
         areas.set(CEREBROKEY, true);
         // Renewal is a custom area that allows to renew expiring commitments.
-        areas.set(COMMITMENTRENWALKEY, true);
+        areas.set(COMMITMENTRENEWALKEY, true);
         const editableAreas = Array.from(areas.keys());
 
         // `overview` is what the Overview component needs.
@@ -304,7 +304,7 @@ const limesStore = (set, get) => ({
           categories: groupKeys(Object.entries(categories).map(([catName, cat]) => [cat.serviceType, catName])),
         };
         overview.areas[CEREBROKEY] = ["cerebro"];
-        overview.areas[COMMITMENTRENWALKEY] = ["renewal"];
+        overview.areas[COMMITMENTRENEWALKEY] = ["renewal"];
 
         return { metadata, categories, overview };
       },

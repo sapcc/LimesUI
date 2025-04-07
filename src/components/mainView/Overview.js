@@ -20,7 +20,7 @@ import { globalStore, createCommitmentStore } from "../StoreProvider";
 import useResetCommitment from "../../hooks/useResetCommitment";
 import { useParams, useNavigate, useLocation, Outlet } from "react-router";
 import { t, byUIString } from "../../lib/utils";
-import { ADVANCEDVIEW, CEREBROKEY, COMMITMENTRENWALKEY } from "../../lib/constants";
+import { ADVANCEDVIEW, CEREBROKEY, COMMITMENTRENEWALKEY } from "../../lib/constants";
 import PAYGOverview from "../paygAvailability/bigVM/PAYGOverview";
 import RenewalManager from "../commitmentRenewal/RenewalManager";
 import { Tabs, Tab, TabList, TabPanel, Container, Button, Box } from "@cloudoperators/juno-ui-components";
@@ -134,7 +134,7 @@ const Overview = (props) => {
     case CEREBROKEY:
       currentTab = renderPAYG();
       break;
-    case COMMITMENTRENWALKEY:
+    case COMMITMENTRENEWALKEY:
       currentTab = renderRenewal();
       break;
     default:
@@ -146,7 +146,7 @@ const Overview = (props) => {
       <Tabs selectedIndex={currentTabIdx} onSelect={() => {}}>
         <TabList>
           {allAreas.map((area) =>
-            !scope.isProject() && area === COMMITMENTRENWALKEY ? null : (
+            !scope.isProject() && area === COMMITMENTRENEWALKEY ? null : (
               <Tab disabled={isEditing} onClick={() => onTabChange(area)} key={area}>
                 {t(area)}
               </Tab>
@@ -168,7 +168,7 @@ const Overview = (props) => {
         </TabList>
 
         {allAreas.map((area) =>
-          !scope.isProject() && area === COMMITMENTRENWALKEY ? null : <TabPanel key={area} className={"m-4"}></TabPanel>
+          !scope.isProject() && area === COMMITMENTRENEWALKEY ? null : <TabPanel key={area} className={"m-4"}></TabPanel>
         )}
       </Tabs>
       {currentTab}
