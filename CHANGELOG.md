@@ -1,5 +1,11 @@
 # @sapcc/limes-ui
 
+## 1.4.0
+
+### Minor Changes
+
+- c58a136: Add commitment renewal
+
 ## 1.3.9
 
 ### Patch Changes
