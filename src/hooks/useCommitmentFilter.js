@@ -25,27 +25,33 @@ const useCommitmentFilter = () => {
     });
   }
 
-  function isPlanned(commitment) {
-    let planned = false;
-    if (commitment.confirm_by > Math.floor(Date.now() / 1000)) {
-      planned = true;
+  function getCommitmentLabel(commitment) {
+    if (isActive(commitment)) {
+      return "Committed";
     }
-    return planned;
+    if (isPending(commitment)) {
+      return "Pending";
+    }
+    if (isPlanned(commitment)) {
+      return "Planned";
+    }
+    return "";
   }
 
   function isPending(commitment) {
-    let pending = false;
-    if (commitment.confirm_by < Math.floor(Date.now() / 1000) && !("confirmed_at" in commitment)) {
-      pending = true;
-    }
-    return pending;
+    return commitment.confirm_by < Math.floor(Date.now() / 1000) && !("confirmed_at" in commitment);
   }
 
-  return {
-    filterCommitments,
-    isPending,
-    isPlanned,
-  };
+  function isPlanned(commitment) {
+    return commitment.confirm_by > Math.floor(Date.now() / 1000);
+  }
+
+  function isActive(commitment) {
+    const { confirmed_at: isConfirmed = false } = commitment;
+    return isConfirmed;
+  }
+
+  return { getCommitmentLabel, filterCommitments, isPending, isPlanned, isActive };
 };
 
 export default useCommitmentFilter;

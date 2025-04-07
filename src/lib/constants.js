@@ -17,6 +17,7 @@
 export const COMMITMENTID = "AddCommitment";
 export const ADVANCEDVIEW = "advancedView";
 export const CEREBROKEY = "PAYG Availability";
+export const COMMITMENTRENEWALKEY = "Renewal";
 export const PAYG_AZUNAWARE_KEY = "Whole Region";
 
 //used to reset the last commitment to default values.

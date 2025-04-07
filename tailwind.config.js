@@ -11,7 +11,7 @@ function withOpacity(variableName) {
   };
 }
 
-module.exports = {
+export default {
   presets: [
     require("@cloudoperators/juno-ui-components/build/lib/tailwind.config"), // important, do not change
   ],

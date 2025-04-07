@@ -49,11 +49,7 @@ const useQueryClientFn = (isMockApi) => {
         const url = `${endpoint}/v1/domains/${domainID}/projects/${pid}`;
         const response = await fetchProxy(url, {
           method: "GET",
-          headers: {
-            Accept: "application/json",
-            "X-Limes-V2-API-Preview": "per-az",
-            "X-Auth-Token": token,
-          },
+          headers: { Accept: "application/json", "X-Limes-V2-API-Preview": "per-az", "X-Auth-Token": token },
           ...{ mock: isMockApi },
         });
         return responseHandler(response);
@@ -67,11 +63,7 @@ const useQueryClientFn = (isMockApi) => {
         const url = `${endpoint}/v1/domains/${did}/projects/${pid}/commitments`;
         const response = await fetchProxy(url, {
           method: "GET",
-          headers: {
-            Accept: "application/json",
-            "X-Limes-V2-API-Preview": "per-az",
-            "X-Auth-Token": token,
-          },
+          headers: { Accept: "application/json", "X-Limes-V2-API-Preview": "per-az", "X-Auth-Token": token },
           ...{ mock: isMockApi },
         });
         return responseHandler(response);
@@ -85,10 +77,7 @@ const useQueryClientFn = (isMockApi) => {
         const url = `${endpoint}/v1/domains/${did}/projects/${pid}/commitments/new`;
         const response = await fetch(url, {
           method: "POST",
-          headers: {
-            Accept: "application/json",
-            "X-Auth-Token": token,
-          },
+          headers: { Accept: "application/json", "X-Auth-Token": token },
           body: JSON.stringify(payload),
         });
         return responseHandler(response);
@@ -102,10 +91,22 @@ const useQueryClientFn = (isMockApi) => {
         const url = `${endpoint}/v1/domains/${did}/projects/${pid}/commitments/${commitmentID}`;
         const response = await fetch(url, {
           method: "DELETE",
-          headers: {
-            Accept: "application/json",
-            "X-Auth-Token": token,
-          },
+          headers: { Accept: "application/json", "X-Auth-Token": token },
+        });
+        if (!response.ok) {
+          const text = await response.text();
+          throw new Error(`Network error: ${text} (Code: ${response.status})`);
+        }
+        return response;
+      },
+    });
+
+    queryClient.setMutationDefaults(["renewCommitment"], {
+      mutationFn: async ({ commitmentID }) => {
+        const url = `${endpoint}/v1/domains/${domainID}/projects/${projectID}/commitments/${commitmentID}/renew`;
+        const response = await fetch(url, {
+          method: "POST",
+          headers: { Accept: "application/json", "X-Auth-Token": token },
         });
         if (!response.ok) {
           const text = await response.text();
@@ -122,10 +123,7 @@ const useQueryClientFn = (isMockApi) => {
         const url = `${endpoint}/v1/domains/${did}/projects/${pid}/commitments/can-confirm`;
         const response = await fetch(url, {
           method: "POST",
-          headers: {
-            Accept: "application/json",
-            "X-Auth-Token": token,
-          },
+          headers: { Accept: "application/json", "X-Auth-Token": token },
           body: JSON.stringify(payload),
         });
         return responseHandler(response);
@@ -138,10 +136,7 @@ const useQueryClientFn = (isMockApi) => {
         const url = `${endpoint}/v1/domains/${did}/projects/${targetProject}/max-quota`;
         const response = await fetch(url, {
           method: "PUT",
-          headers: {
-            Accept: "application/json",
-            "X-Auth-Token": token,
-          },
+          headers: { Accept: "application/json", "X-Auth-Token": token },
           body: JSON.stringify(payload),
         });
         if (!response.ok) {
@@ -159,10 +154,7 @@ const useQueryClientFn = (isMockApi) => {
         const url = `${endpoint}/v1/commitment-conversion/${serviceType}/${resourceName}`;
         const response = await fetchProxy(url, {
           method: "GET",
-          headers: {
-            Accept: "application/json",
-            "X-Auth-Token": token,
-          },
+          headers: { Accept: "application/json", "X-Auth-Token": token },
           ...{ mock: isMockApi },
         });
         return responseHandler(response);
@@ -176,10 +168,7 @@ const useQueryClientFn = (isMockApi) => {
         const url = `${endpoint}/v1/domains/${did}/projects/${pid}/commitments/${commitmentID}/convert`;
         const response = await fetchProxy(url, {
           method: "POST",
-          headers: {
-            Accept: "application/json",
-            "X-Auth-Token": token,
-          },
+          headers: { Accept: "application/json", "X-Auth-Token": token },
           body: JSON.stringify(payload),
         });
         return responseHandler(response);
@@ -193,10 +182,7 @@ const useQueryClientFn = (isMockApi) => {
         const url = `${endpoint}/v1/domains/${did}/projects/${pid}/commitments/${commitmentID}/update-duration`;
         const response = await fetchProxy(url, {
           method: "POST",
-          headers: {
-            Accept: "application/json",
-            "X-Auth-Token": token,
-          },
+          headers: { Accept: "application/json", "X-Auth-Token": token },
           body: JSON.stringify(payload),
         });
         return responseHandler(response);
@@ -216,11 +202,7 @@ const useQueryClientFn = (isMockApi) => {
         const url = `${endpoint}/v1/domains/${dID}`;
         const response = await fetchProxy(url, {
           method: "GET",
-          headers: {
-            Accept: "application/json",
-            "X-Limes-V2-API-Preview": "per-az",
-            "X-Auth-Token": token,
-          },
+          headers: { Accept: "application/json", "X-Limes-V2-API-Preview": "per-az", "X-Auth-Token": token },
           ...{ mock: isMockApi },
         });
         return responseHandler(response);
@@ -234,11 +216,7 @@ const useQueryClientFn = (isMockApi) => {
         const url = `${endpoint}/v1/domains/${dID}/projects?service=${service}&resource=${resource}`;
         const response = await fetchProxy(url, {
           method: "GET",
-          headers: {
-            Accept: "application/json",
-            "X-Limes-V2-API-Preview": "per-az",
-            "X-Auth-Token": token,
-          },
+          headers: { Accept: "application/json", "X-Limes-V2-API-Preview": "per-az", "X-Auth-Token": token },
           ...{ mock: isMockApi },
         });
         return responseHandler(response);
@@ -251,10 +229,7 @@ const useQueryClientFn = (isMockApi) => {
         const url = `${endpoint}/v1/domains/${dID}/projects/${projectID}/commitments/${commitmentID}/start-transfer`;
         const response = await fetchProxy(url, {
           method: "POST",
-          headers: {
-            Accept: "application/json",
-            "X-Auth-Token": token,
-          },
+          headers: { Accept: "application/json", "X-Auth-Token": token },
           body: JSON.stringify(payload),
         });
         return responseHandler(response);
@@ -267,11 +242,7 @@ const useQueryClientFn = (isMockApi) => {
         const url = `${endpoint}/v1/domains/${dID}/projects/${projectID}/transfer-commitment/${commitmentID}`;
         const response = await fetchProxy(url, {
           method: "POST",
-          headers: {
-            Accept: "application/json",
-            "X-Auth-Token": token,
-            "Transfer-Token": transferToken,
-          },
+          headers: { Accept: "application/json", "X-Auth-Token": token, "Transfer-Token": transferToken },
         });
         return responseHandler(response);
       },
@@ -288,11 +259,7 @@ const useQueryClientFn = (isMockApi) => {
         const url = isDetail ? `${endpoint}/v1/clusters/current?detail` : `${endpoint}/v1/clusters/current`;
         const response = await fetchProxy(url, {
           method: "GET",
-          headers: {
-            Accept: "application/json",
-            "X-Limes-V2-API-Preview": "per-az",
-            "X-Auth-Token": token,
-          },
+          headers: { Accept: "application/json", "X-Limes-V2-API-Preview": "per-az", "X-Auth-Token": token },
           ...{ mock: isMockApi },
         });
         return responseHandler(response);
@@ -306,11 +273,7 @@ const useQueryClientFn = (isMockApi) => {
         const url = `${endpoint}/v1/domains?service=${service}&resource=${resource}`;
         const response = await fetchProxy(url, {
           method: "GET",
-          headers: {
-            Accept: "application/json",
-            "X-Limes-V2-API-Preview": "per-az",
-            "X-Auth-Token": token,
-          },
+          headers: { Accept: "application/json", "X-Limes-V2-API-Preview": "per-az", "X-Auth-Token": token },
           ...{ mock: isMockApi },
         });
         return responseHandler(response);
@@ -332,10 +295,7 @@ const useQueryClientFn = (isMockApi) => {
         const url = `https://${host}${path}/bigvm_resources`;
         const response = await fetchProxy(url, {
           method: "GET",
-          headers: {
-            "X-Requested-With": "XMLHttpRequest",
-            "X-CSRF-Token": token,
-          },
+          headers: { "X-Requested-With": "XMLHttpRequest", "X-CSRF-Token": token },
           ...{ mock: isMockApi },
         });
         return responseHandler(response, false);
@@ -351,11 +311,7 @@ const useQueryClientFn = (isMockApi) => {
         const url = `${endpoint}/v1/commitments/${transferToken}`;
         const response = await fetchProxy(url, {
           method: "GET",
-          headers: {
-            Accept: "application/json",
-            "X-Limes-V2-API-Preview": "per-az",
-            "X-Auth-Token": token,
-          },
+          headers: { Accept: "application/json", "X-Limes-V2-API-Preview": "per-az", "X-Auth-Token": token },
           ...{ mock: isMockApi },
         });
         return responseHandler(response);

@@ -16,12 +16,13 @@
 
 import React from "react";
 import Category from "./Category";
-import { createCommitmentStore } from "../StoreProvider";
+import { globalStore, createCommitmentStore } from "../StoreProvider";
 import useResetCommitment from "../../hooks/useResetCommitment";
 import { useParams, useNavigate, useLocation, Outlet } from "react-router";
 import { t, byUIString } from "../../lib/utils";
-import { ADVANCEDVIEW, CEREBROKEY } from "../../lib/constants";
+import { ADVANCEDVIEW, CEREBROKEY, COMMITMENTRENEWALKEY } from "../../lib/constants";
 import PAYGOverview from "../paygAvailability/bigVM/PAYGOverview";
+import RenewalManager from "../commitmentRenewal/RenewalManager";
 import { Tabs, Tab, TabList, TabPanel, Container, Button, Box } from "@cloudoperators/juno-ui-components";
 import { getScrapeTime } from "../../lib/getScrapeTime";
 
@@ -29,8 +30,9 @@ const Overview = (props) => {
   const { canEdit } = props;
   const navigate = useNavigate();
   const location = useLocation();
-  const editableAreas = props.overview.editableAreas;
   const { isEditing } = createCommitmentStore();
+  const { scope } = globalStore();
+  const editableAreas = props.overview.editableAreas;
   const [advancedView, setAdvancedView] = React.useState(JSON.parse(localStorage.getItem(ADVANCEDVIEW)) || false);
   const allAreas = advancedView ? Object.keys(props.overview.areas) : editableAreas;
   const { currentArea = allAreas[0] } = useParams();
@@ -54,8 +56,9 @@ const Overview = (props) => {
   }, [currentArea]);
 
   // Hide tabs that should not be displayed in reduced resource view.
-  function onTabChange(currentArea) {
-    const areaIdx = allAreas.findIndex((area) => area === currentArea);
+  // A previous selected tab will route to the first displayed area.
+  function onTabChange(selectedArea) {
+    const areaIdx = allAreas.findIndex((area) => area === selectedArea);
     if (areaIdx < 0) {
       setCurrentTabIdx(0);
       navigate(`/${allAreas[0]}`);
@@ -65,21 +68,13 @@ const Overview = (props) => {
     navigate(`/${allAreas[areaIdx]}`);
   }
 
-  // On custom tab, directly route to it.
-  React.useEffect(() => {
-    if (currentArea == CEREBROKEY) {
-      const tabIdx = allAreas.length - 1;
-      setCurrentTabIdx(tabIdx);
-      navigate(`/${allAreas[tabIdx]}`);
-      return;
-    }
-  }, [advancedView]);
-
-  // Consider advanced view button click
+  // Consider advanced view button click.
+  // Set selected tab to the corresponding view (reduced | advanced)
   React.useEffect(() => {
     // Do not reroute on any other subroute. Matches: ("/", "/route", "/route/")
     // This would cause the refresh of the EditPanel to be rerouted to the main route.
-    const exp = new RegExp("^/[a-zA-Z0-9]*/?$").exec(location.pathname);
+    // '%' will be checked to capture special characters. F.e. URL encoding empty space = %20
+    const exp = new RegExp("^/[a-zA-Z0-9%]*/?$").exec(location.pathname);
     if (!exp) return;
     onTabChange(currentArea);
   }, [advancedView]);
@@ -130,10 +125,17 @@ const Overview = (props) => {
     );
   }
 
+  function renderRenewal() {
+    return <RenewalManager />;
+  }
+
   let currentTab;
   switch (currentArea) {
     case CEREBROKEY:
       currentTab = renderPAYG();
+      break;
+    case COMMITMENTRENEWALKEY:
+      currentTab = renderRenewal();
       break;
     default:
       currentTab = renderArea();
@@ -143,11 +145,13 @@ const Overview = (props) => {
     <Container px={false} className="mb-11">
       <Tabs selectedIndex={currentTabIdx} onSelect={() => {}}>
         <TabList>
-          {allAreas.map((area) => (
-            <Tab disabled={isEditing} onClick={() => onTabChange(area)} key={area}>
-              {t(area)}
-            </Tab>
-          ))}
+          {allAreas.map((area) =>
+            !scope.isProject() && area === COMMITMENTRENEWALKEY ? null : (
+              <Tab disabled={isEditing} onClick={() => onTabChange(area)} key={area}>
+                {t(area)}
+              </Tab>
+            )
+          )}
           <div className="m-auto mr-0">
             <Button
               size="small"
@@ -163,9 +167,11 @@ const Overview = (props) => {
           </div>
         </TabList>
 
-        {allAreas.map((area) => (
-          <TabPanel key={area} className={"m-4"}></TabPanel>
-        ))}
+        {allAreas.map((area) =>
+          !scope.isProject() && area === COMMITMENTRENEWALKEY ? null : (
+            <TabPanel key={area} className={"m-4"}></TabPanel>
+          )
+        )}
       </Tabs>
       {currentTab}
       {canEdit && <Outlet />}
