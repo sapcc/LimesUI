@@ -99,6 +99,7 @@ const CommitmentRenewal = (props) => {
           <DataGridCell>
             <Button
               data-testid={"renew" + c.id}
+              title="Renew Commitment"
               className="w-10"
               icon="openInNew"
               size="small"
@@ -165,6 +166,7 @@ const CommitmentRenewal = (props) => {
             </Select>
             <Button
               data-testid="renewMultiple"
+              title="Renew all"
               className="w-10"
               icon="openInNew"
               variant="primary"
@@ -193,7 +195,7 @@ const CommitmentRenewal = (props) => {
       )}
       {hasInconsistencies && (
         <div>
-          <div className={categoryTitle}>Inconsistencies</div>
+          <div className={categoryTitle}>Expiring commitments that were not confirmed and therefore cannot be renewed</div>
           <DataGrid columns={inconsistencyHeadCells.length}>
             <DataGridRow>
               {inconsistencyHeadCells.map((headCell) => (
