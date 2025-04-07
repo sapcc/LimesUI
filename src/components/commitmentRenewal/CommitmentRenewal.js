@@ -34,11 +34,11 @@ import { useMutation } from "@tanstack/react-query";
 import { createCommitmentStoreActions } from "../StoreProvider";
 
 export const renewableInfoText = "No renewable commitments found for this project.";
-export const inconsistentInfoText = "Resolve the state of the listed commitments first.";
-export const inconsistentInfoHint = [
+export const renewableInfoHint = [
   "You will usually not need to check this page proactively.",
   "We will send mail notifications when active commitments are about to expire.",
 ];
+export const inconsistentInfoText = "Resolve the state of the listed commitments first.";
 
 const CommitmentRenewal = (props) => {
   const { renewable = [], inconsistent = [] } = props;
@@ -142,7 +142,7 @@ const CommitmentRenewal = (props) => {
         <div>
           {!hasInconsistencies && (
             <Message data-testid="inconsistentInfoHint" className="mb-2" dismissible={true}>
-              {inconsistentInfoHint.map((hint, i) => (
+              {renewableInfoHint.map((hint, i) => (
                 <div key={i}>{hint}</div>
               ))}
             </Message>
@@ -187,6 +187,9 @@ const CommitmentRenewal = (props) => {
       ) : (
         <Message className="mb-4 font-medium" variant="info" dismissible={true}>
           <div>{renewableInfoText}</div>
+          {renewableInfoHint.map((hint, i) => (
+            <div key={i}>{hint}</div>
+          ))}
           {hasInconsistencies && <div>{inconsistentInfoText}</div>}
         </Message>
       )}
