@@ -55,6 +55,7 @@ const CommitmentRenewal = (props) => {
   const headCells = [
     { key: "Category", label: "Category" },
     { key: "resourceName", label: "Resource" },
+    { key: "availabilityZone", label: "AZ" },
     { key: "amount", label: "Amount" },
     { key: "duration", label: "Duration" },
     { key: "confirmedAt", label: "Confirmed at" },
@@ -89,6 +90,7 @@ const CommitmentRenewal = (props) => {
       <DataGridRow key={c.id}>
         <DataGridCell>{t(c.service_type)}</DataGridCell>
         <DataGridCell>{t(c.resource_name)}</DataGridCell>
+        <DataGridCell>{c.availability_zone}</DataGridCell>
         <DataGridCell>{valueWithUnit(c.amount, unit)}</DataGridCell>
         <DataGridCell>{c.duration}</DataGridCell>
         <DataGridCell>{formatTimeISO8160(c.confirmed_at)}</DataGridCell>
