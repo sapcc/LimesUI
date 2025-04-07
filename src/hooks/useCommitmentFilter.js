@@ -26,15 +26,10 @@ const useCommitmentFilter = () => {
   }
 
   function getCommitmentLabel(commitment) {
-    let label;
-    isActive(commitment)
-      ? (label = "Committed")
-      : isPending(commitment)
-        ? (label = "Pending")
-        : isPlanned(commitment)
-          ? (label = "Planned")
-          : (label = "");
-    return label;
+    if (isActive(commitment)) { return "Committed"; }
+    if (isPending(commitment)) { return "Pending"; }
+    if (isPlanned(commitment)) { return "Planned"; }
+    return "";
   }
 
   function isPending(commitment) {
