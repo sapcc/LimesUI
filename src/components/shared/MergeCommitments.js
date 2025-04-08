@@ -2,11 +2,11 @@ import React from "react";
 import { Button, Icon, Stack } from "@cloudoperators/juno-ui-components";
 
 const MergeCommitment = (props) => {
-  const { mergeOps } = props;
+  const { mergeOps, style } = props;
   const { isMerging, setIsMerging, commitmentsToMerge, setCommitmentsToMerge, setConfirmMerge } = mergeOps;
 
   return (
-    <Stack gap="1">
+    <Stack className={style} gap="1">
       <Button
         size="small"
         onClick={() => {
