@@ -24,7 +24,13 @@ import MergeCommitment from "../shared/MergeCommitments";
 const AvailabilityZoneNav = (props) => {
   const azIndex = props.az.findIndex((az) => az[0] === props.currentAZ);
   const { scope, setCurrentAZ, mergeOps } = props;
+  const { setIsMerging, setCommitmentsToMerge } = mergeOps;
   const { resetCommitment } = useResetCommitment();
+
+  function resetCommitmentMerge() {
+    setIsMerging(false);
+    setCommitmentsToMerge([]);
+  }
 
   return (
     <Container px={false} className="pt-0 py-6 sticky top-[2rem] bg-juno-grey-light-1 z-[100]">
@@ -40,7 +46,7 @@ const AvailabilityZoneNav = (props) => {
                   key={azName}
                   onClick={() => {
                     setCurrentAZ(azName);
-                    setIsMerging(false);
+                    resetCommitmentMerge();
                     resetCommitment();
                   }}
                 >
