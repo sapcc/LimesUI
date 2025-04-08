@@ -32,6 +32,7 @@ import CommitmentTable from "../commitment/CommitmentTable";
 import CommitmentModal from "../commitment/Modals/CommitmentModal";
 import ConversionModal from "../commitment/Modals/ConversionModal";
 import DeleteModal from "../commitment/Modals/DeleteModal";
+import MergeModal from "../commitment/Modals/MergeModal";
 import TransferModal from "../commitment/Modals/TransferModal";
 import TransferTokenModal from "../commitment/Modals/TransferTokenModal";
 import TransferReceiveModal from "../commitment/Modals/TransferReceiveModal";
@@ -88,7 +89,8 @@ const EditPanel = (props) => {
   // Merge Commitments
   const [commitmentsToMerge, setCommitmentsToMerge] = React.useState([]);
   const [isMerging, setIsMerging] = React.useState(false);
-  const mergeForwardProps = { commitmentsToMerge, setCommitmentsToMerge, isMerging, setIsMerging };
+  const [confirmMerge, setConfirmMerge] = React.useState(false);
+  const mergeForwardProps = { commitmentsToMerge, setCommitmentsToMerge, isMerging, setIsMerging, setConfirmMerge };
 
   // Query can-confirm API. Determine if capacity is sufficient on limes.
   // If a minConfirmDate is set, skip the request. Limes handles capacity concerns.
@@ -332,6 +334,10 @@ const EditPanel = (props) => {
     setConversionCommitment(null);
   }
 
+  function onMergeClose() {
+    setConfirmMerge(false);
+  }
+
   function dismissToast() {
     setToast(null);
   }
@@ -475,6 +481,15 @@ const EditPanel = (props) => {
           commitment={updateDurationCommitment}
           onModalClose={onUpdateDurationClose}
           onUpdate={updateCommitmentDuration}
+        />
+      )}
+      {confirmMerge && (
+        <MergeModal
+          action={(commitments) => console.log(commitments)}
+          title="Merge selected commitments"
+          subText="Merge"
+          commitments={commitmentsToMerge}
+          onModalClose={onMergeClose}
         />
       )}
     </PanelBody>
