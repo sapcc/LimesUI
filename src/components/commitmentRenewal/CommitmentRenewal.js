@@ -210,15 +210,14 @@ const CommitmentRenewal = (props) => {
           </DataGrid>
         </div>
       )}
-      {showModal && (
-        <RenewModal
-          title="Renew Commitments"
-          subText="renew"
-          action={onRenew}
-          commitments={commitmentsForModal.current}
-          onModalClose={() => setShowModal(false)}
-        />
-      )}
+      <RenewModal
+        open={showModal}
+        title="Renew Commitments"
+        subText="renew"
+        action={onRenew}
+        commitments={commitmentsForModal.current}
+        onModalClose={() => setShowModal(false)}
+      />
     </div>
   );
 };
