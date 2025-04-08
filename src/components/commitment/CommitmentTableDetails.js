@@ -201,7 +201,7 @@ const CommitmentTableDetails = (props) => {
         />
       </DataGridCell>
       <DataGridCell className="items-start truncate">
-          <CommitmentTooltip displayText={parseRequesterName(creator_name)} toolTipContent={creator_name} />
+        <CommitmentTooltip displayText={parseRequesterName(creator_name)} toolTipContent={creator_name} />
       </DataGridCell>
       <DataGridCell>
         {isAddingCommitment ? (
