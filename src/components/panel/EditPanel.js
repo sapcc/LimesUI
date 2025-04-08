@@ -59,6 +59,7 @@ const EditPanel = (props) => {
   const convert = useMutation({ mutationKey: ["convertCommitment"] });
   const updateDuration = useMutation({ mutationKey: ["updateCommitmentDuration"] });
   const maxQuota = useMutation({ mutationKey: ["setMaxQuota"] });
+  const merge = useMutation({ mutationKey: ["mergeCommitments"] });
   const { resetCommitmentTransfer } = useResetCommitment();
   const { commitment: newCommitment } = createCommitmentStore();
   const { toast } = createCommitmentStore();
@@ -285,6 +286,24 @@ const EditPanel = (props) => {
     );
   }
 
+  function mergeCommitments(payload) {
+    const targetDomainID = currentProject?.metadata.domainID || scope.domainID;
+    const targetProjectID = currentProject?.metadata.id || scope.projectID;
+    merge.mutate(
+      { payload: payload, domainID: targetDomainID, projectID: targetProjectID },
+      {
+        onSuccess: () => {
+          setRefetchCommitmentAPI(true);
+          setCommitmentsToMerge([]);
+          setConfirmMerge(false);
+        },
+        onError: (error) => {
+          setToast(error.toString());
+        },
+      }
+    );
+  }
+
   // maxQuota can be set for a project with n services and m resources.
   function setMaxQuota(project, domainID, projectID) {
     if (!project) return;
@@ -487,7 +506,7 @@ const EditPanel = (props) => {
       )}
       {confirmMerge && (
         <MergeModal
-          action={(commitments) => console.log(commitments)}
+          action={mergeCommitments}
           title="Merge selected commitments"
           subText="Merge"
           commitments={commitmentsToMerge}
