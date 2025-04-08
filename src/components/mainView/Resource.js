@@ -99,9 +99,7 @@ const Resource = (props) => {
     editableResource,
   } = props.resource;
   const { scope } = globalStore();
-  const { tracksQuota, isPanelView, subRoute, setCurrentAZ } = {
-    ...props,
-  };
+  const { tracksQuota, isPanelView, subRoute, setCurrentAZ, setIsMerging } = { ...props };
   const displayName = t(props.resource.name);
   const maxQuota = props.resource?.max_quota;
   // displayedUsage ensures that resources without commitments get the project usage displayed.
@@ -188,6 +186,7 @@ const Resource = (props) => {
                 onClick={() => {
                   if (!props.isPanelView || subRoute || azName == "unknown") return;
                   setCurrentAZ(azName);
+                  setIsMerging(false);
                   resetCommitment();
                 }}
               >

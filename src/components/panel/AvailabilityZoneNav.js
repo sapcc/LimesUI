@@ -57,11 +57,9 @@ const AvailabilityZoneNav = (props) => {
           })}
           {scope.isProject() && (
             <Stack className="h-8 my-auto ml-auto mr-2" gap="1">
-              <Stack className="mr-2">
-                <MergeCommitment mergeOps={mergeOps} />
-              </Stack>
-              <ReceiveCommitment />
               <AddCommitments label="Add" />
+              <ReceiveCommitment />
+                <MergeCommitment mergeOps={mergeOps} style={"ml-2"}/>
             </Stack>
           )}
         </TabList>

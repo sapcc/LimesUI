@@ -374,6 +374,7 @@ const EditPanel = (props) => {
         tracksQuota={tracksQuota}
         isPanelView={true}
         subRoute={subRoute}
+        setIsMerging={setIsMerging}
         setCurrentAZ={setCurrentAZ}
       />
       <div className={"sticky top-0 z-[100] bg-juno-grey-light-1 h-8"}>
