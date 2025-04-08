@@ -189,6 +189,18 @@ const useQueryClientFn = (isMockApi) => {
       },
     });
 
+    queryClient.setMutationDefaults(["mergeCommitments"], {
+      mutationFn: async ({ domainID, projectID, payload }) => {
+        const url = `${endpoint}/v1/domains/${domainID}/projects/${projectID}/commitments/merge`;
+        const response = await fetchProxy(url, {
+          method: "POST",
+          headers: { Accept: "application/json", "X-Auth-Token": token },
+          body: JSON.stringify(payload),
+        });
+        return responseHandler(response);
+      },
+    });
+
     setApiReady(true);
   }, [queryClient, endpoint, token, projectID, domainID]);
 

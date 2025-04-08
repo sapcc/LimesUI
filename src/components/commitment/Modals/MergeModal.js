@@ -24,8 +24,15 @@ const MergeModal = (props) => {
     return [mergeAmount, highestDuration];
   }, [commitments]);
 
-  function onRenew() {
-    action(commitments);
+  function onMerge() {
+    if (commitments.length < 2) return;
+    let commitment_ids = [];
+    for (const c of commitments) {
+      commitment_ids.push(c.id);
+    }
+
+    const payload = { commitment_ids: commitment_ids };
+    action(payload);
   }
 
   return (
@@ -34,7 +41,7 @@ const MergeModal = (props) => {
       title={title}
       open={true}
       modalFooter={
-        <BaseFooter onModalClose={onModalClose} guardFns={[checkInput]} actionFn={onRenew} variant={"primary"} />
+        <BaseFooter onModalClose={onModalClose} guardFns={[checkInput]} actionFn={onMerge} variant={"primary"} />
       }
       onCancel={() => {
         onModalClose();
