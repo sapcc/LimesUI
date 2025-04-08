@@ -27,7 +27,7 @@ import { COMMITMENTID } from "../../lib/constants";
 import useResetCommitment from "../../hooks/useResetCommitment";
 
 const CommitmentTableDetails = (props) => {
-  const { commitment } = props;
+  const { commitment, mergeOps } = props;
   const {
     id,
     amount,
@@ -84,10 +84,7 @@ const CommitmentTableDetails = (props) => {
     const { label = "" } = value?.props;
     durationLabel.current = label;
     setInValidDuration(false);
-    setCommitment({
-      ...newCommitment,
-      duration: duration,
-    });
+    setCommitment({ ...newCommitment, duration: duration });
   }
 
   function handleSave() {
@@ -245,7 +242,7 @@ const CommitmentTableDetails = (props) => {
             </Button>
           </Stack>
         ) : (
-          <Actions commitment={commitment} resource={currentResource} />
+          <Actions commitment={commitment} resource={currentResource} mergeOps={mergeOps} />
         )}
       </DataGridCell>
     </DataGridRow>

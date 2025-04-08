@@ -33,7 +33,7 @@ const CommitmentTable = (props) => {
   const { commitment: newCommitment } = createCommitmentStore();
   const { commitmentIsFetching } = createCommitmentStore();
   const { isCommitting } = createCommitmentStore();
-  const { serviceType, currentCategory, currentResource, currentAZ, commitmentData } = {
+  const { serviceType, currentCategory, currentResource, currentAZ, commitmentData, mergeOps } = {
     ...props,
   };
   const resourceName = currentResource?.name;
@@ -103,6 +103,7 @@ const CommitmentTable = (props) => {
           currentCategory={currentCategory}
           currentResource={currentResource}
           currentAZ={currentAZ}
+          mergeOps={mergeOps}
         />
       ))}
     </DataGrid>
