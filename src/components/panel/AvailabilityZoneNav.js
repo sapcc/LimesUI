@@ -23,7 +23,7 @@ import MergeCommitment from "../shared/MergeCommitments";
 
 const AvailabilityZoneNav = (props) => {
   const azIndex = props.az.findIndex((az) => az[0] === props.currentAZ);
-  const { scope, setCurrentAZ } = props;
+  const { scope, setCurrentAZ, mergeOps } = props;
   const { resetCommitment } = useResetCommitment();
 
   return (
@@ -40,6 +40,7 @@ const AvailabilityZoneNav = (props) => {
                   key={azName}
                   onClick={() => {
                     setCurrentAZ(azName);
+                    setIsMerging(false);
                     resetCommitment();
                   }}
                 >
@@ -50,8 +51,10 @@ const AvailabilityZoneNav = (props) => {
           })}
           {scope.isProject() && (
             <Stack className="h-8 my-auto ml-auto mr-2" gap="1">
+              <Stack className="mr-2">
+                <MergeCommitment mergeOps={mergeOps} />
+              </Stack>
               <ReceiveCommitment />
-              <MergeCommitment />
               <AddCommitments label="Add" />
             </Stack>
           )}

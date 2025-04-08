@@ -22,9 +22,11 @@ import useDeleteAction from "./useDeleteAction";
 import useTransferAction from "./useTransferAction";
 import useConversionAction from "./useConversionAction";
 import useUpdateDurationAction from "./useUpdateDurationAction";
+import CommitmentMergeSelect from "./CommitmentMergeSelect";
 
 const Actions = (props) => {
-  const { commitment = {}, resource = {} } = props;
+  const { commitment = {}, resource = {}, mergeOps = { isMerging: false } } = props;
+  const { isMerging } = mergeOps;
   const { getCommitmentLabel } = useCommitmentFilter();
   const [commitmentActions, setCommitmentActions] = React.useState([]);
 
@@ -63,14 +65,20 @@ const Actions = (props) => {
           />
         )}
       </Stack>
-      {commitmentActions.length > 0 && (
-        <ContextMenu>
-          <div className="border-solid border-2 border-juno-grey-light-9">
-            {commitmentActions.map((action) => {
-              return <div key={action.key}> {action.menuItem} </div>;
-            })}
-          </div>
-        </ContextMenu>
+      {isMerging ? (
+        <Stack className={"h-4 self-center"}>
+          <CommitmentMergeSelect commitment={commitment} mergeOps={mergeOps} />
+        </Stack>
+      ) : (
+        commitmentActions.length > 0 && (
+          <ContextMenu>
+            <div className="border-solid border-2 border-juno-grey-light-9">
+              {commitmentActions.map((action) => {
+                return <div key={action.key}> {action.menuItem} </div>;
+              })}
+            </div>
+          </ContextMenu>
+        )
       )}
     </Stack>
   );

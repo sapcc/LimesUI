@@ -85,6 +85,10 @@ const EditPanel = (props) => {
   const { setCommitmentIsLoading } = createCommitmentStoreActions();
   const conversionResults = useGetConversions({ serviceType, resourceName });
   const [currentAZ, setCurrentAZ] = React.useState(currentResource.per_az[0][0]);
+  // Merge Commitments
+  const [commitmentsToMerge, setCommitmentsToMerge] = React.useState([]);
+  const [isMerging, setIsMerging] = React.useState(false);
+  const mergeForwardProps = { commitmentsToMerge, setCommitmentsToMerge, isMerging, setIsMerging };
 
   // Query can-confirm API. Determine if capacity is sufficient on limes.
   // If a minConfirmDate is set, skip the request. Limes handles capacity concerns.
@@ -356,8 +360,9 @@ const EditPanel = (props) => {
         <AvailabilityZoneNav
           az={currentResource.per_az}
           currentAZ={currentAZ}
-          setCurrentAZ={setCurrentAZ}
           scope={scope}
+          setCurrentAZ={setCurrentAZ}
+          mergeOps={mergeForwardProps}
         />
       )}
       {scope.isProject() && commitments && (
@@ -368,6 +373,7 @@ const EditPanel = (props) => {
           resource={currentResource}
           currentAZ={currentAZ}
           commitmentData={commitments}
+          mergeOps={mergeForwardProps}
           scope={scope}
         />
       )}
