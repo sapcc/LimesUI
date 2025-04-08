@@ -5,12 +5,20 @@ const CommitmentMergeSelect = (props) => {
   const { commitment, mergeOps } = props;
   const { commitmentsToMerge, setCommitmentsToMerge } = mergeOps;
   const [selectedForMerge, setSelectedForMerge] = React.useState(false);
+
   function onCommitmentMergeSelect(isSelected) {
-    console.log(commitmentsToMerge)
-    setSelectedForMerge(isSelected);
-    if(isSelected) {
-        setCommitmentsToMerge([...commitmentsToMerge, commitment.id])
+    const commitmentInSelection = commitmentsToMerge.find((c) => c.id === commitment.id);
+    if (commitmentInSelection && isSelected) {
+      return;
     }
+    if (commitmentInSelection && !isSelected) {
+      const commitments = commitmentsToMerge.filter((c) => c.id !== commitment.id);
+      setCommitmentsToMerge(commitments);
+    }
+    if (isSelected) {
+      setCommitmentsToMerge([...commitmentsToMerge, commitment]);
+    }
+    setSelectedForMerge(isSelected);
   }
 
   return <Checkbox checked={selectedForMerge} onClick={() => onCommitmentMergeSelect(!selectedForMerge)} />;

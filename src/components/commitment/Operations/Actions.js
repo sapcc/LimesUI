@@ -27,7 +27,7 @@ import CommitmentMergeSelect from "./CommitmentMergeSelect";
 const Actions = (props) => {
   const { commitment = {}, resource = {}, mergeOps = { isMerging: false } } = props;
   const { isMerging } = mergeOps;
-  const { getCommitmentLabel } = useCommitmentFilter();
+  const { getCommitmentLabel, isActive } = useCommitmentFilter();
   const [commitmentActions, setCommitmentActions] = React.useState([]);
 
   const hasTooltips = React.useMemo(() => {
@@ -67,7 +67,7 @@ const Actions = (props) => {
       </Stack>
       {isMerging ? (
         <Stack className={"h-4 self-center"}>
-          <CommitmentMergeSelect commitment={commitment} mergeOps={mergeOps} />
+          {isActive(commitment) && <CommitmentMergeSelect commitment={commitment} mergeOps={mergeOps} />}
         </Stack>
       ) : (
         commitmentActions.length > 0 && (
