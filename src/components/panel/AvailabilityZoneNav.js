@@ -55,13 +55,15 @@ const AvailabilityZoneNav = (props) => {
               )
             );
           })}
-          {scope.isProject() && (
-            <Stack className="h-8 my-auto ml-auto mr-2" gap="1">
-              <AddCommitments label="Add" />
-              <ReceiveCommitment />
-                <MergeCommitment mergeOps={mergeOps} style={"ml-2"}/>
-            </Stack>
-          )}
+          <Stack className="h-8 my-auto ml-auto mr-2" gap="1">
+            {scope.isProject() && (
+              <>
+                <AddCommitments label="Add" />
+                <ReceiveCommitment />
+              </>
+            )}
+            <MergeCommitment mergeOps={mergeOps} style={"ml-2"} />
+          </Stack>
         </TabList>
         {props.az.map((az) => az[0] !== "unknown" && az[0] !== "any" && <TabPanel key={az[0]}></TabPanel>)}
       </Tabs>

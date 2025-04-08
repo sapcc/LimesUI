@@ -409,6 +409,7 @@ const EditPanel = (props) => {
           currentAZ={currentAZ}
           subRoute={subRoute}
           setMaxQuota={setMaxQuota}
+          mergeOps={mergeForwardProps}
         />
       )}
       {scope.isCluster() && (
@@ -419,6 +420,7 @@ const EditPanel = (props) => {
           currentAZ={currentAZ}
           subRoute={subRoute}
           setMaxQuota={setMaxQuota}
+          mergeOps={mergeForwardProps}
         />
       )}
       {isSubmitting && canConfirm != null && (

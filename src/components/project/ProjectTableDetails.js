@@ -45,6 +45,7 @@ const ProjectTableDetails = (props) => {
     az,
     currentAZ,
     colSpan,
+    mergeOps,
   } = props;
   const { metadata } = project;
   const { name: projectName, id: projectID } = metadata;
@@ -60,15 +61,13 @@ const ProjectTableDetails = (props) => {
   const { setCommitmentIsFetching } = createCommitmentStoreActions();
   const { setIsCommitting } = createCommitmentStoreActions();
   const { setTransferCommitment } = createCommitmentStoreActions();
+  const { setCommitmentsToMerge } = mergeOps;
   const { resetCommitmentTransfer } = useResetCommitment();
   // commitment query requires a domain ID that differs on cluster level.
   const { scope } = globalStore();
   const domainID = scope.isCluster() ? metadata.domainID : null;
   // Be careful here! If enabled state is passed in as undefined, the useQuery hook spams the limes API for all projects!
-  const commitQueryResult = useQuery({
-    queryKey: ["commitmentData", projectID, domainID],
-    enabled: showCommitments,
-  });
+  const commitQueryResult = useQuery({ queryKey: ["commitmentData", projectID, domainID], enabled: showCommitments });
   const { data: commitmentData, isLoading, isFetching } = commitQueryResult;
   const [moveCommitment, setMoveCommitment] = React.useState(false);
   const [originProject, setOriginProject] = React.useState(false);
@@ -116,6 +115,7 @@ const ProjectTableDetails = (props) => {
                 resetCommitmentTransfer();
                 setMoveCommitment(false);
                 setIsCommitting(false);
+                setCommitmentsToMerge([]);
                 updateShowCommitments(index);
               }}
             />
@@ -193,6 +193,7 @@ const ProjectTableDetails = (props) => {
                 resource={resource}
                 currentAZ={currentAZ}
                 commitmentData={commitments}
+                mergeOps={mergeOps}
               />
             </>
           ) : (
