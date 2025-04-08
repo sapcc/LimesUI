@@ -22,7 +22,7 @@ import { globalStoreActions, domainStoreActions, domainStore } from "../StorePro
 import { LoadingIndicator } from "@cloudoperators/juno-ui-components";
 
 const ProjectManager = (props) => {
-  const { serviceType, currentCategory, currentResource, currentAZ, subRoute, setMaxQuota } = props;
+  const { serviceType, currentCategory, currentResource, currentAZ, subRoute, setMaxQuota, mergeOps } = props;
   const resourceName = currentResource.name;
   const { refetchProjectAPI } = projectStore();
   const { setRefetchProjectAPI } = projectStoreActions();
@@ -62,6 +62,7 @@ const ProjectManager = (props) => {
       projects={projects}
       subRoute={subRoute}
       setMaxQuota={setMaxQuota}
+      mergeOps={mergeOps}
     />
   ) : (
     <LoadingIndicator className={`m-auto`} />

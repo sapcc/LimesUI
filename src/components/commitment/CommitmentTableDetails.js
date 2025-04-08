@@ -200,8 +200,8 @@ const CommitmentTableDetails = (props) => {
           toolTipContent={formatTime(expires_at, "YYYY-MM-DD HH:mm A")}
         />
       </DataGridCell>
-      <DataGridCell className="items-start">
-        <CommitmentTooltip displayText={parseRequesterName(creator_name)} toolTipContent={creator_name} />
+      <DataGridCell className="items-start truncate">
+          <CommitmentTooltip displayText={parseRequesterName(creator_name)} toolTipContent={creator_name} />
       </DataGridCell>
       <DataGridCell>
         {isAddingCommitment ? (
