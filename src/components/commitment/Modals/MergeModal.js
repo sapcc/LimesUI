@@ -42,12 +42,7 @@ const MergeModal = (props) => {
 
   function onMerge() {
     if (commitments.length < 2) return;
-    let commitment_ids = [];
-    for (const c of commitments) {
-      commitment_ids.push(c.id);
-    }
-
-    const payload = { commitment_ids: commitment_ids };
+    const payload = { commitment_ids: commitments.map((c) => c.id); };
     action(payload);
   }
 
