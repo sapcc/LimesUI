@@ -53,6 +53,7 @@ const MergeModal = (props) => {
 
   return (
     <Modal
+      data-testid={"mergeModal"}
       className="max-h-full"
       title={title}
       open={true}

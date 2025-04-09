@@ -24,6 +24,7 @@ const MergeCommitment = (props) => {
   return (
     <Stack className={style} gap="1">
       <Button
+        data-testid={"mergeToggle"}
         size="small"
         onClick={() => {
           if (isMerging) {
@@ -36,6 +37,7 @@ const MergeCommitment = (props) => {
         <span>Merge</span>
       </Button>
       <Button
+        data-testid={"mergeAction"}
         size="small"
         icon="success"
         disabled={commitmentsToMerge.length < 2}
