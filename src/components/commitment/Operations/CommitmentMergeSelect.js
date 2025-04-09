@@ -37,7 +37,13 @@ const CommitmentMergeSelect = (props) => {
     setSelectedForMerge(isSelected);
   }
 
-  return <Checkbox checked={selectedForMerge} onClick={() => onCommitmentMergeSelect(!selectedForMerge)} />;
+  return (
+    <Checkbox
+      data-testid={`mergeSelect-${commitment.id}`}
+      checked={selectedForMerge}
+      onClick={() => onCommitmentMergeSelect(!selectedForMerge)}
+    />
+  );
 };
 
 export default CommitmentMergeSelect;
