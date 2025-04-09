@@ -25,6 +25,7 @@ const MergeCommitment = (props) => {
     <Stack className={style} gap="1">
       <Button
         data-testid={"mergeToggle"}
+        title={!isMerging ? "Merge" : "Cancel Merge"}
         size="small"
         onClick={() => {
           if (isMerging) {
@@ -38,6 +39,7 @@ const MergeCommitment = (props) => {
       </Button>
       <Button
         data-testid={"mergeAction"}
+        title="Confirm Merge"
         className={!isMerging && "invisible"}
         size="small"
         icon="success"
