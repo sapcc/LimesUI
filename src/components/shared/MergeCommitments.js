@@ -38,6 +38,7 @@ const MergeCommitment = (props) => {
       </Button>
       <Button
         data-testid={"mergeAction"}
+        className={!isMerging && "invisible"}
         size="small"
         icon="success"
         disabled={commitmentsToMerge.length < 2}
