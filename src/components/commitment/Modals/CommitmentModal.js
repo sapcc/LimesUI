@@ -111,7 +111,6 @@ const CommitmentModal = (props) => {
             {commitment.duration + (commitment?.durationLabel && " " + "(" + commitment.durationLabel + ")")}
           </DataGridCell>
         </DataGridRow>
-        <DataGridRow></DataGridRow>
         <DataGridRow>
           <DataGridCell className={label}>Activation</DataGridCell>
           <DataGridCell>
