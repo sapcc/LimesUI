@@ -34,13 +34,9 @@ import { formatTimeISO8160 } from "../../../lib/utils";
 const label = "font-semibold";
 
 const CommitmentModal = (props) => {
-  const { action, az, canConfirm, commitment, minConfirmDate, onModalClose, subText, title } = {
-    ...props,
-  };
+  const { action, az, canConfirm, commitment, minConfirmDate, onModalClose, subText, title } = { ...props };
   const unit = new Unit(commitment.unit);
-  const { ConfirmInput, inputProps, checkInput } = useConfirmInput({
-    confirmationText: subText,
-  });
+  const { ConfirmInput, inputProps, checkInput } = useConfirmInput({ confirmationText: subText });
   const hasMinConfirmDate = minConfirmDate ? true : false;
   // Show Calendar if: 1.) min_confirm_by field is set 2.) Not enough capacity is available on limes.
   const [showCalendar, setShowCalendar] = React.useState(hasMinConfirmDate || !canConfirm);
@@ -50,6 +46,7 @@ const CommitmentModal = (props) => {
   const startDate = minConfirmDate ? moment.unix(minConfirmDate)._d : moment()._d;
   const [selectedDate, setSelectedDate] = React.useState(startDate);
   const formattedDate = formatTimeISO8160(moment(selectedDate).unix());
+  const notifyOnConfirm = React.useRef(false);
 
   function onConfirm() {
     if (!selectedDate) return;
@@ -70,7 +67,7 @@ const CommitmentModal = (props) => {
     // The API confirms commitments without confirm_by instantly.
     const sendConfirmBy = showCalendar;
     if (sendConfirmBy) {
-      action(confirm_by);
+      action(confirm_by, notifyOnConfirm.current);
     } else {
       action();
     }
@@ -114,6 +111,7 @@ const CommitmentModal = (props) => {
             {commitment.duration + (commitment?.durationLabel && " " + "(" + commitment.durationLabel + ")")}
           </DataGridCell>
         </DataGridRow>
+        <DataGridRow></DataGridRow>
         <DataGridRow>
           <DataGridCell className={label}>Activation</DataGridCell>
           <DataGridCell>
@@ -126,6 +124,19 @@ const CommitmentModal = (props) => {
               label="immediately"
             />
           </DataGridCell>
+          {showCalendar && (
+            <>
+              <DataGridCell className={label}>Notificaton</DataGridCell>
+              <DataGridCell>
+                <Checkbox
+                  label="send mail on confirm"
+                  onClick={() => {
+                    notifyOnConfirm.current = !notifyOnConfirm.current;
+                  }}
+                />
+              </DataGridCell>
+            </>
+          )}
         </DataGridRow>
         {showCalendar && (
           <DataGridRow>
