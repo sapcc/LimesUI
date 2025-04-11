@@ -61,7 +61,7 @@ const ProjectTableDetails = (props) => {
   const { setCommitmentIsFetching } = createCommitmentStoreActions();
   const { setIsCommitting } = createCommitmentStoreActions();
   const { setTransferCommitment } = createCommitmentStoreActions();
-  const { setCommitmentsToMerge } = mergeOps;
+  const { setCommitmentsToMerge, setMergeIsActive } = mergeOps;
   const { resetCommitmentTransfer } = useResetCommitment();
   // commitment query requires a domain ID that differs on cluster level.
   const { scope } = globalStore();
@@ -116,6 +116,7 @@ const ProjectTableDetails = (props) => {
                 setMoveCommitment(false);
                 setIsCommitting(false);
                 setCommitmentsToMerge([]);
+                setMergeIsActive(false);
                 updateShowCommitments(index);
               }}
             />

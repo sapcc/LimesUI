@@ -89,9 +89,19 @@ const EditPanel = (props) => {
   const [currentAZ, setCurrentAZ] = React.useState(currentResource.per_az[0][0]);
   // Merge Commitments
   const [commitmentsToMerge, setCommitmentsToMerge] = React.useState([]);
+  // The merge button is active if >= 2 commitments are available for the AZ.
+  const [mergeIsActive, setMergeIsActive] = React.useState(false); 
   const [isMerging, setIsMerging] = React.useState(false);
   const [confirmMerge, setConfirmMerge] = React.useState(false);
-  const mergeForwardProps = { commitmentsToMerge, setCommitmentsToMerge, isMerging, setIsMerging, setConfirmMerge };
+  const mergeForwardProps = {
+    commitmentsToMerge,
+    setCommitmentsToMerge,
+    isMerging,
+    setIsMerging,
+    setConfirmMerge,
+    mergeIsActive,
+    setMergeIsActive,
+  };
 
   // Query can-confirm API. Determine if capacity is sufficient on limes.
   // If a minConfirmDate is set, skip the request. Limes handles capacity concerns.
@@ -296,6 +306,7 @@ const EditPanel = (props) => {
           setRefetchCommitmentAPI(true);
           setCommitmentsToMerge([]);
           setConfirmMerge(false);
+          setIsMerging(false);
         },
         onError: (error) => {
           setToast(error.toString());

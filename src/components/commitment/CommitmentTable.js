@@ -36,6 +36,7 @@ const CommitmentTable = (props) => {
   const { serviceType, currentCategory, currentResource, currentAZ, commitmentData, mergeOps } = {
     ...props,
   };
+  const { setMergeIsActive } = mergeOps;
   const resourceName = currentResource?.name;
   const { per_az: availabilityZones } = props.resource;
   const isAZAware = availabilityZones.length == 1 && availabilityZones[0][0] == "any";
@@ -77,6 +78,7 @@ const CommitmentTable = (props) => {
   const filteredCommitments = React.useMemo(() => {
     const filteredData = filterCommitments(resourceName, currentAZ);
     if (!isCommitting) {
+      filteredData.length >= 2 ? setMergeIsActive(true) : setMergeIsActive(false);
       return filteredData;
     }
     newCommitment.unit = unit;

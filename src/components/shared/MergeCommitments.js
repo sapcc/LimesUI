@@ -19,12 +19,14 @@ import { Button, Icon, Stack } from "@cloudoperators/juno-ui-components";
 
 const MergeCommitment = (props) => {
   const { mergeOps, style } = props;
-  const { isMerging, setIsMerging, commitmentsToMerge, setCommitmentsToMerge, setConfirmMerge } = mergeOps;
+  const { isMerging, setIsMerging, commitmentsToMerge, setCommitmentsToMerge, setConfirmMerge, mergeIsActive } =
+    mergeOps;
 
   return (
     <Stack className={style} gap="1">
       <Button
         data-testid={"mergeToggle"}
+        disabled={!mergeIsActive}
         title={!isMerging ? "Merge" : "Cancel Merge"}
         size="small"
         onClick={() => {
