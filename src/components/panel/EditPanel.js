@@ -90,7 +90,7 @@ const EditPanel = (props) => {
   // Merge Commitments
   const [commitmentsToMerge, setCommitmentsToMerge] = React.useState([]);
   // The merge button is active if >= 2 commitments are available for the AZ.
-  const [mergeIsActive, setMergeIsActive] = React.useState(false); 
+  const [mergeIsActive, setMergeIsActive] = React.useState(false);
   const [isMerging, setIsMerging] = React.useState(false);
   const [confirmMerge, setConfirmMerge] = React.useState(false);
   const mergeForwardProps = {
