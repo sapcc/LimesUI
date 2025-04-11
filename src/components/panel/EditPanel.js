@@ -139,11 +139,13 @@ const EditPanel = (props) => {
     );
   }, [isSubmitting]);
 
-  function postCommitment(confirm_by = null) {
+  function postCommitment(confirm_by = null, notifyOnConfirm = false) {
     const currentProjectID = currentProject?.metadata?.id;
     const currentDomainID = scope.isCluster() ? currentProject.metadata.domainID : null;
     setCommitmentIsLoading(true);
-    const payload = confirm_by ? { ...newCommitment, id: "", confirm_by: confirm_by } : { ...newCommitment, id: "" };
+    const payload = confirm_by
+      ? { ...newCommitment, id: "", confirm_by: confirm_by, notify_on_confirm: notifyOnConfirm }
+      : { ...newCommitment, id: "" };
     commit.mutate(
       {
         payload: {

@@ -155,6 +155,7 @@ describe("test commitment creation modal", () => {
     act(() => {
       screen.getByRole("checkbox").click();
     });
+    expect(screen.getByText("Notificaton")).toBeInTheDocument();
     expect(screen.getByText(/January 2024/i)).toBeInTheDocument();
   });
 });
