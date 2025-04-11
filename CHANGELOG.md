@@ -1,5 +1,11 @@
 # @sapcc/limes-ui
 
+## 1.4.1
+
+### Patch Changes
+
+- aa6ec06: Add notification option for planned commitments
+
 ## 1.4.0
 
 ### Minor Changes
