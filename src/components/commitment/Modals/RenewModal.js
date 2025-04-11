@@ -27,10 +27,8 @@ const RenewModal = (props) => {
   const { commitments = [] } = props;
   const isSingleCommitment = commitments.length == 1;
   const unit = isSingleCommitment && new Unit(commitments[0].unit);
-  const { action, title, subText, onModalClose } = props;
-  const { ConfirmInput, inputProps, checkInput } = useConfirmInput({
-    confirmationText: subText,
-  });
+  const { open, action, title, subText, onModalClose } = props;
+  const { ConfirmInput, inputProps, checkInput } = useConfirmInput({ confirmationText: subText });
 
   function onRenew() {
     action(commitments);
@@ -40,7 +38,7 @@ const RenewModal = (props) => {
     <Modal
       className="max-h-full"
       title={title}
-      open={true}
+      open={open}
       modalFooter={
         <BaseFooter onModalClose={onModalClose} guardFns={[checkInput]} actionFn={onRenew} variant={"primary"} />
       }

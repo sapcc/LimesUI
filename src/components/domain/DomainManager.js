@@ -20,12 +20,10 @@ import { clusterStore, clusterStoreActions } from "../StoreProvider";
 import ProjectsPerDomain from "./ProjectsPerDomain";
 
 const DomainManager = (props) => {
-  const { serviceType, currentCategory, currentResource, currentAZ, subRoute, setMaxQuota } = props;
+  const { serviceType, currentCategory, currentResource, currentAZ, subRoute, setMaxQuota, mergeOps } = props;
   const { domainData } = clusterStore();
   const { setDomainData } = clusterStoreActions();
-  const domainQueryResult = useQuery({
-    queryKey: ["domains", "", ""],
-  });
+  const domainQueryResult = useQuery({ queryKey: ["domains", "", ""] });
   const { data: domainAPIData, isLoading } = domainQueryResult;
 
   React.useEffect(() => {
@@ -46,6 +44,7 @@ const DomainManager = (props) => {
         currentAZ={currentAZ}
         subRoute={subRoute}
         setMaxQuota={setMaxQuota}
+        mergeOps={mergeOps}
       />
     )
   );

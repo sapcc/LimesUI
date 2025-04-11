@@ -15,13 +15,22 @@
  */
 
 import React from "react";
-import { Tabs, Tab, TabList, TabPanel, Container } from "@cloudoperators/juno-ui-components";
+import AddCommitments from "../shared/AddCommitments";
+import ReceiveCommitment from "./ReceiveCommitment";
+import { Stack, Tabs, Tab, TabList, TabPanel, Container } from "@cloudoperators/juno-ui-components";
 import useResetCommitment from "../../hooks/useResetCommitment";
+import MergeCommitment from "../shared/MergeCommitments";
 
 const AvailabilityZoneNav = (props) => {
   const azIndex = props.az.findIndex((az) => az[0] === props.currentAZ);
-  const { setCurrentAZ } = props;
+  const { scope, setCurrentAZ, mergeOps } = props;
+  const { setIsMerging, setCommitmentsToMerge } = mergeOps;
   const { resetCommitment } = useResetCommitment();
+
+  function resetCommitmentMerge() {
+    setIsMerging(false);
+    setCommitmentsToMerge([]);
+  }
 
   return (
     <Container px={false} className="pt-0 py-6 sticky top-[2rem] bg-juno-grey-light-1 z-[100]">
@@ -37,6 +46,7 @@ const AvailabilityZoneNav = (props) => {
                   key={azName}
                   onClick={() => {
                     setCurrentAZ(azName);
+                    resetCommitmentMerge();
                     resetCommitment();
                   }}
                 >
@@ -45,6 +55,15 @@ const AvailabilityZoneNav = (props) => {
               )
             );
           })}
+          <Stack className="h-8 my-auto ml-auto mr-2" gap="1">
+            {scope.isProject() && (
+              <>
+                <AddCommitments label="Add" />
+                <ReceiveCommitment />
+              </>
+            )}
+            <MergeCommitment mergeOps={mergeOps} />
+          </Stack>
         </TabList>
         {props.az.map((az) => az[0] !== "unknown" && az[0] !== "any" && <TabPanel key={az[0]}></TabPanel>)}
       </Tabs>
