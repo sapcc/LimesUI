@@ -118,7 +118,7 @@
     }
   },
   "dependencies": {
-    "@cloudoperators/juno-ui-components": "2.38.0",
+    "@cloudoperators/juno-ui-components": "3.0.0",
     "@cloudoperators/juno-url-state-provider": "*",
     "@cloudoperators/juno-utils": "*",
     "cypress": "^14.0.0",
