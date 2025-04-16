@@ -1,5 +1,15 @@
 # @sapcc/limes-ui
 
+## 1.5.0
+
+### Minor Changes
+
+- 4a00bc4: Add commitment merging to project, domain and cluster level
+
+### Patch Changes
+
+- aa6ec06: Add notification option for planned commitments
+
 ## 1.4.0
 
 ### Minor Changes
