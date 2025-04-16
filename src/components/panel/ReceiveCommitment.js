@@ -16,8 +16,8 @@
 
 import React from "react";
 import { Button, Icon } from "@cloudoperators/juno-ui-components";
-import { createCommitmentStoreActions } from "../../StoreProvider";
-import { TransferStatus } from "../../../lib/constants";
+import { createCommitmentStoreActions } from "../StoreProvider";
+import { TransferStatus } from "../../lib/constants";
 
 const ReceiveCommitment = () => {
   const { setTransferFromAndToProject } = createCommitmentStoreActions();
@@ -34,7 +34,7 @@ const ReceiveCommitment = () => {
       }}
     >
       <Icon className="mr-2" icon="download" title="Receive" size="18" />
-      <span>Receive Commitment</span>
+      <span>Receive</span>
     </Button>
   );
 };

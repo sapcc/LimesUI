@@ -77,7 +77,7 @@ const quotaTableHeadCells = [
 
 // Display the project details in DomainView
 const ProjectTable = (props) => {
-  const { serviceType, currentResource, currentCategory, currentAZ, projects, subRoute, setMaxQuota } = props;
+  const { serviceType, currentResource, currentCategory, currentAZ, projects, subRoute, setMaxQuota, mergeOps } = props;
   const resourceTracksQuota = tracksQuota(currentResource);
   const { scope } = globalStore();
   const { previousProject } = domainStore();
@@ -140,7 +140,7 @@ const ProjectTable = (props) => {
   // Change the displayed projects corresponding to its filtered string
   // The show commitment state will be transferred to filtered projects.
   function filterProjects(input) {
-    const regex = new RegExp(input, "i");
+    const regex = new RegExp(input.trim(), "i");
     let filteredProjects = [];
     const filtered = projects.filter((project) => {
       const filterName = scope.isCluster() ? project.metadata.fullName : project.metadata.name;
@@ -180,7 +180,7 @@ const ProjectTable = (props) => {
                   setToast(null);
                   setSortedProjects(projects);
                 }}
-                className={"m-auto"}
+                className={"m-auto mt-0"}
               >
                 Sort
               </Button>
@@ -237,6 +237,7 @@ const ProjectTable = (props) => {
                 az={az[0]}
                 currentAZ={currentAZ}
                 colSpan={colSpan}
+                mergeOps={mergeOps}
               />
             ) : (
               <ProjectQuotaDetails

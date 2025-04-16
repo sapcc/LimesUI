@@ -111,7 +111,6 @@ const TransferReceiveModal = (props) => {
       <div className="font-medium">Enter a token to receive a commmitment:</div>
       <TextInput
         data-testid="transferTokenInput"
-        autoFocus
         invalid={invalidInput}
         className={"px-2 mb-2"}
         value={tokenInput}

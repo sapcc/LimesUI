@@ -29,7 +29,7 @@ import { LoadingIndicator } from "@cloudoperators/juno-ui-components";
 
 const ProjectsPerDomain = (props) => {
   // Fetch project data for all domains
-  const { domains, serviceType, currentCategory, resource, currentAZ, subRoute, setMaxQuota } = props;
+  const { domains, serviceType, currentCategory, resource, currentAZ, subRoute, setMaxQuota, mergeOps } = props;
   const resourceName = resource.name;
   const { restructureReport } = globalStoreActions();
   const { setProjectsToDomain } = clusterStoreActions();
@@ -37,9 +37,7 @@ const ProjectsPerDomain = (props) => {
   const { setProjects } = domainStoreActions();
   const projectQueries = useQueries({
     queries: domains.map((domain) => {
-      return {
-        queryKey: ["projectsInDomain", serviceType, resourceName, domain.id],
-      };
+      return { queryKey: ["projectsInDomain", serviceType, resourceName, domain.id] };
     }),
   });
   const isLoading = projectQueries.some((query) => query.isLoading);
@@ -94,6 +92,7 @@ const ProjectsPerDomain = (props) => {
       projects={projects}
       subRoute={subRoute}
       setMaxQuota={setMaxQuota}
+      mergeOps={mergeOps}
     />
   ) : (
     <LoadingIndicator className={`m-auto`} />

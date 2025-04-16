@@ -33,8 +33,6 @@ import { ProjectBadges } from "../shared/LimesBadges";
 import { isAZUnaware } from "../../lib/utils";
 import ResourceBarBuilder from "../resourceBar/ResourceBarBuilder";
 import useResetCommitment from "../../hooks/useResetCommitment";
-import AddCommitments from "../shared/AddCommitments";
-import ReceiveCommitment from "./subComponents/ReceiveCommitment";
 import HistoricalUsage from "./subComponents/HistoricalUsage";
 import MaxQuota from "./subComponents/MaxQuota";
 import PhysicalUsage from "./subComponents/PhysicalUsage";
@@ -101,9 +99,7 @@ const Resource = (props) => {
     editableResource,
   } = props.resource;
   const { scope } = globalStore();
-  const { tracksQuota, isPanelView, subRoute, setCurrentAZ } = {
-    ...props,
-  };
+  const { tracksQuota, isPanelView, subRoute, setCurrentAZ, setIsMerging } = { ...props };
   const displayName = t(props.resource.name);
   const maxQuota = props.resource?.max_quota;
   // displayedUsage ensures that resources without commitments get the project usage displayed.
@@ -161,12 +157,6 @@ const Resource = (props) => {
             )}
           </Stack>
         )}
-        {scope.isProject() && props.isPanelView && (
-          <Stack gap="1">
-            <ReceiveCommitment />
-            <AddCommitments label="Add Commitment" />
-          </Stack>
-        )}
       </Stack>
       <ResourceBarBuilder
         unit={unitName}
@@ -196,6 +186,7 @@ const Resource = (props) => {
                 onClick={() => {
                   if (!props.isPanelView || subRoute || azName == "unknown") return;
                   setCurrentAZ(azName);
+                  setIsMerging(false);
                   resetCommitment();
                 }}
               >

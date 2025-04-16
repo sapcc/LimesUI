@@ -32,6 +32,7 @@ import CommitmentTable from "../commitment/CommitmentTable";
 import CommitmentModal from "../commitment/Modals/CommitmentModal";
 import ConversionModal from "../commitment/Modals/ConversionModal";
 import DeleteModal from "../commitment/Modals/DeleteModal";
+import MergeModal from "../commitment/Modals/MergeModal";
 import TransferModal from "../commitment/Modals/TransferModal";
 import TransferTokenModal from "../commitment/Modals/TransferTokenModal";
 import TransferReceiveModal from "../commitment/Modals/TransferReceiveModal";
@@ -44,38 +45,21 @@ import { initialCommitmentObject, TransferStatus } from "../../lib/constants";
 
 const EditPanel = (props) => {
   const { scope } = globalStore();
-  const { serviceType, currentResource, tracksQuota, currentCategory, subRoute } = {
-    ...props,
-  };
+  const { serviceType, currentResource, tracksQuota, currentCategory, subRoute } = { ...props };
   const resourceName = currentResource.name;
   const minConfirmDate = currentResource?.commitment_config?.min_confirm_by;
   const [canConfirm, setCanConfirm] = React.useState(null);
   const { commitments } = projectStore();
   const { setRefetchProjectAPI } = projectStoreActions();
-  const commit = useMutation({
-    mutationKey: ["newCommitment"],
-  });
-  const confirm = useMutation({
-    mutationKey: ["canConfirm"],
-  });
-  const startTransfer = useMutation({
-    mutationKey: ["startCommitmentTransfer"],
-  });
-  const transfer = useMutation({
-    mutationKey: ["transferCommitment"],
-  });
-  const commitmentDelete = useMutation({
-    mutationKey: ["deleteCommitment"],
-  });
-  const convert = useMutation({
-    mutationKey: ["convertCommitment"],
-  });
-  const updateDuration = useMutation({
-    mutationKey: ["updateCommitmentDuration"],
-  });
-  const maxQuota = useMutation({
-    mutationKey: ["setMaxQuota"],
-  });
+  const commit = useMutation({ mutationKey: ["newCommitment"] });
+  const confirm = useMutation({ mutationKey: ["canConfirm"] });
+  const startTransfer = useMutation({ mutationKey: ["startCommitmentTransfer"] });
+  const transfer = useMutation({ mutationKey: ["transferCommitment"] });
+  const commitmentDelete = useMutation({ mutationKey: ["deleteCommitment"] });
+  const convert = useMutation({ mutationKey: ["convertCommitment"] });
+  const updateDuration = useMutation({ mutationKey: ["updateCommitmentDuration"] });
+  const maxQuota = useMutation({ mutationKey: ["setMaxQuota"] });
+  const merge = useMutation({ mutationKey: ["mergeCommitments"] });
   const { resetCommitmentTransfer } = useResetCommitment();
   const { commitment: newCommitment } = createCommitmentStore();
   const { toast } = createCommitmentStore();
@@ -103,6 +87,21 @@ const EditPanel = (props) => {
   const { setCommitmentIsLoading } = createCommitmentStoreActions();
   const conversionResults = useGetConversions({ serviceType, resourceName });
   const [currentAZ, setCurrentAZ] = React.useState(currentResource.per_az[0][0]);
+  // Merge Commitments
+  const [commitmentsToMerge, setCommitmentsToMerge] = React.useState([]);
+  // The merge button is active if >= 2 commitments are available for the AZ.
+  const [mergeIsActive, setMergeIsActive] = React.useState(false);
+  const [isMerging, setIsMerging] = React.useState(false);
+  const [confirmMerge, setConfirmMerge] = React.useState(false);
+  const mergeForwardProps = {
+    commitmentsToMerge,
+    setCommitmentsToMerge,
+    isMerging,
+    setIsMerging,
+    setConfirmMerge,
+    mergeIsActive,
+    setMergeIsActive,
+  };
 
   // Query can-confirm API. Determine if capacity is sufficient on limes.
   // If a minConfirmDate is set, skip the request. Limes handles capacity concerns.
@@ -118,12 +117,7 @@ const EditPanel = (props) => {
     const currentProjectID = currentProject?.metadata?.id;
     const currentDomainID = scope.isCluster() ? currentProject.metadata.domainID : null;
     confirm.mutate(
-      {
-        payload: {
-          commitment: payload,
-        },
-        queryKey: [currentProjectID, currentDomainID],
-      },
+      { payload: { commitment: payload }, queryKey: [currentProjectID, currentDomainID] },
       {
         onSuccess: (data) => {
           setCanConfirm(data.result);
@@ -147,12 +141,7 @@ const EditPanel = (props) => {
       ? { ...newCommitment, id: "", confirm_by: confirm_by, notify_on_confirm: notifyOnConfirm }
       : { ...newCommitment, id: "" };
     commit.mutate(
-      {
-        payload: {
-          commitment: payload,
-        },
-        queryKey: [currentProjectID, currentDomainID],
-      },
+      { payload: { commitment: payload }, queryKey: [currentProjectID, currentDomainID] },
       {
         onSuccess: () => {
           (scope.isDomain() || scope.isCluster()) &&
@@ -183,12 +172,7 @@ const EditPanel = (props) => {
     const sourceDomainID = scope.isCluster() ? currentProject.metadata.domainID : null;
     startTransfer.mutate(
       {
-        payload: {
-          commitment: {
-            amount: commitment.amount,
-            transfer_status: "unlisted",
-          },
-        },
+        payload: { commitment: { amount: commitment.amount, transfer_status: "unlisted" } },
         domainID: sourceDomainID,
         projectID: sourceProjectID,
         commitmentID: commitment.id,
@@ -253,11 +237,7 @@ const EditPanel = (props) => {
     const targetDomainID = currentProject?.metadata.domainID || null;
     const targetProjectID = currentProject?.metadata.id || null;
     commitmentDelete.mutate(
-      {
-        domainID: targetDomainID,
-        projectID: targetProjectID,
-        commitmentID: commitment.id,
-      },
+      { domainID: targetDomainID, projectID: targetProjectID, commitmentID: commitment.id },
       {
         onSuccess: () => {
           setRefetchClusterAPI(true);
@@ -279,12 +259,7 @@ const EditPanel = (props) => {
     const targetProjectID = currentProject?.metadata.id || null;
 
     convert.mutate(
-      {
-        payload: payload,
-        domainID: targetDomainID,
-        projectID: targetProjectID,
-        commitmentID: commitment.id,
-      },
+      { payload: payload, domainID: targetDomainID, projectID: targetProjectID, commitmentID: commitment.id },
       {
         onSuccess: () => {
           setRefetchClusterAPI(true);
@@ -305,12 +280,7 @@ const EditPanel = (props) => {
     const targetProjectID = currentProject?.metadata.id || null;
 
     updateDuration.mutate(
-      {
-        payload: payload,
-        domainID: targetDomainID,
-        projectID: targetProjectID,
-        commitmentID: commitment.id,
-      },
+      { payload: payload, domainID: targetDomainID, projectID: targetProjectID, commitmentID: commitment.id },
       {
         onSuccess: () => {
           setRefetchClusterAPI(true);
@@ -326,6 +296,25 @@ const EditPanel = (props) => {
     );
   }
 
+  function mergeCommitments(payload) {
+    const targetDomainID = currentProject?.metadata.domainID || scope.domainID;
+    const targetProjectID = currentProject?.metadata.id || scope.projectID;
+    merge.mutate(
+      { payload: payload, domainID: targetDomainID, projectID: targetProjectID },
+      {
+        onSuccess: () => {
+          setRefetchCommitmentAPI(true);
+          setCommitmentsToMerge([]);
+          setConfirmMerge(false);
+          setIsMerging(false);
+        },
+        onError: (error) => {
+          setToast(error.toString());
+        },
+      }
+    );
+  }
+
   // maxQuota can be set for a project with n services and m resources.
   function setMaxQuota(project, domainID, projectID) {
     if (!project) return;
@@ -333,11 +322,7 @@ const EditPanel = (props) => {
     const targetProjectID = projectID;
 
     maxQuota.mutate(
-      {
-        payload: project,
-        targetDomain: targetDomainID,
-        targetProject: targetProjectID,
-      },
+      { payload: project, targetDomain: targetDomainID, targetProject: targetProjectID },
       {
         onSuccess: () => {
           setRefetchProjectAPI(true);
@@ -381,6 +366,10 @@ const EditPanel = (props) => {
     setConversionCommitment(null);
   }
 
+  function onMergeClose() {
+    setConfirmMerge(false);
+  }
+
   function dismissToast() {
     setToast(null);
   }
@@ -396,6 +385,7 @@ const EditPanel = (props) => {
         tracksQuota={tracksQuota}
         isPanelView={true}
         subRoute={subRoute}
+        setIsMerging={setIsMerging}
         setCurrentAZ={setCurrentAZ}
       />
       <div className={"sticky top-0 z-[100] bg-juno-grey-light-1 h-8"}>
@@ -404,7 +394,13 @@ const EditPanel = (props) => {
         )}
       </div>
       {!subRoute && (
-        <AvailabilityZoneNav az={currentResource.per_az} currentAZ={currentAZ} setCurrentAZ={setCurrentAZ} />
+        <AvailabilityZoneNav
+          az={currentResource.per_az}
+          currentAZ={currentAZ}
+          scope={scope}
+          setCurrentAZ={setCurrentAZ}
+          mergeOps={mergeForwardProps}
+        />
       )}
       {scope.isProject() && commitments && (
         <CommitmentTable
@@ -414,6 +410,7 @@ const EditPanel = (props) => {
           resource={currentResource}
           currentAZ={currentAZ}
           commitmentData={commitments}
+          mergeOps={mergeForwardProps}
           scope={scope}
         />
       )}
@@ -425,6 +422,7 @@ const EditPanel = (props) => {
           currentAZ={currentAZ}
           subRoute={subRoute}
           setMaxQuota={setMaxQuota}
+          mergeOps={mergeForwardProps}
         />
       )}
       {scope.isCluster() && (
@@ -435,6 +433,7 @@ const EditPanel = (props) => {
           currentAZ={currentAZ}
           subRoute={subRoute}
           setMaxQuota={setMaxQuota}
+          mergeOps={mergeForwardProps}
         />
       )}
       {isSubmitting && canConfirm != null && (
@@ -517,6 +516,15 @@ const EditPanel = (props) => {
           commitment={updateDurationCommitment}
           onModalClose={onUpdateDurationClose}
           onUpdate={updateCommitmentDuration}
+        />
+      )}
+      {confirmMerge && (
+        <MergeModal
+          action={mergeCommitments}
+          title="Merge selected commitments"
+          subText="Merge"
+          commitments={commitmentsToMerge}
+          onModalClose={onMergeClose}
         />
       )}
     </PanelBody>
