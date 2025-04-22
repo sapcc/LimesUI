@@ -71,7 +71,7 @@ const Actions = (props) => {
         </Stack>
       ) : (
         commitmentActions.length > 0 && (
-          <PopupMenu>
+          <PopupMenu className="h-4">
             <PopupMenu.Menu className="border-solid border-2 border-juno-grey-light-9">
               {commitmentActions.map((action) => {
                 return <div key={action.key}> {action.menuItem} </div>;
