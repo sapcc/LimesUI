@@ -21,7 +21,7 @@ import StoreProvider, { createCommitmentStoreActions, projectStore, projectStore
 import { PortalProvider } from "@cloudoperators/juno-ui-components";
 import { act, fireEvent, renderHook, screen, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { inconsistentInfoText, renewableInfoText } from "./CommitmentRenewal";
+import { inconsistentInfoText, renewableInfoText, missingRole } from "./CommitmentRenewal";
 import RenewalManager from "./RenewalManager";
 
 const queryClient = new QueryClient({ defaultOptions: { queries: { retry: 0 } } });
@@ -73,7 +73,7 @@ describe("Renewal Manger", () => {
       <PortalProvider>
         <StoreProvider>
           <QueryClientProvider client={queryClient}>
-            <RenewalManager />
+            <RenewalManager canEdit={true} />
             {children}
           </QueryClientProvider>
         </StoreProvider>
@@ -151,7 +151,7 @@ describe("Commitment renewal tests", () => {
       <PortalProvider>
         <StoreProvider>
           <QueryClientProvider client={queryClient}>
-            <CommitmentRenewal renewable={renewableCommitmnets} inconsistent={inconsistentCommitments} />
+            <CommitmentRenewal canEdit={true} renewable={renewableCommitmnets} inconsistent={inconsistentCommitments} />
             {children}
           </QueryClientProvider>
         </StoreProvider>
@@ -238,7 +238,7 @@ describe("Commitment renewal tests", () => {
       <PortalProvider>
         <StoreProvider>
           <QueryClientProvider client={queryClient}>
-            <CommitmentRenewal inconsistent={inconsistentCommitments} />
+            <CommitmentRenewal canEdit={true} inconsistent={inconsistentCommitments} />
             {children}
           </QueryClientProvider>
         </StoreProvider>
@@ -279,7 +279,7 @@ describe("Commitment renewal tests", () => {
       <PortalProvider>
         <StoreProvider>
           <QueryClientProvider client={queryClient}>
-            <CommitmentRenewal renewable={renewableCommitmnets} />
+            <CommitmentRenewal canEdit={true} renewable={renewableCommitmnets} />
             {children}
           </QueryClientProvider>
         </StoreProvider>
@@ -289,6 +289,49 @@ describe("Commitment renewal tests", () => {
       return renderHook(() => ({ commitmentStoreActions: createCommitmentStoreActions() }), { wrapper });
     });
 
-    expect(screen.queryByTestId("inconsistentInfoHint")).toBeInTheDocument();
+    expect(screen.queryByTestId("infoHint")).toBeInTheDocument();
+  });
+  test("Missing access role", async () => {
+    const now = moment().utc();
+    const expire = now.add(2, "months").unix();
+    const renewableCommitmnets = [
+      {
+        id: 1,
+        service_type: "service_1",
+        resource_name: "resource_1",
+        availability_zone: "az_1",
+        amount: 1,
+        duration: "1 year",
+        expires_at: expire,
+      },
+      {
+        id: 2,
+        service_type: "service_2",
+        resource_name: "resource_2",
+        availability_zone: "az_2",
+        amount: 1024,
+        unit: "MiB",
+        duration: "1 year",
+        expires_at: expire,
+      },
+    ];
+    const wrapper = ({ children }) => (
+      <PortalProvider>
+        <StoreProvider>
+          <QueryClientProvider client={queryClient}>
+            <CommitmentRenewal canEdit={false} renewable={renewableCommitmnets} />
+            {children}
+          </QueryClientProvider>
+        </StoreProvider>
+      </PortalProvider>
+    );
+    await waitFor(() => {
+      return renderHook(() => ({ commitmentStoreActions: createCommitmentStoreActions() }), { wrapper });
+    });
+
+    expect(screen.getByText(missingRole)).toBeInTheDocument();
+    expect(screen.queryByTestId("infoHint")).toBeInTheDocument();
+    const renewCommitmentBtn1 = screen.getByTestId("renew1");
+    expect(renewCommitmentBtn1).toBeDisabled();
   });
 });

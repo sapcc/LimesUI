@@ -24,7 +24,8 @@ import useCommitmentFilter from "../../hooks/useCommitmentFilter";
 
 // RenewalManager fetches renwable commitments for the current scope.
 // Currently only available at project level.
-const RenewalManager = () => {
+const RenewalManager = (props) => {
+  const { canEdit = false } = props;
   const { commitments } = projectStore();
   const { isActive, getCommitmentLabel } = useCommitmentFilter();
   const now = moment().utc();
@@ -71,7 +72,9 @@ const RenewalManager = () => {
     return 0;
   }
 
-  return <CommitmentRenewal renewable={renewableCommitments} inconsistent={inconsistentCommitments} />;
+  return (
+    <CommitmentRenewal canEdit={canEdit} renewable={renewableCommitments} inconsistent={inconsistentCommitments} />
+  );
 };
 
 export default RenewalManager;
