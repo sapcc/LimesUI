@@ -29,7 +29,7 @@ import { LoadingIndicator } from "@cloudoperators/juno-ui-components";
 
 const ProjectsPerDomain = (props) => {
   // Fetch project data for all domains
-  const { domains, serviceType, currentCategory, resource, currentAZ, subRoute, setMaxQuota, mergeOps } = props;
+  const { domains, serviceType, currentCategory, resource, currentAZ, subRoute, mergeOps } = props;
   const resourceName = resource.name;
   const { restructureReport } = globalStoreActions();
   const { setProjectsToDomain } = clusterStoreActions();
@@ -91,7 +91,6 @@ const ProjectsPerDomain = (props) => {
       currentAZ={currentAZ}
       projects={projects}
       subRoute={subRoute}
-      setMaxQuota={setMaxQuota}
       mergeOps={mergeOps}
     />
   ) : (

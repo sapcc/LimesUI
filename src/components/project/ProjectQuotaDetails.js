@@ -20,7 +20,6 @@ import { DataGridCell, DataGridRow, Stack } from "@cloudoperators/juno-ui-compon
 import useMaxQuotaSets from "../shared/useMaxQuotaSets";
 import { Unit, valueWithUnit } from "../../lib/unit";
 
-// NOTE: setMaxQuota is not available on resources that have a parentResource.
 const ProjectQuotaDetails = (props) => {
   const { serviceType, project, resource, setMaxQuota } = props;
   const { metadata } = project;

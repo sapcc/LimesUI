@@ -15,13 +15,14 @@
  */
 
 import React from "react";
+import { useMutation } from "@tanstack/react-query";
+import { projectStoreActions } from "../StoreProvider";
 import { Button, Stack, TextInput } from "@cloudoperators/juno-ui-components";
 import { createCommitmentStoreActions } from "../StoreProvider";
 import { Unit, valueWithUnit } from "../../lib/unit";
 
-// TODO: get postMaxQuota from custom hook (needs to be extracted from editPanel)
 const useMaxQuotaSets = (props) => {
-  const { project = {}, resource = {}, serviceType = "", postMaxQuota = () => {} } = props;
+  const { project = {}, resource = {}, serviceType = "", postMaxQuota = getMaxQuotaQuery() } = props;
   const { setToast = () => {} } = createCommitmentStoreActions();
   const [maxQuotaState, setMaxQuotaState] = React.useState({
     invalidInput: false,
@@ -209,5 +210,26 @@ const MaxQuotaEdit = (props) => {
     </Stack>
   );
 };
+
+function getMaxQuotaQuery() {
+  const maxQuota = useMutation({ mutationKey: ["setMaxQuota"] });
+  const { setRefetchProjectAPI } = projectStoreActions();
+  // maxQuota can be set for a project with n services and m resources.
+  return function postMaxQuota(project, domainID, projectID) {
+    if (!project) return;
+
+    maxQuota.mutate(
+      { payload: project, targetDomain: domainID, targetProject: projectID },
+      {
+        onSuccess: () => {
+          setRefetchProjectAPI(true);
+        },
+        onError: (error) => {
+          setToast(error.toString());
+        },
+      }
+    );
+  };
+}
 
 export default useMaxQuotaSets;

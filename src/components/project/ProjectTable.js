@@ -76,7 +76,7 @@ const quotaTableHeadCells = [
 
 // Display the project details in DomainView
 const ProjectTable = (props) => {
-  const { serviceType, currentResource, currentCategory, currentAZ, projects, subRoute, setMaxQuota, mergeOps } = props;
+  const { serviceType, currentResource, currentCategory, currentAZ, projects, subRoute, mergeOps } = props;
   const resourceTracksQuota = tracksQuota(currentResource);
   const { scope } = globalStore();
   const { previousProject } = domainStore();
@@ -240,7 +240,6 @@ const ProjectTable = (props) => {
                 serviceType={serviceType}
                 project={project}
                 resource={resource}
-                setMaxQuota={setMaxQuota}
               />
             );
           })}
