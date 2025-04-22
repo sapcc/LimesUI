@@ -17,7 +17,7 @@
 import React from "react";
 import CommitmentTooltip from "../CommitmentTooltip";
 import useCommitmentFilter from "../../../hooks/useCommitmentFilter";
-import { ContextMenu, Icon, Stack } from "@cloudoperators/juno-ui-components";
+import { PopupMenu, Icon, Stack } from "@cloudoperators/juno-ui-components";
 import useDeleteAction from "./useDeleteAction";
 import useTransferAction from "./useTransferAction";
 import useConversionAction from "./useConversionAction";
@@ -71,13 +71,13 @@ const Actions = (props) => {
         </Stack>
       ) : (
         commitmentActions.length > 0 && (
-          <ContextMenu>
-            <div className="border-solid border-2 border-juno-grey-light-9">
+          <PopupMenu>
+            <PopupMenu.Menu className="border-solid border-2 border-juno-grey-light-9">
               {commitmentActions.map((action) => {
                 return <div key={action.key}> {action.menuItem} </div>;
               })}
-            </div>
-          </ContextMenu>
+            </PopupMenu.Menu>
+          </PopupMenu>
         )
       )}
     </Stack>

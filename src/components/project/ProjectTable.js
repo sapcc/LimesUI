@@ -21,7 +21,6 @@ import { globalStore, domainStoreActions, createCommitmentStoreActions, domainSt
 import ProjectTableDetails from "./ProjectTableDetails";
 import {
   Stack,
-  Filters,
   SearchInput,
   Pagination,
   ContentAreaToolbar,
@@ -158,21 +157,17 @@ const ProjectTable = (props) => {
   return projects ? (
     <>
       <ContentAreaToolbar className={`p-0 sticky ${subRoute ? "top-8" : "top-24"} z-[100]`}>
-        <Stack className="w-full" direction="horizontal" distribution="between">
-          <Stack>
-            <Filters
-              search={
-                <SearchInput
-                  onChange={(e) => {
-                    setInput(e.target.value);
-                    setCurrentPage(0);
-                    filterProjects(e.target.value);
-                  }}
-                  onClear={() => {
-                    setInput(null);
-                  }}
-                />
-              }
+        <Stack className="w-full mb-7" direction="horizontal" distribution="between">
+          <Stack gap="1">
+            <SearchInput
+              onChange={(e) => {
+                setInput(e.target.value);
+                setCurrentPage(0);
+                filterProjects(e.target.value);
+              }}
+              onClear={() => {
+                setInput(null);
+              }}
             />
             {!subRoute && (
               <Button

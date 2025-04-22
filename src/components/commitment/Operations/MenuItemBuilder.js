@@ -15,7 +15,7 @@
  */
 
 import React from "react";
-import { MenuItem } from "@cloudoperators/juno-ui-components";
+import { PopupMenu } from "@cloudoperators/juno-ui-components/index";
 const MenuItemBuilder = (props) => {
   const { icon, text, callBack } = props;
 
@@ -23,13 +23,13 @@ const MenuItemBuilder = (props) => {
   // TODO: Add a test case which calls the modal the menuItem is supposed to call.
   // As a workaround we comply to these changes and implement a workaround which results in icons to always have the default color. This means the Transfor icon won't be indicating in which state it is now.
   return (
-    <MenuItem
+    <PopupMenu.Item
       onClick={() => {
         callBack();
       }}
       icon={icon}
       label={text}
-    ></MenuItem>
+    ></PopupMenu.Item>
   );
 };
 
