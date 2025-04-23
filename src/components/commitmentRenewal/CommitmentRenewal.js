@@ -39,9 +39,11 @@ export const renewableInfoHint = [
   "We will send mail notifications when active commitments are about to expire.",
 ];
 export const inconsistentInfoText = "Resolve the state of the listed commitments first.";
+export const missingRole =
+  "You are missing the permissions to edit this page. Please forward this page to a resource admin.";
 
 const CommitmentRenewal = (props) => {
-  const { renewable = [], inconsistent = [] } = props;
+  const { renewable = [], inconsistent = [], canEdit = false } = props;
   const hasRenewable = renewable.length > 0;
   const hasInconsistencies = inconsistent.length > 0;
   const [showModal, setShowModal] = React.useState(false);
@@ -97,6 +99,7 @@ const CommitmentRenewal = (props) => {
         {showRenewable && (
           <DataGridCell>
             <Button
+              disabled={!canEdit}
               data-testid={"renew" + c.id}
               title="Renew Commitment"
               className="w-10"
@@ -138,10 +141,11 @@ const CommitmentRenewal = (props) => {
           <span className="whitespace-pre-line">{toast}</span>
         </Message>
       )}
+      {!canEdit && <Message className={"mb-1"} variant="warning" text={missingRole} />}
       {hasRenewable ? (
         <div>
           {!hasInconsistencies && (
-            <Message data-testid="inconsistentInfoHint" className="mb-2" dismissible={true}>
+            <Message data-testid="infoHint" className="mb-2" dismissible={true}>
               {renewableInfoHint.map((hint, i) => (
                 <div key={i}>{hint}</div>
               ))}
@@ -162,6 +166,7 @@ const CommitmentRenewal = (props) => {
               ))}
             </Select>
             <Button
+              disabled={!canEdit}
               data-testid="renewMultiple"
               title="Renew all"
               className="w-10"

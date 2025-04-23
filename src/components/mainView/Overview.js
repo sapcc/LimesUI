@@ -125,8 +125,8 @@ const Overview = (props) => {
     );
   }
 
-  function renderRenewal() {
-    return <RenewalManager />;
+  function renderRenewal(canEdit) {
+    return <RenewalManager canEdit={canEdit} />;
   }
 
   let currentTab;
@@ -135,7 +135,7 @@ const Overview = (props) => {
       currentTab = renderPAYG();
       break;
     case COMMITMENTRENEWALKEY:
-      currentTab = renderRenewal();
+      currentTab = renderRenewal(canEdit);
       break;
     default:
       currentTab = renderArea();
