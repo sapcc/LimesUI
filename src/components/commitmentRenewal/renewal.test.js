@@ -102,7 +102,7 @@ describe("Commitment renewal tests", () => {
   test("Expect renewable and inconsistent commitments", async () => {
     const now = moment().utc();
     const expire = now.add(2, "months").unix();
-    const renewableCommitmnets = [
+    const renewableCommitments = [
       {
         id: 1,
         service_type: "service_1",
@@ -151,7 +151,7 @@ describe("Commitment renewal tests", () => {
       <PortalProvider>
         <StoreProvider>
           <QueryClientProvider client={queryClient}>
-            <CommitmentRenewal canEdit={true} renewable={renewableCommitmnets} inconsistent={inconsistentCommitments} />
+            <CommitmentRenewal canEdit={true} renewable={renewableCommitments} inconsistent={inconsistentCommitments} />
             {children}
           </QueryClientProvider>
         </StoreProvider>
@@ -254,7 +254,7 @@ describe("Commitment renewal tests", () => {
   test("Renewables but no inconistencies", async () => {
     const now = moment().utc();
     const expire = now.add(2, "months").unix();
-    const renewableCommitmnets = [
+    const renewableCommitments = [
       {
         id: 1,
         service_type: "service_1",
@@ -279,7 +279,7 @@ describe("Commitment renewal tests", () => {
       <PortalProvider>
         <StoreProvider>
           <QueryClientProvider client={queryClient}>
-            <CommitmentRenewal canEdit={true} renewable={renewableCommitmnets} />
+            <CommitmentRenewal canEdit={true} renewable={renewableCommitments} />
             {children}
           </QueryClientProvider>
         </StoreProvider>
@@ -294,7 +294,7 @@ describe("Commitment renewal tests", () => {
   test("Missing access role", async () => {
     const now = moment().utc();
     const expire = now.add(2, "months").unix();
-    const renewableCommitmnets = [
+    const renewableCommitments = [
       {
         id: 1,
         service_type: "service_1",
@@ -319,7 +319,7 @@ describe("Commitment renewal tests", () => {
       <PortalProvider>
         <StoreProvider>
           <QueryClientProvider client={queryClient}>
-            <CommitmentRenewal canEdit={false} renewable={renewableCommitmnets} />
+            <CommitmentRenewal canEdit={false} renewable={renewableCommitments} />
             {children}
           </QueryClientProvider>
         </StoreProvider>
