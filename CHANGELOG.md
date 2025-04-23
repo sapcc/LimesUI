@@ -1,5 +1,12 @@
 # @sapcc/limes-ui
 
+## 1.5.1
+
+### Patch Changes
+
+- e6edba7: disable commitment renewal actions on missing permissions
+- 0750d2c: Update Juno to 3.0.0
+
 ## 1.5.0
 
 ### Minor Changes
