@@ -78,13 +78,16 @@ const CommitmentTable = (props) => {
   const filteredCommitments = React.useMemo(() => {
     const filteredData = filterCommitments(resourceName, currentAZ);
     if (!isCommitting) {
-      filteredData.length >= 2 ? setMergeIsActive(true) : setMergeIsActive(false);
       return filteredData;
     }
     newCommitment.unit = unit;
     filteredData.unshift(newCommitment);
     return filteredData;
   }, [commitmentData, currentAZ, resourceName, isCommitting]);
+
+  React.useEffect(() => {
+    filteredCommitments.length >= 2 ? setMergeIsActive(true) : setMergeIsActive(false);
+  }, [filteredCommitments]);
 
   return commitmentIsFetching ? (
     <LoadingIndicator className="m-auto" />
