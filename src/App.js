@@ -25,6 +25,7 @@ import projectApiDB from "./lib/fixtures/limes_project_api.json";
 import cerebroApiDB from "./lib/fixtures/cerebro_api.json";
 import commitmentApiDB from "./lib/fixtures/limes_commitment_api.json";
 import clusterApiDB from "./lib/fixtures/cluster_api.json";
+import domainAPIDB from "./lib/fixtures/domain_api.json";
 import dayPickerStyle from "react-day-picker/dist/style.css?inline";
 import AsyncWorker from "./AsyncWorker";
 import { Scope } from "./lib/scope";
@@ -101,9 +102,10 @@ const App = (props = {}) => {
       fetchProxyInitDB(
         {
           projects: [projectApiDB],
+          domains: [domainAPIDB],
+          cluster: [clusterApiDB],
           projectCommitments: commitmentApiDB.projectCommitments,
           cerebro: [cerebroApiDB],
-          cluster: [clusterApiDB],
         },
         {
           debug: true,
@@ -116,6 +118,7 @@ const App = (props = {}) => {
             "/v1/domains/(.*)/projects/(.*)/commitments": "/projectCommitments/$2/commitments",
             "/v1/domains/(.*)/projects/(.*)": "/projects/$2",
             "(.*)/(.*)/resources/project/bigvm_resources": "/cerebro/bigvm_resources",
+            "/v1/domains": "/domains/clusterDomainID1",
           },
         }
       );

@@ -15,7 +15,7 @@
  */
 
 import React from "react";
-import CommitmentTooltip from "../CommitmentTooltip";
+import ToolTipWrapper from "../../shared/ToolTipWrapper";
 import useCommitmentFilter from "../../../hooks/useCommitmentFilter";
 import { PopupMenu, Icon, Stack } from "@cloudoperators/juno-ui-components";
 import useDeleteAction from "./useDeleteAction";
@@ -55,9 +55,9 @@ const Actions = (props) => {
       <Stack gap="1" alignment="center">
         {getCommitmentLabel(commitment)}
         {hasTooltips && (
-          <CommitmentTooltip
-            displayText={<Icon size="16" icon="info" />}
-            toolTipContent={commitmentActions.map((action) => {
+          <ToolTipWrapper
+            trigger={<Icon size="16" icon="info" />}
+            content={commitmentActions.map((action) => {
               const toolTip = action.toolTip;
               if (toolTip == null) return;
               return <div key={action.key}>{toolTip}</div>;
