@@ -16,7 +16,7 @@
 
 import React from "react";
 import { globalStore } from "../StoreProvider";
-import { t, tracksQuota } from "../../lib/utils";
+import { t } from "../../lib/utils";
 import { PanelType } from "../../lib/constants";
 import {
   getCapacityForAZLevel,
@@ -89,8 +89,7 @@ const azContentHover = `
     `;
 
 const Resource = (props) => {
-  const { canEdit, project, resource, isPanelView, subRoute, setCurrentAZ, serviceType, setIsMerging } = props;
-  const resourceTracksQuota = tracksQuota(resource);
+  const { canEdit, project, resource, isPanelView, subRoute, setCurrentAZ, serviceType, setIsMerging, tracksQuota } = props;
   const {
     totalCommitments,
     usagePerCommitted,
@@ -113,7 +112,7 @@ const Resource = (props) => {
   }
 
   const maxQuotaForwardProps = {
-    editMode: isPanelView || !canEdit,
+    editMode: isPanelView || !editableResource,
     project: project,
     resource: resource,
     serviceType: serviceType,
@@ -125,7 +124,11 @@ const Resource = (props) => {
         className={` ${props.isPanelView ? `az-panel-container ${azPanelContent}` : `az-main-container ${azContent}`}`}
       ></div>
       <Stack distribution="between" className={`bar-header ${barHeader}`}>
-        <Stack className={`bar-title ${barTitle} w-full`} gap="1" distribution={!canEdit && !isPanelView && "between"}>
+        <Stack
+          className={`bar-title ${barTitle} w-full`}
+          gap="1"
+          distribution={!editableResource && !isPanelView && "between"}
+        >
           {displayName}
           {scope.isProject() && (
             <span className="font-light">
@@ -133,28 +136,30 @@ const Resource = (props) => {
             </span>
           )}
         </Stack>
-        <Stack className="items-center" gap="1">
-          {isAZUnaware(props.resource.per_az) && (
-            <ProjectBadges az={props.resource.per_az[0][1]} unit={unitName} displayValues={true} />
-          )}
-          {canEdit && !isPanelView && editableResource && (
-            <Link to={`/${props.area}/edit/${props.categoryName}/${props.resource.name}`} state={props}>
-              <Button data-cy={`edit/${props.resource.name}`} size="small" variant="subdued" icon="edit">
-                {scope.isProject() ? "Manage" : "Commitments"}
-              </Button>
-            </Link>
-          )}
-          {!scope.isProject() && !isPanelView && resourceTracksQuota && (
-            <Link
-              to={`/${props.area}/edit/${props.categoryName}/${props.resource.name}/${PanelType.quota.name}`}
-              state={props}
-            >
-              <Button className="ml-1" size="small" icon="edit">
-                Quota
-              </Button>
-            </Link>
-          )}
-        </Stack>
+        {canEdit && (
+          <Stack className="items-center" gap="1">
+            {isAZUnaware(props.resource.per_az) && (
+              <ProjectBadges az={props.resource.per_az[0][1]} unit={unitName} displayValues={true} />
+            )}
+            {canEdit && !isPanelView && editableResource && (
+              <Link to={`/${props.area}/edit/${props.categoryName}/${props.resource.name}`} state={props}>
+                <Button data-cy={`edit/${props.resource.name}`} size="small" variant="subdued" icon="edit">
+                  {scope.isProject() ? "Manage" : "Commitments"}
+                </Button>
+              </Link>
+            )}
+            {!scope.isProject() && tracksQuota && (
+              <Link
+                to={`/${props.area}/edit/${props.categoryName}/${props.resource.name}/${PanelType.quota.name}`}
+                state={props}
+              >
+                <Button className="ml-1" size="small" icon="edit">
+                  Quota
+                </Button>
+              </Link>
+            )}
+          </Stack>
+        )}
       </Stack>
       <ResourceBarBuilder
         unit={unitName}

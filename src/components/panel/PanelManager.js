@@ -84,7 +84,7 @@ const PanelManager = (props) => {
 
   //Durations get checked to avoid route call to uneditable resource.
   return (
-    currentResource?.commitment_config?.durations && (
+    (currentResource?.commitment_config?.durations || subRoute) && (
       <Panel
         size="large"
         opened={isEditing}
