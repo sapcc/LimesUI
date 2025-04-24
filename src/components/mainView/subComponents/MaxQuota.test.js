@@ -36,7 +36,7 @@ describe("test max quota project level", () => {
             resource={resource}
             serviceType="serviceA"
             postMaxQuota={setMaxQuota}
-            isPanelView={true}
+            editMode={true}
           />
         </StoreProvider>
       </PortalProvider>

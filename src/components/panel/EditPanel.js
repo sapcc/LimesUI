@@ -45,7 +45,7 @@ import { initialCommitmentObject, TransferStatus } from "../../lib/constants";
 
 const EditPanel = (props) => {
   const { scope } = globalStore();
-  const { serviceType, currentResource, tracksQuota, currentCategory, subRoute } = { ...props };
+  const { serviceType, currentResource, currentCategory, subRoute } = { ...props };
   const resourceName = currentResource.name;
   const minConfirmDate = currentResource?.commitment_config?.min_confirm_by;
   const [canConfirm, setCanConfirm] = React.useState(null);
@@ -361,7 +361,6 @@ const EditPanel = (props) => {
         resource={currentResource}
         serviceType={serviceType}
         currentAZ={currentAZ}
-        tracksQuota={tracksQuota}
         isPanelView={true}
         subRoute={subRoute}
         setIsMerging={setIsMerging}

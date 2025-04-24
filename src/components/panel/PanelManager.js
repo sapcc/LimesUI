@@ -18,7 +18,7 @@ import React from "react";
 import { Panel } from "@cloudoperators/juno-ui-components";
 import EditPanel from "./EditPanel";
 import { useParams, useNavigate } from "react-router";
-import { t, getCurrentResource, tracksQuota } from "../../lib/utils";
+import { t, getCurrentResource } from "../../lib/utils";
 import { initialCommitmentObject } from "../../lib/constants";
 import { createCommitmentStore, createCommitmentStoreActions, domainStoreActions, globalStore } from "../StoreProvider";
 
@@ -46,7 +46,6 @@ const PanelManager = (props) => {
   const { serviceType } = props.categories[categoryName];
   const { resources } = props.categories[categoryName];
   const currentResource = getCurrentResource(resources, resourceName);
-  const resourceTracksQuota = tracksQuota(currentResource);
 
   React.useEffect(() => {
     if (currentResource) {
@@ -100,7 +99,6 @@ const PanelManager = (props) => {
           {...props}
           serviceType={serviceType}
           currentResource={currentResource}
-          tracksQuota={resourceTracksQuota}
           currentArea={currentArea}
           currentCategory={categoryName}
           subRoute={subRoute}
