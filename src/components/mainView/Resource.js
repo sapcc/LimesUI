@@ -89,7 +89,8 @@ const azContentHover = `
     `;
 
 const Resource = (props) => {
-  const { canEdit, project, resource, isPanelView, subRoute, setCurrentAZ, serviceType, setIsMerging, tracksQuota } = props;
+  const { canEdit, project, resource, isPanelView, subRoute, setCurrentAZ, serviceType, setIsMerging, tracksQuota } =
+    props;
   const {
     totalCommitments,
     usagePerCommitted,
