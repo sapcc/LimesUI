@@ -172,10 +172,7 @@ const CommitmentTableDetails = (props) => {
         )}
       </DataGridCell>
       <DataGridCell className="items-start">
-        <ToolTipWrapper
-          trigger={formatTimeISO8160(startDate)}
-          content={formatTime(startDate, "YYYY-MM-DD HH:mm A")}
-        />
+        <ToolTipWrapper trigger={formatTimeISO8160(startDate)} content={formatTime(startDate, "YYYY-MM-DD HH:mm A")} />
       </DataGridCell>
       <DataGridCell className="items-start">
         <ToolTipWrapper

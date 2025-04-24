@@ -37,8 +37,8 @@ const MaxQuota = (props) => {
       <MaxQuotaInput {...maxQuotaInputProps} reducedView={true} styles="h-[1.75rem] py-0" wrapperStyles="w-28" />{" "}
       <MaxQuotaEdit {...maxQuotaEditProps} iconOnlyView={true} subduedView={true} />
     </span>
-  ) : maxQuotaValue > 0 && (
-    <span>| Max Quota: {valueWithUnit(maxQuotaValue, unit)}</span>
+  ) : (
+    maxQuotaValue > 0 && <span>| Max Quota: {valueWithUnit(maxQuotaValue, unit)}</span>
   );
 };
 
