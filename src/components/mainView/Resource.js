@@ -144,7 +144,13 @@ const Resource = (props) => {
             )}
             {canEdit && !isPanelView && editableResource && (
               <Link to={`/${props.area}/edit/${props.categoryName}/${props.resource.name}`} state={props}>
-                <Button data-cy={`edit/${props.resource.name}`} size="small" variant="subdued" icon="edit">
+                <Button
+                  data-cy={`edit/${props.resource.name}`}
+                  data-testid={`edit/${props.resource.name}`}
+                  size="small"
+                  variant="subdued"
+                  icon="edit"
+                >
                   {scope.isProject() ? "Manage" : "Commitments"}
                 </Button>
               </Link>
@@ -154,7 +160,7 @@ const Resource = (props) => {
                 to={`/${props.area}/edit/${props.categoryName}/${props.resource.name}/${PanelType.quota.name}`}
                 state={props}
               >
-                <Button className="ml-1" size="small" icon="edit">
+                <Button data-testid={"setMaxQuotaPanel"} className="ml-1" size="small" icon="edit">
                   Quota
                 </Button>
               </Link>
