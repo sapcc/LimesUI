@@ -145,15 +145,31 @@ const StyledApp = (props) => {
   // Create query client which it can be used from overall in the app
   // set default endpoint to fetch data
   const queryClient = new QueryClient();
+  const parsedProps = parseProps(props);
   return (
     <AppShellProvider theme={`${props.theme ? props.theme : "theme-dark"}`}>
       {/* load styles inside the shadow dom */}
       <style>{styles.toString()}</style>
       <StoreProvider>
-        <App {...props} queryClient={queryClient} />
+        <App {...parsedProps} queryClient={queryClient} />
       </StoreProvider>
     </AppShellProvider>
   );
 };
+
+// Some properties might be delivered with a different type than expected. Those differences get translated into the expected values.
+function parseProps(props) {
+  let { canEdit } = props;
+  let parsedValue;
+  if (typeof canEdit === "boolean") {
+    parsedValue = canEdit;
+  } else if (typeof canEdit === "string") {
+    parsedValue = canEdit.toLowerCase() === "true";
+  } else {
+    canEdit = false;
+  }
+
+  return { ...props, canEdit: parsedValue };
+}
 
 export default StyledApp;
