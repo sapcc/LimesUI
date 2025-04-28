@@ -16,7 +16,7 @@
 
 import React from "react";
 import EditPanel from "./EditPanel";
-import moment from "moment";
+import moment, { duration } from "moment";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, fireEvent, renderHook, screen, waitFor } from "@testing-library/react";
 import { PortalProvider } from "@cloudoperators/juno-ui-components";
@@ -34,6 +34,47 @@ const queryClient = new QueryClient({ defaultOptions: { queries: { retry: 0 } } 
 queryClient.setQueryDefaults(["getConversions"], {
   queryFn: () => {
     return;
+  },
+});
+queryClient.setQueryDefaults(["projectsInDomain"], {
+  queryFn: ({ queryKey }) => {
+    const id = queryKey[3];
+    function getMockProject() {
+      const commitment_config = id === 1 ? { durations: ["1 year"] } : {};
+      return {
+        projects: [
+          {
+            id: "1",
+            name: "project",
+            services: [
+              {
+                resources: [
+                  {
+                    name: "testResource",
+                    commitment_config,
+                    per_az: {
+                      az1: {
+                        quota: 10,
+                        usage: 1,
+                      },
+                      az2: {
+                        quota: 20,
+                        usage: 2,
+                      },
+                      az3: {
+                        quota: 30,
+                        usage: 3,
+                      },
+                    },
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      };
+    }
+    return getMockProject();
   },
 });
 
@@ -190,5 +231,77 @@ describe("EditPanel tests", () => {
     fireEvent.click(mergeAction);
     expect(screen.getByTestId("mergeModal")).toBeInTheDocument();
     expect(screen.getByText("3 MiB")).toBeInTheDocument();
+  });
+
+  test("cluster: disable commit action on uncommittable domain resource", async () => {
+    const scope = new Scope({});
+    let domains = [
+      {
+        id: 1,
+        name: "exampleDomain",
+        services: [],
+      },
+    ];
+    const resource = {
+      name: "testResource",
+      quota: 500,
+      capacity: 0,
+      totalCommitments: 10,
+      usagePerCommitted: 5,
+      usagePerQuota: 0,
+      per_az: [["az1", { projects_usage: 10 }]],
+    };
+    resource.per_az.commitmentSum = 10;
+    const wrapper = ({ children }) => (
+      <PortalProvider>
+        <StoreProvider>
+          <QueryClientProvider client={queryClient}>
+            <EditPanel serviceType="testService" currentResource={resource} tracksQuota={true} />
+            {children}
+          </QueryClientProvider>
+        </StoreProvider>
+      </PortalProvider>
+    );
+    const { result, rerender } = await waitFor(() => {
+      return renderHook(
+        () => ({
+          globalStoreActions: globalStoreActions(),
+          clusterStoreActions: clusterStoreActions(),
+          domainStoreActions: domainStoreActions(),
+          projectStoreActions: projectStoreActions(),
+          commitmentStore: createCommitmentStore(),
+          commitmentStoreActions: createCommitmentStoreActions(),
+        }),
+        { wrapper }
+      );
+    });
+    act(() => {
+      result.current.globalStoreActions.setScope(scope);
+      result.current.clusterStoreActions.setDomainData(domains);
+    });
+    const selectedAZ = screen.getByTestId("tab/az1");
+    expect(selectedAZ).toHaveAttribute("aria-selected", "true");
+
+    // Expect commitment edit option at a committable resource.
+    await waitFor(() => {
+      expect(screen.getByTestId("committableTableEntry")).toBeInTheDocument();
+    });
+
+    // Expect info for unccommittable resource.
+    domains = [
+      {
+        id: 2,
+        name: "exampleDomain",
+        services: [],
+      },
+    ];
+    rerender();
+    act(() => {
+      result.current.globalStoreActions.setScope(scope);
+      result.current.clusterStoreActions.setDomainData(domains);
+    });
+    await waitFor(() => {
+      expect(screen.getByTestId("uncommittableTableEntry")).toBeInTheDocument();
+    });
   });
 });

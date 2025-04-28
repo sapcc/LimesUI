@@ -112,6 +112,7 @@ const ProjectTableDetails = (props) => {
           <Stack className="items-center">
             {isEditableResource ? (
               <Icon
+                data-testid={"committableTableEntry"}
                 icon={showCommitments ? "expandMore" : "chevronRight"}
                 onClick={() => {
                   if (isTransferring) return;
@@ -125,7 +126,7 @@ const ProjectTableDetails = (props) => {
               />
             ) : (
               <ToolTipWrapper
-                trigger={<Icon icon="info" size="18" />}
+                trigger={<Icon data-testid={"uncommittableTableEntry"} icon="info" size="18" />}
                 content="Commitments are disabled for this resource"
               />
             )}
