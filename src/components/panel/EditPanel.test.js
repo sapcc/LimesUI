@@ -16,6 +16,7 @@
 
 import React from "react";
 import EditPanel from "./EditPanel";
+import moment from "moment";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, fireEvent, renderHook, screen, waitFor } from "@testing-library/react";
 import { PortalProvider } from "@cloudoperators/juno-ui-components";
