@@ -166,7 +166,7 @@ function parseProps(props) {
   } else if (typeof canEdit === "string") {
     parsedValue = canEdit.toLowerCase() === "true";
   } else {
-    canEdit = false;
+    parsedValue = false;
   }
 
   return { ...props, canEdit: parsedValue };
