@@ -162,43 +162,43 @@ const ProjectTableDetails = (props) => {
             </Stack>
           </div>
         </DataGridCell>
-        {isEditableResource ? (
-          <DataGridCell>
-            {!isTransferring || originProject ? (
-              <div>
-                <AddCommitments
-                  label="Add"
-                  disabled={!showCommitments || transferCommitment || isLoading}
-                  size="small"
-                />
+        <DataGridCell>
+          {isEditableResource && (
+            <>
+              {!isTransferring || originProject ? (
+                <div>
+                  <AddCommitments
+                    label="Add"
+                    disabled={!showCommitments || transferCommitment || isLoading}
+                    size="small"
+                  />
+                  <Button
+                    className={"ml-1"}
+                    data-cy="moveCommitment"
+                    variant="primary"
+                    disabled={!showCommitments || !moveCommitment || transferCommitment || isCommitting || isLoading}
+                    size="small"
+                    onClick={() => {
+                      setTransferCommitment(true);
+                    }}
+                  >
+                    Move
+                  </Button>
+                </div>
+              ) : (
                 <Button
-                  className={"ml-1"}
-                  data-cy="moveCommitment"
                   variant="primary"
-                  disabled={!showCommitments || !moveCommitment || transferCommitment || isCommitting || isLoading}
                   size="small"
                   onClick={() => {
-                    setTransferCommitment(true);
+                    handleCommitmentTransfer(project);
                   }}
                 >
-                  Move
+                  Transfer Commitment
                 </Button>
-              </div>
-            ) : (
-              <Button
-                variant="primary"
-                size="small"
-                onClick={() => {
-                  handleCommitmentTransfer(project);
-                }}
-              >
-                Transfer Commitment
-              </Button>
-            )}
-          </DataGridCell>
-        ) : (
-          <DataGridCell></DataGridCell>
-        )}
+              )}
+            </>
+          )}
+        </DataGridCell>
       </DataGridRow>
       {showCommitments && (
         <div className={`${colSpan} mt-2 mb-5`}>
