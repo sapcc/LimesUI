@@ -175,7 +175,7 @@ const Overview = (props) => {
         )}
       </Tabs>
       {currentTab}
-      <Outlet />
+      {canEdit && <Outlet />}
     </Container>
   );
 };
