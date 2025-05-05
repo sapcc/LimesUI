@@ -98,6 +98,7 @@ const Overview = (props) => {
               <Category
                 key={categoryName}
                 categoryName={categoryName}
+                serviceType={serviceType}
                 category={props.categories[categoryName]}
                 canEdit={props.canEdit}
                 advancedView={advancedView}

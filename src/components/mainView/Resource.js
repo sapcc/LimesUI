@@ -89,6 +89,8 @@ const azContentHover = `
     `;
 
 const Resource = (props) => {
+  const { canEdit, project, resource, isPanelView, subRoute, setCurrentAZ, serviceType, setIsMerging, tracksQuota } =
+    props;
   const {
     totalCommitments,
     usagePerCommitted,
@@ -97,11 +99,9 @@ const Resource = (props) => {
     capacity,
     unit: unitName,
     editableResource,
-  } = props.resource;
+  } = resource;
   const { scope } = globalStore();
-  const { tracksQuota, isPanelView, subRoute, setCurrentAZ, setIsMerging } = { ...props };
   const displayName = t(props.resource.name);
-  const maxQuota = props.resource?.max_quota;
   // displayedUsage ensures that resources without commitments get the project usage displayed.
   const displayedUsage = usagePerCommitted > 0 ? usagePerCommitted : usagePerQuota;
   const { resetCommitment } = useResetCommitment();
@@ -113,11 +113,10 @@ const Resource = (props) => {
   }
 
   const maxQuotaForwardProps = {
-    isPanelView: props.isPanelView,
-    postMaxQuota: props.postMaxQuota,
-    project: props.project,
-    resource: props.resource,
-    serviceType: props.serviceType,
+    editMode: isPanelView || !editableResource,
+    project: project,
+    resource: resource,
+    serviceType: serviceType,
   };
 
   return (
@@ -126,31 +125,42 @@ const Resource = (props) => {
         className={` ${props.isPanelView ? `az-panel-container ${azPanelContent}` : `az-main-container ${azContent}`}`}
       ></div>
       <Stack distribution="between" className={`bar-header ${barHeader}`}>
-        <div className={`bar-title ${barTitle}`}>
-          {displayName}{" "}
-          {scope.isProject() && (isPanelView || maxQuota >= 0) && (
+        <Stack
+          className={`bar-title ${barTitle} w-full`}
+          gap="1"
+          distribution={!editableResource && !isPanelView && "between"}
+        >
+          {displayName}
+          {scope.isProject() && (
             <span className="font-light">
-              | <MaxQuota {...maxQuotaForwardProps} />
+              <MaxQuota {...maxQuotaForwardProps} />
             </span>
           )}
-        </div>
-        {props.canEdit && editableResource && (
+        </Stack>
+        {canEdit && (
           <Stack className="items-center" gap="1">
             {isAZUnaware(props.resource.per_az) && (
               <ProjectBadges az={props.resource.per_az[0][1]} unit={unitName} displayValues={true} />
             )}
-            {!scope.isProject() && <div className="mr-1 font-normal text-sm m-auto">Manage:</div>}
-            <Link to={`/${props.area}/edit/${props.categoryName}/${props.resource.name}`} state={props}>
-              <Button data-cy={`edit/${props.resource.name}`} size="small" variant="subdued" icon="edit">
-                {scope.isProject() ? "Manage" : "Commitments"}
-              </Button>
-            </Link>
+            {canEdit && !isPanelView && editableResource && (
+              <Link to={`/${props.area}/edit/${props.categoryName}/${props.resource.name}`} state={props}>
+                <Button
+                  data-cy={`edit/${props.resource.name}`}
+                  data-testid={`edit/${props.resource.name}`}
+                  size="small"
+                  variant="subdued"
+                  icon="edit"
+                >
+                  {scope.isProject() ? "Manage" : "Commitments"}
+                </Button>
+              </Link>
+            )}
             {!scope.isProject() && tracksQuota && (
               <Link
                 to={`/${props.area}/edit/${props.categoryName}/${props.resource.name}/${PanelType.quota.name}`}
                 state={props}
               >
-                <Button className="ml-1" size="small" icon="edit">
+                <Button data-testid={"setMaxQuotaPanel"} className="ml-1" size="small" icon="edit">
                   Quota
                 </Button>
               </Link>

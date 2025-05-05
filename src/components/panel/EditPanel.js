@@ -45,7 +45,7 @@ import { initialCommitmentObject, TransferStatus } from "../../lib/constants";
 
 const EditPanel = (props) => {
   const { scope } = globalStore();
-  const { serviceType, currentResource, tracksQuota, currentCategory, subRoute } = { ...props };
+  const { serviceType, currentResource, currentCategory, subRoute } = { ...props };
   const resourceName = currentResource.name;
   const minConfirmDate = currentResource?.commitment_config?.min_confirm_by;
   const [canConfirm, setCanConfirm] = React.useState(null);
@@ -58,7 +58,6 @@ const EditPanel = (props) => {
   const commitmentDelete = useMutation({ mutationKey: ["deleteCommitment"] });
   const convert = useMutation({ mutationKey: ["convertCommitment"] });
   const updateDuration = useMutation({ mutationKey: ["updateCommitmentDuration"] });
-  const maxQuota = useMutation({ mutationKey: ["setMaxQuota"] });
   const merge = useMutation({ mutationKey: ["mergeCommitments"] });
   const { resetCommitmentTransfer } = useResetCommitment();
   const { commitment: newCommitment } = createCommitmentStore();
@@ -315,25 +314,6 @@ const EditPanel = (props) => {
     );
   }
 
-  // maxQuota can be set for a project with n services and m resources.
-  function setMaxQuota(project, domainID, projectID) {
-    if (!project) return;
-    const targetDomainID = domainID || null;
-    const targetProjectID = projectID;
-
-    maxQuota.mutate(
-      { payload: project, targetDomain: targetDomainID, targetProject: targetProjectID },
-      {
-        onSuccess: () => {
-          setRefetchProjectAPI(true);
-        },
-        onError: (error) => {
-          setToast(error.toString());
-        },
-      }
-    );
-  }
-
   function onPostModalClose() {
     setIsSubmitting(false);
     setCanConfirm(null);
@@ -377,12 +357,10 @@ const EditPanel = (props) => {
   return (
     <PanelBody>
       <Resource
-        postMaxQuota={setMaxQuota}
         project={currentProject}
         resource={currentResource}
         serviceType={serviceType}
         currentAZ={currentAZ}
-        tracksQuota={tracksQuota}
         isPanelView={true}
         subRoute={subRoute}
         setIsMerging={setIsMerging}
@@ -421,7 +399,6 @@ const EditPanel = (props) => {
           currentResource={currentResource}
           currentAZ={currentAZ}
           subRoute={subRoute}
-          setMaxQuota={setMaxQuota}
           mergeOps={mergeForwardProps}
         />
       )}
@@ -432,7 +409,6 @@ const EditPanel = (props) => {
           currentResource={currentResource}
           currentAZ={currentAZ}
           subRoute={subRoute}
-          setMaxQuota={setMaxQuota}
           mergeOps={mergeForwardProps}
         />
       )}

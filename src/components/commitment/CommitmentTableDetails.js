@@ -21,7 +21,7 @@ import { valueWithUnit, Unit } from "../../lib/unit";
 import { formatTime, formatTimeISO8160 } from "../../lib/utils";
 import { createCommitmentStore, createCommitmentStoreActions } from "../StoreProvider";
 import CommitmentDurationInputLabel from "./CommitmentDurationInputLabel";
-import CommitmentTooltip from "./CommitmentTooltip";
+import ToolTipWrapper from "../shared/ToolTipWrapper";
 import { initialCommitmentObject } from "../../lib/constants";
 import { COMMITMENTID } from "../../lib/constants";
 import useResetCommitment from "../../hooks/useResetCommitment";
@@ -172,15 +172,12 @@ const CommitmentTableDetails = (props) => {
         )}
       </DataGridCell>
       <DataGridCell className="items-start">
-        <CommitmentTooltip
-          displayText={formatTimeISO8160(startDate)}
-          toolTipContent={formatTime(startDate, "YYYY-MM-DD HH:mm A")}
-        />
+        <ToolTipWrapper trigger={formatTimeISO8160(startDate)} content={formatTime(startDate, "YYYY-MM-DD HH:mm A")} />
       </DataGridCell>
       <DataGridCell className="items-start">
-        <CommitmentTooltip
-          displayText={formatTimeISO8160(confirmed_at) || (!isAddingCommitment ? "Unconfirmed" : "")}
-          toolTipContent={
+        <ToolTipWrapper
+          trigger={formatTimeISO8160(confirmed_at) || (!isAddingCommitment ? "Unconfirmed" : "")}
+          content={
             <span className="grid grid-cols-3 gap-1">
               <span>created: </span>
               <span className="col-span-2">{formatTime(created_at, "YYYY-MM-DD HH:mm A")}</span>
@@ -195,13 +192,13 @@ const CommitmentTableDetails = (props) => {
         />
       </DataGridCell>
       <DataGridCell className="items-start">
-        <CommitmentTooltip
-          displayText={formatTimeISO8160(expires_at)}
-          toolTipContent={formatTime(expires_at, "YYYY-MM-DD HH:mm A")}
+        <ToolTipWrapper
+          trigger={formatTimeISO8160(expires_at)}
+          content={formatTime(expires_at, "YYYY-MM-DD HH:mm A")}
         />
       </DataGridCell>
       <DataGridCell className="items-start truncate">
-        <CommitmentTooltip displayText={parseRequesterName(creator_name)} toolTipContent={creator_name} />
+        <ToolTipWrapper trigger={parseRequesterName(creator_name)} content={creator_name} />
       </DataGridCell>
       <DataGridCell>
         {isAddingCommitment ? (

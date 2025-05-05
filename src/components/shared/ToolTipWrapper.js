@@ -17,19 +17,17 @@
 import React from "react";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@cloudoperators/juno-ui-components";
 
-const CommitmentTooltip = (props) => {
-  const { displayText, toolTipContent } = { ...props };
+const ToolTipWrapper = (props) => {
+  const { trigger, content, triggerEvent = "hover" } = { ...props };
 
   return (
-    displayText && (
-      <Tooltip triggerEvent="hover">
-        <TooltipTrigger asChild>
-          <span>{displayText}</span>
-        </TooltipTrigger>
-        <TooltipContent>{toolTipContent}</TooltipContent>
+    trigger && (
+      <Tooltip triggerEvent={triggerEvent}>
+        <TooltipTrigger>{trigger}</TooltipTrigger>
+        <TooltipContent className="z-[999]">{content}</TooltipContent>
       </Tooltip>
     )
   );
 };
 
-export default CommitmentTooltip;
+export default ToolTipWrapper;

@@ -19,6 +19,7 @@ import { getQuotaForAZLevel, getUsageForAZLevel } from "../../lib/resourceBarVal
 import ResourceBarBuilder from "../resourceBar/ResourceBarBuilder";
 import CommitmentTable from "../commitment/CommitmentTable";
 import AddCommitments from "../shared/AddCommitments";
+import ToolTipWrapper from "../shared/ToolTipWrapper";
 import {
   globalStore,
   projectStore,
@@ -49,7 +50,8 @@ const ProjectTableDetails = (props) => {
   } = props;
   const { metadata } = project;
   const { name: projectName, id: projectID } = metadata;
-  const { quota, unit } = resource;
+  const { quota, unit, commitment_config } = resource;
+  const isEditableResource = commitment_config?.durations ? true : false;
   const { commitments } = projectStore();
   const { currentProject } = createCommitmentStore();
   const { refetchCommitmentAPI } = createCommitmentStore();
@@ -107,19 +109,27 @@ const ProjectTableDetails = (props) => {
     <React.Fragment>
       <DataGridRow>
         <DataGridCell key={metadata.name} className={"pl-0"}>
-          <Stack>
-            <Icon
-              icon={showCommitments ? "expandMore" : "chevronRight"}
-              onClick={() => {
-                if (isTransferring) return;
-                resetCommitmentTransfer();
-                setMoveCommitment(false);
-                setIsCommitting(false);
-                setCommitmentsToMerge([]);
-                setMergeIsActive(false);
-                updateShowCommitments(index);
-              }}
-            />
+          <Stack className="items-center">
+            {isEditableResource ? (
+              <Icon
+                data-testid={"committableTableEntry"}
+                icon={showCommitments ? "expandMore" : "chevronRight"}
+                onClick={() => {
+                  if (isTransferring) return;
+                  resetCommitmentTransfer();
+                  setMoveCommitment(false);
+                  setIsCommitting(false);
+                  setCommitmentsToMerge([]);
+                  setMergeIsActive(false);
+                  updateShowCommitments(index);
+                }}
+              />
+            ) : (
+              <ToolTipWrapper
+                trigger={<Icon data-testid={"uncommittableTableEntry"} icon="info" size="18" />}
+                content="Commitments are disabled for this resource"
+              />
+            )}
             <Stack direction={"vertical"} className="w-full">
               <div className="truncate" title={displayedName}>
                 {displayedName}
@@ -153,32 +163,40 @@ const ProjectTableDetails = (props) => {
           </div>
         </DataGridCell>
         <DataGridCell>
-          {!isTransferring || originProject ? (
-            <div>
-              <AddCommitments label="Add" disabled={!showCommitments || transferCommitment || isLoading} size="small" />
-              <Button
-                className={"ml-1"}
-                data-cy="moveCommitment"
-                variant="primary"
-                disabled={!showCommitments || !moveCommitment || transferCommitment || isCommitting || isLoading}
-                size="small"
-                onClick={() => {
-                  setTransferCommitment(true);
-                }}
-              >
-                Move
-              </Button>
-            </div>
-          ) : (
-            <Button
-              variant="primary"
-              size="small"
-              onClick={() => {
-                handleCommitmentTransfer(project);
-              }}
-            >
-              Transfer Commitment
-            </Button>
+          {isEditableResource && (
+            <>
+              {!isTransferring || originProject ? (
+                <div>
+                  <AddCommitments
+                    label="Add"
+                    disabled={!showCommitments || transferCommitment || isLoading}
+                    size="small"
+                  />
+                  <Button
+                    className={"ml-1"}
+                    data-cy="moveCommitment"
+                    variant="primary"
+                    disabled={!showCommitments || !moveCommitment || transferCommitment || isCommitting || isLoading}
+                    size="small"
+                    onClick={() => {
+                      setTransferCommitment(true);
+                    }}
+                  >
+                    Move
+                  </Button>
+                </div>
+              ) : (
+                <Button
+                  variant="primary"
+                  size="small"
+                  onClick={() => {
+                    handleCommitmentTransfer(project);
+                  }}
+                >
+                  Transfer Commitment
+                </Button>
+              )}
+            </>
           )}
         </DataGridCell>
       </DataGridRow>

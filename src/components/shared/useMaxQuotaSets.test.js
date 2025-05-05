@@ -20,7 +20,7 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { PortalProvider } from "@cloudoperators/juno-ui-components";
 import StoreProvider from "../StoreProvider";
 
-const ExampleCMP = ({ project, resource, serviceType, postMaxQuota }) => {
+const ExampleCMP = ({ project, resource, serviceType, postMaxQuota = () => {} }) => {
   const { MaxQuotaInput, maxQuotaInputProps, MaxQuotaEdit, maxQuotaEditProps } = useMaxQuotaSets({
     project: project,
     resource: resource,

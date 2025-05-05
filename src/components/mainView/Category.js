@@ -17,6 +17,7 @@
 import React from "react";
 import { t, sortByLogicalOrderAndName, tracksQuota } from "../../lib/utils";
 import Resource from "./Resource";
+import { createCommitmentStore } from "../StoreProvider";
 
 const categoryTitle = `
     text-lg 
@@ -34,12 +35,15 @@ const categoryContent = `
 // TODO: for domain/cluster level add tracksQuota which skips resource that do not track quota.
 
 const Category = (props) => {
-  const { categoryName, canEdit, advancedView } = props;
+  const { advancedView, canEdit, categoryName, serviceType } = props;
   const { area, resources } = props.category;
+  const { currentProject } = createCommitmentStore();
   const forwardProps = {
-    categoryName,
     area,
     canEdit,
+    categoryName,
+    project: currentProject,
+    serviceType,
   };
 
   const editableResources = resources.filter((res) => res.editableResource === true);

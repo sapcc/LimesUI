@@ -25,6 +25,7 @@ import projectApiDB from "./lib/fixtures/limes_project_api.json";
 import cerebroApiDB from "./lib/fixtures/cerebro_api.json";
 import commitmentApiDB from "./lib/fixtures/limes_commitment_api.json";
 import clusterApiDB from "./lib/fixtures/cluster_api.json";
+import domainAPIDB from "./lib/fixtures/domain_api.json";
 import dayPickerStyle from "react-day-picker/dist/style.css?inline";
 import AsyncWorker from "./AsyncWorker";
 import { Scope } from "./lib/scope";
@@ -101,9 +102,10 @@ const App = (props = {}) => {
       fetchProxyInitDB(
         {
           projects: [projectApiDB],
+          domains: [domainAPIDB],
+          cluster: [clusterApiDB],
           projectCommitments: commitmentApiDB.projectCommitments,
           cerebro: [cerebroApiDB],
-          cluster: [clusterApiDB],
         },
         {
           debug: true,
@@ -116,6 +118,7 @@ const App = (props = {}) => {
             "/v1/domains/(.*)/projects/(.*)/commitments": "/projectCommitments/$2/commitments",
             "/v1/domains/(.*)/projects/(.*)": "/projects/$2",
             "(.*)/(.*)/resources/project/bigvm_resources": "/cerebro/bigvm_resources",
+            "/v1/domains": "/domains/clusterDomainID1",
           },
         }
       );
@@ -142,15 +145,31 @@ const StyledApp = (props) => {
   // Create query client which it can be used from overall in the app
   // set default endpoint to fetch data
   const queryClient = new QueryClient();
+  const parsedProps = parseProps(props);
   return (
     <AppShellProvider theme={`${props.theme ? props.theme : "theme-dark"}`}>
       {/* load styles inside the shadow dom */}
       <style>{styles.toString()}</style>
       <StoreProvider>
-        <App {...props} queryClient={queryClient} />
+        <App {...parsedProps} queryClient={queryClient} />
       </StoreProvider>
     </AppShellProvider>
   );
 };
+
+// Some properties might be delivered with a different type than expected. Those differences get translated into the expected values.
+function parseProps(props) {
+  let { canEdit } = props;
+  let parsedValue;
+  if (typeof canEdit === "boolean") {
+    parsedValue = canEdit;
+  } else if (typeof canEdit === "string") {
+    parsedValue = canEdit.toLowerCase() === "true";
+  } else {
+    parsedValue = false;
+  }
+
+  return { ...props, canEdit: parsedValue };
+}
 
 export default StyledApp;
