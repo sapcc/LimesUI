@@ -374,7 +374,9 @@ function getQuotaNewOrOldModel(res) {
   res.per_az.forEach((az) => {
     return (quotaSum += az[1].quota || 0);
   });
-  res.quota = quotaSum;
+  if (quotaSum > 0) {
+    res.quota = quotaSum;
+  }
 }
 
 // Sum up all commitments of a resource over all AZ's

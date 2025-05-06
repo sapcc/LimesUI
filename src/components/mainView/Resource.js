@@ -103,7 +103,7 @@ const Resource = (props) => {
   const { scope } = globalStore();
   const displayName = t(props.resource.name);
   // displayedUsage ensures that resources without commitments get the project usage displayed.
-  const displayedUsage = usagePerCommitted > 0 ? usagePerCommitted : usagePerQuota;
+  const displayedUsage = usagePerCommitted > 0 ? (tracksQuota ? usagePerCommitted : resource.usage) : usagePerQuota;
   const { resetCommitment } = useResetCommitment();
   // Bar length on project/domain level is Quota. On Cluster level it is capacity.
   const capacityOrQuota = scope.isCluster() ? capacity || 0 : originalQuota;

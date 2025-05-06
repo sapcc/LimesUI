@@ -18,7 +18,7 @@ import React from "react";
 import { Panel } from "@cloudoperators/juno-ui-components";
 import EditPanel from "./EditPanel";
 import { useParams, useNavigate, useLocation } from "react-router";
-import { t } from "../../lib/utils";
+import { t, getCurrentResource } from "../../lib/utils";
 import { initialCommitmentObject } from "../../lib/constants";
 import { createCommitmentStore, createCommitmentStoreActions, domainStoreActions, globalStore } from "../StoreProvider";
 
@@ -27,8 +27,11 @@ const PanelManager = (props) => {
   const location = useLocation();
   const params = useParams();
   const navigate = useNavigate();
-  const { resource: currentResource, serviceType, tracksQuota } = {...location.state}
+  const { serviceType, tracksQuota } = {...location.state}
   const { currentArea, categoryName, resourceName, subRoute } = { ...params };
+  // currentResource has to be provided from the props. The location state is static and does not refresh on rerender once the project data gets requeried.
+  const { resources } = props.categories[categoryName];
+  const currentResource = getCurrentResource(resources, resourceName);
   const { setShowCommitments } = domainStoreActions();
   const { isEditing } = createCommitmentStore();
   const { currentProject } = createCommitmentStore();
