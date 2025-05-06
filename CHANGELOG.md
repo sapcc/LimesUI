@@ -1,5 +1,11 @@
 # @sapcc/limes-ui
 
+## 1.6.0
+
+### Minor Changes
+
+- 1cc35b2: Allow max-quota edits for resources without the resource having to allow commitments. Do not allow commitment actions for domains that do not allow commitments for the current displayed resource (cluster level change).
+
 ## 1.5.1
 
 ### Patch Changes
