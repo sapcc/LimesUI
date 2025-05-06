@@ -17,13 +17,18 @@
 import React from "react";
 import { Panel } from "@cloudoperators/juno-ui-components";
 import EditPanel from "./EditPanel";
-import { useParams, useNavigate } from "react-router";
-import { t, getCurrentResource } from "../../lib/utils";
+import { useParams, useNavigate, useLocation } from "react-router";
+import { t } from "../../lib/utils";
 import { initialCommitmentObject } from "../../lib/constants";
 import { createCommitmentStore, createCommitmentStoreActions, domainStoreActions, globalStore } from "../StoreProvider";
 
 // Panel needs to be rendered first to enable the fading UI animation.
 const PanelManager = (props) => {
+  const location = useLocation();
+  const params = useParams();
+  const navigate = useNavigate();
+  const { resource: currentResource, serviceType, tracksQuota } = {...location.state}
+  const { currentArea, categoryName, resourceName, subRoute } = { ...params };
   const { setShowCommitments } = domainStoreActions();
   const { isEditing } = createCommitmentStore();
   const { currentProject } = createCommitmentStore();
@@ -40,12 +45,6 @@ const PanelManager = (props) => {
   const { setShowConversionOption } = createCommitmentStoreActions();
   const { setTransferProject } = createCommitmentStoreActions();
   const { setDeleteCommitment } = createCommitmentStoreActions();
-  const navigate = useNavigate();
-  const params = useParams();
-  const { currentArea, categoryName, resourceName, subRoute } = { ...params };
-  const { serviceType } = props.categories[categoryName];
-  const { resources } = props.categories[categoryName];
-  const currentResource = getCurrentResource(resources, resourceName);
 
   React.useEffect(() => {
     if (currentResource) {
@@ -102,6 +101,7 @@ const PanelManager = (props) => {
           currentArea={currentArea}
           currentCategory={categoryName}
           subRoute={subRoute}
+          tracksQuota={tracksQuota}
         />
       </Panel>
     )
