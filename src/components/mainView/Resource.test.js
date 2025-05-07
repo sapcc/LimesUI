@@ -19,7 +19,7 @@ import Resource from "./Resource";
 import { Scope } from "../../lib/scope";
 import { MemoryRouter } from "react-router";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
-import { act, render, renderHook, screen, waitFor } from "@testing-library/react";
+import { act, renderHook, screen, waitFor } from "@testing-library/react";
 import { PortalProvider } from "@cloudoperators/juno-ui-components";
 import StoreProvider, { globalStore, globalStoreActions } from "../StoreProvider";
 
