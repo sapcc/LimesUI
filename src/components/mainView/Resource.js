@@ -119,6 +119,10 @@ const Resource = (props) => {
     serviceType: serviceType,
   };
 
+  if (tracksQuota === undefined) {
+    throw new Error("Missing property: tracksQuota");
+  }
+
   return (
     <div className={!props.isPanelView ? `bar-card ${barGroupContainer}` : `bar-card-panel`}>
       <div

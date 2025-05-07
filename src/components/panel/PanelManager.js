@@ -21,13 +21,14 @@ import { useParams, useNavigate, useLocation } from "react-router";
 import { t, getCurrentResource } from "../../lib/utils";
 import { initialCommitmentObject } from "../../lib/constants";
 import { createCommitmentStore, createCommitmentStoreActions, domainStoreActions, globalStore } from "../StoreProvider";
+import { ErrorBoundary } from "../../lib/ErrorBoundary";
 
 // Panel needs to be rendered first to enable the fading UI animation.
 const PanelManager = (props) => {
   const location = useLocation();
   const params = useParams();
   const navigate = useNavigate();
-  const { serviceType, tracksQuota } = {...location.state}
+  const { serviceType, tracksQuota } = { ...location.state };
   const { currentArea, categoryName, resourceName, subRoute } = { ...params };
   // currentResource has to be provided from the props. The location state is static and does not refresh on rerender once the project data gets requeried.
   const { resources } = props.categories[categoryName];
@@ -97,15 +98,17 @@ const PanelManager = (props) => {
         closeable={true}
         heading={`Manage Committed Resources: ${t(categoryName)} - ${t(resourceName)}`}
       >
-        <EditPanel
-          {...props}
-          serviceType={serviceType}
-          currentResource={currentResource}
-          currentArea={currentArea}
-          currentCategory={categoryName}
-          subRoute={subRoute}
-          tracksQuota={tracksQuota}
-        />
+        <ErrorBoundary>
+          <EditPanel
+            {...props}
+            serviceType={serviceType}
+            currentResource={currentResource}
+            currentArea={currentArea}
+            currentCategory={categoryName}
+            subRoute={subRoute}
+            tracksQuota={tracksQuota}
+          />
+        </ErrorBoundary>
       </Panel>
     )
   );
