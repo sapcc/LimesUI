@@ -120,7 +120,7 @@ describe("Resource bar test", () => {
   });
   test("resources with quota tracking", async () => {
     let scope = new Scope({ projectID: "123", domainID: "456" });
-    function getProjectData(committed = null) {
+    function getProjectData(committed = null, usage = 50) {
       return {
         project: {
           id: "123",
@@ -136,12 +136,12 @@ describe("Resource bar test", () => {
                   },
                   per_az: {
                     "zone-a": {
-                      usage: 25,
+                      usage: usage / 2,
                       quota: 50,
                       committed,
                     },
                     "zone-b": {
-                      usage: 25,
+                      usage: usage / 2,
                       quota: 50,
                       committed,
                     },
@@ -151,7 +151,7 @@ describe("Resource bar test", () => {
                     },
                   },
                   quota: 150,
-                  usage: 50,
+                  usage: usage,
                 },
               ],
             },
@@ -216,6 +216,21 @@ describe("Resource bar test", () => {
     expect(screen.queryAllByText("10/10").length).toEqual(2);
     expect(screen.queryAllByText("15/40").length).toEqual(2);
     // zone-c does not contain commitments and displays the basic bar layout.
+    expect(screen.getByText("0/50")).toBeInTheDocument();
+
+    // Sumbar (left) is not filled completely (usage < commitments)
+    res = actions.restructureReport(getProjectData(committed, 10).project).categories.testType.resources[0];
+    rerender();
+    act(() => {
+      result.current.globalStoreActions.setScope(scope);
+    });
+    // sumbar values (left and right)
+    expect(screen.getByText("10/20")).toBeInTheDocument();
+    expect(screen.getByText("0/130")).toBeInTheDocument();
+    // zone-a and zone-b (left and right)
+    expect(screen.queryAllByText("5/10").length).toEqual(2);
+    expect(screen.queryAllByText("0/40").length).toEqual(2);
+    // zone-c
     expect(screen.getByText("0/50")).toBeInTheDocument();
   });
 
