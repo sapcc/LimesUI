@@ -1,5 +1,11 @@
 # @sapcc/limes-ui
 
+## 1.6.1
+
+### Patch Changes
+
+- 93637a5: Fix: add missing tracksQuota property to the Panel component. Fix wrongly displayed quota bar values on usage only resources"
+
 ## 1.6.0
 
 ### Minor Changes
