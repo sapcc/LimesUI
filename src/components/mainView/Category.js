@@ -18,6 +18,7 @@ import React from "react";
 import { t, sortByLogicalOrderAndName, tracksQuota } from "../../lib/utils";
 import Resource from "./Resource";
 import { createCommitmentStore } from "../StoreProvider";
+import { ErrorBoundary } from "../../lib/ErrorBoundary";
 
 const categoryTitle = `
     text-lg 
@@ -54,7 +55,11 @@ const Category = (props) => {
         <h1 className={`category-title ${categoryTitle}`}>{t(props.categoryName)}</h1>
         <div className={`category-content ${categoryContent}`}>
           {sortByLogicalOrderAndName(advancedView ? resources : editableResources).map((res) => {
-            return <Resource key={res.name} resource={res} {...forwardProps} tracksQuota={tracksQuota(res)} />;
+            return (
+              <ErrorBoundary key={res.name}>
+                <Resource resource={res} {...forwardProps} tracksQuota={tracksQuota(res)} />
+              </ErrorBoundary>
+            );
           })}
         </div>
       </div>

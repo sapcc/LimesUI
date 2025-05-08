@@ -16,7 +16,7 @@
 
 import React from "react";
 import ResourceBar from "./ResourceBar";
-import { Unit, valueWithUnit } from "../../lib/unit";
+import { Unit } from "../../lib/unit";
 import { globalStore } from "../StoreProvider";
 
 const ResourceBarBuilder = (props) => {
@@ -59,17 +59,14 @@ const ResourceBarBuilder = (props) => {
   }
   const quotaOrUsage = tracksQuota ? quota : usage;
   let extraCapacityValue = quotaOrUsage - commitment;
-  if (extraCapacityValue < 0) {
-    extraCapacityValue = 0;
-  }
 
   // isPanelView is used, because tracksQuota check is not accessible from EditPanel (gets prop passed from Category)
   return (
     <ResourceBar
-      fillLabel={valueWithUnit(showCommitmentOrUsage, unit)}
-      capacityLabel={valueWithUnit(capacity, unit)}
-      extraFillLabel={valueWithUnit(extraFillValue, unit)}
-      extraCapacityLabel={valueWithUnit(extraCapacityValue, unit)}
+      fillLabel={unit.format(showCommitmentOrUsage)}
+      capacityLabel={unit.format(capacity)}
+      extraFillLabel={unit.format(extraFillValue)}
+      extraCapacityLabel={unit.format(extraCapacityValue, unit)}
       usageLabel={paygView ? "" : clusterView ? "capacity used" : "quota used"}
       fill={usage}
       capacity={capacity}
