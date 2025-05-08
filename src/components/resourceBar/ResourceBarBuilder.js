@@ -59,9 +59,6 @@ const ResourceBarBuilder = (props) => {
   }
   const quotaOrUsage = tracksQuota ? quota : usage;
   let extraCapacityValue = quotaOrUsage - commitment;
-  if (extraCapacityValue < 0) {
-    extraCapacityValue = 0;
-  }
 
   // isPanelView is used, because tracksQuota check is not accessible from EditPanel (gets prop passed from Category)
   return (

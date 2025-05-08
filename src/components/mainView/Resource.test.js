@@ -328,7 +328,128 @@ describe("Resource bar test", () => {
     // zone-a and zone-b (left and right)
     expect(screen.queryAllByText("5/5").length).toEqual(2);
     expect(screen.queryAllByText("45/45").length).toEqual(2);
-    // zone-c does not contain commitments and displays the basic bar layout.
+    // zone-c
     expect(screen.getByText(/no quota/i)).toBeInTheDocument();
+  });
+
+  test("cluster level capacity values", async () => {
+    let scope = new Scope({});
+    function getClusterData(committed = null, capacity = 150) {
+      return {
+        cluster: {
+          id: "123",
+          services: [
+            {
+              type: "testType",
+              resources: [
+                {
+                  name: "testResource",
+                  area: "testArea",
+                  commitment_config: {
+                    durations: ["1 year", "2 years", "3 years"],
+                  },
+                  per_az: {
+                    "zone-a": {
+                      capacity: (capacity * 2) / 3,
+                      usage: 50,
+                      committed,
+                    },
+                    "zone-b": {
+                      capacity: capacity / 3,
+                      usage: 50,
+                      committed,
+                    },
+                    "zone-c": {
+                      capacity: 0,
+                      usage: 0,
+                    },
+                  },
+                  capacity: capacity,
+                  domains_quota: 300,
+                  usage: 100,
+                },
+              ],
+            },
+          ],
+        },
+      };
+    }
+
+    const committed = {
+      "1 year": 10,
+    };
+
+    const forwardProps = {
+      area: "testArea",
+      canEdit: true,
+      categoryName: "testCategory",
+      serviceType: "testService",
+    };
+
+    let res = actions.receiveCapacity(getClusterData().cluster).categories.testType.resources[0];
+
+    const wrapper = ({ children }) => (
+      <PortalProvider>
+        <StoreProvider>
+          <QueryClientProvider client={queryClient}>
+            <MemoryRouter>
+              <Resource key={res.name} resource={res} {...forwardProps} tracksQuota={tracksQuota(res)} />
+              {children}
+            </MemoryRouter>
+          </QueryClientProvider>
+        </StoreProvider>
+      </PortalProvider>
+    );
+    const { result, rerender } = await waitFor(() => {
+      return renderHook(
+        () => ({
+          globalStore: globalStore(),
+          globalStoreActions: globalStoreActions(),
+        }),
+        { wrapper }
+      );
+    });
+
+    act(() => {
+      result.current.globalStoreActions.setScope(scope);
+    });
+
+    // Resourcebar values without commitments
+    expect(screen.getByText("100/150")).toBeInTheDocument();
+    expect(screen.getByText("50/100")).toBeInTheDocument();
+    expect(screen.getByText("50/50")).toBeInTheDocument();
+    expect(screen.getByText(/no capacity/i)).toBeInTheDocument();
+
+    // Resourcebar values with commitments
+    res = actions.receiveCapacity(getClusterData(committed).cluster).categories.testType.resources[0];
+    rerender();
+    act(() => {
+      result.current.globalStoreActions.setScope(scope);
+    });
+
+    // sumbar values (left and right)
+    expect(screen.getByText("20/20")).toBeInTheDocument();
+    expect(screen.getByText("80/130")).toBeInTheDocument();
+    // zone-a and zone-b (left and right)
+    expect(screen.queryAllByText("10/10").length).toEqual(2);
+    expect(screen.getByText("40/90")).toBeInTheDocument();
+    expect(screen.getByText("40/40")).toBeInTheDocument();
+    // zone-c
+    expect(screen.getByText(/no capacity/i)).toBeInTheDocument();
+
+    // Missing capacity (Detect errors in limes capacity assignment at UI level)
+    res = actions.receiveCapacity(getClusterData(committed, 0).cluster).categories.testType.resources[0];
+    rerender();
+    act(() => {
+      result.current.globalStoreActions.setScope(scope);
+    });
+    // sumbar values (left and right)
+    expect(screen.getByText("20/20")).toBeInTheDocument();
+    expect(screen.getByText("80/-20")).toBeInTheDocument();
+    // zone-a and zone-b (left and right)
+    expect(screen.queryAllByText("10/10").length).toEqual(2);
+    expect(screen.queryAllByText("40/-10").length).toEqual(2);
+    // zone-c
+    expect(screen.getByText(/no capacity/i)).toBeInTheDocument();
   });
 });
