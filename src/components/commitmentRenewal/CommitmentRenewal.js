@@ -85,10 +85,7 @@ const CommitmentRenewal = (props) => {
     renewablePerService[selectedCategory],
     sortConfig
   );
-  const { items: inconistentItems, TableSortHeader: InconstentcyHeader } = useSortTableData(
-    inconsistent,
-    sortConfig
-  );
+  const { items: inconistentItems, TableSortHeader: InconstentcyHeader } = useSortTableData(inconsistent, sortConfig);
 
   function onRenewSelectionChange(value) {
     setSelectedCategory(value);

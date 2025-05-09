@@ -22,7 +22,7 @@ import { DataGridHeadCell, Icon, Stack } from "@cloudoperators/juno-ui-component
 const useSortTableData = (items, config = null) => {
   const [sortConfig, setSortConfig] = useState(config || {});
 
-  console.log(sortConfig)
+  console.log(sortConfig);
 
   const sortedItems = React.useMemo(() => {
     if (Object.keys(sortConfig).length === 0) return items;

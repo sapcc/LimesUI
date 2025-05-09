@@ -75,7 +75,7 @@ describe("Resource tests", () => {
         { wrapper }
       );
     });
-    
+
     // Project level
     act(() => {
       result.current.globalStoreActions.setScope(scope);
