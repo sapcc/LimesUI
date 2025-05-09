@@ -48,7 +48,7 @@ describe("Resource tests", () => {
       editableResource: false,
       per_az: [["az1", { projects_usage: 10 }]],
     };
-    const forwardProps = {
+    let forwardProps = {
       area: "testArea",
       canEdit: true,
       categoryName: "testCategory",
@@ -75,12 +75,23 @@ describe("Resource tests", () => {
         { wrapper }
       );
     });
+
     // Project level
     act(() => {
       result.current.globalStoreActions.setScope(scope);
     });
+    // resource does not allow commitments, therfore the maxQuota edit option should be displayed.
     expect(screen.getByTestId("maxQuotaEdit")).toBeInTheDocument();
-    // resource does not allow commitments
+    // edit option should not be invisible if no edit previleges are present
+    forwardProps = { ...forwardProps, canEdit: false };
+    rerender();
+    act(() => {
+      result.current.globalStoreActions.setScope(scope);
+    });
+    expect(screen.queryByTestId("maxQuotaEdit")).not.toBeInTheDocument();
+    forwardProps = { ...forwardProps, canEdit: true };
+    rerender();
+    // resource allows commitments, therefore the maxQuota edit option should not be displayed.
     res.editableResource = true;
     rerender();
     act(() => {

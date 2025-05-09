@@ -135,7 +135,7 @@ const Resource = (props) => {
           distribution={!editableResource && !isPanelView && "between"}
         >
           {displayName}
-          {scope.isProject() && (
+          {canEdit && scope.isProject() && (
             <span className="font-light">
               <MaxQuota {...maxQuotaForwardProps} />
             </span>
