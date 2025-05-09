@@ -71,9 +71,15 @@ const RenewalManager = (props) => {
     }
     return 0;
   }
+  const initialSortConfig = { service_type: "ascending", expires_at: "ascending" };
 
   return (
-    <CommitmentRenewal canEdit={canEdit} renewable={renewableCommitments} inconsistent={inconsistentCommitments} />
+    <CommitmentRenewal
+      canEdit={canEdit}
+      renewable={renewableCommitments}
+      inconsistent={inconsistentCommitments}
+      sortConfig={initialSortConfig}
+    />
   );
 };
 

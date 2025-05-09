@@ -15,14 +15,9 @@
  */
 
 import React from "react";
-import {
-  DataGrid,
-  DataGridHeadCell,
-  DataGridRow,
-  IntroBox,
-  LoadingIndicator,
-} from "@cloudoperators/juno-ui-components";
+import { DataGrid, DataGridRow, IntroBox, LoadingIndicator } from "@cloudoperators/juno-ui-components";
 import CommitmentTableDetails from "./CommitmentTableDetails";
+import useSortTableData from "../../hooks/useSortTable";
 import useCommitmentFilter from "../../hooks/useCommitmentFilter";
 import { createCommitmentStore } from "../StoreProvider";
 
@@ -55,15 +50,15 @@ const CommitmentTable = (props) => {
       label: "Starts at",
     },
     {
-      key: "confirmedAt",
+      key: "confirmed_at",
       label: "Confirmed at",
     },
     {
-      key: "expiresAt",
+      key: "expires_at",
       label: "Expires at",
     },
     {
-      key: "requestedBy",
+      key: "creator_name",
       label: "Requester",
     },
     {
@@ -85,6 +80,8 @@ const CommitmentTable = (props) => {
     return filteredData;
   }, [commitmentData, currentAZ, resourceName, isCommitting]);
 
+  const { items, TableSortHeader } = useSortTableData(filteredCommitments);
+
   React.useEffect(() => {
     filteredCommitments.length >= 2 ? setMergeIsActive(true) : setMergeIsActive(false);
   }, [filteredCommitments]);
@@ -95,11 +92,16 @@ const CommitmentTable = (props) => {
     <DataGrid columns={commitmentHeadCells.length} gridColumnTemplate={gridColumnTemplate}>
       <DataGridRow>
         {commitmentHeadCells.map((headCell) => (
-          <DataGridHeadCell key={headCell.key}>{headCell.label}</DataGridHeadCell>
+          <TableSortHeader
+            key={headCell.key}
+            identifier={headCell.key}
+            value={headCell.label}
+            rule={headCell.keyrule}
+          />
         ))}
       </DataGridRow>
 
-      {filteredCommitments.map((commitment) => (
+      {items.map((commitment) => (
         <CommitmentTableDetails
           key={commitment.id}
           commitment={commitment}

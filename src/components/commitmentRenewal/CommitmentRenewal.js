@@ -20,7 +20,6 @@ import {
   DataGrid,
   DataGridRow,
   DataGridCell,
-  DataGridHeadCell,
   Select,
   SelectOption,
   Stack,
@@ -30,6 +29,7 @@ import RenewModal from "../commitment/Modals/RenewModal";
 import { t, formatTimeISO8160 } from "../../lib/utils";
 import { Unit, valueWithUnit } from "../../lib/unit";
 import { categoryTitle } from "../paygAvailability/stylescss";
+import useSortTableData from "../../hooks/useSortTable";
 import { useMutation } from "@tanstack/react-query";
 import { createCommitmentStoreActions } from "../StoreProvider";
 
@@ -43,7 +43,7 @@ export const missingRole =
   "You are missing the permissions to edit this page. Please forward this page to a resource admin.";
 
 const CommitmentRenewal = (props) => {
-  const { renewable = [], inconsistent = [], canEdit = false } = props;
+  const { renewable = [], inconsistent = [], canEdit = false, sortConfig = [] } = props;
   const hasRenewable = renewable.length > 0;
   const hasInconsistencies = inconsistent.length > 0;
   const [showModal, setShowModal] = React.useState(false);
@@ -54,13 +54,13 @@ const CommitmentRenewal = (props) => {
   const commitmentRenew = useMutation({ mutationKey: ["renewCommitment"] });
   const { setRefetchCommitmentAPI } = createCommitmentStoreActions();
   const headCells = [
-    { key: "Category", label: "Category" },
-    { key: "resourceName", label: "Resource" },
-    { key: "availabilityZone", label: "AZ" },
+    { key: "service_type", label: "Category" },
+    { key: "resource_name", label: "Resource" },
+    { key: "availability_zone", label: "AZ" },
     { key: "amount", label: "Amount" },
     { key: "duration", label: "Duration" },
-    { key: "confirmedAt", label: "Confirmed at" },
-    { key: "expiresAt", label: "Expires at" },
+    { key: "confirmed_at", label: "Confirmed at" },
+    { key: "expires_at", label: "Expires at" },
   ];
   let renewableHeadCells = [...headCells];
   renewableHeadCells.push({ key: "renew", label: "Renew" });
@@ -80,6 +80,15 @@ const CommitmentRenewal = (props) => {
     const result = Object.assign(allCategories, renewableResult);
     return result;
   }, [renewable]);
+
+  const { items: renewableItems, TableSortHeader: RenewableHeader } = useSortTableData(
+    renewablePerService[selectedCategory],
+    sortConfig
+  );
+  const { items: inconistentItems, TableSortHeader: InconstentcyHeader } = useSortTableData(
+    inconsistent,
+    sortConfig
+  );
 
   function onRenewSelectionChange(value) {
     setSelectedCategory(value);
@@ -135,7 +144,7 @@ const CommitmentRenewal = (props) => {
   }
 
   return (
-    <div>
+    <>
       {toast && (
         <Message variant="error" dismissible={true} onDismiss={() => setToast(null)}>
           <span className="whitespace-pre-line">{toast}</span>
@@ -181,10 +190,11 @@ const CommitmentRenewal = (props) => {
           <DataGrid columns={renewableHeadCells.length} className={"mb-10"}>
             <DataGridRow>
               {renewableHeadCells.map((headCell) => (
-                <DataGridHeadCell key={headCell.key}>{headCell.label}</DataGridHeadCell>
+                <RenewableHeader key={headCell.key} identifier={headCell.key} value={headCell.label} />
               ))}
             </DataGridRow>
-            {renewablePerService[selectedCategory]?.map((c) => {
+
+            {renewableItems.map((c) => {
               return getTableData(c, true);
             })}
           </DataGrid>
@@ -206,10 +216,10 @@ const CommitmentRenewal = (props) => {
           <DataGrid columns={inconsistencyHeadCells.length}>
             <DataGridRow>
               {inconsistencyHeadCells.map((headCell) => (
-                <DataGridHeadCell key={headCell.key}>{headCell.label}</DataGridHeadCell>
+                <InconstentcyHeader key={headCell.key} identifier={headCell.key} value={headCell.label} />
               ))}
             </DataGridRow>
-            {inconsistent.map((c) => {
+            {inconistentItems.map((c) => {
               return getTableData(c, false);
             })}
           </DataGrid>
@@ -223,7 +233,7 @@ const CommitmentRenewal = (props) => {
         commitments={commitmentsForModal.current}
         onModalClose={() => setShowModal(false)}
       />
-    </div>
+    </>
   );
 };
 
