@@ -67,6 +67,7 @@ const useSortTableData = (items, config = null) => {
           <Stack>
             {value}
             <Icon
+              data-testid={`tableSort-${value}`}
               onClick={() => {
                 requestSort(identifier, sortRule, sortStrategy);
               }}
