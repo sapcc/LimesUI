@@ -18,39 +18,43 @@ import React from "react";
 import { useState } from "react";
 import { DataGridHeadCell, Icon, Stack } from "@cloudoperators/juno-ui-components/index";
 
+const sorters = {
+  text: (a, b) => a.localeCompare(b),
+  numeric: (a, b) => a - b,
+};
+
 const useSortTableData = (items, config = null) => {
   const [sortConfig, setSortConfig] = useState(config || {});
 
   const sortedItems = React.useMemo(() => {
     if (Object.keys(sortConfig).length === 0) return items;
     const [[key, data]] = Object.entries(sortConfig);
-    const { direction, sortRule } = data;
+    const { direction, sortRule, sortStrategy } = data;
+    console.log(sortStrategy, key)
+    if (!sortStrategy) {
+      throw new Error(`Missing sort strategy for key: ${key}`);
+    }
+    const sorter = sorters[sortStrategy];
 
     return [...items].sort((a, b) => {
       let aValue = sortRule ? sortRule(a) : a[key];
       let bValue = sortRule ? sortRule(b) : b[key];
-
-      if (aValue < bValue) {
-        return direction === "ascending" ? -1 : 1;
-      }
-      if (aValue > bValue) {
-        return direction === "ascending" ? 1 : -1;
-      }
-      return 0;
+      const comparison = sorter(aValue, bValue);
+      return direction === "ascending" ? comparison : -comparison;
     });
   }, [items, sortConfig]);
 
-  const requestSort = (key, sortRule) => {
+  const requestSort = (key, sortRule, sortStrategy) => {
     setSortConfig((currentConfig) => {
       const currentDirection = currentConfig[key]?.direction;
       const direction = currentDirection === "ascending" ? "descending" : "ascending";
-      const newConfig = { [key]: { direction, sortRule } };
+      const newConfig = { [key]: { direction, sortRule, sortStrategy } };
       return newConfig;
     });
   };
 
   const TableSortHeader = (headerProps) => {
-    const { value = "", identifier = "", sortRule = null } = headerProps;
+    const { value = "", identifier = "", sortRule = null, sortStrategy = null } = headerProps;
     const direction = sortConfig[identifier]?.direction;
     const isSortableColumn =
       sortRule ||
@@ -65,7 +69,7 @@ const useSortTableData = (items, config = null) => {
             {value}
             <Icon
               onClick={() => {
-                requestSort(identifier, sortRule);
+                requestSort(identifier, sortRule, sortStrategy);
               }}
               title={direction ?? "sort"}
               icon={

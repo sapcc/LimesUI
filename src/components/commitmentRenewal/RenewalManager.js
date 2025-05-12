@@ -21,6 +21,7 @@ import { t } from "../../lib/utils";
 import { parseCommitmentDuration } from "../../lib/parseCommitmentDurations";
 import { projectStore } from "../StoreProvider";
 import useCommitmentFilter from "../../hooks/useCommitmentFilter";
+import { ErrorBoundary } from "../../lib/ErrorBoundary";
 
 // RenewalManager fetches renwable commitments for the current scope.
 // Currently only available at project level.
@@ -60,17 +61,20 @@ const RenewalManager = (props) => {
       sortRule: (commitment) => {
         return t(commitment["service_type"]);
       },
+      sortStrategy: "text",
     },
     expires_at: { direction: "ascending" },
   };
 
   return (
-    <CommitmentRenewal
-      canEdit={canEdit}
-      renewable={renewableCommitments}
-      inconsistent={inconsistentCommitments}
-      sortConfig={initialSortConfig}
-    />
+    <ErrorBoundary>
+      <CommitmentRenewal
+        canEdit={canEdit}
+        renewable={renewableCommitments}
+        inconsistent={inconsistentCommitments}
+        sortConfig={initialSortConfig}
+      />
+    </ErrorBoundary>
   );
 };
 

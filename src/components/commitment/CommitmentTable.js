@@ -43,33 +43,40 @@ const CommitmentTable = (props) => {
       sortRule: (commitment) => {
         return commitment["confirm_by"] ?? commitment["created_at"];
       },
+      sortStrategy: "numeric",
     },
   };
   const commitmentHeadCells = [
     {
       key: "amount",
       label: "Amount",
+      sortStrategy: "numeric",
     },
     {
       key: "duration",
       label: "Duration",
+      sortStrategy: "text",
     },
     {
       key: "starts_at",
       label: "Starts at",
-      sortRule: initialSortConfig["starts_at"].sortRule
+      sortRule: initialSortConfig["starts_at"].sortRule,
+      sortStrategy: initialSortConfig["starts_at"].sortStrategy,
     },
     {
       key: "confirmed_at",
       label: "Confirmed at",
+      sortStrategy: "numeric",
     },
     {
       key: "expires_at",
       label: "Expires at",
+      sortStrategy: "numeric",
     },
     {
       key: "creator_name",
       label: "Requester",
+      sortStrategy: "text",
     },
     {
       key: "edit",
@@ -107,6 +114,7 @@ const CommitmentTable = (props) => {
             identifier={headCell.key}
             value={headCell.label}
             sortRule={headCell.sortRule}
+            sortStrategy={headCell.sortStrategy}
           />
         ))}
       </DataGridRow>

@@ -58,13 +58,14 @@ const CommitmentRenewal = (props) => {
       key: "service_type",
       label: "Category",
       sortRule: sortConfig["service_type"].sortRule,
+      sortStrategy: sortConfig["service_type"].sortStrategy,
     },
-    { key: "resource_name", label: "Resource" },
-    { key: "availability_zone", label: "AZ" },
-    { key: "amount", label: "Amount" },
-    { key: "duration", label: "Duration" },
-    { key: "confirmed_at", label: "Confirmed at" },
-    { key: "expires_at", label: "Expires at" },
+    { key: "resource_name", label: "Resource", sortStrategy: "text" },
+    { key: "availability_zone", label: "AZ", sortStrategy: "text" },
+    { key: "amount", label: "Amount", sortStrategy: "numeric" },
+    { key: "duration", label: "Duration", sortStrategy: "text" },
+    { key: "confirmed_at", label: "Confirmed at", sortStrategy: "numeric" },
+    { key: "expires_at", label: "Expires at", sortStrategy: "numeric" },
   ];
   let renewableHeadCells = [...headCells];
   renewableHeadCells.push({ key: "renew", label: "Renew" });
@@ -196,6 +197,7 @@ const CommitmentRenewal = (props) => {
                   identifier={headCell.key}
                   value={headCell.label}
                   sortRule={headCell.sortRule}
+                  sortStrategy={headCell.sortStrategy}
                 />
               ))}
             </DataGridRow>
@@ -227,6 +229,7 @@ const CommitmentRenewal = (props) => {
                   identifier={headCell.key}
                   value={headCell.label}
                   sortRule={headCell.sortRule}
+                  sortStrategy={headCell.sortStrategy}
                 />
               ))}
             </DataGridRow>
