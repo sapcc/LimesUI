@@ -17,7 +17,6 @@
 import React from "react";
 import CommitmentRenewal from "./CommitmentRenewal";
 import moment from "moment";
-import { t } from "../../lib/utils";
 import { parseCommitmentDuration } from "../../lib/parseCommitmentDurations";
 import { projectStore } from "../StoreProvider";
 import useCommitmentFilter from "../../hooks/useCommitmentFilter";
@@ -55,25 +54,9 @@ const RenewalManager = (props) => {
     return [renewableCommitments, inconsistentCommitments];
   }, [commitments]);
 
-  const initialSortConfig = {
-    service_type: {
-      direction: "ascending",
-      sortRule: (commitment) => {
-        return t(commitment["service_type"]);
-      },
-      sortStrategy: "text",
-    },
-    expires_at: { direction: "ascending" },
-  };
-
   return (
     <ErrorBoundary>
-      <CommitmentRenewal
-        canEdit={canEdit}
-        renewable={renewableCommitments}
-        inconsistent={inconsistentCommitments}
-        sortConfig={initialSortConfig}
-      />
+      <CommitmentRenewal canEdit={canEdit} renewable={renewableCommitments} inconsistent={inconsistentCommitments} />
     </ErrorBoundary>
   );
 };

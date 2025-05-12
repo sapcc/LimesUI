@@ -102,6 +102,7 @@ describe("Commitment renewal tests", () => {
   test("Expect renewable and inconsistent commitments", async () => {
     const now = moment().utc();
     const expire = now.add(2, "months").unix();
+
     const renewableCommitments = [
       {
         id: 1,

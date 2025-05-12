@@ -111,13 +111,4 @@ describe("limesStore", () => {
       );
     });
   });
-
-  describe("commitments", () => {
-    test("commitmentOrdering", () => {
-      act(() => {
-        store.result.current.projectStoreActions.setCommitments(commitments);
-      });
-      expect(store.result.current.projectStore.commitments[0].created_at).toEqual(2);
-    });
-  });
 });

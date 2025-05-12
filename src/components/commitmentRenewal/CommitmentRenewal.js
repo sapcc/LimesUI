@@ -43,7 +43,7 @@ export const missingRole =
   "You are missing the permissions to edit this page. Please forward this page to a resource admin.";
 
 const CommitmentRenewal = (props) => {
-  const { renewable = [], inconsistent = [], canEdit = false, sortConfig = [] } = props;
+  const { renewable = [], inconsistent = [], canEdit = false } = props;
   const hasRenewable = renewable.length > 0;
   const hasInconsistencies = inconsistent.length > 0;
   const [showModal, setShowModal] = React.useState(false);
@@ -53,12 +53,23 @@ const CommitmentRenewal = (props) => {
   const commitmentsForModal = React.useRef();
   const commitmentRenew = useMutation({ mutationKey: ["renewCommitment"] });
   const { setRefetchCommitmentAPI } = createCommitmentStoreActions();
+
+  const initialSortConfig = {
+    service_type: {
+      direction: "ascending",
+      sortRule: (commitment) => {
+        return t(commitment["service_type"]);
+      },
+      sortStrategy: "text",
+    },
+    expires_at: { direction: "ascending" },
+  };
   const headCells = [
     {
       key: "service_type",
       label: "Category",
-      sortRule: sortConfig["service_type"].sortRule,
-      sortStrategy: sortConfig["service_type"].sortStrategy,
+      sortRule: initialSortConfig["service_type"].sortRule,
+      sortStrategy: initialSortConfig["service_type"].sortStrategy,
     },
     { key: "resource_name", label: "Resource", sortStrategy: "text" },
     { key: "availability_zone", label: "AZ", sortStrategy: "text" },
@@ -88,9 +99,12 @@ const CommitmentRenewal = (props) => {
 
   const { items: renewableItems, TableSortHeader: RenewableHeader } = useSortTableData(
     renewablePerService[selectedCategory],
-    sortConfig
+    initialSortConfig
   );
-  const { items: inconistentItems, TableSortHeader: InconstentcyHeader } = useSortTableData(inconsistent, sortConfig);
+  const { items: inconistentItems, TableSortHeader: InconstentcyHeader } = useSortTableData(
+    inconsistent,
+    initialSortConfig
+  );
 
   function onRenewSelectionChange(value) {
     setSelectedCategory(value);
