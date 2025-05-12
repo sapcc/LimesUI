@@ -57,6 +57,41 @@ describe("useSortTableData", () => {
     ]);
   });
 
+  test("should sort with a provided sort rule", () => {
+    const items = [
+      { id: 1, value: 3 },
+      { id: 2, value: 1 },
+      { id: 3, value: 2 },
+    ];
+
+    const sortRule = (item) => {
+      switch (item.id) {
+        case 1:
+          item.value = 1;
+          break;
+        case 2:
+          item.value = 2;
+          break;
+        case 3:
+          item.value = 3;
+          break;
+        default:
+          return 0;
+      }
+      return item.value;
+    };
+    const { result } = renderHook(() => useSortTableData(items));
+    act(() => {
+      result.current.requestSort("value", sortRule, "numeric");
+    });
+
+    expect(result.current.items).toEqual([
+      { id: 1, value: 1 },
+      { id: 2, value: 2 },
+      { id: 3, value: 3 },
+    ]);
+  });
+
   test("should throw an error when sort strategy is missing", () => {
     console.error = jest.fn();
     const items = [
@@ -73,7 +108,7 @@ describe("useSortTableData", () => {
     }).toThrow("Missing sort strategy for key: value");
   });
 
-  test("should render TableSortHeader with sortable columns", () => {
+  test("should render header with sortable columns", () => {
     const items = [
       { id: 1, value: "banana" },
       { id: 3, value: "cherry" },
