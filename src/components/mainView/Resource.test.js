@@ -131,7 +131,7 @@ describe("Resource bar test", () => {
   });
   test("resources with quota tracking", async () => {
     let scope = new Scope({ projectID: "123", domainID: "456" });
-    function getProjectData(committed = null, usage = 50) {
+    function getProjectData(committed = null, usage = 50, quota = 150) {
       return {
         project: {
           id: "123",
@@ -148,20 +148,20 @@ describe("Resource bar test", () => {
                   per_az: {
                     "zone-a": {
                       usage: usage / 2,
-                      quota: 50,
+                      quota: quota / 3,
                       committed,
                     },
                     "zone-b": {
                       usage: usage / 2,
-                      quota: 50,
+                      quota: quota / 3,
                       committed,
                     },
                     "zone-c": {
                       usage: 0,
-                      quota: 50,
+                      quota: quota / 3,
                     },
                   },
-                  quota: 150,
+                  quota: quota,
                   usage: usage,
                 },
               ],
@@ -243,6 +243,22 @@ describe("Resource bar test", () => {
     expect(screen.queryAllByText("0/40").length).toEqual(2);
     // zone-c
     expect(screen.getByText("0/50")).toBeInTheDocument();
+
+    // Missing quota (Detect errors in limes capacity assignment at UI level)
+    res = actions.restructureReport(getProjectData(committed, 10, 0).project).categories.testType.resources[0];
+    rerender();
+    act(() => {
+      result.current.globalStoreActions.setScope(scope);
+    });
+    // sumbar values (left and right)
+    expect(screen.getByText("10/20")).toBeInTheDocument();
+    expect(screen.getByText("0/-20")).toBeInTheDocument();
+    // zone-a and zone-b (left and right)
+    expect(screen.queryAllByText("5/10").length).toEqual(2);
+    expect(screen.queryAllByText("0/-10").length).toEqual(2);
+    // zone-c
+    expect(screen.getByText(/no quota/i)).toBeInTheDocument();
+
   });
 
   test("usage only resources", async () => {
