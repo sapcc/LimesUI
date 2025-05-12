@@ -36,6 +36,15 @@ const CommitmentTable = (props) => {
   const { per_az: availabilityZones } = props.resource;
   const isAZAware = availabilityZones.length == 1 && availabilityZones[0][0] == "any";
   const noCommitmentsText = `No commitments found${!isAZAware ? " in this availability zone" : ""}.`;
+
+  const initialSortConfig = {
+    starts_at: {
+      direction: "descending",
+      sortRule: (commitment) => {
+        return commitment["confirm_by"] ?? commitment["created_at"];
+      },
+    },
+  };
   const commitmentHeadCells = [
     {
       key: "amount",
@@ -48,9 +57,7 @@ const CommitmentTable = (props) => {
     {
       key: "starts_at",
       label: "Starts at",
-      sortRule: (commitment) => {
-        return commitment["confirm_by"] ?? commitment["created_at"];
-      },
+      sortRule: initialSortConfig["starts_at"].sortRule
     },
     {
       key: "confirmed_at",
@@ -83,7 +90,7 @@ const CommitmentTable = (props) => {
     return filteredData;
   }, [commitmentData, currentAZ, resourceName, isCommitting]);
 
-  const { items, TableSortHeader } = useSortTableData(filteredCommitments);
+  const { items, TableSortHeader } = useSortTableData(filteredCommitments, initialSortConfig);
 
   React.useEffect(() => {
     filteredCommitments.length >= 2 ? setMergeIsActive(true) : setMergeIsActive(false);

@@ -52,7 +52,7 @@ const useSortTableData = (items, config = null) => {
   const TableSortHeader = (headerProps) => {
     const { value = "", identifier = "", sortRule = null } = headerProps;
     const direction = sortConfig[identifier]?.direction;
-    const isIdentifierInItems =
+    const isSortableColumn =
       sortRule ||
       items.some((item) => {
         return item[identifier];
@@ -60,7 +60,7 @@ const useSortTableData = (items, config = null) => {
 
     return (
       <DataGridHeadCell>
-        {isIdentifierInItems ? (
+        {isSortableColumn ? (
           <Stack>
             {value}
             <Icon
