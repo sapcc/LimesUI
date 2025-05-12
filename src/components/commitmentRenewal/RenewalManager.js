@@ -17,9 +17,9 @@
 import React from "react";
 import CommitmentRenewal from "./CommitmentRenewal";
 import moment from "moment";
+import { t } from "../../lib/utils";
 import { parseCommitmentDuration } from "../../lib/parseCommitmentDurations";
 import { projectStore } from "../StoreProvider";
-import { t } from "../../lib/utils";
 import useCommitmentFilter from "../../hooks/useCommitmentFilter";
 
 // RenewalManager fetches renwable commitments for the current scope.
@@ -51,27 +51,18 @@ const RenewalManager = (props) => {
       const index = renewableCommitments.indexOf(c);
       renewableCommitments.splice(index, 1);
     });
-    renewableCommitments = renewableCommitments.sort(compareCommitmentsByCategory);
-    inconsistentCommitments = inconsistentCommitments.sort(compareCommitmentsByCategory);
     return [renewableCommitments, inconsistentCommitments];
   }, [commitments]);
 
-  function compareCommitmentsByCategory(a, b) {
-    if (t(a.service_type) < t(b.service_type)) {
-      return -1;
-    }
-    if (t(a.service_type) > t(b.service_type)) {
-      return 1;
-    }
-    if (a.expires_at < b.expires_at) {
-      return -1;
-    }
-    if (a.expires_at > b.expires_at) {
-      return 1;
-    }
-    return 0;
-  }
-  const initialSortConfig = { service_type: "ascending", expires_at: "ascending" };
+  const initialSortConfig = {
+    service_type: {
+      direction: "ascending",
+      sortRule: (commitment) => {
+        return t(commitment["service_type"]);
+      },
+    },
+    expires_at: { direction: "ascending" },
+  };
 
   return (
     <CommitmentRenewal

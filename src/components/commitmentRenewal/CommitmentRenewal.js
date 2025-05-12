@@ -54,7 +54,11 @@ const CommitmentRenewal = (props) => {
   const commitmentRenew = useMutation({ mutationKey: ["renewCommitment"] });
   const { setRefetchCommitmentAPI } = createCommitmentStoreActions();
   const headCells = [
-    { key: "service_type", label: "Category" },
+    {
+      key: "service_type",
+      label: "Category",
+      sortRule: sortConfig["service_type"].sortRule,
+    },
     { key: "resource_name", label: "Resource" },
     { key: "availability_zone", label: "AZ" },
     { key: "amount", label: "Amount" },
@@ -187,7 +191,12 @@ const CommitmentRenewal = (props) => {
           <DataGrid columns={renewableHeadCells.length} className={"mb-10"}>
             <DataGridRow>
               {renewableHeadCells.map((headCell) => (
-                <RenewableHeader key={headCell.key} identifier={headCell.key} value={headCell.label} />
+                <RenewableHeader
+                  key={headCell.key}
+                  identifier={headCell.key}
+                  value={headCell.label}
+                  sortRule={headCell.sortRule}
+                />
               ))}
             </DataGridRow>
 
@@ -213,7 +222,12 @@ const CommitmentRenewal = (props) => {
           <DataGrid columns={inconsistencyHeadCells.length}>
             <DataGridRow>
               {inconsistencyHeadCells.map((headCell) => (
-                <InconstentcyHeader key={headCell.key} identifier={headCell.key} value={headCell.label} />
+                <InconstentcyHeader
+                  key={headCell.key}
+                  identifier={headCell.key}
+                  value={headCell.label}
+                  sortRule={headCell.sortRule}
+                />
               ))}
             </DataGridRow>
             {inconistentItems.map((c) => {

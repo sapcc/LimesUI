@@ -46,8 +46,11 @@ const CommitmentTable = (props) => {
       label: "Duration",
     },
     {
-      key: "startsAt",
+      key: "starts_at",
       label: "Starts at",
+      sortRule: (commitment) => {
+        return commitment["confirm_by"] ?? commitment["created_at"];
+      },
     },
     {
       key: "confirmed_at",
@@ -96,7 +99,7 @@ const CommitmentTable = (props) => {
             key={headCell.key}
             identifier={headCell.key}
             value={headCell.label}
-            rule={headCell.keyrule}
+            sortRule={headCell.sortRule}
           />
         ))}
       </DataGridRow>
