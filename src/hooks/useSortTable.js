@@ -30,7 +30,6 @@ const useSortTableData = (items, config = null) => {
     if (Object.keys(sortConfig).length === 0) return items;
     const [[key, data]] = Object.entries(sortConfig);
     const { direction, sortRule, sortStrategy } = data;
-    console.log(sortStrategy, key)
     if (!sortStrategy) {
       throw new Error(`Missing sort strategy for key: ${key}`);
     }
