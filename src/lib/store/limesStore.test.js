@@ -64,8 +64,6 @@ const projectData = {
   },
 };
 
-const commitments = [{ created_at: 1 }, { created_at: 2 }];
-
 describe("limesStore", () => {
   let store;
   beforeEach(() => {
