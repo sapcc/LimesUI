@@ -55,6 +55,18 @@ describe("Unit", () => {
       }
     });
   });
+  it("renders negative values", () => {
+    let cases = [
+      [-1, /^-1\sMiB$/],
+      [-1234, /^-1.21\sGiB$/],
+      [-45421, /^-44.36\sGiB$/],
+      [-1234567, /^-1.18\sTiB$/],
+    ];
+    const u = new Unit("MiB");
+    for (const [input, output] of cases) {
+      expect(u.format(input)).toMatch(output);
+    }
+  });
 
   describe(".parse", () => {
     const errSyntax = { error: "syntax" };

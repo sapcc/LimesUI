@@ -79,6 +79,10 @@ export class Unit {
   format(value, options = {}) {
     //convert value into bigger units if available
     let steps = this.unitData.steps;
+
+    const prefix = value < 0 && "-";
+    value = Math.abs(value);
+
     while (value >= this.scaleData.step && steps + 1 < this.scaleData.prefixes.length) {
       value /= this.scaleData.step;
       steps += 1;
@@ -93,7 +97,7 @@ export class Unit {
     } else {
       //if possible, join with narrow no-break space instead of regular space
       const space = options.ascii ? " " : "\u202F";
-      return value + space + displayUnit;
+      return prefix + value + space + displayUnit;
     }
   }
 
