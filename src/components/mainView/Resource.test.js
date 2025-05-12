@@ -247,7 +247,6 @@ describe("Resource bar test", () => {
     expect(screen.queryAllByText("0/-10").length).toEqual(2);
     // zone-c
     expect(screen.getByText(/no quota/i)).toBeInTheDocument();
-
   });
 
   test("usage only resources", async () => {
