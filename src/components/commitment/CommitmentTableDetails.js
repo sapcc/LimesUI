@@ -150,7 +150,7 @@ const CommitmentTableDetails = (props) => {
           valueWithUnit(amount, unit)
         )}
       </DataGridCell>
-      <DataGridCell className={"px-0"}>
+      <DataGridCell>
         {isAddingCommitment ? (
           <Select
             data-cy="commitmentSelect"
