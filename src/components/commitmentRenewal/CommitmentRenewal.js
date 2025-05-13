@@ -57,9 +57,7 @@ const CommitmentRenewal = (props) => {
   const initialSortConfig = {
     service_type: {
       direction: "ascending",
-      sortRule: (commitment) => {
-        return t(commitment["service_type"]);
-      },
+      sortValueFn: (commitment) => t(commitment["service_type"]),
       sortStrategy: "text",
     },
     expires_at: { direction: "ascending" },
@@ -68,7 +66,7 @@ const CommitmentRenewal = (props) => {
     {
       key: "service_type",
       label: "Category",
-      sortRule: initialSortConfig["service_type"].sortRule,
+      sortValueFn: initialSortConfig["service_type"].sortValueFn,
       sortStrategy: initialSortConfig["service_type"].sortStrategy,
     },
     { key: "resource_name", label: "Resource", sortStrategy: "text" },
@@ -210,7 +208,7 @@ const CommitmentRenewal = (props) => {
                   key={headCell.key}
                   identifier={headCell.key}
                   value={headCell.label}
-                  sortRule={headCell.sortRule}
+                  sortValueFn={headCell.sortValueFn}
                   sortStrategy={headCell.sortStrategy}
                 />
               ))}
@@ -242,7 +240,7 @@ const CommitmentRenewal = (props) => {
                   key={headCell.key}
                   identifier={headCell.key}
                   value={headCell.label}
-                  sortRule={headCell.sortRule}
+                  sortValueFn={headCell.sortValueFn}
                   sortStrategy={headCell.sortStrategy}
                 />
               ))}

@@ -64,7 +64,7 @@ describe("useSortTableData", () => {
       { id: 3, value: 2 },
     ];
 
-    const sortRule = (item) => {
+    const sortValueFn = (item) => {
       switch (item.id) {
         case 1:
           item.value = 1;
@@ -82,7 +82,7 @@ describe("useSortTableData", () => {
     };
     const { result } = renderHook(() => useSortTableData(items));
     act(() => {
-      result.current.requestSort("value", sortRule, "numeric");
+      result.current.requestSort("value", sortValueFn, "numeric");
     });
 
     expect(result.current.items).toEqual([

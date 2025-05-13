@@ -29,34 +29,34 @@ const useSortTableData = (items, config = null) => {
   const sortedItems = React.useMemo(() => {
     if (Object.keys(sortConfig).length === 0) return items;
     const [[key, data]] = Object.entries(sortConfig);
-    const { direction, sortRule, sortStrategy } = data;
+    const { direction, sortValueFn, sortStrategy } = data;
     if (!sortStrategy) {
       throw new Error(`Missing sort strategy for key: ${key}`);
     }
     const sorter = sorters[sortStrategy];
 
     return [...items].sort((a, b) => {
-      let aValue = sortRule ? sortRule(a) : a[key];
-      let bValue = sortRule ? sortRule(b) : b[key];
+      let aValue = sortValueFn ? sortValueFn(a) : a[key];
+      let bValue = sortValueFn ? sortValueFn(b) : b[key];
       const comparison = sorter(aValue, bValue);
       return direction === "ascending" ? comparison : -comparison;
     });
   }, [items, sortConfig]);
 
-  const requestSort = (key, sortRule, sortStrategy) => {
+  const requestSort = (key, sortValueFn, sortStrategy) => {
     setSortConfig((currentConfig) => {
       const currentDirection = currentConfig[key]?.direction;
       const direction = currentDirection === "ascending" ? "descending" : "ascending";
-      const newConfig = { [key]: { direction, sortRule, sortStrategy } };
+      const newConfig = { [key]: { direction, sortValueFn, sortStrategy } };
       return newConfig;
     });
   };
 
   const TableSortHeader = (headerProps) => {
-    const { value = "", identifier = "", sortRule = null, sortStrategy = null } = headerProps;
+    const { value = "", identifier = "", sortValueFn = null, sortStrategy = null } = headerProps;
     const direction = sortConfig[identifier]?.direction;
     const isSortableColumn =
-      sortRule ||
+      sortValueFn ||
       items.some((item) => {
         return item[identifier];
       });
@@ -69,7 +69,7 @@ const useSortTableData = (items, config = null) => {
             <Icon
               data-testid={`tableSort-${value}`}
               onClick={() => {
-                requestSort(identifier, sortRule, sortStrategy);
+                requestSort(identifier, sortValueFn, sortStrategy);
               }}
               title={direction ?? "sort"}
               icon={

@@ -40,9 +40,7 @@ const CommitmentTable = (props) => {
   const initialSortConfig = {
     starts_at: {
       direction: "descending",
-      sortRule: (commitment) => {
-        return commitment["confirm_by"] ?? commitment["created_at"];
-      },
+      sortValueFn: (commitment) => commitment["confirm_by"] ?? commitment["created_at"],
       sortStrategy: "numeric",
     },
   };
@@ -60,7 +58,7 @@ const CommitmentTable = (props) => {
     {
       key: "starts_at",
       label: "Starts at",
-      sortRule: initialSortConfig["starts_at"].sortRule,
+      sortValueFn: initialSortConfig["starts_at"].sortValueFn,
       sortStrategy: initialSortConfig["starts_at"].sortStrategy,
     },
     {
@@ -113,7 +111,7 @@ const CommitmentTable = (props) => {
             key={headCell.key}
             identifier={headCell.key}
             value={headCell.label}
-            sortRule={headCell.sortRule}
+            sortValueFn={headCell.sortValueFn}
             sortStrategy={headCell.sortStrategy}
           />
         ))}
