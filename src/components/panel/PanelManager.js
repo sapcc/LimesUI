@@ -32,6 +32,7 @@ const PanelManager = (props) => {
   // currentResource has to be provided from the props. The location state is static and does not refresh on rerender once the project data gets requeried.
   const { resources, serviceType } = props.categories[categoryName];
   const currentResource = getCurrentResource(resources, resourceName);
+  const isEditableResource = currentResource.commitment_config?.durations ?? false
   const resourceTracksQuota = tracksQuota(currentResource);
   const { setShowCommitments } = domainStoreActions();
   const { isEditing } = createCommitmentStore();
@@ -51,7 +52,7 @@ const PanelManager = (props) => {
   const { setDeleteCommitment } = createCommitmentStoreActions();
 
   React.useEffect(() => {
-    if (currentResource) {
+    if (isEditableResource && currentResource) {
       setIsEditing(true);
     }
     // reset state if user presses return button at the browser
@@ -61,7 +62,7 @@ const PanelManager = (props) => {
       setDeleteCommitment(null);
       onPanelClose(project.current);
     };
-  }, []);
+  }, [currentResource]);
 
   // This is a workaround hence the return statement of a useEffect apparently clears the store data first.
   React.useEffect(() => {
@@ -87,7 +88,7 @@ const PanelManager = (props) => {
 
   //Durations get checked to avoid route call to uneditable resource.
   return (
-    (currentResource?.commitment_config?.durations || subRoute) && (
+    (isEditableResource || subRoute) && (
       <Panel
         size="large"
         opened={isEditing}
