@@ -101,7 +101,7 @@ const CommitmentRenewal = (props) => {
     renewablePerService[selectedCategory],
     initialSortConfig
   );
-  const { items: inconistentItems, TableSortHeader: InconstentcyHeader } = useSortTableData(
+  const { items: inconsistentItems, TableSortHeader: InconsistencyHeader } = useSortTableData(
     inconsistent,
     initialSortConfig
   );
@@ -238,7 +238,7 @@ const CommitmentRenewal = (props) => {
           <DataGrid columns={inconsistencyHeadCells.length}>
             <DataGridRow>
               {inconsistencyHeadCells.map((headCell) => (
-                <InconstentcyHeader
+                <InconsistencyHeader
                   key={headCell.key}
                   identifier={headCell.key}
                   value={headCell.label}
@@ -247,7 +247,7 @@ const CommitmentRenewal = (props) => {
                 />
               ))}
             </DataGridRow>
-            {inconistentItems.map((c) => {
+            {inconsistentItems.map((c) => {
               return getTableData(c, false);
             })}
           </DataGrid>
