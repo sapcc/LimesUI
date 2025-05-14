@@ -175,12 +175,6 @@ const limesStore = (set, get) => ({
         })),
       setCommitments: (commitments) =>
         set((state) => {
-          commitments.sort((a, b) => {
-            return b.created_at - a.created_at;
-          });
-          commitments.sort((a, b) => {
-            return b.confirmed_at || 0 - a.confirmed_at || 0;
-          });
           return {
             ...state,
             project: { ...state.project, commitments: commitments },

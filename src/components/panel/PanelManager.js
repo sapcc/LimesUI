@@ -17,7 +17,8 @@
 import React from "react";
 import { Panel } from "@cloudoperators/juno-ui-components";
 import EditPanel from "./EditPanel";
-import { useParams, useNavigate, useLocation } from "react-router";
+import { tracksQuota } from "../../lib/utils";
+import { useParams, useNavigate } from "react-router";
 import { t, getCurrentResource } from "../../lib/utils";
 import { initialCommitmentObject } from "../../lib/constants";
 import { createCommitmentStore, createCommitmentStoreActions, domainStoreActions, globalStore } from "../StoreProvider";
@@ -25,14 +26,14 @@ import { ErrorBoundary } from "../../lib/ErrorBoundary";
 
 // Panel needs to be rendered first to enable the fading UI animation.
 const PanelManager = (props) => {
-  const location = useLocation();
   const params = useParams();
   const navigate = useNavigate();
-  const { serviceType, tracksQuota } = { ...location.state };
   const { currentArea, categoryName, resourceName, subRoute } = { ...params };
   // currentResource has to be provided from the props. The location state is static and does not refresh on rerender once the project data gets requeried.
-  const { resources } = props.categories[categoryName];
+  const { resources, serviceType } = props.categories[categoryName];
   const currentResource = getCurrentResource(resources, resourceName);
+  const isEditableResource = currentResource.commitment_config?.durations ?? false;
+  const resourceTracksQuota = tracksQuota(currentResource);
   const { setShowCommitments } = domainStoreActions();
   const { isEditing } = createCommitmentStore();
   const { currentProject } = createCommitmentStore();
@@ -51,7 +52,7 @@ const PanelManager = (props) => {
   const { setDeleteCommitment } = createCommitmentStoreActions();
 
   React.useEffect(() => {
-    if (currentResource) {
+    if (isEditableResource && currentResource) {
       setIsEditing(true);
     }
     // reset state if user presses return button at the browser
@@ -61,7 +62,7 @@ const PanelManager = (props) => {
       setDeleteCommitment(null);
       onPanelClose(project.current);
     };
-  }, []);
+  }, [currentResource]);
 
   // This is a workaround hence the return statement of a useEffect apparently clears the store data first.
   React.useEffect(() => {
@@ -87,7 +88,7 @@ const PanelManager = (props) => {
 
   //Durations get checked to avoid route call to uneditable resource.
   return (
-    (currentResource?.commitment_config?.durations || subRoute) && (
+    (isEditableResource || subRoute) && (
       <Panel
         size="large"
         opened={isEditing}
@@ -106,7 +107,7 @@ const PanelManager = (props) => {
             currentArea={currentArea}
             currentCategory={categoryName}
             subRoute={subRoute}
-            tracksQuota={tracksQuota}
+            tracksQuota={resourceTracksQuota}
           />
         </ErrorBoundary>
       </Panel>

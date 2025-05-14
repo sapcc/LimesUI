@@ -64,8 +64,6 @@ const projectData = {
   },
 };
 
-const commitments = [{ created_at: 1 }, { created_at: 2 }];
-
 describe("limesStore", () => {
   let store;
   beforeEach(() => {
@@ -109,15 +107,6 @@ describe("limesStore", () => {
       expect(store.result.current.projectStore.projectData.categories.compute.resources[0].totalCommitments).toEqual(
         totalCommitments
       );
-    });
-  });
-
-  describe("commitments", () => {
-    test("commitmentOrdering", () => {
-      act(() => {
-        store.result.current.projectStoreActions.setCommitments(commitments);
-      });
-      expect(store.result.current.projectStore.commitments[0].created_at).toEqual(2);
     });
   });
 });

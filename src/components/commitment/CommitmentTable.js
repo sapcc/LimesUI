@@ -15,14 +15,9 @@
  */
 
 import React from "react";
-import {
-  DataGrid,
-  DataGridHeadCell,
-  DataGridRow,
-  IntroBox,
-  LoadingIndicator,
-} from "@cloudoperators/juno-ui-components";
+import { DataGrid, DataGridRow, IntroBox, LoadingIndicator } from "@cloudoperators/juno-ui-components";
 import CommitmentTableDetails from "./CommitmentTableDetails";
+import useSortTableData from "../../hooks/useSortTable";
 import useCommitmentFilter from "../../hooks/useCommitmentFilter";
 import { createCommitmentStore } from "../StoreProvider";
 
@@ -41,30 +36,45 @@ const CommitmentTable = (props) => {
   const { per_az: availabilityZones } = props.resource;
   const isAZAware = availabilityZones.length == 1 && availabilityZones[0][0] == "any";
   const noCommitmentsText = `No commitments found${!isAZAware ? " in this availability zone" : ""}.`;
+
+  const initialSortConfig = {
+    starts_at: {
+      direction: "descending",
+      sortValueFn: (commitment) => commitment["confirm_by"] ?? commitment["created_at"],
+      sortStrategy: "numeric",
+    },
+  };
   const commitmentHeadCells = [
     {
       key: "amount",
       label: "Amount",
+      sortStrategy: "numeric",
     },
     {
       key: "duration",
       label: "Duration",
+      sortStrategy: "text",
     },
     {
-      key: "startsAt",
+      key: "starts_at",
       label: "Starts at",
+      sortValueFn: initialSortConfig["starts_at"].sortValueFn,
+      sortStrategy: initialSortConfig["starts_at"].sortStrategy,
     },
     {
-      key: "confirmedAt",
+      key: "confirmed_at",
       label: "Confirmed at",
+      sortStrategy: "numeric",
     },
     {
-      key: "expiresAt",
+      key: "expires_at",
       label: "Expires at",
+      sortStrategy: "numeric",
     },
     {
-      key: "requestedBy",
+      key: "creator_name",
       label: "Requester",
+      sortStrategy: "text",
     },
     {
       key: "edit",
@@ -85,6 +95,8 @@ const CommitmentTable = (props) => {
     return filteredData;
   }, [commitmentData, currentAZ, resourceName, isCommitting]);
 
+  const { items, TableSortHeader } = useSortTableData(filteredCommitments, initialSortConfig);
+
   React.useEffect(() => {
     filteredCommitments.length >= 2 ? setMergeIsActive(true) : setMergeIsActive(false);
   }, [filteredCommitments]);
@@ -95,11 +107,17 @@ const CommitmentTable = (props) => {
     <DataGrid columns={commitmentHeadCells.length} gridColumnTemplate={gridColumnTemplate}>
       <DataGridRow>
         {commitmentHeadCells.map((headCell) => (
-          <DataGridHeadCell key={headCell.key}>{headCell.label}</DataGridHeadCell>
+          <TableSortHeader
+            key={headCell.key}
+            identifier={headCell.key}
+            value={headCell.label}
+            sortValueFn={headCell.sortValueFn}
+            sortStrategy={headCell.sortStrategy}
+          />
         ))}
       </DataGridRow>
 
-      {filteredCommitments.map((commitment) => (
+      {items.map((commitment) => (
         <CommitmentTableDetails
           key={commitment.id}
           commitment={commitment}

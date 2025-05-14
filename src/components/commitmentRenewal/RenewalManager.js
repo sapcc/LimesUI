@@ -19,8 +19,8 @@ import CommitmentRenewal from "./CommitmentRenewal";
 import moment from "moment";
 import { parseCommitmentDuration } from "../../lib/parseCommitmentDurations";
 import { projectStore } from "../StoreProvider";
-import { t } from "../../lib/utils";
 import useCommitmentFilter from "../../hooks/useCommitmentFilter";
+import { ErrorBoundary } from "../../lib/ErrorBoundary";
 
 // RenewalManager fetches renwable commitments for the current scope.
 // Currently only available at project level.
@@ -51,29 +51,13 @@ const RenewalManager = (props) => {
       const index = renewableCommitments.indexOf(c);
       renewableCommitments.splice(index, 1);
     });
-    renewableCommitments = renewableCommitments.sort(compareCommitmentsByCategory);
-    inconsistentCommitments = inconsistentCommitments.sort(compareCommitmentsByCategory);
     return [renewableCommitments, inconsistentCommitments];
   }, [commitments]);
 
-  function compareCommitmentsByCategory(a, b) {
-    if (t(a.service_type) < t(b.service_type)) {
-      return -1;
-    }
-    if (t(a.service_type) > t(b.service_type)) {
-      return 1;
-    }
-    if (a.expires_at < b.expires_at) {
-      return -1;
-    }
-    if (a.expires_at > b.expires_at) {
-      return 1;
-    }
-    return 0;
-  }
-
   return (
-    <CommitmentRenewal canEdit={canEdit} renewable={renewableCommitments} inconsistent={inconsistentCommitments} />
+    <ErrorBoundary>
+      <CommitmentRenewal canEdit={canEdit} renewable={renewableCommitments} inconsistent={inconsistentCommitments} />
+    </ErrorBoundary>
   );
 };
 

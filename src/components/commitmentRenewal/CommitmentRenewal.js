@@ -20,7 +20,6 @@ import {
   DataGrid,
   DataGridRow,
   DataGridCell,
-  DataGridHeadCell,
   Select,
   SelectOption,
   Stack,
@@ -30,6 +29,7 @@ import RenewModal from "../commitment/Modals/RenewModal";
 import { t, formatTimeISO8160 } from "../../lib/utils";
 import { Unit, valueWithUnit } from "../../lib/unit";
 import { categoryTitle } from "../paygAvailability/stylescss";
+import useSortTableData from "../../hooks/useSortTable";
 import { useMutation } from "@tanstack/react-query";
 import { createCommitmentStoreActions } from "../StoreProvider";
 
@@ -53,14 +53,28 @@ const CommitmentRenewal = (props) => {
   const commitmentsForModal = React.useRef();
   const commitmentRenew = useMutation({ mutationKey: ["renewCommitment"] });
   const { setRefetchCommitmentAPI } = createCommitmentStoreActions();
+
+  const initialSortConfig = {
+    service_type: {
+      direction: "ascending",
+      sortValueFn: (commitment) => t(commitment["service_type"]),
+      sortStrategy: "text",
+    },
+    expires_at: { direction: "ascending" },
+  };
   const headCells = [
-    { key: "Category", label: "Category" },
-    { key: "resourceName", label: "Resource" },
-    { key: "availabilityZone", label: "AZ" },
-    { key: "amount", label: "Amount" },
-    { key: "duration", label: "Duration" },
-    { key: "confirmedAt", label: "Confirmed at" },
-    { key: "expiresAt", label: "Expires at" },
+    {
+      key: "service_type",
+      label: "Category",
+      sortValueFn: initialSortConfig["service_type"].sortValueFn,
+      sortStrategy: initialSortConfig["service_type"].sortStrategy,
+    },
+    { key: "resource_name", label: "Resource", sortStrategy: "text" },
+    { key: "availability_zone", label: "AZ", sortStrategy: "text" },
+    { key: "amount", label: "Amount", sortStrategy: "numeric" },
+    { key: "duration", label: "Duration", sortStrategy: "text" },
+    { key: "confirmed_at", label: "Confirmed at", sortStrategy: "numeric" },
+    { key: "expires_at", label: "Expires at", sortStrategy: "numeric" },
   ];
   let renewableHeadCells = [...headCells];
   renewableHeadCells.push({ key: "renew", label: "Renew" });
@@ -80,6 +94,15 @@ const CommitmentRenewal = (props) => {
     const result = Object.assign(allCategories, renewableResult);
     return result;
   }, [renewable]);
+
+  const { items: renewableItems, TableSortHeader: RenewableHeader } = useSortTableData(
+    renewablePerService[selectedCategory],
+    initialSortConfig
+  );
+  const { items: inconsistentItems, TableSortHeader: InconsistencyHeader } = useSortTableData(
+    inconsistent,
+    initialSortConfig
+  );
 
   function onRenewSelectionChange(value) {
     setSelectedCategory(value);
@@ -135,7 +158,7 @@ const CommitmentRenewal = (props) => {
   }
 
   return (
-    <div>
+    <>
       {toast && (
         <Message variant="error" dismissible={true} onDismiss={() => setToast(null)}>
           <span className="whitespace-pre-line">{toast}</span>
@@ -181,10 +204,17 @@ const CommitmentRenewal = (props) => {
           <DataGrid columns={renewableHeadCells.length} className={"mb-10"}>
             <DataGridRow>
               {renewableHeadCells.map((headCell) => (
-                <DataGridHeadCell key={headCell.key}>{headCell.label}</DataGridHeadCell>
+                <RenewableHeader
+                  key={headCell.key}
+                  identifier={headCell.key}
+                  value={headCell.label}
+                  sortValueFn={headCell.sortValueFn}
+                  sortStrategy={headCell.sortStrategy}
+                />
               ))}
             </DataGridRow>
-            {renewablePerService[selectedCategory]?.map((c) => {
+
+            {renewableItems.map((c) => {
               return getTableData(c, true);
             })}
           </DataGrid>
@@ -206,10 +236,16 @@ const CommitmentRenewal = (props) => {
           <DataGrid columns={inconsistencyHeadCells.length}>
             <DataGridRow>
               {inconsistencyHeadCells.map((headCell) => (
-                <DataGridHeadCell key={headCell.key}>{headCell.label}</DataGridHeadCell>
+                <InconsistencyHeader
+                  key={headCell.key}
+                  identifier={headCell.key}
+                  value={headCell.label}
+                  sortValueFn={headCell.sortValueFn}
+                  sortStrategy={headCell.sortStrategy}
+                />
               ))}
             </DataGridRow>
-            {inconsistent.map((c) => {
+            {inconsistentItems.map((c) => {
               return getTableData(c, false);
             })}
           </DataGrid>
@@ -223,7 +259,7 @@ const CommitmentRenewal = (props) => {
         commitments={commitmentsForModal.current}
         onModalClose={() => setShowModal(false)}
       />
-    </div>
+    </>
   );
 };
 
