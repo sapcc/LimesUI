@@ -1,5 +1,15 @@
 # @sapcc/limes-ui
 
+## 1.7.0
+
+### Minor Changes
+
+- a813a8b: Add table sorting for commitments
+
+### Patch Changes
+
+- 52b9eea: fix: unit parsing, which now parses provided negative values
+
 ## 1.6.1
 
 ### Patch Changes
