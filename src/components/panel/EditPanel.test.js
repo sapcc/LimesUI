@@ -120,6 +120,9 @@ describe("EditPanel tests", () => {
 
     const selectedAZ = screen.getByTestId("tab/az1");
     expect(selectedAZ).toHaveAttribute("aria-selected", "true");
+
+    // expect maxQuota edit to be available
+    expect(screen.getByTestId("maxQuotaEdit")).toBeInTheDocument();
   });
 
   test("Commitment merging", async () => {
