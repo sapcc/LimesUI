@@ -113,7 +113,7 @@ const Resource = (props) => {
   }
 
   const maxQuotaForwardProps = {
-    editMode: isPanelView || !editableResource,
+    editMode: isPanelView || (canEdit && !editableResource),
     project: project,
     resource: resource,
     serviceType: serviceType,
@@ -135,7 +135,7 @@ const Resource = (props) => {
           distribution={!editableResource && !isPanelView && "between"}
         >
           {displayName}
-          {canEdit && scope.isProject() && (
+          {scope.isProject() && (
             <span className="font-light">
               <MaxQuota {...maxQuotaForwardProps} />
             </span>
