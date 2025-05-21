@@ -1,5 +1,11 @@
 # @sapcc/limes-ui
 
+## 1.7.1
+
+### Patch Changes
+
+- 17e862a: fix: max quota edit option to be available in the panel again
+
 ## 1.7.0
 
 ### Minor Changes
