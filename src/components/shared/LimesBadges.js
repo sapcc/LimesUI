@@ -25,13 +25,13 @@ const DomainBadges = (props) => {
   if (quota == 0) return;
   return (
     <span>
-      {unusedCommitments(az.commitmentSum, az[1].usage) && (
+      {unusedCommitments(az.commitmentSum, az.usage) && (
         <Badge variant="info">
           {" "}
           <b>unused</b>
         </Badge>
       )}
-      {uncommittedUsage(az.commitmentSum, az[1].usage) && (
+      {uncommittedUsage(az.commitmentSum, az.usage) && (
         <Badge variant="info">
           {" "}
           <b>uncommitted</b>

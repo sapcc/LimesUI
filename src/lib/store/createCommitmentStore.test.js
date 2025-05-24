@@ -32,10 +32,10 @@ describe("createCommitmentStore", () => {
       );
 
       act(() => {
-        store.result.current.commitmentActions.setCurrentAZ(currentAZ[0]);
+        store.result.current.commitmentActions.setCurrentAZ(currentAZ.name);
       });
 
-      expect(store.result.current.commitmentStore.currentAZ).toEqual(currentAZ[0]);
+      expect(store.result.current.commitmentStore.currentAZ).toEqual(currentAZ.name);
     });
   });
 });

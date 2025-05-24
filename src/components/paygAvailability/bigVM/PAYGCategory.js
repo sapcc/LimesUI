@@ -42,7 +42,7 @@ const PAYGCategory = (props) => {
     // - "tempest-test-...": dummy AZ created by Tempest
     // - "cp...": pseudo-AZ for control plane nodes without AZ association
     const validAvailabilityZones = availabilityZones.filter(
-      (az) => az != "unknown" && az != "any" && !/^tempest-|^cp/.test(az)
+      (az) => az != "unknown" && az != "any" && !/^tempest-|^cp/.test(az.name)
     );
     return validAvailabilityZones;
   }
@@ -63,7 +63,7 @@ const PAYGCategory = (props) => {
         } else {
           includesAZUnaware = true;
         }
-        availabilityZones[az[0]] = true;
+        availabilityZones[az.name] = true;
       });
     }
     const hasMixedAZAwareness = includesAZAware && includesAZUnaware;

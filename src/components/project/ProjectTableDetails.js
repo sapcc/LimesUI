@@ -15,7 +15,12 @@
  */
 
 import React from "react";
-import { getQuotaForAZLevel, getUsageForAZLevel } from "../../lib/resourceBarValues";
+import {
+  getQuotaForLeftBar,
+  getQuotaForRightBar,
+  getUsageForLeftBar,
+  getUsageForRightBar,
+} from "../../lib/resourceBarValues";
 import ResourceBarBuilder from "../resourceBar/ResourceBarBuilder";
 import CommitmentTable from "../commitment/CommitmentTable";
 import AddCommitments from "../shared/AddCommitments";
@@ -42,7 +47,6 @@ const ProjectTableDetails = (props) => {
     currentCategory,
     project,
     resource,
-    tracksQuota,
     az,
     currentAZ,
     colSpan,
@@ -50,7 +54,7 @@ const ProjectTableDetails = (props) => {
   } = props;
   const { metadata } = project;
   const { name: projectName, id: projectID } = metadata;
-  const { quota, unit, commitment_config } = resource;
+  const { unit, commitment_config } = resource;
   const isEditableResource = commitment_config?.durations ? true : false;
   const { commitments } = projectStore();
   const { currentProject } = createCommitmentStore();
@@ -142,11 +146,12 @@ const ProjectTableDetails = (props) => {
           <ResourceBarBuilder
             key={metadata.name}
             unit={unit}
-            usage={getUsageForAZLevel(az[1])}
             isAZ={true}
+            usage={getUsageForLeftBar(az)}
+            usageBurstSum={getUsageForRightBar(az)}
+            quotaForLeftBar={getQuotaForLeftBar(az)}
+            quotaForRightBar={getQuotaForRightBar(az)}
             commitment={az.commitmentSum}
-            quota={getQuotaForAZLevel(az[1], quota)}
-            tracksQuota={tracksQuota}
             editableResource={true}
             equallySized={true}
             clusterQuotaView={true}
@@ -158,7 +163,7 @@ const ProjectTableDetails = (props) => {
               <DomainBadges resource={resource} az={az} />
             </Stack>
             <Stack>
-              <ProjectBadges az={az[1]} />
+              <ProjectBadges az={az} />
             </Stack>
           </div>
         </DataGridCell>
