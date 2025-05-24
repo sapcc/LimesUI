@@ -24,9 +24,9 @@ const ResourceBarBuilder = (props) => {
     unit: unitName,
     usage,
     usageBurstSum,
+    quotaForLeftBar,
+    quotaForRightBar,
     commitment,
-    quota,
-    tracksQuota,
     isPanelView,
     // Displays bars either blue or purple if usage > commitments.
     editableResource,
@@ -34,31 +34,23 @@ const ResourceBarBuilder = (props) => {
     // Determines if NoQuota bars are the same size as filledBars.
     equallySized,
     // bar should display quota(cluster scope) or capacity (project/domain scope)
-    clusterQuotaView,
-    paygView,
+    clusterQuotaView
   } = { ...props };
   const { scope } = globalStore();
   const unit = new Unit(unitName || "");
-  const clusterView = paygView ? true : clusterQuotaView ? false : scope.isCluster();
+  const clusterView = clusterQuotaView ? false : scope.isCluster();
 
   // fillLabel: displays commitment or current usage.
-  const showCommitmentOrUsage = usage > commitment && commitment > 0 ? commitment : usage;
+  const showCommitmentOrUsage = usage;
 
   // capacityLabel: displays commitments, quota or usage (on usageOnly resources)
-  const commitmentOrQuota = commitment > 0 ? commitment : quota;
-  const noQuotaResourceValue = commitment > 0 ? commitment : usage;
-  const capacity = tracksQuota ? commitmentOrQuota : noQuotaResourceValue;
+  const capacity = quotaForLeftBar;
 
   // ExtraBar: displays values that exceed the commitment
   // The sum bar can display the second bar without completely filling the first bar.
-  let extraFillValue;
-  if (usageBurstSum > 0) {
-    extraFillValue = usageBurstSum;
-  } else {
-    extraFillValue = usage >= commitment ? usage - commitment : "0";
-  }
-  const quotaOrUsage = tracksQuota ? quota : usage;
-  let extraCapacityValue = quotaOrUsage - commitment;
+  let extraFillValue = usageBurstSum;
+
+  let extraCapacityValue = quotaForRightBar;
 
   // isPanelView is used, because tracksQuota check is not accessible from EditPanel (gets prop passed from Category)
   return (
@@ -67,7 +59,7 @@ const ResourceBarBuilder = (props) => {
       capacityLabel={unit.format(capacity)}
       extraFillLabel={unit.format(extraFillValue)}
       extraCapacityLabel={unit.format(extraCapacityValue, unit)}
-      usageLabel={paygView ? "" : clusterView ? "capacity used" : "quota used"}
+      usageLabel={clusterView ? "capacity used" : "quota used"}
       fill={usage}
       capacity={capacity}
       commitment={commitment ?? 0}
@@ -79,7 +71,6 @@ const ResourceBarBuilder = (props) => {
       isAZ={isAZ}
       // No Quota and Quota bars have the same size within the Edit Panel Tables.
       equallySized={equallySized}
-      paygView={paygView}
     />
   );
 };

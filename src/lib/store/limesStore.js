@@ -313,7 +313,7 @@ const limesStore = (set, get) => ({
           for (const resource of categories[categoryName].resources) {
             if (!resource?.per_az) continue;
             for (const azCapacity of resource.per_az) {
-              availabilityZones[azCapacity[0]] = true;
+              availabilityZones[azCapacity.name] = true;
             }
           }
         }
@@ -331,10 +331,12 @@ function filterAZs(res) {
   if (Array.isArray(res.per_az)) return;
   let validAZs;
   if (res.per_az == undefined) return;
-  validAZs = Object.entries(res.per_az);
+  validAZs = Object.keys(res.per_az).map((key) => {
+    return { name: key, ...res.per_az[key] };
+  });
   // move 'unknown' and 'any' AZ's to the bottom of the array.
   validAZs.forEach((az, idx) => {
-    if ((validAZs.length > 1 && az[0] == "any") || az[0] == "unknown") {
+    if ((validAZs.length > 1 && az.name == "any") || az.name == "unknown") {
       validAZs.push(validAZs.splice(idx, 1)[0]);
     }
   });
@@ -366,7 +368,7 @@ function getQuotaNewOrOldModel(res) {
   }
   let quotaSum = 0;
   res.per_az.forEach((az) => {
-    return (quotaSum += az[1].quota || 0);
+    return (quotaSum += az.quota || 0);
   });
   if (quotaSum > 0) {
     res.quota = quotaSum;
@@ -378,12 +380,12 @@ function addTotalCommitments(res) {
   let totalCommitments = 0;
   // Determine per AZ if it contains any sort of commitment
   res.per_az?.forEach((az) => {
-    const hasCommitments = az[1].committed || az[1].planned_commitments || az[1].pending_commitments ? true : false;
+    const hasCommitments = az.committed || az.planned_commitments || az.pending_commitments ? true : false;
     az.hasCommitments = hasCommitments;
   });
   // Sum of all commitments over all AZ's.
   res.per_az?.forEach((az) => {
-    const commitments = Object.values(az[1].committed || {});
+    const commitments = Object.values(az.committed || {});
     commitments.forEach((commitmentValue) => {
       totalCommitments += commitmentValue;
     });
@@ -408,12 +410,12 @@ function addUsageValues(res) {
   // Sum of all usages with commitments.
   // No commitments available => use usage.
   res.per_az?.forEach((az) => {
-    const azCommitments = Object.values(az[1].committed || {});
+    const azCommitments = Object.values(az.committed || {});
     let azCommitmentSum = 0;
     azCommitments.forEach((commtimentValue) => {
       azCommitmentSum += commtimentValue;
     });
-    const azUsage = az[1].projects_usage || az[1].usage || 0;
+    const azUsage = az.projects_usage || az.usage || 0;
     let usageValue;
     // usage left side:
     if (azUsage > azCommitmentSum) {
@@ -423,7 +425,7 @@ function addUsageValues(res) {
     }
     // usage right side:
     if (azCommitmentSum == 0) {
-      usagePerQuota += az[1].projects_usage || az[1].usage || 0;
+      usagePerQuota += az.projects_usage || az.usage || 0;
     }
     if (azCommitmentSum > 0 && azUsage > azCommitmentSum) {
       usagePerQuota += azUsage - azCommitmentSum;

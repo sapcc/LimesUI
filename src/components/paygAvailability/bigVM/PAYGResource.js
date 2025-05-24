@@ -37,7 +37,7 @@ function createTooltip(resource, tooltipContent) {
 
 const PAYGResource = (props) => {
   const { resource, cerebro, az, azIndex } = props;
-  const azValues = az[1];
+  const azValues = az;
   const unit = new Unit(resource.unit);
   const azUnaware = isAZUnaware(resource.per_az);
 

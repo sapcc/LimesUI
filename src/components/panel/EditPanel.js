@@ -85,7 +85,7 @@ const EditPanel = (props) => {
   const { setRefetchCommitmentAPI } = createCommitmentStoreActions();
   const { setCommitmentIsLoading } = createCommitmentStoreActions();
   const conversionResults = useGetConversions({ serviceType, resourceName });
-  const [currentAZ, setCurrentAZ] = React.useState(currentResource.per_az[0][0]);
+  const [currentAZ, setCurrentAZ] = React.useState(currentResource.per_az[0].name);
   // Merge Commitments
   const [commitmentsToMerge, setCommitmentsToMerge] = React.useState([]);
   // The merge button is active if >= 2 commitments are available for the AZ.

@@ -22,7 +22,7 @@ import useResetCommitment from "../../hooks/useResetCommitment";
 import MergeCommitment from "../shared/MergeCommitments";
 
 const AvailabilityZoneNav = (props) => {
-  const azIndex = props.az.findIndex((az) => az[0] === props.currentAZ);
+  const azIndex = props.az.findIndex((az) => az.name === props.currentAZ);
   const { scope, setCurrentAZ, mergeOps } = props;
   const { setIsMerging, setCommitmentsToMerge } = mergeOps;
   const { resetCommitment } = useResetCommitment();
@@ -37,7 +37,7 @@ const AvailabilityZoneNav = (props) => {
       <Tabs selectedIndex={azIndex} onSelect={() => {}}>
         <TabList>
           {props.az.map((az) => {
-            const azName = az[0];
+            const azName = az.name;
             return (
               azName !== "unknown" &&
               azName !== "any" && (
@@ -50,7 +50,7 @@ const AvailabilityZoneNav = (props) => {
                     resetCommitment();
                   }}
                 >
-                  {az[0]}
+                  {az.name}
                 </Tab>
               )
             );
@@ -65,7 +65,7 @@ const AvailabilityZoneNav = (props) => {
             <MergeCommitment mergeOps={mergeOps} />
           </Stack>
         </TabList>
-        {props.az.map((az) => az[0] !== "unknown" && az[0] !== "any" && <TabPanel key={az[0]}></TabPanel>)}
+        {props.az.map((az) => az.name !== "unknown" && az.name !== "any" && <TabPanel key={az.name}></TabPanel>)}
       </Tabs>
     </Container>
   );
