@@ -34,7 +34,7 @@ const ResourceBarBuilder = (props) => {
     // Determines if NoQuota bars are the same size as filledBars.
     equallySized,
     // bar should display quota(cluster scope) or capacity (project/domain scope)
-    clusterQuotaView
+    clusterQuotaView,
   } = { ...props };
   const { scope } = globalStore();
   const unit = new Unit(unitName || "");

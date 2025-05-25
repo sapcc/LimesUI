@@ -50,7 +50,7 @@ const PAYGResource = (props) => {
   function getAZUnawareAvailability() {
     const paygUsage = getTotalUsageForRightBar(resource);
     const totalUsage = resource.commitmentSum + paygUsage;
-    const capacity = resource.capacity ?? 0;
+    const capacity = resource.capacity;
     return capacity - totalUsage;
   }
 

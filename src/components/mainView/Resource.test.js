@@ -248,16 +248,16 @@ describe("Resource bar test", () => {
     act(() => {
       result.current.globalStoreActions.setScope(scope);
     });
-     // sumbar values (left and right)
-     expect(screen.getByText("15/20")).toBeInTheDocument();
-     expect(screen.getByText("1/130")).toBeInTheDocument();
-     // zone-a and zone-b (left and right)
-     expect(screen.queryAllByText("10/10").length).toEqual(1);
-     expect(screen.queryAllByText("1/40").length).toEqual(1);
-     expect(screen.queryAllByText("5/10").length).toEqual(1);
-     expect(screen.queryAllByText("0/40").length).toEqual(1);
-     // zone-c
-     expect(screen.getByText("0/50")).toBeInTheDocument();
+    // sumbar values (left and right)
+    expect(screen.getByText("15/20")).toBeInTheDocument();
+    expect(screen.getByText("1/130")).toBeInTheDocument();
+    // zone-a and zone-b (left and right)
+    expect(screen.queryAllByText("10/10").length).toEqual(1);
+    expect(screen.queryAllByText("1/40").length).toEqual(1);
+    expect(screen.queryAllByText("5/10").length).toEqual(1);
+    expect(screen.queryAllByText("0/40").length).toEqual(1);
+    // zone-c
+    expect(screen.getByText("0/50")).toBeInTheDocument();
 
     // Missing quota (Detect errors in limes capacity assignment at UI level)
     res = actions.restructureReport(getProjectData(committed, 5, 5, 0).project).categories.testType.resources[0];
