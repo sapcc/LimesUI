@@ -38,7 +38,7 @@ export function getTotalUsageForLeftBar(resource) {
   AZs.forEach((az) => {
     // No commitments available => No usage gets added to the left bar, because it's uncommitted usage.
     // Ensure that the left bar only contains uncommitted usage if no AZ's have any commitments.
-    if (resource.totalCommitments == 0 || az.commitmentSum > 0) {
+    if (resource.commitmentSum == 0 || az.commitmentSum > 0) {
       totalUsage += getUsageForLeftBar(az);
     }
   });
@@ -102,7 +102,7 @@ function getCommitmentSumPerAZ(az) {
 }
 
 export function getQuotaForLeftBar(resource) {
-  const commitments = resource.totalCommitments ?? resource.commitmentSum;
+  const commitments = resource.commitmentSum;
   if (commitments > 0) {
     return commitments;
   }
@@ -117,7 +117,7 @@ export function getQuotaForLeftBar(resource) {
 }
 
 export function getQuotaForRightBar(resource) {
-  const commitments = resource.totalCommitments ?? resource.commitmentSum;
+  const commitments = resource.commitmentSum;
   if (resource.hasOwnProperty("capacity")) {
     return resource.capacity - commitments;
   }

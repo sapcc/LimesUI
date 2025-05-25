@@ -42,9 +42,7 @@ describe("Resource tests", () => {
       name: "testResource",
       quota: 500,
       capacity: 0,
-      totalCommitments: 10,
-      usagePerCommitted: 5,
-      usagePerQuota: 0,
+      commitmentSum: 10,
       editableResource: false,
       per_az: [["az1", { projects_usage: 10 }]],
     };

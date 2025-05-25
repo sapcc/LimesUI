@@ -90,7 +90,7 @@ const azContentHover = `
 const Resource = (props) => {
   const { canEdit, project, resource, isPanelView, subRoute, setCurrentAZ, serviceType, setIsMerging, tracksQuota } =
     props;
-  const { totalCommitments, unit: unitName, editableResource } = resource;
+  const { commitmentSum, unit: unitName, editableResource } = resource;
   const { scope } = globalStore();
   const displayName = t(resource.name);
   const { resetCommitment } = useResetCommitment();
@@ -161,7 +161,7 @@ const Resource = (props) => {
         usageBurstSum={getTotalUsageForRightBar(resource)}
         quotaForLeftBar={getQuotaForLeftBar(resource)}
         quotaForRightBar={getQuotaForRightBar(resource)}
-        commitment={totalCommitments}
+        commitment={commitmentSum}
         isPanelView={isPanelView}
         editableResource={editableResource}
       />

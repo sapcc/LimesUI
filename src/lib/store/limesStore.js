@@ -111,8 +111,8 @@ const limesStore = (set, get) => ({
           const { resources: resourcesB } = Object.values(b.categories)[0];
           const resourceA = resourcesA[0];
           const resourceB = resourcesB[0];
-          let maxA = getMaxCommitmentsOrUsage(resourceA.totalCommitments, resourceA.usage);
-          let maxB = getMaxCommitmentsOrUsage(resourceB.totalCommitments, resourceB.usage);
+          let maxA = getMaxCommitmentsOrUsage(resourceA.commitmentSum, resourceA.usage);
+          let maxB = getMaxCommitmentsOrUsage(resourceB.commitmentSum, resourceB.usage);
 
           // Set no quota projects to the bottom of the table.
           if (maxA == 0 && maxB == 0) {
@@ -243,8 +243,7 @@ const limesStore = (set, get) => ({
               editableResourceCount++;
             }
             getQuotaNewOrOldModel(res);
-            addTotalCommitments(res);
-            addUsageValues(res);
+            addCommitmentSum(res);
             categories[res.category || serviceType].resources.push(res);
           }
           if (editableResourceCount == 0) {
@@ -376,8 +375,8 @@ function getQuotaNewOrOldModel(res) {
 }
 
 // Sum up all commitments of a resource over all AZ's
-function addTotalCommitments(res) {
-  let totalCommitments = 0;
+function addCommitmentSum(res) {
+  let resCommitmentSum = 0;
   // Determine per AZ if it contains any sort of commitment
   res.per_az?.forEach((az) => {
     const hasCommitments = az.committed || az.planned_commitments || az.pending_commitments ? true : false;
@@ -385,56 +384,15 @@ function addTotalCommitments(res) {
   });
   // Sum of all commitments over all AZ's.
   res.per_az?.forEach((az) => {
+    let azCommitmentSum = 0;
     const commitments = Object.values(az.committed || {});
     commitments.forEach((commitmentValue) => {
-      totalCommitments += commitmentValue;
+      azCommitmentSum += commitmentValue;
+      resCommitmentSum += commitmentValue;
     });
-  });
-  res.totalCommitments = totalCommitments;
-}
-
-// The sum bar of commitments is split in two scenarios:
-// 1) when no commitments are present (shows only one bar):
-// <sum(usage over all AZs)> / <Quota>
-// 2) when Commitments are present:
-// left side: <sum(usage on AZs with Commitments)> / <sum(Commitments of the AZs)> = (userPerCommitted / Commitments)
-// right side: <sum(usage that exceeds the AZs Commitments)> / <Quota - Commitments> = (usagePerQuota / RestQuota)
-// This function adds the usage values of scenario 2 as attributes to the object.
-// Important: On Cluster View the relevant usage is: projects_usage
-// TODO: on a resource without any commitments: usagePerQuota = Quota. Simplify the handling of this case.
-function addUsageValues(res) {
-  // usage: left side
-  let usagePerCommitted = 0;
-  // usage: right side
-  let usagePerQuota = 0;
-  // Sum of all usages with commitments.
-  // No commitments available => use usage.
-  res.per_az?.forEach((az) => {
-    const azCommitments = Object.values(az.committed || {});
-    let azCommitmentSum = 0;
-    azCommitments.forEach((commtimentValue) => {
-      azCommitmentSum += commtimentValue;
-    });
-    const azUsage = az.projects_usage || az.usage || 0;
-    let usageValue;
-    // usage left side:
-    if (azUsage > azCommitmentSum) {
-      usageValue = azCommitmentSum;
-    } else {
-      usageValue = azUsage;
-    }
-    // usage right side:
-    if (azCommitmentSum == 0) {
-      usagePerQuota += az.projects_usage || az.usage || 0;
-    }
-    if (azCommitmentSum > 0 && azUsage > azCommitmentSum) {
-      usagePerQuota += azUsage - azCommitmentSum;
-    }
-    usagePerCommitted += usageValue;
     az.commitmentSum = azCommitmentSum;
   });
-  res.usagePerCommitted = usagePerCommitted;
-  res.usagePerQuota = usagePerQuota;
+  res.commitmentSum = resCommitmentSum;
 }
 
 const objectFromEntries = (entries) => {
