@@ -86,7 +86,6 @@ const ResourceBar = (props) => {
     extraFillValue,
     // determine fill size of extra bar
     extraCapacityValue,
-    canEdit,
     showsCapacity,
     isAZ,
   } = props;
@@ -117,7 +116,7 @@ const ResourceBar = (props) => {
     // purple: Occurs when usage > commitments. Do not display purple if resource is not managable.
     // gradient: Occurs if usage > capacity. Displays a striped bar.
     let className;
-    if (commitment > 0 || !canEdit) {
+    if (commitment > 0) {
       className = "progress-bar";
     } else {
       className = "progress-bar bg-sap-purple-2";

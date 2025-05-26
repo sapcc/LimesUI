@@ -18,14 +18,6 @@ import React from "react";
 import { globalStore } from "../StoreProvider";
 import { t } from "../../lib/utils";
 import { PanelType } from "../../lib/constants";
-import {
-  getTotalCommittedUsage,
-  getTotalUncommittedUsage,
-  getCommittedUsage,
-  getUncommittedUsage,
-  getAvailableCapacity,
-  getRemainingCapacity,
-} from "../../lib/resourceBarValues";
 import { Stack, Button } from "@cloudoperators/juno-ui-components";
 import { Link } from "react-router";
 import { ProjectBadges } from "../shared/LimesBadges";
@@ -90,7 +82,7 @@ const azContentHover = `
 const Resource = (props) => {
   const { canEdit, project, resource, isPanelView, subRoute, setCurrentAZ, serviceType, setIsMerging, tracksQuota } =
     props;
-  const { commitmentSum, unit: unitName, editableResource } = resource;
+  const { unit: unitName, editableResource } = resource;
   const { scope } = globalStore();
   const displayName = t(resource.name);
   const { resetCommitment } = useResetCommitment();
@@ -155,16 +147,7 @@ const Resource = (props) => {
           </Stack>
         )}
       </Stack>
-      <ResourceBarBuilder
-        unit={unitName}
-        usage={getTotalCommittedUsage(resource)}
-        usageBurstSum={getTotalUncommittedUsage(resource)}
-        quotaForLeftBar={getAvailableCapacity(resource)}
-        quotaForRightBar={getRemainingCapacity(resource)}
-        commitment={commitmentSum}
-        isPanelView={isPanelView}
-        editableResource={editableResource}
-      />
+      <ResourceBarBuilder resource={resource} unit={unitName} barType={"total"} />
       {isAZUnaware(props.resource.per_az) && <PhysicalUsage resource={props.resource} unit={unitName} />}
       <div className={props.isPanelView && `az-container ${azPanelContent} ${props.isPanelView && "gap-2"}`}>
         {props.resource.per_az?.map((az) => {
@@ -192,17 +175,7 @@ const Resource = (props) => {
                   </Stack>
                   <ProjectBadges az={az} unit={unitName} displayValues={true} />
                 </div>
-                <ResourceBarBuilder
-                  unit={unitName}
-                  usage={getCommittedUsage(az)}
-                  usageBurstSum={getUncommittedUsage(az)}
-                  quotaForLeftBar={getAvailableCapacity(az)}
-                  quotaForRightBar={getRemainingCapacity(az)}
-                  isAZ={true}
-                  commitment={az.commitmentSum}
-                  isPanelView={isPanelView}
-                  editableResource={editableResource}
-                />
+                <ResourceBarBuilder resource={az} unit={unitName} isAZ={true} barType={"granular"} />
                 <PhysicalUsage resource={az} resourceName={props.resource.name} unit={unitName} />
               </div>
             )

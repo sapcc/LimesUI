@@ -15,12 +15,6 @@
  */
 
 import React from "react";
-import {
-  getCommittedUsage,
-  getUncommittedUsage,
-  getAvailableCapacity,
-  getRemainingCapacity,
-} from "../../lib/resourceBarValues";
 import ResourceBarBuilder from "../resourceBar/ResourceBarBuilder";
 import CommitmentTable from "../commitment/CommitmentTable";
 import AddCommitments from "../shared/AddCommitments";
@@ -143,18 +137,7 @@ const ProjectTableDetails = (props) => {
           </Stack>
         </DataGridCell>
         <DataGridCell>
-          <ResourceBarBuilder
-            key={metadata.name}
-            unit={unit}
-            isAZ={true}
-            usage={getCommittedUsage(az)}
-            usageBurstSum={getUncommittedUsage(az)}
-            quotaForLeftBar={getAvailableCapacity(az)}
-            quotaForRightBar={getRemainingCapacity(az)}
-            commitment={az.commitmentSum}
-            editableResource={true}
-            clusterQuotaView={true}
-          />
+          <ResourceBarBuilder resource={az} unit={unit} isAZ={true} barType={"granular"} clusterQuotaView={true} />
         </DataGridCell>
         <DataGridCell>
           <div key={metadata.name}>

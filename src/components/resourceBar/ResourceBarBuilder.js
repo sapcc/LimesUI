@@ -18,53 +18,28 @@ import React from "react";
 import ResourceBar from "./ResourceBar";
 import { Unit } from "../../lib/unit";
 import { globalStore } from "../StoreProvider";
+import useResourceBarValues from "../../hooks/useResourceBarValues";
 
 const ResourceBarBuilder = (props) => {
-  const {
-    unit: unitName,
-    usage,
-    usageBurstSum,
-    quotaForLeftBar,
-    quotaForRightBar,
-    commitment,
-    isPanelView,
-    // Displays bars either blue or purple if usage > commitments.
-    editableResource,
-    isAZ,
-    // bar should display quota(cluster scope) or capacity (project/domain scope)
-    clusterQuotaView,
-  } = { ...props };
+  const { resource, unit: unitName, isAZ, barType, clusterQuotaView } = { ...props };
   const { scope } = globalStore();
   const unit = new Unit(unitName || "");
   const clusterView = clusterQuotaView ? false : scope.isCluster();
+  const { leftBar, rightBar } = useResourceBarValues(resource, barType);
 
-  // fillLabel: displays commitment or current usage.
-  const showCommitmentOrUsage = usage;
-
-  // capacityLabel: displays commitments, quota or usage (on usageOnly resources)
-  const capacity = quotaForLeftBar;
-
-  // ExtraBar: displays values that exceed the commitment
-  // The sum bar can display the second bar without completely filling the first bar.
-  let extraFillValue = usageBurstSum;
-
-  let extraCapacityValue = quotaForRightBar;
-
-  // isPanelView is used, because tracksQuota check is not accessible from EditPanel (gets prop passed from Category)
   return (
     <ResourceBar
-      fillLabel={unit.format(showCommitmentOrUsage)}
-      capacityLabel={unit.format(capacity)}
-      extraFillLabel={unit.format(extraFillValue)}
-      extraCapacityLabel={unit.format(extraCapacityValue, unit)}
+      fillLabel={unit.format(leftBar.utilized)}
+      capacityLabel={unit.format(leftBar.available)}
+      extraFillLabel={unit.format(rightBar.utilized)}
+      extraCapacityLabel={unit.format(rightBar.available, unit)}
       usageLabel={clusterView ? "capacity used" : "quota used"}
-      fill={usage}
-      capacity={capacity}
-      commitment={commitment ?? 0}
-      extraFillValue={extraFillValue}
+      fill={leftBar.utilized}
+      capacity={leftBar.available}
+      commitment={resource.commitmentSum ?? 0}
+      extraFillValue={rightBar.utilized}
       // Providing 1 enables the bar to be filled completely if commitments > quota
-      extraCapacityValue={extraCapacityValue || 1}
-      canEdit={editableResource || isPanelView}
+      extraCapacityValue={rightBar.available || 1}
       showsCapacity={clusterView}
       isAZ={isAZ}
     />
