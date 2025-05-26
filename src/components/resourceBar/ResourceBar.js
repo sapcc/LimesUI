@@ -23,29 +23,26 @@ const barConainer = `
   min-w-full 
   gap-1
 `;
-
 const baseResourceBar = `
   rounded-sm 
   border 
   border-theme-background-lvl-5 
   flex 
 `;
-const emptyResourceBar = `
-  bg-theme-background-lvl-2 
-  `;
 const filledResourceBar = `
   text-white 
   bg-sap-blue-3 
-  has-label-if-fits 
   rounded-sm 
   `;
-const emptyExtraResourceBar = `
+const baseBarBackground = `
+  bg-theme-background-lvl-2 
+  `;
+const extraBarBackground = `
   bg-theme-background-lvl-4 
   `;
 const filledExtraResourceBar = `
   text-white
   bg-sap-purple-2
-  has-label-if-fits 
   rounded-sm  
   `;
 const noneResourceBar = `
@@ -78,11 +75,9 @@ const ResourceBar = (props) => {
   const outerDivRef = React.useRef(null);
   const { usageLabel, leftBar, rightBar, formatter, showsCapacity, commitment, isAZ } = props;
 
-  const disabled = false;
-
   function buildResourceBar() {
     // First handle the creation of an empty bar.
-    if (leftBar.available == 0 && rightBar.available == 0) {
+    if (rightBar.utilized == 0 && rightBar.available == 0) {
       return (
         <Stack direction="vertical" distribution="between">
           <span className={`progress-bar-label ${disabledLabel} ${isAZ ? "text-xs" : "text-sm"}`}>
@@ -100,25 +95,15 @@ const ResourceBar = (props) => {
     }
     let widthCommitment = Math.round((1000 * rightBar.utilized) / rightBar.available) / 10;
 
-    // special cases:
-    // purple: Occurs when usage > commitments. Do not display purple if resource is not managable.
-    // gradient: Occurs if usage > capacity. Displays a striped bar.
-    let className;
-    if (commitment > 0) {
-      className = "progress-bar";
-    } else {
-      className = "progress-bar bg-sap-purple-2";
-    }
-
     let gradientSingleBar;
-    if (commitment == 0 && leftBar.utilized > leftBar.available) {
+    if (leftBar.utilized > leftBar.available) {
       gradientSingleBar = {
         background: usageExceedsCapacity,
       };
     }
 
     let gradientExtraBar;
-    if (commitment > 0 && rightBar.utilized > rightBar.available) {
+    if (rightBar.utilized > rightBar.available) {
       gradientExtraBar = {
         background: usageExceedsCapacity,
       };
@@ -141,7 +126,6 @@ const ResourceBar = (props) => {
       </span>
     );
 
-    let filled = className;
     let barStyleFilled = {
       width: widthPercent + "%",
       background: gradientSingleBar?.background,
@@ -150,28 +134,22 @@ const ResourceBar = (props) => {
       width: widthCommitment + "%",
       background: gradientExtraBar?.background,
     };
-    if (disabled) {
-      filled = "progress-bar progress-bar-disabled has-label";
-    }
+
     const resourceBar = (
       <Stack distribution="between" className={`${barConainer}`}>
         {commitment > 0 && (
           <Stack direction="vertical" distribution="between" style={{ width: "70%" }}>
             {label}
-            <div className={`${baseResourceBar} ${emptyResourceBar} ${isAZ ? "h-4 p-0" : "h-8 p-0.5"}`}>
-              <div
-                key="base-bar"
-                className={`${filled} ${filledResourceBar}`}
-                style={leftBar.utilized > 0 ? barStyleFilled : { width: "0%" }}
-              ></div>
+            <div className={`${baseResourceBar} ${baseBarBackground} ${isAZ ? "h-4 p-0" : "h-8 p-0.5"}`}>
+              <div key="base-bar" className={`${filledResourceBar}`} style={barStyleFilled} />
             </div>
           </Stack>
         )}
 
         <Stack direction="vertical" distribution="between" style={{ width: commitment > 0 ? "30%" : "100%" }}>
           {extraLabel}
-          <div className={`${baseResourceBar} ${emptyExtraResourceBar} ${isAZ ? "h-4 p-0" : "h-8 p-0.5"}`}>
-            <div key="extra-bar" className={`${filled} ${filledExtraResourceBar}`} style={barStyleCommitment} />
+          <div className={`${baseResourceBar} ${commitment > 0 ? extraBarBackground : baseBarBackground} ${isAZ ? "h-4 p-0" : "h-8 p-0.5"}`}>
+            <div key="extra-bar" className={`${filledExtraResourceBar}`} style={barStyleCommitment} />
           </div>
         </Stack>
       </Stack>
