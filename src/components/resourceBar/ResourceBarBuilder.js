@@ -29,18 +29,12 @@ const ResourceBarBuilder = (props) => {
 
   return (
     <ResourceBar
-      fillLabel={unit.format(leftBar.utilized)}
-      capacityLabel={unit.format(leftBar.available)}
-      extraFillLabel={unit.format(rightBar.utilized)}
-      extraCapacityLabel={unit.format(rightBar.available, unit)}
       usageLabel={clusterView ? "capacity used" : "quota used"}
-      fill={leftBar.utilized}
-      capacity={leftBar.available}
-      commitment={resource.commitmentSum ?? 0}
-      extraFillValue={rightBar.utilized}
-      // Providing 1 enables the bar to be filled completely if commitments > quota
-      extraCapacityValue={rightBar.available || 1}
+      leftBar={leftBar}
+      rightBar={rightBar}
+      formatter={(value) => unit.format(value)}
       showsCapacity={clusterView}
+      commitment={resource.commitmentSum ?? 0}
       isAZ={isAZ}
     />
   );

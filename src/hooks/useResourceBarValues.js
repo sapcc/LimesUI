@@ -23,17 +23,13 @@ import {
   getAvailableCapacity,
   getRemainingCapacity,
 } from "../lib/resourceBarValues";
+import resourceBar from "../components/resourceBar/ResourceBar";
 
 const ResourceBarType = {
   total: "total",
   granular: "granular",
 };
 Object.freeze(ResourceBarType);
-
-const resourceBar = {
-  utilized: 0,
-  available: 0,
-};
 
 const useResourceBarValues = (resource, type) => {
   const { leftBar, rightBar } = React.useMemo(() => {

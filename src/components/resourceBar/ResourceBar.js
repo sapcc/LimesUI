@@ -67,26 +67,22 @@ const disabledLable = `
   text-sm
   font-bold
 `;
-
 const usageExceedsCapacity = "repeating-linear-gradient(55deg,#c9302c ,#c9302c  8px,#d9534f 8px,#d9534f 16px)";
+
+export const resourceBar = {
+  utilized: 0,
+  available: 0,
+};
 
 const ResourceBar = (props) => {
   const outerDivRef = React.useRef(null);
   const {
-    fillLabel,
-    capacityLabel,
-    extraFillLabel,
-    extraCapacityLabel,
     usageLabel,
-    fill,
-    // determine fill size of single bar
-    capacity,
-    // determine if extra bar should be displayed
-    commitment,
-    extraFillValue,
-    // determine fill size of extra bar
-    extraCapacityValue,
+    leftBar,
+    rightBar,
+    formatter,
     showsCapacity,
+    commitment,
     isAZ,
   } = props;
 
@@ -94,7 +90,7 @@ const ResourceBar = (props) => {
 
   function buildResourceBar() {
     // First handle the creation of an empty bar.
-    if (capacity == 0 && fill == 0) {
+    if (leftBar.utilized == 0 && leftBar.available == 0) {
       return (
         <Stack direction="vertical" distribution="between" style={{ width: commitment > 0 ? "70%" : "100%" }}>
           <span className={`progress-bar-label ${disabledLable} ${isAZ ? "text-xs" : "text-sm"}`}>
@@ -105,12 +101,12 @@ const ResourceBar = (props) => {
       );
     }
 
-    let widthPercent = Math.round(1000 * (fill / capacity)) / 10;
+    let widthPercent = Math.round(1000 * (leftBar.utilized / leftBar.available)) / 10;
     // ensure that a non-zero-wide bar is at least somewhat visible
-    if (fill > 0 && widthPercent < 0.5) {
+    if (leftBar.utilized > 0 && widthPercent < 0.5) {
       widthPercent = 0.5;
     }
-    let widthCommitment = Math.round((1000 * extraFillValue) / extraCapacityValue) / 10;
+    let widthCommitment = Math.round((1000 * rightBar.utilized) / rightBar.available) / 10;
 
     // special cases:
     // purple: Occurs when usage > commitments. Do not display purple if resource is not managable.
@@ -123,14 +119,14 @@ const ResourceBar = (props) => {
     }
 
     let gradientSingleBar;
-    if (commitment == 0 && fill > capacity) {
+    if (commitment == 0 && leftBar.utilized > leftBar.available) {
       gradientSingleBar = {
         background: usageExceedsCapacity,
       };
     }
 
     let gradientExtraBar;
-    if (commitment > 0 && extraFillValue > extraCapacityValue) {
+    if (commitment > 0 && rightBar.utilized > rightBar.available) {
       gradientExtraBar = {
         background: usageExceedsCapacity,
       };
@@ -138,7 +134,7 @@ const ResourceBar = (props) => {
 
     const label = (
       <span className={`progress-bar-label ${barLable} ${props.isAZ && "text-xs"}`}>
-        {fillLabel}/{capacityLabel}{" "}
+        {formatter(leftBar.utilized)}/{formatter(leftBar.available)}{" "}
         {commitment > 0 ? (
           <span className="font-normal">committed</span>
         ) : (
@@ -149,7 +145,7 @@ const ResourceBar = (props) => {
 
     const extraLable = (
       <span className={`progress-bar-label ${barLable} ${props.isAZ && "text-xs"}`}>
-        {extraFillLabel}/{extraCapacityLabel}
+        {formatter(rightBar.utilized)}/{formatter(rightBar.available)}
       </span>
     );
 
@@ -173,7 +169,7 @@ const ResourceBar = (props) => {
             <div
               key="filled"
               className={`main-fill ${filled} ${filledResourceBar}`}
-              style={fill > 0 ? barStyleFilled : { width: "0%" }}
+              style={leftBar.utilized > 0 ? barStyleFilled : { width: "0%" }}
             ></div>
           </div>
         </Stack>
