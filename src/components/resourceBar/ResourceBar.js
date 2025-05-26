@@ -101,11 +101,7 @@ const ResourceBar = (props) => {
           <span className={`progress-bar-label ${disabledLable} ${isAZ ? "text-xs" : "text-sm"}`}>
             {showsCapacity ? "No capacity" : "No quota"}
           </span>
-          <div
-            key="filled"
-            className={`${noneResourceBar} ${isAZ ? "h-4" : "h-8"}`}
-            style={{ width: "100%" }}
-          ></div>
+          <div key="filled" className={`${noneResourceBar} ${isAZ ? "h-4" : "h-8"}`} style={{ width: "100%" }}></div>
         </Stack>
       );
     }
