@@ -19,7 +19,7 @@ import { Stack, Icon, Tooltip, TooltipContent, TooltipTrigger } from "@cloudoper
 import { t } from "../../../lib/utils";
 import { Unit } from "../../../lib/unit";
 import { isAZUnaware } from "../../../lib/utils";
-import { getTotalUsageForRightBar } from "../../../lib/resourceBarValues";
+import { getTotalUncommittedUsage } from "../../../lib/resourceBarValues";
 
 function createTooltip(resource, tooltipContent) {
   return (
@@ -48,7 +48,7 @@ const PAYGResource = (props) => {
   }
 
   function getAZUnawareAvailability() {
-    const paygUsage = getTotalUsageForRightBar(resource);
+    const paygUsage = getTotalUncommittedUsage(resource);
     const totalUsage = resource.commitmentSum + paygUsage;
     const capacity = resource.capacity;
     return capacity - totalUsage;

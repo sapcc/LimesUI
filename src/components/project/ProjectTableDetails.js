@@ -16,10 +16,10 @@
 
 import React from "react";
 import {
-  getQuotaForLeftBar,
-  getQuotaForRightBar,
-  getUsageForLeftBar,
-  getUsageForRightBar,
+  getCommittedUsage,
+  getUncommittedUsage,
+  getAvailableCapacity,
+  getRemainingCapacity,
 } from "../../lib/resourceBarValues";
 import ResourceBarBuilder from "../resourceBar/ResourceBarBuilder";
 import CommitmentTable from "../commitment/CommitmentTable";
@@ -147,10 +147,10 @@ const ProjectTableDetails = (props) => {
             key={metadata.name}
             unit={unit}
             isAZ={true}
-            usage={getUsageForLeftBar(az)}
-            usageBurstSum={getUsageForRightBar(az)}
-            quotaForLeftBar={getQuotaForLeftBar(az)}
-            quotaForRightBar={getQuotaForRightBar(az)}
+            usage={getCommittedUsage(az)}
+            usageBurstSum={getUncommittedUsage(az)}
+            quotaForLeftBar={getAvailableCapacity(az)}
+            quotaForRightBar={getRemainingCapacity(az)}
             commitment={az.commitmentSum}
             editableResource={true}
             clusterQuotaView={true}

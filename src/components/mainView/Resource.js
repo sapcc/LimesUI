@@ -19,12 +19,12 @@ import { globalStore } from "../StoreProvider";
 import { t } from "../../lib/utils";
 import { PanelType } from "../../lib/constants";
 import {
-  getUsageForLeftBar,
-  getUsageForRightBar,
-  getTotalUsageForLeftBar,
-  getTotalUsageForRightBar,
-  getQuotaForLeftBar,
-  getQuotaForRightBar,
+  getTotalCommittedUsage,
+  getTotalUncommittedUsage,
+  getCommittedUsage,
+  getUncommittedUsage,
+  getAvailableCapacity,
+  getRemainingCapacity,
 } from "../../lib/resourceBarValues";
 import { Stack, Button } from "@cloudoperators/juno-ui-components";
 import { Link } from "react-router";
@@ -157,10 +157,10 @@ const Resource = (props) => {
       </Stack>
       <ResourceBarBuilder
         unit={unitName}
-        usage={getTotalUsageForLeftBar(resource)}
-        usageBurstSum={getTotalUsageForRightBar(resource)}
-        quotaForLeftBar={getQuotaForLeftBar(resource)}
-        quotaForRightBar={getQuotaForRightBar(resource)}
+        usage={getTotalCommittedUsage(resource)}
+        usageBurstSum={getTotalUncommittedUsage(resource)}
+        quotaForLeftBar={getAvailableCapacity(resource)}
+        quotaForRightBar={getRemainingCapacity(resource)}
         commitment={commitmentSum}
         isPanelView={isPanelView}
         editableResource={editableResource}
@@ -194,10 +194,10 @@ const Resource = (props) => {
                 </div>
                 <ResourceBarBuilder
                   unit={unitName}
-                  usage={getUsageForLeftBar(az)}
-                  usageBurstSum={getUsageForRightBar(az)}
-                  quotaForLeftBar={getQuotaForLeftBar(az)}
-                  quotaForRightBar={getQuotaForRightBar(az)}
+                  usage={getCommittedUsage(az)}
+                  usageBurstSum={getUncommittedUsage(az)}
+                  quotaForLeftBar={getAvailableCapacity(az)}
+                  quotaForRightBar={getRemainingCapacity(az)}
                   isAZ={true}
                   commitment={az.commitmentSum}
                   isPanelView={isPanelView}
