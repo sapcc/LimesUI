@@ -155,7 +155,7 @@ const ResourceBar = (props) => {
     }
     const resourceBar = (
       <Stack distribution="between" className={`${barConainer}`}>
-        {commitment ? (
+        {commitment > 0 && (
           <Stack direction="vertical" distribution="between" style={{ width: "70%" }}>
             {label}
             <div className={`${baseResourceBar} ${emptyResourceBar} ${isAZ ? "h-4 p-0" : "h-8 p-0.5"}`}>
@@ -166,8 +166,6 @@ const ResourceBar = (props) => {
               ></div>
             </div>
           </Stack>
-        ) : (
-          ""
         )}
 
         <Stack direction="vertical" distribution="between" style={{ width: commitment > 0 ? "30%" : "100%" }}>
