@@ -153,7 +153,6 @@ const ProjectTableDetails = (props) => {
             quotaForRightBar={getQuotaForRightBar(az)}
             commitment={az.commitmentSum}
             editableResource={true}
-            equallySized={true}
             clusterQuotaView={true}
           />
         </DataGridCell>

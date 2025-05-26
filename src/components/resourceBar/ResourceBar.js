@@ -89,7 +89,6 @@ const ResourceBar = (props) => {
     canEdit,
     showsCapacity,
     isAZ,
-    equallySized,
   } = props;
 
   const disabled = false;
@@ -99,12 +98,12 @@ const ResourceBar = (props) => {
     if (capacity == 0 && fill == 0) {
       return (
         <Stack direction="vertical" distribution="between" style={{ width: commitment > 0 ? "70%" : "100%" }}>
-          <span className={`progress-bar-label ${disabledLable} ${props.isAz ? "text-xs" : "text-sm"}`}>
+          <span className={`progress-bar-label ${disabledLable} ${isAZ ? "text-xs" : "text-sm"}`}>
             {showsCapacity ? "No capacity" : "No quota"}
           </span>
           <div
             key="filled"
-            className={`${noneResourceBar} ${equallySized ? "h-4" : "h-7"}`}
+            className={`${noneResourceBar} ${isAZ ? "h-4" : "h-8"}`}
             style={{ width: "100%" }}
           ></div>
         </Stack>

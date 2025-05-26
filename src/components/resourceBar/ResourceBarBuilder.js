@@ -31,8 +31,6 @@ const ResourceBarBuilder = (props) => {
     // Displays bars either blue or purple if usage > commitments.
     editableResource,
     isAZ,
-    // Determines if NoQuota bars are the same size as filledBars.
-    equallySized,
     // bar should display quota(cluster scope) or capacity (project/domain scope)
     clusterQuotaView,
   } = { ...props };
@@ -69,8 +67,6 @@ const ResourceBarBuilder = (props) => {
       canEdit={editableResource || isPanelView}
       showsCapacity={clusterView}
       isAZ={isAZ}
-      // No Quota and Quota bars have the same size within the Edit Panel Tables.
-      equallySized={equallySized}
     />
   );
 };
