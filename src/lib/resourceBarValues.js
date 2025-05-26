@@ -35,8 +35,7 @@ export function getTotalCommittedUsage(resource) {
 
   AZs.forEach((az) => {
     // No commitments available => No usage gets added to the left bar, because it's uncommitted usage.
-    // Ensure that the left bar only contains uncommitted usage if no AZ's have any commitments.
-    if (resource.commitmentSum == 0 || az.commitmentSum > 0) {
+    if (az.commitmentSum > 0) {
       totalUsage += getCommittedUsage(az);
     }
   });
@@ -50,12 +49,7 @@ export function getTotalUncommittedUsage(resource) {
   let totalUsage = 0;
 
   AZs.forEach((az) => {
-    // No commitments available => The usage gets added to the right bar, because it's uncommitted usage.
-    if (az.commitmentSum > 0) {
-      totalUsage += getUncommittedUsage(az);
-    } else {
-      totalUsage += getUsageForAZLevel(az);
-    }
+    totalUsage += getUncommittedUsage(az);
   });
 
   return totalUsage;

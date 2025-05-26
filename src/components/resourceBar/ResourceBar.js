@@ -57,10 +57,10 @@ const noneResourceBar = `
   text-theme-light 
   italic
   `;
-const barLable = `
+const barLabel = `
   font-bold
 `;
-const disabledLable = `
+const disabledLabel = `
   text-theme-light 
   italic
   px-1
@@ -76,24 +76,16 @@ export const resourceBar = {
 
 const ResourceBar = (props) => {
   const outerDivRef = React.useRef(null);
-  const {
-    usageLabel,
-    leftBar,
-    rightBar,
-    formatter,
-    showsCapacity,
-    commitment,
-    isAZ,
-  } = props;
+  const { usageLabel, leftBar, rightBar, formatter, showsCapacity, commitment, isAZ } = props;
 
   const disabled = false;
 
   function buildResourceBar() {
     // First handle the creation of an empty bar.
-    if (leftBar.utilized == 0 && leftBar.available == 0) {
+    if (leftBar.available == 0 && rightBar.available == 0) {
       return (
-        <Stack direction="vertical" distribution="between" style={{ width: commitment > 0 ? "70%" : "100%" }}>
-          <span className={`progress-bar-label ${disabledLable} ${isAZ ? "text-xs" : "text-sm"}`}>
+        <Stack direction="vertical" distribution="between">
+          <span className={`progress-bar-label ${disabledLabel} ${isAZ ? "text-xs" : "text-sm"}`}>
             {showsCapacity ? "No capacity" : "No quota"}
           </span>
           <div key="filled" className={`${noneResourceBar} ${isAZ ? "h-4" : "h-8"}`} style={{ width: "100%" }}></div>
@@ -133,7 +125,7 @@ const ResourceBar = (props) => {
     }
 
     const label = (
-      <span className={`progress-bar-label ${barLable} ${props.isAZ && "text-xs"}`}>
+      <span className={`progress-bar-label ${barLabel} ${props.isAZ && "text-xs"}`}>
         {formatter(leftBar.utilized)}/{formatter(leftBar.available)}{" "}
         {commitment > 0 ? (
           <span className="font-normal">committed</span>
@@ -143,8 +135,8 @@ const ResourceBar = (props) => {
       </span>
     );
 
-    const extraLable = (
-      <span className={`progress-bar-label ${barLable} ${props.isAZ && "text-xs"}`}>
+    const extraLabel = (
+      <span className={`progress-bar-label ${barLabel} ${props.isAZ && "text-xs"}`}>
         {formatter(rightBar.utilized)}/{formatter(rightBar.available)}
       </span>
     );
@@ -162,36 +154,28 @@ const ResourceBar = (props) => {
       filled = "progress-bar progress-bar-disabled has-label";
     }
     const resourceBar = (
-      <Stack distribution="between" className={`process-bar-container ${barConainer}`}>
-        <Stack direction="vertical" distribution="between" style={{ width: commitment > 0 ? "70%" : "100%" }}>
-          {label}
-          <div className={`main-bar ${baseResourceBar} ${emptyResourceBar} ${isAZ ? "h-4 p-0" : "h-8 p-0.5"}`}>
-            <div
-              key="filled"
-              className={`main-fill ${filled} ${filledResourceBar}`}
-              style={leftBar.utilized > 0 ? barStyleFilled : { width: "0%" }}
-            ></div>
-          </div>
-        </Stack>
-
+      <Stack distribution="between" className={`${barConainer}`}>
         {commitment ? (
-          <Stack direction="vertical" distribution="between" style={{ width: "30%" }}>
-            {extraLable}
-            <div
-              className={`extra-bar ${baseResourceBar} ${emptyExtraResourceBar} ${
-                props.isAZ ? "h-4 p-0" : "h-8 p-0.5"
-              }`}
-            >
+          <Stack direction="vertical" distribution="between" style={{ width: "70%" }}>
+            {label}
+            <div className={`${baseResourceBar} ${emptyResourceBar} ${isAZ ? "h-4 p-0" : "h-8 p-0.5"}`}>
               <div
-                key="extra-filled"
-                className={`extra-fill ${filled} ${filledExtraResourceBar}`}
-                style={barStyleCommitment}
+                key="base-bar"
+                className={`${filled} ${filledResourceBar}`}
+                style={leftBar.utilized > 0 ? barStyleFilled : { width: "0%" }}
               ></div>
             </div>
           </Stack>
         ) : (
           ""
         )}
+
+        <Stack direction="vertical" distribution="between" style={{ width: commitment > 0 ? "30%" : "100%" }}>
+          {extraLabel}
+          <div className={`${baseResourceBar} ${emptyExtraResourceBar} ${isAZ ? "h-4 p-0" : "h-8 p-0.5"}`}>
+            <div key="extra-bar" className={`${filled} ${filledExtraResourceBar}`} style={barStyleCommitment} />
+          </div>
+        </Stack>
       </Stack>
     );
     return resourceBar;
