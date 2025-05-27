@@ -51,7 +51,13 @@ const ResourceBarBuilder = (props) => {
   }
 
   function getResourceBarLabel(bar) {
-    const labelInfo = !hasLeftBar && getLabelInfo();
+    // Determine whether to show the label based on the bar situation
+    let labelInfo;
+    if (bar === leftBar && hasLeftBar) {
+      labelInfo = getLabelInfo();
+    } else if (bar === rightBar && !hasLeftBar && hasRightBar) {
+      labelInfo = getLabelInfo();
+    }
     return (
       <span className={`progress-bar-label font-bold ${isAZ && "text-xs"}`}>
         {unit.format(bar.utilized)}/{unit.format(bar.available)} {labelInfo}
