@@ -80,7 +80,7 @@ const ResourceBar = (props) => {
   }
 
   let widthPercent = Math.round(1000 * (barValues.utilized / barValues.available)) / 10;
-  if (barValues.available == 0) {
+  if (barValues.utilized > 0 && barValues.available == 0) {
     widthPercent = 100;
   }
   // ensure that a non-zero-wide bar is at least somewhat visible
