@@ -35,9 +35,7 @@ export function getTotalCommittedUsage(resource) {
 
   AZs.forEach((az) => {
     // No commitments available => No usage gets added to the left bar, because it's uncommitted usage.
-    if (az.commitmentSum > 0) {
-      totalUsage += getCommittedUsage(az);
-    }
+    totalUsage += getCommittedUsage(az);
   });
 
   return totalUsage;
@@ -58,6 +56,9 @@ export function getTotalUncommittedUsage(resource) {
 // AZ calculation
 // No unused commitments means either: a) usage = commitments b) no commitments available
 export function getCommittedUsage(az) {
+  if (az.commitmentSum == 0) {
+    return 0;
+  }
   // domain/cluster level
   if (az.hasOwnProperty("unused_commitments")) {
     const commitmentSum = az.commitmentSum;
@@ -66,7 +67,7 @@ export function getCommittedUsage(az) {
   // project level:
   const usage = getUsageForAZLevel(az);
   let usageValue = 0;
-  if (az.commitmentSum > 0 && usage > az.commitmentSum) {
+  if (usage > az.commitmentSum) {
     usageValue = az.commitmentSum;
   } else {
     usageValue = usage;
@@ -91,14 +92,7 @@ export function getAvailableCapacity(resource) {
   if (commitments > 0) {
     return commitments;
   }
-  if (resource.hasOwnProperty("capacity")) {
-    return resource.capacity;
-  }
-  if (tracksQuota(resource)) {
-    return resource.quota;
-  } else {
-    return resource.usage;
-  }
+  return 0;
 }
 
 export function getRemainingCapacity(resource) {

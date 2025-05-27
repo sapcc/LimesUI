@@ -17,34 +17,18 @@
 import React from "react";
 import { Stack } from "@cloudoperators/juno-ui-components";
 
-const resourceBarWrapper = ``;
-
-const barConainer = `
-  min-w-full 
-  gap-1
-`;
 const baseResourceBar = `
   rounded-sm 
   border 
   border-theme-background-lvl-5 
   flex 
 `;
+const baseBarBackground = `bg-theme-background-lvl-2`;
 const filledResourceBar = `
-  text-white 
-  bg-sap-blue-3 
+  text-white
   rounded-sm 
   `;
-const baseBarBackground = `
-  bg-theme-background-lvl-2 
-  `;
-const extraBarBackground = `
-  bg-theme-background-lvl-4 
-  `;
-const filledExtraResourceBar = `
-  text-white
-  bg-sap-purple-2
-  rounded-sm  
-  `;
+const filledBarBackground = `bg-sap-blue-3`;
 const noneResourceBar = `
   rounded-sm 
   border 
@@ -54,113 +38,84 @@ const noneResourceBar = `
   text-theme-light 
   italic
   `;
-const barLabel = `
-  font-bold
-`;
 const disabledLabel = `
-  text-theme-light 
-  italic
-  px-1
-  text-sm
-  font-bold
-`;
-const usageExceedsCapacity = "repeating-linear-gradient(55deg,#c9302c ,#c9302c  8px,#d9534f 8px,#d9534f 16px)";
+    text-theme-light 
+    italic
+    px-1
+    text-sm
+    font-bold
+  `;
+
+const utilizedExceedsAvailable = "repeating-linear-gradient(55deg,#c9302c ,#c9302c  8px,#d9534f 8px,#d9534f 16px)";
 
 export const resourceBar = {
   utilized: 0,
   available: 0,
 };
 
+export const barStyles = {
+  base: null,
+  filled: null,
+};
+
 const ResourceBar = (props) => {
-  const outerDivRef = React.useRef(null);
-  const { usageLabel, leftBar, rightBar, formatter, showsCapacity, commitment, isAZ } = props;
+  const {
+    barValues,
+    barLabel,
+    variant = "small",
+    isEmptyBar = false,
+    styles = { ...barStyles },
+    containerWidth = 100,
+  } = props;
 
-  function buildResourceBar() {
-    // First handle the creation of an empty bar.
-    if (rightBar.utilized == 0 && rightBar.available == 0) {
-      return (
-        <Stack direction="vertical" distribution="between">
-          <span className={`progress-bar-label ${disabledLabel} ${isAZ ? "text-xs" : "text-sm"}`}>
-            {showsCapacity ? "No capacity" : "No quota"}
-          </span>
-          <div key="filled" className={`${noneResourceBar} ${isAZ ? "h-4" : "h-8"}`} style={{ width: "100%" }}></div>
-        </Stack>
-      );
-    }
-
-    let widthPercent = Math.round(1000 * (leftBar.utilized / leftBar.available)) / 10;
-    // ensure that a non-zero-wide bar is at least somewhat visible
-    if (leftBar.utilized > 0 && widthPercent < 0.5) {
-      widthPercent = 0.5;
-    }
-    let widthCommitment = Math.round((1000 * rightBar.utilized) / rightBar.available) / 10;
-
-    let gradientSingleBar;
-    if (leftBar.utilized > leftBar.available) {
-      gradientSingleBar = {
-        background: usageExceedsCapacity,
-      };
-    }
-
-    let gradientExtraBar;
-    if (rightBar.utilized > rightBar.available) {
-      gradientExtraBar = {
-        background: usageExceedsCapacity,
-      };
-    }
-
-    const label = (
-      <span className={`progress-bar-label ${barLabel} ${props.isAZ && "text-xs"}`}>
-        {formatter(leftBar.utilized)}/{formatter(leftBar.available)}{" "}
-        {commitment > 0 ? (
-          <span className="font-normal">committed</span>
-        ) : (
-          <span className="font-normal">{usageLabel}</span>
-        )}
-      </span>
-    );
-
-    const extraLabel = (
-      <span className={`progress-bar-label ${barLabel} ${props.isAZ && "text-xs"}`}>
-        {formatter(rightBar.utilized)}/{formatter(rightBar.available)}
-      </span>
-    );
-
-    let barStyleFilled = {
-      width: widthPercent + "%",
-      background: gradientSingleBar?.background,
-    };
-    let barStyleCommitment = {
-      width: widthCommitment + "%",
-      background: gradientExtraBar?.background,
-    };
-
-    const resourceBar = (
-      <Stack distribution="between" className={`${barConainer}`}>
-        {commitment > 0 && (
-          <Stack direction="vertical" distribution="between" style={{ width: "70%" }}>
-            {label}
-            <div className={`${baseResourceBar} ${baseBarBackground} ${isAZ ? "h-4 p-0" : "h-8 p-0.5"}`}>
-              <div key="base-bar" className={`${filledResourceBar}`} style={barStyleFilled} />
-            </div>
-          </Stack>
-        )}
-
-        <Stack direction="vertical" distribution="between" style={{ width: commitment > 0 ? "30%" : "100%" }}>
-          {extraLabel}
-          <div className={`${baseResourceBar} ${commitment > 0 ? extraBarBackground : baseBarBackground} ${isAZ ? "h-4 p-0" : "h-8 p-0.5"}`}>
-            <div key="extra-bar" className={`${filledExtraResourceBar}`} style={barStyleCommitment} />
-          </div>
-        </Stack>
+  if (isEmptyBar) {
+    const barVariant = { small: "h-4", large: "h-8" };
+    const textVariant = { small: "text-xs", large: "text-sm" };
+    return (
+      <Stack direction="vertical" distribution="between" style={{ width: "100%" }}>
+        <span className={`progress-bar-label ${disabledLabel} ${textVariant[variant]}`}>{barLabel}</span>
+        <div key="filled" className={`${noneResourceBar} ${barVariant[variant]}`} />
       </Stack>
     );
-    return resourceBar;
   }
 
+  let widthPercent = Math.round(1000 * (barValues.utilized / barValues.available)) / 10;
+  if (barValues.available == 0) {
+    widthPercent = 100;
+  }
+  // ensure that a non-zero-wide bar is at least somewhat visible
+  if (barValues.utilized > 0 && widthPercent < 0.5) {
+    widthPercent = 0.5;
+  }
+
+  let gradientBar;
+  if (barValues.utilized > barValues.available) {
+    gradientBar = {
+      background: utilizedExceedsAvailable,
+    };
+  }
+
+  let barStyle = {
+    width: widthPercent + "%",
+    background: gradientBar?.background,
+  };
+
+  const barVariant = {
+    small: "h-4 p-0",
+    large: "h-8 p-0.5",
+  };
+
   return (
-    <div className={resourceBarWrapper} ref={outerDivRef}>
-      {buildResourceBar()}
-    </div>
+    <Stack direction="vertical" distribution="between" style={{ width: containerWidth + "%" }}>
+      {barLabel}
+      <div className={`${baseResourceBar} ${styles.base || baseBarBackground} ${barVariant[variant]}`}>
+        <div
+          key="base-bar"
+          className={`${filledResourceBar} ${styles.filled || filledBarBackground}`}
+          style={barStyle}
+        />
+      </div>
+    </Stack>
   );
 };
 

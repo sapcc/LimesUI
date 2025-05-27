@@ -101,7 +101,6 @@ const ProjectTableDetails = (props) => {
     }
   }, [currentProject]);
 
-  // TODO: As soon as the limes API is ready, activate the transfer commitment (move) button.
   const displayedName = scope.isCluster() ? metadata.fullName : projectName;
   return (
     <React.Fragment>
@@ -137,7 +136,14 @@ const ProjectTableDetails = (props) => {
           </Stack>
         </DataGridCell>
         <DataGridCell>
-          <ResourceBarBuilder resource={az} unit={unit} isAZ={true} barType={"granular"} clusterQuotaView={true} />
+          <ResourceBarBuilder
+            resource={az}
+            unit={unit}
+            isAZ={true}
+            barType={"granular"}
+            clusterQuotaView={true}
+            isEditableResource={isEditableResource}
+          />
         </DataGridCell>
         <DataGridCell>
           <div key={metadata.name}>

@@ -147,7 +147,7 @@ const Resource = (props) => {
           </Stack>
         )}
       </Stack>
-      <ResourceBarBuilder resource={resource} unit={unitName} barType={"total"} />
+      <ResourceBarBuilder resource={resource} unit={unitName} barType={"total"} isEditableResource={editableResource} />
       {isAZUnaware(props.resource.per_az) && <PhysicalUsage resource={props.resource} unit={unitName} />}
       <div className={props.isPanelView && `az-container ${azPanelContent} ${props.isPanelView && "gap-2"}`}>
         {props.resource.per_az?.map((az) => {
@@ -175,7 +175,13 @@ const Resource = (props) => {
                   </Stack>
                   <ProjectBadges az={az} unit={unitName} displayValues={true} />
                 </div>
-                <ResourceBarBuilder resource={az} unit={unitName} isAZ={true} barType={"granular"} />
+                <ResourceBarBuilder
+                  resource={az}
+                  unit={unitName}
+                  isAZ={true}
+                  barType={"granular"}
+                  isEditableResource={editableResource}
+                />
                 <PhysicalUsage resource={az} resourceName={props.resource.name} unit={unitName} />
               </div>
             )
