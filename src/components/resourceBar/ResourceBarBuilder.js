@@ -85,7 +85,7 @@ const ResourceBarBuilder = (props) => {
         barValues={rightBar}
         barLabel={isEmptyBar ? getEmptyBarLabel() : getResourceBarLabel(rightBar)}
         variant={isAZ ? "small" : "large"}
-        containerWidth={hasLeftBar > 0 ? 30 : 100}
+        containerWidth={hasLeftBar ? 30 : 100}
         styles={{ base: hasLeftBar && extraBaseStyle, filled: isEditableResource && extraFillStyle }}
         isEmptyBar={isEmptyBar}
       />
