@@ -136,6 +136,6 @@ export function uncommittedUsage(committed, usage) {
 }
 
 export function isAZUnaware(az) {
-  if (az?.length == 1 && az[0][0] == "any") return true;
+  if (az?.length == 1 && az[0].name == "any") return true;
   return false;
 }

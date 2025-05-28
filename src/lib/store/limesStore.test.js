@@ -21,7 +21,7 @@ import StoreProvider, { projectStore, projectStoreActions, globalStoreActions } 
 // Expected is a dual bar display at the UI
 // Because only qa-de-1a has commitments: usagePerCommitted only takes this into account
 // The remaining AZ's don't have commitments: They get added to usagePerQuota
-const totalCommitments = 30;
+const commitmentSum = 30;
 
 const projectData = {
   project: {
@@ -104,8 +104,8 @@ describe("limesStore", () => {
         const structuredData = store.result.current.globalStoreActions.restructureReport(projectData.project);
         store.result.current.projectStoreActions.setProjectData(structuredData);
       });
-      expect(store.result.current.projectStore.projectData.categories.compute.resources[0].totalCommitments).toEqual(
-        totalCommitments
+      expect(store.result.current.projectStore.projectData.categories.compute.resources[0].commitmentSum).toEqual(
+        commitmentSum
       );
     });
   });

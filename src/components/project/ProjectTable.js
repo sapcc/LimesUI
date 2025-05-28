@@ -213,9 +213,8 @@ const ProjectTable = (props) => {
             const { categories } = project;
             const { resources } = Object.values(categories)[0];
             const resource = getCurrentResource(resources, currentResource.name);
-            const az = resource.per_az.filter((az) => {
-              const azName = az[0];
-              return azName === currentAZ;
+            const az = resource.per_az.find((az) => {
+              return az.name === currentAZ;
             });
             return !subRoute ? (
               <ProjectTableDetails
@@ -229,7 +228,7 @@ const ProjectTable = (props) => {
                 project={project}
                 resource={resource}
                 tracksQuota={resourceTracksQuota}
-                az={az[0]}
+                az={az}
                 currentAZ={currentAZ}
                 colSpan={colSpan}
                 mergeOps={mergeOps}

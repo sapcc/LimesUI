@@ -42,9 +42,7 @@ describe("Resource tests", () => {
       name: "testResource",
       quota: 500,
       capacity: 0,
-      totalCommitments: 10,
-      usagePerCommitted: 5,
-      usagePerQuota: 0,
+      commitmentSum: 10,
       editableResource: false,
       per_az: [["az1", { projects_usage: 10 }]],
     };
@@ -131,7 +129,7 @@ describe("Resource bar test", () => {
   });
   test("resources with quota tracking", async () => {
     let scope = new Scope({ projectID: "123", domainID: "456" });
-    function getProjectData(committed = null, usage = 50) {
+    function getProjectData(committed = null, usageA = 25, usageB = 25, quota = 150) {
       return {
         project: {
           id: "123",
@@ -147,22 +145,22 @@ describe("Resource bar test", () => {
                   },
                   per_az: {
                     "zone-a": {
-                      usage: usage / 2,
-                      quota: 50,
+                      usage: usageA,
+                      quota: quota / 3,
                       committed,
                     },
                     "zone-b": {
-                      usage: usage / 2,
-                      quota: 50,
+                      usage: usageB,
+                      quota: quota / 3,
                       committed,
                     },
                     "zone-c": {
                       usage: 0,
-                      quota: 50,
+                      quota: quota / 3,
                     },
                   },
-                  quota: 150,
-                  usage: usage,
+                  quota: quota,
+                  usage: usageA + usageB,
                 },
               ],
             },
@@ -230,7 +228,7 @@ describe("Resource bar test", () => {
     expect(screen.getByText("0/50")).toBeInTheDocument();
 
     // Sumbar (left) is not filled completely (usage < commitments)
-    res = actions.restructureReport(getProjectData(committed, 10).project).categories.testType.resources[0];
+    res = actions.restructureReport(getProjectData(committed, 5, 5).project).categories.testType.resources[0];
     rerender();
     act(() => {
       result.current.globalStoreActions.setScope(scope);
@@ -243,6 +241,38 @@ describe("Resource bar test", () => {
     expect(screen.queryAllByText("0/40").length).toEqual(2);
     // zone-c
     expect(screen.getByText("0/50")).toBeInTheDocument();
+
+    // Sumbar (left) is not filled completely, but there is usage that exceeds commitments in zone-a
+    res = actions.restructureReport(getProjectData(committed, 11, 5).project).categories.testType.resources[0];
+    rerender();
+    act(() => {
+      result.current.globalStoreActions.setScope(scope);
+    });
+    // sumbar values (left and right)
+    expect(screen.getByText("15/20")).toBeInTheDocument();
+    expect(screen.getByText("1/130")).toBeInTheDocument();
+    // zone-a and zone-b (left and right)
+    expect(screen.queryAllByText("10/10").length).toEqual(1);
+    expect(screen.queryAllByText("1/40").length).toEqual(1);
+    expect(screen.queryAllByText("5/10").length).toEqual(1);
+    expect(screen.queryAllByText("0/40").length).toEqual(1);
+    // zone-c
+    expect(screen.getByText("0/50")).toBeInTheDocument();
+
+    // Missing quota (Detect errors in limes capacity assignment at UI level)
+    res = actions.restructureReport(getProjectData(committed, 5, 5, 0).project).categories.testType.resources[0];
+    rerender();
+    act(() => {
+      result.current.globalStoreActions.setScope(scope);
+    });
+    // sumbar values (left and right)
+    expect(screen.getByText("10/20")).toBeInTheDocument();
+    expect(screen.getByText("0/-20")).toBeInTheDocument();
+    // zone-a and zone-b (left and right)
+    expect(screen.queryAllByText("5/10").length).toEqual(2);
+    expect(screen.queryAllByText("0/-10").length).toEqual(2);
+    // zone-c
+    expect(screen.getByText(/no quota/i)).toBeInTheDocument();
   });
 
   test("usage only resources", async () => {
