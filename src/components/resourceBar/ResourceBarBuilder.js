@@ -17,9 +17,9 @@
 import React from "react";
 import ResourceBar from "./ResourceBar";
 import { Unit } from "../../lib/unit";
-import useResourceBarValues from "../../hooks/useResourceBarValues";
-import { globalStore } from "../StoreProvider";
+import useResourceBarValues, { ResourceBarType } from "../../hooks/useResourceBarValues";
 import { Stack } from "@cloudoperators/juno-ui-components/index";
+import { getBarLabel, getEmptyBarLabel } from "../../lib/resourceBarValues";
 
 const barConainer = `
   min-w-full 
@@ -31,44 +31,26 @@ const extraBaseStyle = `
 const extraFillStyle = `bg-sap-purple-2`;
 
 const ResourceBarBuilder = (props) => {
-  const { resource, unit: unitName, isAZ, barType, clusterQuotaView, isEditableResource } = { ...props };
-  const { scope } = globalStore();
+  const { resource, unit: unitName, barType, isEditableResource } = { ...props };
   const unit = new Unit(unitName || "");
-  const clusterView = clusterQuotaView ? false : scope.isCluster();
   const { leftBar, rightBar } = useResourceBarValues(resource, barType);
+  const isGranular = barType === ResourceBarType.granular;
   const hasLeftBar = leftBar.utilized > 0 || leftBar.available > 0;
   const hasRightBar = rightBar.utilized > 0 || rightBar.available > 0;
   const isEmptyBar = !hasLeftBar && !hasRightBar;
 
-  function getLabelInfo() {
-    let labelInfo;
-    if (hasLeftBar) {
-      labelInfo = <span className="font-normal">committed</span>;
-    } else {
-      labelInfo = <span className="font-normal">{clusterView ? "capacity used" : "quota used"}</span>;
-    }
-    return labelInfo;
-  }
-
   function getResourceBarLabel(bar) {
-    // Determine whether to show the label based on the bar situation
-    let labelInfo;
-    if (bar === leftBar && hasLeftBar) {
-      labelInfo = getLabelInfo();
-    } else if (bar === rightBar && !hasLeftBar && hasRightBar) {
-      labelInfo = getLabelInfo();
+    if (isEmptyBar) {
+      return getEmptyBarLabel(resource);
     }
+
+    const hideLabelInfo = bar === rightBar && hasLeftBar;
+    const barLabel = !hideLabelInfo && getBarLabel(resource);
     return (
-      <span className={`progress-bar-label font-bold ${isAZ && "text-xs"}`}>
-        {unit.format(bar.utilized)}/{unit.format(bar.available)} {labelInfo}
+      <span className={`progress-bar-label font-bold ${isGranular && "text-xs"}`}>
+        {unit.format(bar.utilized) + "/" + unit.format(bar.available)} {<span className="font-normal">{barLabel}</span>}
       </span>
     );
-  }
-
-  function getEmptyBarLabel() {
-    if (isEmptyBar) {
-      return clusterView ? "No capacity" : "No quota";
-    }
   }
 
   return (
@@ -77,14 +59,14 @@ const ResourceBarBuilder = (props) => {
         <ResourceBar
           barValues={leftBar}
           barLabel={getResourceBarLabel(leftBar)}
-          variant={isAZ ? "small" : "large"}
+          variant={isGranular ? "small" : "large"}
           containerWidth={70}
         />
       )}
       <ResourceBar
         barValues={rightBar}
-        barLabel={isEmptyBar ? getEmptyBarLabel() : getResourceBarLabel(rightBar)}
-        variant={isAZ ? "small" : "large"}
+        barLabel={getResourceBarLabel(rightBar)}
+        variant={isGranular ? "small" : "large"}
         containerWidth={hasLeftBar ? 30 : 100}
         styles={{ base: hasLeftBar && extraBaseStyle, filled: isEditableResource && extraFillStyle }}
         isEmptyBar={isEmptyBar}

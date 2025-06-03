@@ -25,7 +25,7 @@ import {
 } from "../lib/resourceBarValues";
 import resourceBar from "../components/resourceBar/ResourceBar";
 
-const ResourceBarType = {
+export const ResourceBarType = {
   total: "total",
   granular: "granular",
 };

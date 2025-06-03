@@ -178,7 +178,6 @@ const Resource = (props) => {
                 <ResourceBarBuilder
                   resource={az}
                   unit={unitName}
-                  isAZ={true}
                   barType={"granular"}
                   isEditableResource={editableResource}
                 />

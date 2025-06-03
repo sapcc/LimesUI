@@ -106,3 +106,23 @@ export function getRemainingCapacity(resource) {
     return resource.usage - commitments;
   }
 }
+
+export function getBarLabel(resource) {
+  if (resource.commitmentSum > 0) {
+    return "committed";
+  }
+  if (resource.hasOwnProperty("capacity")) {
+    return "capacity used";
+  } else {
+    return "quota used";
+  }
+}
+
+export function getEmptyBarLabel(resource) {
+  console.log(resource)
+  if (resource.hasOwnProperty("capacity")) {
+    return "No capacity";
+  } else {
+    return "No quota";
+  }
+}
