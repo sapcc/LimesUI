@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { CEREBROKEY, COMMITMENTRENEWALKEY } from "../constants";
+import { CEREBROKEY, COMMITMENTRENEWALKEY, CustomZones } from "../constants";
 import { unusedCommitments, uncommittedUsage } from "../../lib/utils";
 import { Scope } from "../scope";
 
@@ -335,7 +335,7 @@ function filterAZs(res) {
   });
   // move 'unknown' and 'any' AZ's to the bottom of the array.
   validAZs.forEach((az, idx) => {
-    if ((validAZs.length > 1 && az.name == "any") || az.name == "unknown") {
+    if ((validAZs.length > 1 && az.name == CustomZones.ANY) || az.name == CustomZones.UNKNOWN) {
       validAZs.push(validAZs.splice(idx, 1)[0]);
     }
   });

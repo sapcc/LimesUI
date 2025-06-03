@@ -18,7 +18,7 @@ import React from "react";
 import { Grid, GridRow, GridColumn } from "@cloudoperators/juno-ui-components";
 import { byUIString, t } from "../../../lib/utils";
 import { categoryTitle } from "../stylescss";
-import { PAYG_AZUNAWARE_KEY } from "../../../lib/constants";
+import { CustomZones, PAYG_AZUNAWARE_KEY } from "../../../lib/constants";
 import PAYGLimebro from "./PAYGLimebro";
 import { isAZUnaware } from "../../../lib/utils";
 
@@ -42,7 +42,7 @@ const PAYGCategory = (props) => {
     // - "tempest-test-...": dummy AZ created by Tempest
     // - "cp...": pseudo-AZ for control plane nodes without AZ association
     const validAvailabilityZones = availabilityZones.filter(
-      (az) => az != "unknown" && az != "any" && !/^tempest-|^cp/.test(az.name)
+      (az) => az != CustomZones.UNKNOWN && az != CustomZones.ANY && !/^tempest-|^cp/.test(az.name)
     );
     return validAvailabilityZones;
   }

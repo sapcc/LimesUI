@@ -17,7 +17,7 @@
 import React from "react";
 import { globalStore } from "../StoreProvider";
 import { t } from "../../lib/utils";
-import { PanelType } from "../../lib/constants";
+import { CustomZones, PanelType } from "../../lib/constants";
 import { Stack, Button } from "@cloudoperators/juno-ui-components";
 import { Link } from "react-router";
 import { ProjectBadges } from "../shared/LimesBadges";
@@ -153,7 +153,7 @@ const Resource = (props) => {
         {props.resource.per_az?.map((az) => {
           const azName = az.name;
           return (
-            azName !== "any" && (
+            azName !== CustomZones.ANY && (
               <div
                 key={`${azName}`}
                 className={`az-bar ${

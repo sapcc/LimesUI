@@ -119,7 +119,6 @@ export function getBarLabel(resource) {
 }
 
 export function getEmptyBarLabel(resource) {
-  console.log(resource);
   if (resource.hasOwnProperty("capacity")) {
     return "No capacity";
   } else {

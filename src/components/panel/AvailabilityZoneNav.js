@@ -20,6 +20,7 @@ import ReceiveCommitment from "./ReceiveCommitment";
 import { Stack, Tabs, Tab, TabList, TabPanel, Container } from "@cloudoperators/juno-ui-components";
 import useResetCommitment from "../../hooks/useResetCommitment";
 import MergeCommitment from "../shared/MergeCommitments";
+import { CustomZones } from "../../lib/constants";
 
 const AvailabilityZoneNav = (props) => {
   const azIndex = props.az.findIndex((az) => az.name === props.currentAZ);
@@ -39,8 +40,8 @@ const AvailabilityZoneNav = (props) => {
           {props.az.map((az) => {
             const azName = az.name;
             return (
-              azName !== "unknown" &&
-              azName !== "any" && (
+              azName !== CustomZones.UNKNOWN &&
+              azName !== CustomZones.ANY && (
                 <Tab
                   data-testid={`tab/${azName}`}
                   key={azName}
@@ -65,7 +66,9 @@ const AvailabilityZoneNav = (props) => {
             <MergeCommitment mergeOps={mergeOps} />
           </Stack>
         </TabList>
-        {props.az.map((az) => az.name !== "unknown" && az.name !== "any" && <TabPanel key={az.name}></TabPanel>)}
+        {props.az.map(
+          (az) => az.name !== CustomZones.UNKNOWN && az.name !== CustomZones.ANY && <TabPanel key={az.name}></TabPanel>
+        )}
       </Tabs>
     </Container>
   );

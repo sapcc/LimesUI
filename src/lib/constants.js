@@ -31,6 +31,11 @@ export const initialCommitmentObject = {
   duration: "",
 };
 
+export const CustomZones = Object.freeze({
+  ANY: "any",
+  UNKNOWN: "unknown",
+});
+
 // Transfer commitment on project level
 // Required are the following states:
 // 1. A view where a transfer can be initiated

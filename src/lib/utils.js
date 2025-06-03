@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { STRINGS } from "./constants";
+import { CustomZones, STRINGS } from "./constants";
 import moment from "moment";
 
 const perFlavorRx = /^instances_(.+)$/;
@@ -136,6 +136,6 @@ export function uncommittedUsage(committed, usage) {
 }
 
 export function isAZUnaware(az) {
-  if (az?.length == 1 && az[0].name == "any") return true;
+  if (az?.length == 1 && az[0].name == CustomZones.ANY) return true;
   return false;
 }
