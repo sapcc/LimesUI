@@ -1,5 +1,15 @@
 # @sapcc/limes-ui
 
+## 1.8.0
+
+### Minor Changes
+
+- 3505cd6: rework resource bars and their value calculation
+
+### Patch Changes
+
+- 7540531: Add resource bar unit test. Checks the behavior for reported 0 value quota
+
 ## 1.7.1
 
 ### Patch Changes
