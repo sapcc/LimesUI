@@ -14,50 +14,40 @@
  * limitations under the License.
  */
 
+import { tracksQuota } from "./utils";
+
 // AZs may or may not contain their own values.
 // Either the AZ or resource values get provided to the UI.
-
 export function getUsageForAZLevel(az) {
   return az.projects_usage || az.usage || 0;
-}
-
-export function getCapacityForAZLevel(az, capacity) {
-  return az.capacity ?? capacity;
 }
 
 export function getQuotaForAZLevel(az, quota) {
   return az.quota ?? quota;
 }
 
-// Domain and Cluster Level calculate their usage values with unused_commitments
-
 // SUM-Bar (Bar over all AZ's) calculation -> loops over all AZ's.
-export function getTotalUsageForLeftBar(resource) {
+// Domain and Cluster Level calculate their usage values with unused_commitments
+export function getTotalCommittedUsage(resource) {
   const AZs = resource.per_az;
   if (!AZs) return;
   let totalUsage = 0;
+
   AZs.forEach((az) => {
     // No commitments available => No usage gets added to the left bar, because it's uncommitted usage.
-    // Ensure that the left bar only contains uncommitted usage if no AZ's have any commitments.
-    if (az.commitmentSum > 0) {
-      totalUsage += getUsageForLeftBar(az[1]);
-    } else if (resource.totalCommitments == 0) {
-      totalUsage += getUsageForAZLevel(az[1]);
-    } else {
-      totalUsage += 0;
-    }
+    totalUsage += getCommittedUsage(az);
   });
 
   return totalUsage;
 }
 
-export function getTotalUsageForRightBar(resource) {
+export function getTotalUncommittedUsage(resource) {
   const AZs = resource.per_az;
-  let totalUsage = 0;
   if (!AZs) return;
+  let totalUsage = 0;
+
   AZs.forEach((az) => {
-    // No commitments available => The usage gets added to the right bar, because it's uncommitted usage.
-    az.commitmentSum > 0 ? (totalUsage += getUsageForRightBar(az[1])) : (totalUsage += getUsageForAZLevel(az[1]));
+    totalUsage += getUncommittedUsage(az);
   });
 
   return totalUsage;
@@ -65,26 +55,73 @@ export function getTotalUsageForRightBar(resource) {
 
 // AZ calculation
 // No unused commitments means either: a) usage = commitments b) no commitments available
-export function getUsageForLeftBar(az) {
-  if (!az.hasOwnProperty("unused_commitments")) {
-    return getUsageForAZLevel(az);
+export function getCommittedUsage(az) {
+  if (az.commitmentSum == 0) {
+    return 0;
   }
-  const commitmentSum = getCommitmentSumPerAZ(az);
-  return commitmentSum - az.unused_commitments;
+  // domain/cluster level
+  if (az.hasOwnProperty("unused_commitments")) {
+    const commitmentSum = az.commitmentSum;
+    return commitmentSum - az.unused_commitments;
+  }
+  // project level:
+  const usage = getUsageForAZLevel(az);
+  let usageValue = 0;
+  if (usage > az.commitmentSum) {
+    usageValue = az.commitmentSum;
+  } else {
+    usageValue = usage;
+  }
+  return usageValue;
 }
 
-export function getUsageForRightBar(az) {
-  const commitmentSum = getCommitmentSumPerAZ(az);
+export function getUncommittedUsage(az) {
+  const commitmentSum = az.commitmentSum;
   const usage = getUsageForAZLevel(az);
-  const rightBarUsage = az.uncommitted_usage ?? usage - (commitmentSum - (az.unused_commitments || 0));
+  let rightBarUsage = az.uncommitted_usage ?? usage - (commitmentSum - (az.unused_commitments || 0));
+  if (rightBarUsage < 0) {
+    rightBarUsage = 0;
+  }
 
   return rightBarUsage;
 }
 
-function getCommitmentSumPerAZ(az) {
-  let commitmentSum = 0;
-  for (const duration in az.committed) {
-    commitmentSum += az.committed[duration] || 0;
+// Capacity calculation
+export function getAvailableCapacity(resource) {
+  const commitments = resource.commitmentSum;
+  if (commitments > 0) {
+    return commitments;
   }
-  return commitmentSum;
+  return 0;
+}
+
+export function getRemainingCapacity(resource) {
+  const commitments = resource.commitmentSum;
+  if (resource.hasOwnProperty("capacity")) {
+    return resource.capacity - commitments;
+  }
+  if (tracksQuota(resource)) {
+    return resource.quota - commitments;
+  } else {
+    return resource.usage - commitments;
+  }
+}
+
+export function getBarLabel(resource) {
+  if (resource.commitmentSum > 0) {
+    return "committed";
+  }
+  if (resource.hasOwnProperty("capacity")) {
+    return "capacity used";
+  } else {
+    return "quota used";
+  }
+}
+
+export function getEmptyBarLabel(resource) {
+  if (resource.hasOwnProperty("capacity")) {
+    return "No capacity";
+  } else {
+    return "No quota";
+  }
 }

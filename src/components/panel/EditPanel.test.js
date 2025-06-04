@@ -85,10 +85,8 @@ describe("EditPanel tests", () => {
       name: "testResource",
       quota: 500,
       capacity: 0,
-      totalCommitments: 10,
-      usagePerCommitted: 5,
-      usagePerQuota: 0,
-      per_az: [["az1", { projects_usage: 10 }]],
+      commitmentSum: 10,
+      per_az: [{ name: "az1", projects_usage: 10 }],
     };
     resource.per_az.commitmentSum = 10;
 
@@ -133,10 +131,8 @@ describe("EditPanel tests", () => {
       commitment_config: { durations: ["1 year", "3 years"] },
       quota: 500,
       capacity: 0,
-      totalCommitments: 10,
-      usagePerCommitted: 5,
-      usagePerQuota: 0,
-      per_az: [["az_1", { projects_usage: 10 }]],
+      commitmentSum: 10,
+      per_az: [{ name: "az_1", projects_usage: 10 }],
     };
     const commitments = [
       {
@@ -249,10 +245,8 @@ describe("EditPanel tests", () => {
       name: "testResource",
       quota: 500,
       capacity: 0,
-      totalCommitments: 10,
-      usagePerCommitted: 5,
-      usagePerQuota: 0,
-      per_az: [["az1", { projects_usage: 10 }]],
+      commitmentSum: 10,
+      per_az: [{ name: "az1", projects_usage: 10 }],
     };
     resource.per_az.commitmentSum = 10;
     const wrapper = ({ children }) => (

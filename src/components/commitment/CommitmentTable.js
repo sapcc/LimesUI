@@ -20,6 +20,7 @@ import CommitmentTableDetails from "./CommitmentTableDetails";
 import useSortTableData from "../../hooks/useSortTable";
 import useCommitmentFilter from "../../hooks/useCommitmentFilter";
 import { createCommitmentStore } from "../StoreProvider";
+import { CustomZones } from "../../lib/constants";
 
 const CommitmentTable = (props) => {
   const durations = props.resource.commitment_config.durations;
@@ -34,7 +35,7 @@ const CommitmentTable = (props) => {
   const { setMergeIsActive } = mergeOps;
   const resourceName = currentResource?.name;
   const { per_az: availabilityZones } = props.resource;
-  const isAZAware = availabilityZones.length == 1 && availabilityZones[0][0] == "any";
+  const isAZAware = availabilityZones.length == 1 && availabilityZones[0][0] == CustomZones.ANY;
   const noCommitmentsText = `No commitments found${!isAZAware ? " in this availability zone" : ""}.`;
 
   const initialSortConfig = {

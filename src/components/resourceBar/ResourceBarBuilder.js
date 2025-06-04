@@ -17,70 +17,61 @@
 import React from "react";
 import ResourceBar from "./ResourceBar";
 import { Unit } from "../../lib/unit";
-import { globalStore } from "../StoreProvider";
+import useResourceBarValues, { ResourceBarType } from "../../hooks/useResourceBarValues";
+import { Stack } from "@cloudoperators/juno-ui-components/index";
+import { getBarLabel, getEmptyBarLabel } from "../../lib/resourceBarValues";
+
+const barConainer = `
+  min-w-full 
+  gap-1
+`;
+const extraBaseStyle = `
+  bg-theme-background-lvl-4 
+  `;
+const extraFillStyle = `bg-sap-purple-2`;
 
 const ResourceBarBuilder = (props) => {
-  const {
-    unit: unitName,
-    usage,
-    usageBurstSum,
-    commitment,
-    quota,
-    tracksQuota,
-    isPanelView,
-    // Displays bars either blue or purple if usage > commitments.
-    editableResource,
-    isAZ,
-    // Determines if NoQuota bars are the same size as filledBars.
-    equallySized,
-    // bar should display quota(cluster scope) or capacity (project/domain scope)
-    clusterQuotaView,
-    paygView,
-  } = { ...props };
-  const { scope } = globalStore();
+  const { resource, unit: unitName, barType, isEditableResource } = { ...props };
   const unit = new Unit(unitName || "");
-  const clusterView = paygView ? true : clusterQuotaView ? false : scope.isCluster();
+  const { leftBar, rightBar } = useResourceBarValues(resource, barType);
+  const isGranular = barType === ResourceBarType.granular;
+  const hasLeftBar = leftBar.utilized > 0 || leftBar.available > 0;
+  const hasRightBar = rightBar.utilized > 0 || rightBar.available > 0;
+  const isEmptyBar = !hasLeftBar && !hasRightBar;
 
-  // fillLabel: displays commitment or current usage.
-  const showCommitmentOrUsage = usage > commitment && commitment > 0 ? commitment : usage;
+  function getResourceBarLabel(bar) {
+    if (isEmptyBar) {
+      return getEmptyBarLabel(resource);
+    }
 
-  // capacityLabel: displays commitments, quota or usage (on usageOnly resources)
-  const commitmentOrQuota = commitment > 0 ? commitment : quota;
-  const noQuotaResourceValue = commitment > 0 ? commitment : usage;
-  const capacity = tracksQuota ? commitmentOrQuota : noQuotaResourceValue;
-
-  // ExtraBar: displays values that exceed the commitment
-  // The sum bar can display the second bar without completely filling the first bar.
-  let extraFillValue;
-  if (usageBurstSum > 0) {
-    extraFillValue = usageBurstSum;
-  } else {
-    extraFillValue = usage >= commitment ? usage - commitment : "0";
+    const hideLabelInfo = bar === rightBar && hasLeftBar;
+    const barLabel = !hideLabelInfo && getBarLabel(resource);
+    return (
+      <span className={`progress-bar-label font-bold ${isGranular && "text-xs"}`}>
+        {unit.format(bar.utilized) + "/" + unit.format(bar.available)} {<span className="font-normal">{barLabel}</span>}
+      </span>
+    );
   }
-  const quotaOrUsage = tracksQuota ? quota : usage;
-  let extraCapacityValue = quotaOrUsage - commitment;
 
-  // isPanelView is used, because tracksQuota check is not accessible from EditPanel (gets prop passed from Category)
   return (
-    <ResourceBar
-      fillLabel={unit.format(showCommitmentOrUsage)}
-      capacityLabel={unit.format(capacity)}
-      extraFillLabel={unit.format(extraFillValue)}
-      extraCapacityLabel={unit.format(extraCapacityValue, unit)}
-      usageLabel={paygView ? "" : clusterView ? "capacity used" : "quota used"}
-      fill={usage}
-      capacity={capacity}
-      commitment={commitment ?? 0}
-      extraFillValue={extraFillValue}
-      // Providing 1 enables the bar to be filled completely if commitments > quota
-      extraCapacityValue={extraCapacityValue || 1}
-      canEdit={editableResource || isPanelView}
-      showsCapacity={clusterView}
-      isAZ={isAZ}
-      // No Quota and Quota bars have the same size within the Edit Panel Tables.
-      equallySized={equallySized}
-      paygView={paygView}
-    />
+    <Stack distribution="between" className={`${barConainer}`}>
+      {hasLeftBar && (
+        <ResourceBar
+          barValues={leftBar}
+          barLabel={getResourceBarLabel(leftBar)}
+          variant={isGranular ? "small" : "large"}
+          containerWidth={70}
+        />
+      )}
+      <ResourceBar
+        barValues={rightBar}
+        barLabel={getResourceBarLabel(rightBar)}
+        variant={isGranular ? "small" : "large"}
+        containerWidth={hasLeftBar ? 30 : 100}
+        styles={{ base: hasLeftBar && extraBaseStyle, filled: isEditableResource && extraFillStyle }}
+        isEmptyBar={isEmptyBar}
+      />
+    </Stack>
   );
 };
 

@@ -41,7 +41,7 @@ const PAYGLimebro = (props) => {
             <GridColumn key={azName} cols={azColumnWidth}>
               <Box className={`border-l-4`}>
                 {resources.map((resource) => {
-                  const az = resource.per_az.find((az) => az[0] == azName) || {};
+                  const az = resource.per_az.find((az) => az.name == azName) || {};
                   let matchingCerebroResource;
                   // Check for cerebro data being present.
                   if (cerebro.length > 0) {
