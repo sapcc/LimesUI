@@ -52,7 +52,7 @@ const PanelManager = (props) => {
   const { setDeleteCommitment } = createCommitmentStoreActions();
 
   React.useEffect(() => {
-    if (isEditableResource && currentResource) {
+    if ((isEditableResource || subRoute) && currentResource) {
       setIsEditing(true);
     }
     // reset state if user presses return button at the browser
