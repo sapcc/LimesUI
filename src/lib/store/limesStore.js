@@ -119,8 +119,9 @@ const limesStore = (set, get) => ({
 
         return sortedProjects;
       },
-      setSortedProjects: (projects) =>
+      setSortedProjects: () =>
         set((state) => {
+          const projects = state.domain.projects;
           const sortedProjects = state.domain.actions.sortProjects([...projects]);
           return {
             ...state,

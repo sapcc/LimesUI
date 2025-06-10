@@ -82,7 +82,8 @@ const filterOpts = Object.freeze({
 
 // Display the project details in DomainView
 const ProjectTable = (props) => {
-  const { serviceType, currentResource, currentCategory, currentAZ, projects, subRoute, mergeOps } = props;
+  const { serviceType, currentResource, currentCategory, currentAZ, projects, subRoute, sortProjectProps, mergeOps } =
+    props;
   const resourceTracksQuota = tracksQuota(currentResource);
   const { scope } = globalStore();
   const [selectedProject, setSelectedProject] = React.useState({ id: "", showCommitments: false });
@@ -94,6 +95,7 @@ const ProjectTable = (props) => {
   const labelFilter = React.useRef(filterOpts.None);
   const nameFilter = React.useRef("");
   const [currentPage, setCurrentPage] = React.useState(0);
+  console.log(sortProjectProps.projectsAreSortable)
 
   if (!resourceTracksQuota && subRoute) return;
 
@@ -221,9 +223,11 @@ const ProjectTable = (props) => {
             />
             {!subRoute && (
               <Button
+                disabled={!sortProjectProps.projectsAreSortable}
                 onClick={() => {
                   setToast(null);
-                  setSortedProjects(projects);
+                  setSortedProjects();
+                  sortProjectProps.setProjectsAreSortable(false);
                 }}
                 className={"m-auto mt-0"}
               >

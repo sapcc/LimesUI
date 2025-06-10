@@ -29,7 +29,8 @@ import { LoadingIndicator } from "@cloudoperators/juno-ui-components";
 
 const ProjectsPerDomain = (props) => {
   // Fetch project data for all domains
-  const { domains, serviceType, currentCategory, resource, currentAZ, subRoute, mergeOps } = props;
+  const { domains, serviceType, currentCategory, resource, currentAZ, subRoute, sortProjectProps, mergeOps } = props;
+  const { enableSortActivities } = sortProjectProps;
   const resourceName = resource.name;
   const { restructureReport } = globalStoreActions();
   const { setProjectsToDomain } = clusterStoreActions();
@@ -70,6 +71,9 @@ const ProjectsPerDomain = (props) => {
         return project;
       })
     );
+    if (projects?.length > 0) {
+      enableSortActivities();
+    }
     setProjects(flattendProjects, sortProjects.current);
     projectsUpdated.current = true;
   }, [isFetching]);
@@ -91,6 +95,7 @@ const ProjectsPerDomain = (props) => {
       currentAZ={currentAZ}
       projects={projects}
       subRoute={subRoute}
+      sortProjectProps={sortProjectProps}
       mergeOps={mergeOps}
     />
   ) : (
