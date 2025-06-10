@@ -17,7 +17,7 @@
 import React from "react";
 import { chunkProjects, getCurrentResource, tracksQuota } from "../../lib/utils";
 import { PanelType } from "../../lib/constants";
-import { globalStore, domainStoreActions, createCommitmentStoreActions, domainStore } from "../StoreProvider";
+import { globalStore, domainStoreActions, createCommitmentStoreActions } from "../StoreProvider";
 import ProjectTableDetails from "./ProjectTableDetails";
 import {
   Stack,
@@ -85,9 +85,7 @@ const ProjectTable = (props) => {
   const { serviceType, currentResource, currentCategory, currentAZ, projects, subRoute, mergeOps } = props;
   const resourceTracksQuota = tracksQuota(currentResource);
   const { scope } = globalStore();
-  const { previousProject } = domainStore();
-  const { setPreviousProject } = domainStoreActions();
-  const { setShowCommitments } = domainStoreActions();
+  const [selectedProject, setSelectedProject] = React.useState({ id: "", showCommitments: false });
   const { setSortedProjects } = domainStoreActions();
   const { setTransferProject } = createCommitmentStoreActions();
   const { setCurrentProject } = createCommitmentStoreActions();
@@ -115,21 +113,16 @@ const ProjectTable = (props) => {
   const colSpan = "col-span-4";
 
   function updateShowCommitments(index) {
-    const projects = [...filteredProjects];
     const project = filteredProjects[currentPage][index];
     const projectID = filteredProjects[currentPage][index].metadata.id;
-    const previousProjectID = previousProject?.metadata?.id;
     setCurrentProject(project);
-    // Disable the last clicked project
-    if (previousProject && projectID != previousProjectID) {
-      setShowCommitments(previousProjectID, false);
-    }
-    // A click on the same (active) project disables it. Otherwise it enables it.
-    setShowCommitments(projectID, !project.showCommitments);
 
-    // Track the previous project.
-    setPreviousProject(project);
-    setFilteredProjects(projects);
+    if (projectID == selectedProject.id) {
+      // A click on the same (active) project disables it. Otherwise it enables it.
+      setSelectedProject({ id: projectID, showCommitments: !selectedProject.showCommitments });
+    } else {
+      setSelectedProject({ id: projectID, showCommitments: true });
+    }
   }
 
   const { availableLabels, projectsPerLabel } = React.useMemo(() => {
@@ -188,7 +181,7 @@ const ProjectTable = (props) => {
   }
   React.useEffect(() => {
     filterProjectsPerNameOrLabel();
-  }, [currentAZ]);
+  }, [projects, currentAZ]);
 
   function handleCommitmentTransfer(project) {
     setTransferProject(project);
@@ -271,6 +264,7 @@ const ProjectTable = (props) => {
             const { categories } = project;
             const { resources } = Object.values(categories)[0];
             const resource = getCurrentResource(resources, currentResource.name);
+            const showCommitments = project.metadata.id === selectedProject.id && selectedProject.showCommitments;
             const az = resource.per_az.find((az) => {
               return az.name === currentAZ;
             });
@@ -278,7 +272,7 @@ const ProjectTable = (props) => {
               <ProjectTableDetails
                 key={project.metadata.id}
                 index={index}
-                showCommitments={filteredProjects[currentPage][index].showCommitments}
+                showCommitments={showCommitments}
                 updateShowCommitments={updateShowCommitments}
                 handleCommitmentTransfer={handleCommitmentTransfer}
                 serviceType={serviceType}

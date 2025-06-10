@@ -55,9 +55,6 @@ const limesStore = (set, get) => ({
     domainData: null,
     refetchDomainAPI: false,
     projects: null,
-    // previous project in detail view. Displays commitments.
-    // Used to close the detailed view if another projects enters its detail mode.
-    previousProject: null,
     actions: {
       setDomainData: (domainData) =>
         set((state) => ({
@@ -67,18 +64,14 @@ const limesStore = (set, get) => ({
         set((state) => ({
           domain: { ...state.domain, refetchDomainAPI: refetchDomainAPI },
         })),
-      setPreviousProject: (previousProject) =>
-        set((state) => ({
-          domain: { ...state.domain, previousProject: previousProject },
-        })),
       setProjects: (projects, sortProjects = true) =>
         set((state) => {
+          const domainProjects = [...(state.domain.projects || [])];
           // The user sorts manually if commitments are added or moved to/from projects.
           if (sortProjects) {
             projects = state.domain.actions.sortProjects(projects);
           } else {
             // Keep previous order structure.
-            const domainProjects = [...state.domain.projects];
             projects.sort((a, b) => {
               return (
                 domainProjects.findIndex((p) => p.metadata.id == a.metadata.id) -
@@ -86,18 +79,6 @@ const limesStore = (set, get) => ({
               );
             });
           }
-
-          // Append the previous showCommitments state to the fresh API data.
-          projects.forEach((project) => {
-            if (state.domain.projects) {
-              const previousProjectIndex = state.domain.projects.findIndex(
-                (oldProject) => project.metadata.id == oldProject.metadata.id
-              );
-              project.showCommitments = state.domain.projects[previousProjectIndex]?.showCommitments || false;
-            } else {
-              project.showCommitments = false;
-            }
-          });
 
           return {
             ...state,
@@ -144,16 +125,6 @@ const limesStore = (set, get) => ({
           return {
             ...state,
             domain: { ...state.domain, projects: sortedProjects },
-          };
-        }),
-      setShowCommitments: (projectID, value) =>
-        set((state) => {
-          const projects = [...state.domain.projects];
-          const index = projects.findIndex((project) => project.metadata.id == projectID);
-          projects[index].showCommitments = value;
-          return {
-            ...state,
-            domain: { ...state.domain, projects: projects },
           };
         }),
     },
