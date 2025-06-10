@@ -166,10 +166,9 @@ const ProjectTable = (props) => {
 
   // Change the displayed projects corresponding to its filtered string
   // The show commitment state will be transferred to filtered projects.
-  function filterProjectsByName() {
+  function filterProjectsByName(projects) {
     const regex = new RegExp(nameFilter.current.trim(), "i");
-    const projectsToFilter = getProjectsToFilter();
-    const filteredProjects = projectsToFilter.filter((project) => {
+    const filteredProjects = projects.filter((project) => {
       const filterName = scope.isCluster() ? project.metadata.fullName : project.metadata.name;
       const projectID = project.metadata.id;
       const matchesNameOrID = regex.exec(filterName) || regex.exec(projectID);
@@ -178,21 +177,14 @@ const ProjectTable = (props) => {
     setFilteredProjects(chunkProjects(filteredProjects));
   }
 
-  function filterProjectsPerAZLabel() {
-    if (labelFilter.current == filterOpts.None) {
-      setFilteredProjects(chunkProjects(projects));
+  function filterProjectsPerNameOrLabel() {
+    const projectsToFilter = getProjectsToFilter();
+    if (nameFilter.current === "") {
+      setFilteredProjects(chunkProjects(projectsToFilter));
     } else {
-      setFilteredProjects(chunkProjects(projectsPerLabel.get(labelFilter.current) || []));
+      filterProjectsByName(projectsToFilter);
     }
     setCurrentPage(0);
-  }
-
-  function filterProjectsPerNameOrLabel() {
-    if (nameFilter.current === "") {
-      filterProjectsPerAZLabel();
-    } else {
-      filterProjectsByName();
-    }
   }
   React.useEffect(() => {
     filterProjectsPerNameOrLabel();
@@ -227,13 +219,11 @@ const ProjectTable = (props) => {
               value={nameFilter.current}
               onChange={(e) => {
                 nameFilter.current = e.target.value;
-                setCurrentPage(0);
-                filterProjectsByName();
+                filterProjectsPerNameOrLabel();
               }}
               onClear={() => {
                 nameFilter.current = "";
-                setCurrentPage(0);
-                setFilteredProjects(chunkProjects(getProjectsToFilter()));
+                filterProjectsPerNameOrLabel();
               }}
             />
             {!subRoute && (
