@@ -29,8 +29,11 @@ import {
   DataGridRow,
   LoadingIndicator,
   Button,
+  Select,
+  SelectOption,
 } from "@cloudoperators/juno-ui-components";
 import ProjectQuotaDetails from "./ProjectQuotaDetails";
+import { labelTypes, matchAZLabel } from "../shared/LimesBadges";
 
 const projectTableHeadCells = [
   {
@@ -73,6 +76,9 @@ const quotaTableHeadCells = [
     label: "Actions",
   },
 ];
+const filterOpts = Object.freeze({
+  None: "none",
+});
 
 // Display the project details in DomainView
 const ProjectTable = (props) => {
@@ -86,9 +92,10 @@ const ProjectTable = (props) => {
   const { setTransferProject } = createCommitmentStoreActions();
   const { setCurrentProject } = createCommitmentStoreActions();
   const { setToast } = createCommitmentStoreActions();
-  const [filteredProjects, setFilteredProjects] = React.useState([]);
+  const [filteredProjects, setFilteredProjects] = React.useState(chunkProjects(projects));
+  const labelFilter = React.useRef(filterOpts.None);
+  const nameFilter = React.useRef("");
   const [currentPage, setCurrentPage] = React.useState(0);
-  const [input, setInput] = React.useState(null);
 
   if (!resourceTracksQuota && subRoute) return;
 
@@ -106,17 +113,6 @@ const ProjectTable = (props) => {
 
   // Tailwind only accepts complete class names as string, otherwise it won't create the corresponding CSS.
   const colSpan = "col-span-4";
-
-  // Refreshes our filtered data.
-  // Filter exsists => only set the projects to filter, not all projects.
-  React.useEffect(() => {
-    const chunkedProjects = chunkProjects(projects);
-    if (input) {
-      filterProjects(input);
-    } else {
-      setFilteredProjects(chunkedProjects);
-    }
-  }, [projects, input]);
 
   function updateShowCommitments(index) {
     const projects = [...filteredProjects];
@@ -136,19 +132,71 @@ const ProjectTable = (props) => {
     setFilteredProjects(projects);
   }
 
+  const { availableLabels, projectsPerLabel } = React.useMemo(() => {
+    if (subRoute) {
+      return { availableLabels: [], projectsPerLabel: new Map() };
+    }
+    const uniqueLabels = new Set([filterOpts.None]);
+    const matchingProjects = new Map();
+
+    projects.forEach((project) => {
+      project.categories[currentCategory].resources[0].per_az.forEach((az) => {
+        if (az.name !== currentAZ) return;
+        const matchingLabels = Object.values(labelTypes).filter((type) => matchAZLabel(az, type));
+        if (matchingLabels.length > 0) {
+          matchingLabels.forEach((label) => {
+            uniqueLabels.add(label);
+            if (!matchingProjects.has(label)) {
+              matchingProjects.set(label, []);
+            }
+            matchingProjects.get(label).push(project);
+          });
+        }
+      });
+    });
+
+    return { availableLabels: Array.from(uniqueLabels), projectsPerLabel: matchingProjects };
+  }, [currentAZ]);
+
+  function getProjectsToFilter() {
+    const projectsToFilter =
+      labelFilter.current == filterOpts.None ? projects : projectsPerLabel.get(labelFilter.current) || [];
+    return projectsToFilter;
+  }
+
   // Change the displayed projects corresponding to its filtered string
   // The show commitment state will be transferred to filtered projects.
-  function filterProjects(input) {
-    const regex = new RegExp(input.trim(), "i");
-    let filteredProjects = [];
-    const filtered = projects.filter((project) => {
+  function filterProjectsByName() {
+    const regex = new RegExp(nameFilter.current.trim(), "i");
+    const projectsToFilter = getProjectsToFilter();
+    const filteredProjects = projectsToFilter.filter((project) => {
       const filterName = scope.isCluster() ? project.metadata.fullName : project.metadata.name;
-      return regex.exec(filterName) || regex.exec(project.metadata.id);
+      const projectID = project.metadata.id;
+      const matchesNameOrID = regex.exec(filterName) || regex.exec(projectID);
+      return matchesNameOrID;
     });
-    filteredProjects.push(filtered);
-    const chunkedProjects = chunkProjects(filteredProjects[0]);
-    setFilteredProjects(chunkedProjects);
+    setFilteredProjects(chunkProjects(filteredProjects));
   }
+
+  function filterProjectsPerAZLabel() {
+    if (labelFilter.current == filterOpts.None) {
+      setFilteredProjects(chunkProjects(projects));
+    } else {
+      setFilteredProjects(chunkProjects(projectsPerLabel.get(labelFilter.current) || []));
+    }
+    setCurrentPage(0);
+  }
+
+  function filterProjectsPerNameOrLabel() {
+    if (nameFilter.current === "") {
+      filterProjectsPerAZLabel();
+    } else {
+      filterProjectsByName();
+    }
+  }
+  React.useEffect(() => {
+    filterProjectsPerNameOrLabel();
+  }, [currentAZ]);
 
   function handleCommitmentTransfer(project) {
     setTransferProject(project);
@@ -159,14 +207,33 @@ const ProjectTable = (props) => {
       <ContentAreaToolbar className={`p-0 sticky ${subRoute ? "top-8" : "top-24"} z-[100]`}>
         <Stack className="w-full mb-7" direction="horizontal" distribution="between">
           <Stack gap="1">
+            {!subRoute && (
+              <Select
+                className="w-40"
+                width="auto"
+                label="Filter"
+                placeholder={labelFilter.current}
+                onChange={(label) => {
+                  labelFilter.current = label;
+                  filterProjectsPerNameOrLabel();
+                }}
+              >
+                {Object.values(availableLabels).map((label) => (
+                  <SelectOption key={label}>{label}</SelectOption>
+                ))}
+              </Select>
+            )}
             <SearchInput
+              value={nameFilter.current}
               onChange={(e) => {
-                setInput(e.target.value);
+                nameFilter.current = e.target.value;
                 setCurrentPage(0);
-                filterProjects(e.target.value);
+                filterProjectsByName();
               }}
               onClear={() => {
-                setInput(null);
+                nameFilter.current = "";
+                setCurrentPage(0);
+                setFilteredProjects(chunkProjects(getProjectsToFilter()));
               }}
             />
             {!subRoute && (
@@ -183,15 +250,16 @@ const ProjectTable = (props) => {
           </Stack>
           <Pagination
             currentPage={currentPage + 1}
-            onPressNext={() => {
-              currentPage < filteredProjects.length - 1 && setCurrentPage(currentPage + 1);
+            onPressPrevious={(page) => {
+              setCurrentPage(page - 1);
             }}
-            onPressPrevious={() => currentPage > 0 && setCurrentPage(currentPage - 1)}
+            onPressNext={(page) => {
+              setCurrentPage(page - 1);
+            }}
             pages={filteredProjects.length}
-            onKeyPress={(e) => {
-              e.preventDefault();
-              const value = Number(e.target.value) - 1;
-              value < filteredProjects.length && value >= 0 && setCurrentPage(value);
+            onKeyPress={(page) => {
+              if (isNaN(page)) return;
+              setCurrentPage(page - 1);
             }}
             variant="input"
           />
