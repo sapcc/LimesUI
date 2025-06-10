@@ -95,7 +95,6 @@ const ProjectTable = (props) => {
   const labelFilter = React.useRef(filterOpts.None);
   const nameFilter = React.useRef("");
   const [currentPage, setCurrentPage] = React.useState(0);
-  console.log(sortProjectProps.projectsAreSortable)
 
   if (!resourceTracksQuota && subRoute) return;
 
