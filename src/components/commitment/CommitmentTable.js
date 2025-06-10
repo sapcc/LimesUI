@@ -28,6 +28,7 @@ const CommitmentTable = (props) => {
   const { filterCommitments } = useCommitmentFilter();
   const { commitment: newCommitment } = createCommitmentStore();
   const { commitmentIsFetching } = createCommitmentStore();
+  const commitmentTransferID = React.useRef(null);
   const { isCommitting } = createCommitmentStore();
   const { serviceType, currentCategory, currentResource, currentAZ, commitmentData, mergeOps } = {
     ...props,
@@ -127,6 +128,7 @@ const CommitmentTable = (props) => {
           currentCategory={currentCategory}
           currentResource={currentResource}
           currentAZ={currentAZ}
+          commitmentTransferID={commitmentTransferID}
           mergeOps={mergeOps}
         />
       ))}
