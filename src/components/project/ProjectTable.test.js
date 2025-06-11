@@ -158,5 +158,10 @@ describe("ProjectTable", () => {
     fireEvent.change(screen.getByTestId("Search"), { target: { value: "" } });
     expect(screen.getByText("domain1/Project1")).toBeInTheDocument();
     expect(screen.queryByText("domain2/Project2")).toBeInTheDocument();
+
+    // enforce an empty list
+    fireEvent.change(screen.getByTestId("Search"), { target: { value: "invalidSearchName" } });
+    expect(screen.queryByText("domain1/Project1")).not.toBeInTheDocument();
+    expect(screen.queryByText("domain2/Project2")).not.toBeInTheDocument();
   });
 });
