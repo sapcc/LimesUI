@@ -44,6 +44,7 @@ const ProjectsPerDomain = (props) => {
   const isLoading = projectQueries.some((query) => query.isLoading);
   // Refetches change the fetchStatus not the loading status.
   const isFetching = projectQueries.some((query) => query.isFetching);
+  const refetchTriggered = React.useRef(false);
   const { setRefetchProjectAPI } = projectStoreActions();
   const { refetchProjectAPI } = projectStore();
   const sortProjects = React.useRef(true);
@@ -71,7 +72,8 @@ const ProjectsPerDomain = (props) => {
         return project;
       })
     );
-    if (projects?.length > 0) {
+    if (projects?.length > 0 && refetchTriggered.current) {
+      refetchTriggered.current = false;
       enableSortActivities();
     }
     setProjects(flattendProjects, sortProjects.current);
@@ -82,6 +84,7 @@ const ProjectsPerDomain = (props) => {
     if (!refetchProjectAPI) return;
     setRefetchProjectAPI(false);
     sortProjects.current = false;
+    refetchTriggered.current = true;
     projectQueries.forEach((query) => {
       query.refetch();
     });
