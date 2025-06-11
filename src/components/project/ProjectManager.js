@@ -22,7 +22,8 @@ import { globalStoreActions, domainStoreActions, domainStore } from "../StorePro
 import { LoadingIndicator } from "@cloudoperators/juno-ui-components";
 
 const ProjectManager = (props) => {
-  const { serviceType, currentCategory, currentResource, currentAZ, subRoute, mergeOps } = props;
+  const { serviceType, currentCategory, currentResource, currentAZ, subRoute, sortProjectProps, mergeOps } = props;
+  const { enableSortActivities } = sortProjectProps;
   const resourceName = currentResource.name;
   const { refetchProjectAPI } = projectStore();
   const { setRefetchProjectAPI } = projectStoreActions();
@@ -34,6 +35,7 @@ const ProjectManager = (props) => {
   });
   const { data: projectsInDomain, isLoading } = projectsQueryResult;
   const sortProjects = React.useRef(true);
+  const refetchTriggered = React.useRef(false);
 
   // Fetch project data.
   // Only one project should show commitments at the same time. A variable gets added to the projects.
@@ -43,6 +45,10 @@ const ProjectManager = (props) => {
       return restructureReport(project);
     });
     setProjects(projects, sortProjects.current);
+    if (projects?.length > 0 && refetchTriggered.current) {
+      refetchTriggered.current = false;
+      enableSortActivities();
+    }
     sortProjects.current = true;
   }, [projectsInDomain]);
 
@@ -50,6 +56,7 @@ const ProjectManager = (props) => {
     if (!refetchProjectAPI) return;
     setRefetchProjectAPI(false);
     sortProjects.current = false;
+    refetchTriggered.current = true;
     projectsQueryResult.refetch();
   }, [refetchProjectAPI]);
 
@@ -61,6 +68,7 @@ const ProjectManager = (props) => {
       currentAZ={currentAZ}
       projects={projects}
       subRoute={subRoute}
+      sortProjectProps={sortProjectProps}
       mergeOps={mergeOps}
     />
   ) : (
