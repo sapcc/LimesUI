@@ -77,7 +77,7 @@ const quotaTableHeadCells = [
   },
 ];
 const filterOpts = Object.freeze({
-  None: "none",
+  Any: "any",
 });
 
 // Display the project details in DomainView
@@ -92,7 +92,7 @@ const ProjectTable = (props) => {
   const { setCurrentProject } = createCommitmentStoreActions();
   const { setToast } = createCommitmentStoreActions();
   const [filteredProjects, setFilteredProjects] = React.useState(chunkProjects(projects));
-  const labelFilter = React.useRef(filterOpts.None);
+  const labelFilter = React.useRef(filterOpts.Any);
   const nameFilter = React.useRef("");
   const [currentPage, setCurrentPage] = React.useState(0);
 
@@ -130,7 +130,7 @@ const ProjectTable = (props) => {
     if (subRoute) {
       return { availableLabels: [], projectsPerLabel: new Map() };
     }
-    const uniqueLabels = new Set([filterOpts.None]);
+    const uniqueLabels = new Set([filterOpts.Any]);
     const matchingProjects = new Map();
 
     projects.forEach((project) => {
@@ -154,7 +154,7 @@ const ProjectTable = (props) => {
 
   function getProjectsToFilter() {
     const projectsToFilter =
-      labelFilter.current == filterOpts.None ? projects : projectsPerLabel.get(labelFilter.current) || [];
+      labelFilter.current == filterOpts.Any ? projects : projectsPerLabel.get(labelFilter.current) || [];
     return projectsToFilter;
   }
 
@@ -195,6 +195,7 @@ const ProjectTable = (props) => {
           <Stack gap="1">
             {!subRoute && (
               <Select
+                data-testid="Filter"
                 className="w-40"
                 width="auto"
                 label="Filter"
@@ -210,6 +211,7 @@ const ProjectTable = (props) => {
               </Select>
             )}
             <SearchInput
+              data-testid="Search"
               value={nameFilter.current}
               onChange={(e) => {
                 nameFilter.current = e.target.value;
