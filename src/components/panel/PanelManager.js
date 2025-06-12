@@ -48,7 +48,7 @@ const PanelManager = (props) => {
   const { setDeleteCommitment } = createCommitmentStoreActions();
 
   React.useEffect(() => {
-    if (isEditableResource && currentResource) {
+    if ((isEditableResource || subRoute) && currentResource) {
       setIsEditing(true);
     }
     // reset state if user presses return button at the browser
@@ -75,30 +75,28 @@ const PanelManager = (props) => {
 
   //Durations get checked to avoid route call to uneditable resource.
   return (
-    (isEditableResource || subRoute) && (
-      <Panel
-        size="large"
-        opened={isEditing}
-        onClose={() => {
-          onPanelClose();
-          navigate(`/${currentArea}`);
-        }}
-        closeable={true}
-        heading={`Manage Committed Resources: ${t(categoryName)} - ${t(resourceName)}`}
-      >
-        <ErrorBoundary>
-          <EditPanel
-            {...props}
-            serviceType={serviceType}
-            currentResource={currentResource}
-            currentArea={currentArea}
-            currentCategory={categoryName}
-            subRoute={subRoute}
-            tracksQuota={resourceTracksQuota}
-          />
-        </ErrorBoundary>
-      </Panel>
-    )
+    <Panel
+      size="large"
+      opened={isEditing}
+      onClose={() => {
+        onPanelClose();
+        navigate(`/${currentArea}`);
+      }}
+      closeable={true}
+      heading={`Manage Committed Resources: ${t(categoryName)} - ${t(resourceName)}`}
+    >
+      <ErrorBoundary>
+        <EditPanel
+          {...props}
+          serviceType={serviceType}
+          currentResource={currentResource}
+          currentArea={currentArea}
+          currentCategory={categoryName}
+          subRoute={subRoute}
+          tracksQuota={resourceTracksQuota}
+        />
+      </ErrorBoundary>
+    </Panel>
   );
 };
 

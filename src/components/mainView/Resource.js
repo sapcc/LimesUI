@@ -107,7 +107,7 @@ const Resource = (props) => {
         <Stack
           className={`bar-title ${barTitle} w-full`}
           gap="1"
-          distribution={!editableResource && !isPanelView && "between"}
+          distribution={canEdit && !editableResource && "between"}
         >
           {displayName}
           {scope.isProject() && (

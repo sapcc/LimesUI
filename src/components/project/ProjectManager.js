@@ -34,6 +34,7 @@ const ProjectManager = (props) => {
     queryKey: ["projectsInDomain", serviceType, resourceName],
   });
   const { data: projectsInDomain, isLoading } = projectsQueryResult;
+  const projectsUpdated = React.useRef(false);
   const sortProjects = React.useRef(true);
   const refetchTriggered = React.useRef(false);
 
@@ -41,6 +42,7 @@ const ProjectManager = (props) => {
   // Only one project should show commitments at the same time. A variable gets added to the projects.
   React.useEffect(() => {
     if (!projectsInDomain) return;
+    projectsUpdated.current = false;
     const projects = projectsInDomain.projects.map((project) => {
       return restructureReport(project);
     });
@@ -49,6 +51,7 @@ const ProjectManager = (props) => {
       refetchTriggered.current = false;
       enableSortActivities();
     }
+    projectsUpdated.current = true;
     sortProjects.current = true;
   }, [projectsInDomain]);
 
@@ -60,7 +63,7 @@ const ProjectManager = (props) => {
     projectsQueryResult.refetch();
   }, [refetchProjectAPI]);
 
-  return !isLoading && projects ? (
+  return !isLoading && projects && projectsUpdated.current ? (
     <ProjectTable
       serviceType={serviceType}
       currentCategory={currentCategory}
