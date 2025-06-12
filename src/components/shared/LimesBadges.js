@@ -16,8 +16,15 @@
 
 import React from "react";
 import { Badge } from "@cloudoperators/juno-ui-components";
-import { unusedCommitments, uncommittedUsage } from "../../lib/utils";
 import { Unit, valueWithUnit } from "../../lib/unit";
+import { uncommittedUsage, unusedCommitments } from "../../lib/utils";
+
+export const labelTypes = Object.freeze({
+  PLANNED: "planned",
+  PENDING: "pending",
+  UNUSED: "unused",
+  UNCOMMITTED: "uncommitted",
+});
 
 const DomainBadges = (props) => {
   const { resource, az } = props;
@@ -25,16 +32,16 @@ const DomainBadges = (props) => {
   if (quota == 0) return;
   return (
     <span>
-      {unusedCommitments(az.commitmentSum, az.usage) && (
+      {matchAZLabel(az, labelTypes.UNUSED) && (
         <Badge variant="info">
           {" "}
-          <b>unused</b>
+          <b>{labelTypes.UNUSED}</b>
         </Badge>
       )}
-      {uncommittedUsage(az.commitmentSum, az.usage) && (
+      {matchAZLabel(az, labelTypes.UNCOMMITTED) && (
         <Badge variant="info">
           {" "}
-          <b>uncommitted</b>
+          <b>{labelTypes.UNCOMMITTED}</b>
         </Badge>
       )}
     </span>
@@ -43,6 +50,10 @@ const DomainBadges = (props) => {
 
 const ProjectBadges = (props) => {
   const { az, unit: unitName } = props;
+  if (!matchAZLabel(az, labelTypes.PLANNED) && !matchAZLabel(az, labelTypes.PENDING)) {
+    return;
+  }
+
   const unit = new Unit(unitName);
   const pending = az.pending_commitments;
   const planned = az.planned_commitments;
@@ -62,17 +73,36 @@ const ProjectBadges = (props) => {
       {pending && (
         <Badge variant="info">
           {" "}
-          <b>+ {props.displayValues && valueWithUnit(pendingAmount, unit)} pending</b>
+          <b>
+            + {props.displayValues && valueWithUnit(pendingAmount, unit)} {labelTypes.PENDING}
+          </b>
         </Badge>
       )}
       {planned && (
         <Badge variant="info" className={`${pending && "ml-1"}`}>
           {" "}
-          <b>+ {props.displayValues && valueWithUnit(plannedAmount, unit)} planned</b>
+          <b>
+            + {props.displayValues && valueWithUnit(plannedAmount, unit)} {labelTypes.PLANNED}
+          </b>
         </Badge>
       )}
     </span>
   );
 };
+
+export function matchAZLabel(az, label) {
+  switch (label) {
+    case labelTypes.PLANNED:
+      return az.hasOwnProperty("planned_commitments");
+    case labelTypes.PENDING:
+      return az.hasOwnProperty("pending_commitments");
+    case labelTypes.UNUSED:
+      return unusedCommitments(az.commitmentSum, az.usage);
+    case labelTypes.UNCOMMITTED:
+      return uncommittedUsage(az.commitmentSum, az.usage);
+    default:
+      return false;
+  }
+}
 
 export { DomainBadges, ProjectBadges };

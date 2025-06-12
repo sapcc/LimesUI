@@ -26,8 +26,13 @@ import { initialCommitmentObject } from "../../lib/constants";
 import { COMMITMENTID } from "../../lib/constants";
 import useResetCommitment from "../../hooks/useResetCommitment";
 
+const transferLabel = Object.freeze({
+  Move: "Move",
+  Selected: "Selected",
+});
+
 const CommitmentTableDetails = (props) => {
-  const { commitment, mergeOps } = props;
+  const { commitment, commitmentTransferID, mergeOps } = props;
   const {
     id,
     amount,
@@ -221,17 +226,20 @@ const CommitmentTableDetails = (props) => {
           <Stack gap="2">
             <Button
               size="small"
+              title={commitment.id == commitmentTransferID.current && `Please select a target project`}
               variant="primary"
               onClick={() => {
+                commitmentTransferID.current = commitment.id;
                 transferCommit();
               }}
               disabled={newCommitment?.id == id}
             >
-              Move
+              {commitment.id == commitmentTransferID.current ? transferLabel.Selected : transferLabel.Move}
             </Button>
             <Button
               size="small"
               onClick={() => {
+                commitmentTransferID.current = null;
                 resetCommitmentTransfer();
               }}
             >

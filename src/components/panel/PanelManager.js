@@ -21,7 +21,7 @@ import { tracksQuota } from "../../lib/utils";
 import { useParams, useNavigate } from "react-router";
 import { t, getCurrentResource } from "../../lib/utils";
 import { initialCommitmentObject } from "../../lib/constants";
-import { createCommitmentStore, createCommitmentStoreActions, domainStoreActions, globalStore } from "../StoreProvider";
+import { createCommitmentStore, createCommitmentStoreActions } from "../StoreProvider";
 import { ErrorBoundary } from "../../lib/ErrorBoundary";
 
 // Panel needs to be rendered first to enable the fading UI animation.
@@ -34,11 +34,7 @@ const PanelManager = (props) => {
   const currentResource = getCurrentResource(resources, resourceName);
   const isEditableResource = currentResource.commitment_config?.durations ?? false;
   const resourceTracksQuota = tracksQuota(currentResource);
-  const { setShowCommitments } = domainStoreActions();
   const { isEditing } = createCommitmentStore();
-  const { currentProject } = createCommitmentStore();
-  const project = React.useRef(currentProject);
-  const { scope } = globalStore();
   const { resetValidDurations } = createCommitmentStoreActions();
   const { setIsEditing } = createCommitmentStoreActions();
   const { setCommitment } = createCommitmentStoreActions();
@@ -60,16 +56,11 @@ const PanelManager = (props) => {
       setIsSubmitting(false);
       setTransferProject(null);
       setDeleteCommitment(null);
-      onPanelClose(project.current);
+      onPanelClose();
     };
   }, [currentResource]);
 
-  // This is a workaround hence the return statement of a useEffect apparently clears the store data first.
-  React.useEffect(() => {
-    project.current = currentProject;
-  }, [currentProject]);
-
-  function onPanelClose(currentProject) {
+  function onPanelClose() {
     setCommitment(initialCommitmentObject);
     setToast(null);
     // create commitment
@@ -80,10 +71,6 @@ const PanelManager = (props) => {
     // transfer commitment
     setTransferCommitment(false);
     setIsTransferring(false);
-    // Reset showCommitment on project
-    if (!scope.isProject() && currentProject) {
-      setShowCommitments(currentProject.metadata.id, false);
-    }
   }
 
   //Durations get checked to avoid route call to uneditable resource.
@@ -93,7 +80,7 @@ const PanelManager = (props) => {
         size="large"
         opened={isEditing}
         onClose={() => {
-          onPanelClose(currentProject);
+          onPanelClose();
           navigate(`/${currentArea}`);
         }}
         closeable={true}

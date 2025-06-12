@@ -86,6 +86,7 @@ const EditPanel = (props) => {
   const { setCommitmentIsLoading } = createCommitmentStoreActions();
   const conversionResults = useGetConversions({ serviceType, resourceName });
   const [currentAZ, setCurrentAZ] = React.useState(currentResource.per_az[0].name);
+  const [projectsAreSortable, setProjectsAreSortable] = React.useState(false);
   // Merge Commitments
   const [commitmentsToMerge, setCommitmentsToMerge] = React.useState([]);
   // The merge button is active if >= 2 commitments are available for the AZ.
@@ -132,6 +133,14 @@ const EditPanel = (props) => {
     );
   }, [isSubmitting]);
 
+  function enableSortActivities() {
+    if (!scope.isProject()) {
+      setToast("Order of projects might have updated. Please sort the table.", "info");
+      setProjectsAreSortable(true);
+    }
+  }
+  const sortProjectProps = { projectsAreSortable, setProjectsAreSortable, enableSortActivities };
+
   function postCommitment(confirm_by = null, notifyOnConfirm = false) {
     const currentProjectID = currentProject?.metadata?.id;
     const currentDomainID = scope.isCluster() ? currentProject.metadata.domainID : null;
@@ -143,8 +152,6 @@ const EditPanel = (props) => {
       { payload: { commitment: payload }, queryKey: [currentProjectID, currentDomainID] },
       {
         onSuccess: () => {
-          (scope.isDomain() || scope.isCluster()) &&
-            setToast("Order of projects might have updated. Please sort the table.", "info");
           setRefetchClusterAPI(true);
           setRefetchDomainAPI(true);
           setRefetchProjectAPI(true);
@@ -212,7 +219,6 @@ const EditPanel = (props) => {
       },
       {
         onSuccess: () => {
-          !scope.isProject() && setToast("Order of projects might have updated. Please sort the table.", "info");
           resetCommitmentTransfer();
           setRefetchClusterAPI(true);
           setRefetchDomainAPI(true);
@@ -400,6 +406,7 @@ const EditPanel = (props) => {
           currentResource={currentResource}
           currentAZ={currentAZ}
           subRoute={subRoute}
+          sortProjectProps={sortProjectProps}
           mergeOps={mergeForwardProps}
         />
       )}
@@ -410,6 +417,7 @@ const EditPanel = (props) => {
           currentResource={currentResource}
           currentAZ={currentAZ}
           subRoute={subRoute}
+          sortProjectProps={sortProjectProps}
           mergeOps={mergeForwardProps}
         />
       )}

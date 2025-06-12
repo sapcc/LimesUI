@@ -29,7 +29,8 @@ import { LoadingIndicator } from "@cloudoperators/juno-ui-components";
 
 const ProjectsPerDomain = (props) => {
   // Fetch project data for all domains
-  const { domains, serviceType, currentCategory, resource, currentAZ, subRoute, mergeOps } = props;
+  const { domains, serviceType, currentCategory, resource, currentAZ, subRoute, sortProjectProps, mergeOps } = props;
+  const { enableSortActivities } = sortProjectProps;
   const resourceName = resource.name;
   const { restructureReport } = globalStoreActions();
   const { setProjectsToDomain } = clusterStoreActions();
@@ -43,6 +44,7 @@ const ProjectsPerDomain = (props) => {
   const isLoading = projectQueries.some((query) => query.isLoading);
   // Refetches change the fetchStatus not the loading status.
   const isFetching = projectQueries.some((query) => query.isFetching);
+  const refetchTriggered = React.useRef(false);
   const { setRefetchProjectAPI } = projectStoreActions();
   const { refetchProjectAPI } = projectStore();
   const sortProjects = React.useRef(true);
@@ -70,6 +72,10 @@ const ProjectsPerDomain = (props) => {
         return project;
       })
     );
+    if (projects?.length > 0 && refetchTriggered.current) {
+      refetchTriggered.current = false;
+      enableSortActivities();
+    }
     setProjects(flattendProjects, sortProjects.current);
     projectsUpdated.current = true;
   }, [isFetching]);
@@ -78,6 +84,7 @@ const ProjectsPerDomain = (props) => {
     if (!refetchProjectAPI) return;
     setRefetchProjectAPI(false);
     sortProjects.current = false;
+    refetchTriggered.current = true;
     projectQueries.forEach((query) => {
       query.refetch();
     });
@@ -91,6 +98,7 @@ const ProjectsPerDomain = (props) => {
       currentAZ={currentAZ}
       projects={projects}
       subRoute={subRoute}
+      sortProjectProps={sortProjectProps}
       mergeOps={mergeOps}
     />
   ) : (
