@@ -1,5 +1,17 @@
 # @sapcc/limes-ui
 
+## 1.8.0
+
+### Minor Changes
+
+- 3505cd6: rework resource bars and their value calculation
+- 46de594: Domain/Cluster level: Add project filtering by label. Improve clearance for commitment transfer"
+
+### Patch Changes
+
+- a056af4: fix: max_quota visiblity for users without edit permissions. Fix: edit panel display when switching between panels on domain level.
+- 7540531: Add resource bar unit test. Checks the behavior for reported 0 value quota
+
 ## 1.7.1
 
 ### Patch Changes
