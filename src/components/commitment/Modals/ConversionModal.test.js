@@ -20,6 +20,20 @@ import { PortalProvider } from "@cloudoperators/juno-ui-components";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { initialCommitmentObject } from "../../../lib/constants";
 
+class ResizeObserver {
+  observe() {
+    () => {};
+  }
+  unobserve() {
+    () => {};
+  }
+  disconnect() {
+    () => {};
+  }
+}
+
+window.ResizeObserver = ResizeObserver;
+
 const conversionResults = {
   data: {
     conversions: [

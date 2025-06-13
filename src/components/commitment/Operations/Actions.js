@@ -17,7 +17,7 @@
 import React from "react";
 import ToolTipWrapper from "../../shared/ToolTipWrapper";
 import useCommitmentFilter from "../../../hooks/useCommitmentFilter";
-import { PopupMenu, Icon, Stack } from "@cloudoperators/juno-ui-components";
+import { PopupMenu, PopupMenuOptions, Icon, Stack } from "@cloudoperators/juno-ui-components";
 import useDeleteAction from "./useDeleteAction";
 import useTransferAction from "./useTransferAction";
 import useConversionAction from "./useConversionAction";
@@ -72,11 +72,11 @@ const Actions = (props) => {
       ) : (
         commitmentActions.length > 0 && (
           <PopupMenu className="h-4">
-            <PopupMenu.Menu className="border-solid border-2 border-juno-grey-light-9">
+            <PopupMenuOptions className="border-solid border-2 border-juno-grey-light-9">
               {commitmentActions.map((action) => {
                 return <div key={action.key}> {action.menuItem} </div>;
               })}
-            </PopupMenu.Menu>
+            </PopupMenuOptions>
           </PopupMenu>
         )
       )}
