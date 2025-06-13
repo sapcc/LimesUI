@@ -26,6 +26,20 @@ import { initialCommitmentObject } from "../../lib/constants";
 import { COMMITMENTID } from "../../lib/constants";
 import useResetCommitment from "../../hooks/useResetCommitment";
 
+class ResizeObserver {
+  observe() {
+    () => {};
+  }
+  unobserve() {
+    () => {};
+  }
+  disconnect() {
+    () => {};
+  }
+}
+
+window.ResizeObserver = ResizeObserver;
+
 const transferLabel = Object.freeze({
   Move: "Move",
   Selected: "Selected",

@@ -15,18 +15,18 @@
  */
 
 import React from "react";
-import { PopupMenu } from "@cloudoperators/juno-ui-components/index";
+import { PopupMenuItem } from "@cloudoperators/juno-ui-components/index";
 const MenuItemBuilder = (props) => {
   const { icon, text, callBack } = props;
 
   return (
-    <PopupMenu.Item
+    <PopupMenuItem
       onClick={() => {
         callBack();
       }}
       icon={icon}
       label={text}
-    ></PopupMenu.Item>
+    ></PopupMenuItem>
   );
 };
 
