@@ -20,12 +20,6 @@ import { AppShell, AppShellProvider, Message, LoadingIndicator } from "@cloudope
 import StoreProvider, { apiStore, apiStoreActions, globalStoreActions } from "./components/StoreProvider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import styles from "./styles.scss";
-import { fetchProxyInitDB } from "@cloudoperators/juno-utils";
-import projectApiDB from "./lib/fixtures/limes_project_api.json";
-import cerebroApiDB from "./lib/fixtures/cerebro_api.json";
-import commitmentApiDB from "./lib/fixtures/limes_commitment_api.json";
-import clusterApiDB from "./lib/fixtures/cluster_api.json";
-import domainAPIDB from "./lib/fixtures/domain_api.json";
 import dayPickerStyle from "react-day-picker/dist/style.css?inline";
 import AsyncWorker from "./AsyncWorker";
 import { Scope } from "./lib/scope";
@@ -96,34 +90,6 @@ const App = (props = {}) => {
       setTokenError(false);
     }
   }, [token]);
-
-  React.useEffect(() => {
-    if (props.mockAPI) {
-      fetchProxyInitDB(
-        {
-          projects: [projectApiDB],
-          domains: [domainAPIDB],
-          cluster: [clusterApiDB],
-          projectCommitments: commitmentApiDB.projectCommitments,
-          cerebro: [cerebroApiDB],
-        },
-        {
-          debug: true,
-          // replaces routes with a path to match the mock keys.
-          // providing an ID causes the mock to return as an object instead of an Array.
-          // ${x} refers to the x'th place of the subroute's generic entries.
-          // example: $2 in "/(.*)/projects/(.*)" => {projectID}
-          rewriteRoutes: {
-            "/v1/clusters/current*": "/cluster/qa_cluster",
-            "/v1/domains/(.*)/projects/(.*)/commitments": "/projectCommitments/$2/commitments",
-            "/v1/domains/(.*)/projects/(.*)": "/projects/$2",
-            "(.*)/(.*)/resources/project/bigvm_resources": "/cerebro/bigvm_resources",
-            "/v1/domains": "/domains/clusterDomainID1",
-          },
-        }
-      );
-    }
-  }, [props.mockAPI]);
 
   return tokenError ? (
     <Message>Failed to fetch a token. Please provide a token as property or provide a getTokenFunc.</Message>
