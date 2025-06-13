@@ -136,11 +136,11 @@ describe("test Action Operation", () => {
     act(() => {
       result.current.globalStoreActions.setScope(scope);
     });
-    
+
     const contextMenu = await waitFor(() => {
       return screen.getByTitle(/more/i);
     });
- 
+
     userEvent.click(contextMenu);
     await waitFor(() => {
       expect(screen.queryByText(/transfer/i)).not.toBe(null);
