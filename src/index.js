@@ -17,12 +17,22 @@
 import { createRoot } from "react-dom/client";
 import React from "react";
 
-// export mount and unmount functions
-export const mount = (container, options = {}) => {
-  import("./App").then((App) => {
-    mount.root = createRoot(container);
-    mount.root.render(React.createElement(App.default, options?.props));
-  });
+const enableMocking = async (options) => {
+  if (!options.isMockApi) {
+    return;
+  }
+  const { startWorker } = await import("./lib/mocks/browser");
+  return startWorker(options);
+};
+
+export const mount = async (container, options = {}) => {
+  const isMockApi = options?.props?.mockAPI || false;
+  const defaultEndpoint = "https://" + window.location.host;
+  const endpoint = options?.props?.endpoint || defaultEndpoint;
+  await enableMocking({ endpoint, defaultEndpoint, isMockApi });
+  const App = await import("./App");
+  mount.root = createRoot(container);
+  mount.root.render(React.createElement(App.default, { ...options?.props, endpoint }));
 };
 
 export const unmount = () => mount.root && mount.root.unmount();

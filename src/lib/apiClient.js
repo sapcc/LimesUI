@@ -16,14 +16,13 @@
 
 import React from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { fetchProxy } from "@cloudoperators/juno-utils";
 import { apiStore, apiStoreActions } from "../components/StoreProvider";
 import { getCerebroBaseURL } from "./scope";
 
 // Requeues are caused by window focus refetching.
 // More details: https://tanstack.com/query/v4/docs/react/guides/window-focus-refetching
 
-const useQueryClientFn = (isMockApi) => {
+const useQueryClientFn = () => {
   const queryClient = useQueryClient();
   const globalAPI = apiStore();
   const { setApiReady } = apiStoreActions();
@@ -47,10 +46,9 @@ const useQueryClientFn = (isMockApi) => {
       queryFn: async ({ queryKey }) => {
         queryKey[1] ? (pid = queryKey[1]) : (pid = projectID);
         const url = `${endpoint}/v1/domains/${domainID}/projects/${pid}`;
-        const response = await fetchProxy(url, {
+        const response = await fetch(url, {
           method: "GET",
           headers: { Accept: "application/json", "X-Limes-V2-API-Preview": "per-az", "X-Auth-Token": token },
-          ...{ mock: isMockApi },
         });
         return responseHandler(response);
       },
@@ -61,10 +59,9 @@ const useQueryClientFn = (isMockApi) => {
         queryKey[1] ? (pid = queryKey[1]) : (pid = projectID);
         queryKey[2] ? (did = queryKey[2]) : (did = domainID);
         const url = `${endpoint}/v1/domains/${did}/projects/${pid}/commitments`;
-        const response = await fetchProxy(url, {
+        const response = await fetch(url, {
           method: "GET",
           headers: { Accept: "application/json", "X-Limes-V2-API-Preview": "per-az", "X-Auth-Token": token },
-          ...{ mock: isMockApi },
         });
         return responseHandler(response);
       },
@@ -152,10 +149,9 @@ const useQueryClientFn = (isMockApi) => {
       queryFn: async ({ queryKey }) => {
         const { serviceType, resourceName } = queryKey[1];
         const url = `${endpoint}/v1/commitment-conversion/${serviceType}/${resourceName}`;
-        const response = await fetchProxy(url, {
+        const response = await fetch(url, {
           method: "GET",
           headers: { Accept: "application/json", "X-Auth-Token": token },
-          ...{ mock: isMockApi },
         });
         return responseHandler(response);
       },
@@ -166,7 +162,7 @@ const useQueryClientFn = (isMockApi) => {
         projID ? (pid = projID) : (pid = projectID);
         domID ? (did = domID) : (did = domainID);
         const url = `${endpoint}/v1/domains/${did}/projects/${pid}/commitments/${commitmentID}/convert`;
-        const response = await fetchProxy(url, {
+        const response = await fetch(url, {
           method: "POST",
           headers: { Accept: "application/json", "X-Auth-Token": token },
           body: JSON.stringify(payload),
@@ -180,7 +176,7 @@ const useQueryClientFn = (isMockApi) => {
         projID ? (pid = projID) : (pid = projectID);
         domID ? (did = domID) : (did = domainID);
         const url = `${endpoint}/v1/domains/${did}/projects/${pid}/commitments/${commitmentID}/update-duration`;
-        const response = await fetchProxy(url, {
+        const response = await fetch(url, {
           method: "POST",
           headers: { Accept: "application/json", "X-Auth-Token": token },
           body: JSON.stringify(payload),
@@ -192,7 +188,7 @@ const useQueryClientFn = (isMockApi) => {
     queryClient.setMutationDefaults(["mergeCommitments"], {
       mutationFn: async ({ domainID, projectID, payload }) => {
         const url = `${endpoint}/v1/domains/${domainID}/projects/${projectID}/commitments/merge`;
-        const response = await fetchProxy(url, {
+        const response = await fetch(url, {
           method: "POST",
           headers: { Accept: "application/json", "X-Auth-Token": token },
           body: JSON.stringify(payload),
@@ -212,10 +208,9 @@ const useQueryClientFn = (isMockApi) => {
       queryFn: async ({ queryKey }) => {
         queryKey[1] ? (dID = queryKey[1]) : (dID = domainID);
         const url = `${endpoint}/v1/domains/${dID}`;
-        const response = await fetchProxy(url, {
+        const response = await fetch(url, {
           method: "GET",
           headers: { Accept: "application/json", "X-Limes-V2-API-Preview": "per-az", "X-Auth-Token": token },
-          ...{ mock: isMockApi },
         });
         return responseHandler(response);
       },
@@ -226,10 +221,9 @@ const useQueryClientFn = (isMockApi) => {
         const resource = queryKey[2];
         queryKey[3] ? (dID = queryKey[3]) : (dID = domainID);
         const url = `${endpoint}/v1/domains/${dID}/projects?service=${service}&resource=${resource}`;
-        const response = await fetchProxy(url, {
+        const response = await fetch(url, {
           method: "GET",
           headers: { Accept: "application/json", "X-Limes-V2-API-Preview": "per-az", "X-Auth-Token": token },
-          ...{ mock: isMockApi },
         });
         return responseHandler(response);
       },
@@ -239,7 +233,7 @@ const useQueryClientFn = (isMockApi) => {
       mutationFn: async ({ payload, domainID: domID, projectID, commitmentID }) => {
         domID ? (dID = domID) : (dID = domainID);
         const url = `${endpoint}/v1/domains/${dID}/projects/${projectID}/commitments/${commitmentID}/start-transfer`;
-        const response = await fetchProxy(url, {
+        const response = await fetch(url, {
           method: "POST",
           headers: { Accept: "application/json", "X-Auth-Token": token },
           body: JSON.stringify(payload),
@@ -252,7 +246,7 @@ const useQueryClientFn = (isMockApi) => {
       mutationFn: async ({ domainID: domID, projectID, commitmentID, transferToken }) => {
         domID ? (dID = domID) : (dID = domainID);
         const url = `${endpoint}/v1/domains/${dID}/projects/${projectID}/transfer-commitment/${commitmentID}`;
-        const response = await fetchProxy(url, {
+        const response = await fetch(url, {
           method: "POST",
           headers: { Accept: "application/json", "X-Auth-Token": token, "Transfer-Token": transferToken },
         });
@@ -269,10 +263,9 @@ const useQueryClientFn = (isMockApi) => {
       queryFn: async ({ queryKey }) => {
         const isDetail = queryKey[1];
         const url = isDetail ? `${endpoint}/v1/clusters/current?detail` : `${endpoint}/v1/clusters/current`;
-        const response = await fetchProxy(url, {
+        const response = await fetch(url, {
           method: "GET",
           headers: { Accept: "application/json", "X-Limes-V2-API-Preview": "per-az", "X-Auth-Token": token },
-          ...{ mock: isMockApi },
         });
         return responseHandler(response);
       },
@@ -283,10 +276,9 @@ const useQueryClientFn = (isMockApi) => {
         const resource = queryKey[2];
         // sending an empty queryString results in the domains without any resources attached to them.
         const url = `${endpoint}/v1/domains?service=${service}&resource=${resource}`;
-        const response = await fetchProxy(url, {
+        const response = await fetch(url, {
           method: "GET",
           headers: { Accept: "application/json", "X-Limes-V2-API-Preview": "per-az", "X-Auth-Token": token },
-          ...{ mock: isMockApi },
         });
         return responseHandler(response);
       },
@@ -298,17 +290,14 @@ const useQueryClientFn = (isMockApi) => {
     queryClient.setQueryDefaults(["cerebro"], {
       queryFn: async () => {
         // Don't retrieve a token in dev to ensure the mocks work.
-        const token = isMockApi
-          ? null
-          : [...document.querySelectorAll("meta")].find((n) => n.name.toLowerCase() == "csrf-token").content;
-        const host = isMockApi ? "host" : window.location.host;
-        const path = isMockApi ? "/domain/project/resources/project" : getCerebroBaseURL();
+        const token = [...document.querySelectorAll("meta")].find((n) => n.name.toLowerCase() == "csrf-token")?.content;
+        const host = window.location.host;
+        const path = getCerebroBaseURL();
 
         const url = `https://${host}${path}/bigvm_resources`;
-        const response = await fetchProxy(url, {
+        const response = await fetch(url, {
           method: "GET",
           headers: { "X-Requested-With": "XMLHttpRequest", "X-CSRF-Token": token },
-          ...{ mock: isMockApi },
         });
         return responseHandler(response, false);
       },
@@ -321,10 +310,9 @@ const useQueryClientFn = (isMockApi) => {
       queryFn: async ({ queryKey }) => {
         const transferToken = queryKey[1];
         const url = `${endpoint}/v1/commitments/${transferToken}`;
-        const response = await fetchProxy(url, {
+        const response = await fetch(url, {
           method: "GET",
           headers: { Accept: "application/json", "X-Limes-V2-API-Preview": "per-az", "X-Auth-Token": token },
-          ...{ mock: isMockApi },
         });
         return responseHandler(response);
       },

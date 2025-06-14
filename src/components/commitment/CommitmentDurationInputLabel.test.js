@@ -19,6 +19,20 @@ import { PortalProvider, Select } from "@cloudoperators/juno-ui-components";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import CommitmentDurationInputLabel from "./CommitmentDurationInputLabel";
 
+class ResizeObserver {
+  observe() {
+    () => {};
+  }
+  unobserve() {
+    () => {};
+  }
+  disconnect() {
+    () => {};
+  }
+}
+
+window.ResizeObserver = ResizeObserver;
+
 describe("test duration input label", () => {
   const selectErrors = console.error.bind(console);
   beforeAll(() => {

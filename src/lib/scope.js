@@ -31,7 +31,8 @@ const cerebroBaseRx = new RegExp("/v2/.+");
 export const getCerebroBaseURL = () => {
   const basePath = window.location.pathname;
   // Cerebro does not have the v2 suffix on its path.
-  const fixedBasePath = basePath.replace(cerebroBaseRx.exec(window.location.pathname)[0], "/project");
+  const match = cerebroBaseRx.exec(window.location.pathname);
+  const fixedBasePath = match ? basePath.replace(match[0], "/project") : "";
   return fixedBasePath;
 };
 
