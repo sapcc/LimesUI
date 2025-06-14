@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -33,23 +33,23 @@
     </style>
     <script>
       // automatically reload on build changes
-      new EventSource("/esbuild").addEventListener("change", () =>
-        location.reload()
-      )
+      new EventSource("/esbuild").addEventListener("change", () => location.reload());
     </script>
   </head>
   <body>
     <script type="module">
       // appProps are generated in development env and added to the build
-      import appProps from "./build/appProps.js"
-      appProps.getTokenFuncName = "_getCurrentToken"
-      window._getCurrentToken = async () => { return {authToken: appProps.token}}
+      import appProps from "./build/appProps.js";
+      appProps.getTokenFuncName = "_getCurrentToken";
+      window._getCurrentToken = async () => {
+        return { authToken: appProps.token };
+      };
       import("./build/index.js").then((app) => {
-        app.mount(document.getElementById("root"), { props: appProps })
-      })
+        app.mount(document.getElementById("root"), { props: appProps });
+      });
       import("./build/quotaPlugin.js").then((app) => {
-        app.mount(document.getElementById("quotaPlugin"), { props: appProps })
-      })
+        app.mount(document.getElementById("quotaPlugin"), { props: appProps });
+      });
     </script>
     <div id="quotaPlugin" data-juno-app="limesUI"></div>
     <div id="root" data-juno-app="limesUI"></div>
