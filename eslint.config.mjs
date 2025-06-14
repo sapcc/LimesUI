@@ -61,6 +61,7 @@ export default [
       "coverage/*",
       "cypress.config.js",
       "helpers/*",
+      "public/*",
       "esbuild.config.js",
       "tailwind.config.js"
     ],
