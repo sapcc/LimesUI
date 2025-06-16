@@ -4,5 +4,4 @@ node_modules
 /public/build/
 secretProps.json
 build/
-package-lock.json
 coverage/
