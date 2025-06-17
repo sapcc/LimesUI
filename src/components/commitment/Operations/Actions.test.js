@@ -24,20 +24,6 @@ import { PortalProvider } from "@cloudoperators/juno-ui-components";
 import StoreProvider from "../../StoreProvider";
 import Actions from "./Actions";
 
-class ResizeObserver {
-  observe() {
-    () => {};
-  }
-  unobserve() {
-    () => {};
-  }
-  disconnect() {
-    () => {};
-  }
-}
-
-window.ResizeObserver = ResizeObserver;
-
 describe("test Action Operation", () => {
   test("should render delete action", async () => {
     const commitment = { ...initialCommitmentObject };

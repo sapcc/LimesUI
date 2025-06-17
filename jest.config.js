@@ -1,7 +1,7 @@
 module.exports = {
   transform: { "\\.[jt]sx?$": "babel-jest" },
   testEnvironment: "jsdom",
-  setupFilesAfterEnv: ["<rootDir>/setupTests.js"],
+  setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],
   transformIgnorePatterns: [
     "node_modules/(?!(@cloudoperators/juno-ui-components|@cloudoperators/juno-communicator|@cloudoperators/juno-messages-provider|@cloudoperators/juno-url-state-provider-v1)/)",
   ],

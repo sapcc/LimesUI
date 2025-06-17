@@ -21,20 +21,6 @@ import { PortalProvider } from "@cloudoperators/juno-ui-components";
 import StoreProvider, { createCommitmentStore, createCommitmentStoreActions } from "../../StoreProvider";
 import { initialCommitmentObject } from "../../../lib/constants";
 
-class ResizeObserver {
-  observe() {
-    () => {};
-  }
-  unobserve() {
-    () => {};
-  }
-  disconnect() {
-    () => {};
-  }
-}
-
-window.ResizeObserver = ResizeObserver;
-
 const commitment = { ...initialCommitmentObject };
 
 describe("check update duration modal", () => {

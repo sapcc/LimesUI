@@ -24,20 +24,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { inconsistentInfoText, renewableInfoText, missingRole } from "./CommitmentRenewal";
 import RenewalManager from "./RenewalManager";
 
-class ResizeObserver {
-  observe() {
-    () => {};
-  }
-  unobserve() {
-    () => {};
-  }
-  disconnect() {
-    () => {};
-  }
-}
-
-window.ResizeObserver = ResizeObserver;
-
 const queryClient = new QueryClient({ defaultOptions: { queries: { retry: 0 } } });
 queryClient.setQueryDefaults(["renewCommitment"], {
   queryFn: () => {
