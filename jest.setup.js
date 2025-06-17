@@ -11,3 +11,18 @@ if (!globalThis.TextEncoder || !globalThis.TextDecoder) {
   globalThis.TextEncoder = TextEncoder;
   globalThis.TextDecoder = TextDecoder;
 }
+
+// Beginning with Juno v4, testcases require an ResizeOberver to be present
+class ResizeObserver {
+  observe() {
+    () => {};
+  }
+  unobserve() {
+    () => {};
+  }
+  disconnect() {
+    () => {};
+  }
+}
+
+window.ResizeObserver = ResizeObserver;

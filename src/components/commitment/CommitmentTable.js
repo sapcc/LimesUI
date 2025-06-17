@@ -21,6 +21,7 @@ import useSortTableData from "../../hooks/useSortTable";
 import useCommitmentFilter from "../../hooks/useCommitmentFilter";
 import { createCommitmentStore } from "../StoreProvider";
 import { CustomZones } from "../../lib/constants";
+import { COMMITMENTID } from "../../lib/constants";
 
 const CommitmentTable = (props) => {
   const durations = props.resource.commitment_config.durations;
@@ -59,18 +60,18 @@ const CommitmentTable = (props) => {
     },
     {
       key: "starts_at",
-      label: "Starts at",
+      label: "Start",
       sortValueFn: initialSortConfig["starts_at"].sortValueFn,
       sortStrategy: initialSortConfig["starts_at"].sortStrategy,
     },
     {
       key: "confirmed_at",
-      label: "Confirmed at",
+      label: "Confirmed",
       sortStrategy: "numeric",
     },
     {
       key: "expires_at",
-      label: "Expires at",
+      label: "Expires",
       sortStrategy: "numeric",
     },
     {
@@ -89,15 +90,20 @@ const CommitmentTable = (props) => {
   //Add or remove edit commitment row.
   const filteredCommitments = React.useMemo(() => {
     const filteredData = filterCommitments(resourceName, currentAZ);
-    if (!isCommitting) {
-      return filteredData;
-    }
-    newCommitment.unit = unit;
-    filteredData.unshift(newCommitment);
     return filteredData;
-  }, [commitmentData, currentAZ, resourceName, isCommitting]);
+  }, [commitmentData, currentAZ, resourceName]);
 
   const { items, TableSortHeader } = useSortTableData(filteredCommitments, initialSortConfig);
+
+  const parsedItems = React.useMemo(() => {
+    if (!isCommitting) {
+      items[0].id === COMMITMENTID && items.shift();
+      return items;
+    }
+    newCommitment.unit = unit;
+    items.unshift(newCommitment);
+    return items;
+  }, [items, isCommitting]);
 
   React.useEffect(() => {
     filteredCommitments.length >= 2 ? setMergeIsActive(true) : setMergeIsActive(false);
@@ -119,7 +125,7 @@ const CommitmentTable = (props) => {
         ))}
       </DataGridRow>
 
-      {items.map((commitment) => (
+      {parsedItems.map((commitment) => (
         <CommitmentTableDetails
           key={commitment.id}
           commitment={commitment}

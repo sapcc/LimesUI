@@ -17,7 +17,8 @@
 import React from "react";
 import { createCommitmentStore, createCommitmentStoreActions, globalStoreActions } from "../../StoreProvider";
 import { initialCommitmentObject } from "../../../lib/constants";
-import { act, fireEvent, renderHook, screen, waitFor } from "@testing-library/react";
+import { act, renderHook, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { Scope } from "../../../lib/scope";
 import { PortalProvider } from "@cloudoperators/juno-ui-components";
 import StoreProvider from "../../StoreProvider";
@@ -54,7 +55,7 @@ describe("test Action Operation", () => {
     const contextMenu = await waitFor(() => {
       return screen.getByTitle(/more/i);
     });
-    fireEvent.click(contextMenu);
+    userEvent.click(contextMenu);
     await waitFor(() => {
       expect(screen.queryByText("Delete")).not.toBe(null);
     });
@@ -89,7 +90,7 @@ describe("test Action Operation", () => {
       return screen.getByTitle(/more/i);
     });
     await waitFor(() => {
-      fireEvent.click(contextMenu);
+      userEvent.click(contextMenu);
       expect(screen.queryByText(/convert/i)).not.toBe(null);
     });
   });
@@ -121,10 +122,12 @@ describe("test Action Operation", () => {
     act(() => {
       result.current.globalStoreActions.setScope(scope);
     });
+
     const contextMenu = await waitFor(() => {
       return screen.getByTitle(/more/i);
     });
-    fireEvent.click(contextMenu);
+
+    userEvent.click(contextMenu);
     await waitFor(() => {
       expect(screen.queryByText(/transfer/i)).not.toBe(null);
     });
@@ -157,7 +160,7 @@ describe("test Action Operation", () => {
     const contextMenu = await waitFor(() => {
       return screen.getByTitle(/more/i);
     });
-    fireEvent.click(contextMenu);
+    userEvent.click(contextMenu);
     await waitFor(() => {
       expect(screen.queryByText(/edit/i)).not.toBe(null);
     });

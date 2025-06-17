@@ -1,5 +1,5 @@
 /**
- * Copyright 2024 SAP SE
+ * Copyright 2025 SAP SE
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,20 +14,12 @@
  * limitations under the License.
  */
 
-import React from "react";
-import { PopupMenuItem } from "@cloudoperators/juno-ui-components/index";
-const MenuItemBuilder = (props) => {
-  const { icon, text, callBack } = props;
+import { setupWorker } from "msw/browser";
+import handlers from "./handlers";
 
-  return (
-    <PopupMenuItem
-      onClick={() => {
-        callBack();
-      }}
-      icon={icon}
-      label={text}
-    ></PopupMenuItem>
-  );
+let worker = null;
+
+export const startWorker = (options) => {
+  worker = setupWorker(...handlers(options));
+  return worker.start();
 };
-
-export default MenuItemBuilder;
