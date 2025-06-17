@@ -123,6 +123,91 @@ describe("EditPanel tests", () => {
     expect(screen.getByTestId("maxQuotaEdit")).toBeInTheDocument();
   });
 
+  test("Add commitment", async () => {
+    const scope = new Scope({ projectID: "123", domainID: "456" });
+    const resource = {
+      name: "testResource",
+      commitment_config: { durations: ["1 year", "3 years"] },
+      quota: 500,
+      capacity: 0,
+      commitmentSum: 10,
+      per_az: [{ name: "az_1", projects_usage: 10, quota: 20 }],
+    };
+    const wrapper = ({ children }) => (
+      <PortalProvider>
+        <StoreProvider>
+          <QueryClientProvider client={queryClient}>
+            <EditPanel serviceType="testService" currentResource={resource} tracksQuota={true} />
+            {children}
+          </QueryClientProvider>
+        </StoreProvider>
+      </PortalProvider>
+    );
+    const { result, rerender } = await waitFor(() => {
+      return renderHook(
+        () => ({
+          globalStoreActions: globalStoreActions(),
+          projectStoreActions: projectStoreActions(),
+          clusterStoreActions: clusterStoreActions(),
+          domainStoreActions: domainStoreActions(),
+          commitmentStore: createCommitmentStore(),
+          commitmentStoreActions: createCommitmentStoreActions(),
+        }),
+        { wrapper }
+      );
+    });
+
+    // Commitment add row should be visible with commitments already present.
+    const commitments = [
+      {
+        id: 1,
+        duration: "1 year",
+        service_type: "testService",
+        resource_name: "testResource",
+        availability_zone: "az_1",
+        amount: 1,
+        unit: "MiB",
+        duration: "1 year",
+      },
+    ];
+    act(() => {
+      result.current.globalStoreActions.setScope(scope);
+      result.current.projectStoreActions.setCommitments(commitments);
+    });
+    const addCommitment1 = screen.getByTestId("addCommitment");
+    fireEvent.click(addCommitment1);
+    await waitFor(() => {
+      expect(screen.getByTestId("addCommitment")).toBeDisabled();
+      expect(screen.getByTestId("commitmentSave")).toBeInTheDocument();
+    });
+    const cancelCommitment1 = screen.getByTestId("commitmentCancel");
+    fireEvent.click(cancelCommitment1);
+    await waitFor(() => {
+      expect(screen.getByTestId("addCommitment")).toBeEnabled();
+      expect(screen.queryByTestId("commitmentSave")).not.toBeInTheDocument();
+    });
+
+    // Commitment add row should be visible with no commitments present.
+    rerender();
+    act(() => {
+      result.current.globalStoreActions.setScope(scope);
+      result.current.projectStoreActions.setCommitments([]);
+    });
+
+    const addCommitment2 = screen.getByTestId("addCommitment");
+    fireEvent.click(addCommitment2);
+    await waitFor(() => {
+      expect(screen.getByTestId("addCommitment")).toBeDisabled();
+      expect(screen.getByTestId("commitmentSave")).toBeInTheDocument();
+    });
+    const cancelCommitment2 = screen.getByTestId("commitmentCancel");
+    fireEvent.click(cancelCommitment2);
+    await waitFor(() => {
+      expect(screen.getByTestId("addCommitment")).toBeEnabled();
+      expect(screen.queryByTestId("commitmentSave")).not.toBeInTheDocument();
+    });
+  });
+
   test("Commitment merging", async () => {
     const now = moment().utc() - 1;
     const scope = new Scope({ projectID: "123", domainID: "456" });

@@ -29,6 +29,7 @@ const AddCommitments = (props) => {
 
   return (
     <Button
+      data-testid="addCommitment"
       data-cy="addCommitment"
       onClick={() => {
         // On Cluster/Domain View a project can be transferred, therefore we reset it first

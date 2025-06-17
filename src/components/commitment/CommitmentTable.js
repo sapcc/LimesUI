@@ -96,13 +96,14 @@ const CommitmentTable = (props) => {
   const { items, TableSortHeader } = useSortTableData(filteredCommitments, initialSortConfig);
 
   const parsedItems = React.useMemo(() => {
+    let newItems = [...items];
     if (!isCommitting) {
-      items[0].id === COMMITMENTID && items.shift();
-      return items;
+      newItems[0]?.id === COMMITMENTID && newItems.shift();
+      return newItems;
     }
     newCommitment.unit = unit;
-    items.unshift(newCommitment);
-    return items;
+    newItems.unshift(newCommitment);
+    return newItems;
   }, [items, isCommitting]);
 
   React.useEffect(() => {
@@ -111,7 +112,7 @@ const CommitmentTable = (props) => {
 
   return commitmentIsFetching ? (
     <LoadingIndicator className="m-auto" />
-  ) : filteredCommitments.length > 0 ? (
+  ) : parsedItems.length > 0 ? (
     <DataGrid columns={commitmentHeadCells.length} gridColumnTemplate={gridColumnTemplate}>
       <DataGridRow>
         {commitmentHeadCells.map((headCell) => (
@@ -124,7 +125,6 @@ const CommitmentTable = (props) => {
           />
         ))}
       </DataGridRow>
-
       {parsedItems.map((commitment) => (
         <CommitmentTableDetails
           key={commitment.id}
