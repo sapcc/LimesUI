@@ -1,5 +1,11 @@
 # @sapcc/limes-ui
 
+## 1.8.1
+
+### Patch Changes
+
+- fcfbb19: fix: table row to add a commitment not visible for resources without commitments
+
 ## 1.8.0
 
 ### Minor Changes
