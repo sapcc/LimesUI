@@ -209,6 +209,7 @@ const CommitmentTableDetails = (props) => {
         {isAddingCommitment ? (
           <Stack gap="2">
             <Button
+              data-testid="commitmentSave"
               data-cy="commitmentSave"
               variant="primary"
               onClick={() => handleSave()}
@@ -218,7 +219,7 @@ const CommitmentTableDetails = (props) => {
             >
               Save
             </Button>
-            <Button onClick={() => stopEditing()} icon="close" size="small">
+            <Button onClick={() => stopEditing()} data-testid="commitmentCancel" icon="close" size="small">
               Cancel
             </Button>
           </Stack>
