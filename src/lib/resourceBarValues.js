@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { CustomZones } from "./constants";
 import { tracksQuota } from "./utils";
 
 // AZs may or may not contain their own values.
@@ -105,31 +104,5 @@ export function getRemainingCapacity(resource) {
     return resource.quota - commitments;
   } else {
     return resource.usage - commitments;
-  }
-}
-
-export function getBarLabel(resource) {
-  if (resource.commitmentSum > 0) {
-    return "committed";
-  }
-  if (resource.hasOwnProperty("capacity")) {
-    return "capacity used";
-  } else {
-    return "quota used";
-  }
-}
-
-export function getEmptyBarLabel(parent, resource) {
-  if (parent) {
-    const hasBaseQuota = parent.per_az.some((az) => az.name === CustomZones.ANY);
-    if (hasBaseQuota) {
-      return "No usage (has base quota)";
-    }
-  }
-
-  if (resource.hasOwnProperty("capacity")) {
-    return "No capacity";
-  } else {
-    return "No quota";
   }
 }

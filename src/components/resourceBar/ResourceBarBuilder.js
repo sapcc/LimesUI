@@ -19,7 +19,8 @@ import ResourceBar, { getAppliedBarColors } from "./ResourceBar";
 import { Unit } from "../../lib/unit";
 import useResourceBarValues, { ResourceBarType } from "../../hooks/useResourceBarValues";
 import { Stack } from "@cloudoperators/juno-ui-components/index";
-import { getBarLabel, getEmptyBarLabel } from "../../lib/resourceBarValues";
+import { getBarLabel, getEmptyBarLabel, hasAnyBarValues } from "./resourceBarUtils";
+import ResourceInfo from "./ResourceInfo";
 
 const barConainer = `
   min-w-full 
@@ -29,12 +30,13 @@ const extraBaseStyle = `bg-theme-background-lvl-4`;
 const extraFillStyle = `bg-sap-purple-2`;
 
 const ResourceBarBuilder = (props) => {
-  const { parent, resource, unit: unitName, barType, isEditableResource, showToolTip = false } = { ...props };
+  const { parent, resource, unit: unitName, barType, isEditableResource } = { ...props };
+  const { showToolTip = false, displayResourceInfo = false } = { ...props };
   const unit = new Unit(unitName || "");
   const { leftBar, rightBar } = useResourceBarValues(resource, barType);
   const isGranular = barType === ResourceBarType.granular;
-  const hasLeftBar = leftBar.utilized > 0 || leftBar.available > 0;
-  const hasRightBar = rightBar.utilized > 0 || rightBar.available > 0;
+  const hasLeftBar = hasAnyBarValues(leftBar);
+  const hasRightBar = hasAnyBarValues(rightBar);
   const isEmptyBar = !hasLeftBar && !hasRightBar;
   const paygStyle = { base: hasLeftBar && extraBaseStyle, filled: isEditableResource && extraFillStyle };
 
@@ -70,26 +72,31 @@ const ResourceBarBuilder = (props) => {
   }
 
   return (
-    <Stack distribution="between" className={`${barConainer}`}>
-      {hasLeftBar && (
+    <>
+      <Stack distribution="between" className={`${barConainer}`}>
+        {hasLeftBar && (
+          <ResourceBar
+            barValues={leftBar}
+            barLabel={getResourceBarLabel(leftBar)}
+            variant={isGranular ? "small" : "large"}
+            containerWidth={70}
+            toolTip={showToolTip && getResourceBarToolTip(leftBar)}
+          />
+        )}
         <ResourceBar
-          barValues={leftBar}
-          barLabel={getResourceBarLabel(leftBar)}
+          barValues={rightBar}
+          barLabel={getResourceBarLabel(rightBar)}
           variant={isGranular ? "small" : "large"}
-          containerWidth={70}
-          toolTip={showToolTip && getResourceBarToolTip(leftBar)}
+          containerWidth={hasLeftBar ? 30 : 100}
+          styles={paygStyle}
+          isEmptyBar={isEmptyBar}
+          toolTip={showToolTip && getResourceBarToolTip(rightBar)}
         />
+      </Stack>
+      {displayResourceInfo && (
+        <ResourceInfo parent={parent} resource={resource} leftBar={leftBar} rightBar={rightBar} />
       )}
-      <ResourceBar
-        barValues={rightBar}
-        barLabel={getResourceBarLabel(rightBar)}
-        variant={isGranular ? "small" : "large"}
-        containerWidth={hasLeftBar ? 30 : 100}
-        styles={paygStyle}
-        isEmptyBar={isEmptyBar}
-        toolTip={showToolTip && getResourceBarToolTip(rightBar)}
-      />
-    </Stack>
+    </>
   );
 };
 
