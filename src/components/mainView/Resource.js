@@ -18,7 +18,7 @@ import React from "react";
 import { globalStore, createCommitmentStore } from "../StoreProvider";
 import { t } from "../../lib/utils";
 import { CustomZones, PanelType } from "../../lib/constants";
-import { Stack, Button } from "@cloudoperators/juno-ui-components";
+import { Button, Icon, Stack } from "@cloudoperators/juno-ui-components";
 import { Link } from "react-router";
 import { ProjectBadges } from "../shared/LimesBadges";
 import { isAZUnaware } from "../../lib/utils";
@@ -87,6 +87,8 @@ const Resource = (props) => {
   const displayName = t(resource.name);
   const { isEditing } = createCommitmentStore();
   const { resetCommitment } = useResetCommitment();
+  const [displayResourceInfo, setDisplayResourceInfo] = React.useState(false);
+  const resourceHasQuota = resource?.quota > 0;
 
   const maxQuotaForwardProps = {
     editMode: isPanelView || (canEdit && !editableResource),
@@ -110,7 +112,17 @@ const Resource = (props) => {
           gap="1"
           distribution={canEdit && !editableResource && "between"}
         >
-          {displayName}
+          <Stack>
+            {displayName}
+            {resourceHasQuota && !isPanelView && (
+              <Icon
+                icon={displayResourceInfo ? "expandMore" : "chevronRight"}
+                onClick={() => {
+                  setDisplayResourceInfo(!displayResourceInfo);
+                }}
+              />
+            )}
+          </Stack>
           {scope.isProject() && (
             <span className="font-light">
               <MaxQuota {...maxQuotaForwardProps} />
@@ -154,6 +166,7 @@ const Resource = (props) => {
         barType={"total"}
         isEditableResource={editableResource}
         showToolTip={!isEditing || isPanelView}
+        displayResourceInfo={displayResourceInfo}
       />
       {isAZUnaware(props.resource.per_az) && <PhysicalUsage resource={props.resource} unit={unitName} />}
       <div className={props.isPanelView && `az-container ${azPanelContent} ${props.isPanelView && "gap-2"}`}>
@@ -188,6 +201,7 @@ const Resource = (props) => {
                   unit={unitName}
                   barType={"granular"}
                   isEditableResource={editableResource}
+                  displayResourceInfo={displayResourceInfo}
                 />
                 <PhysicalUsage resource={az} resourceName={props.resource.name} unit={unitName} />
               </div>
