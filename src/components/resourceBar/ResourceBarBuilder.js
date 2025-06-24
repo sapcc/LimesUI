@@ -93,7 +93,7 @@ const ResourceBarBuilder = (props) => {
           toolTip={showToolTip && getResourceBarToolTip(rightBar)}
         />
       </Stack>
-      {displayResourceInfo && (
+      {displayResourceInfo && !isEmptyBar && (
         <ResourceInfo parent={parent} resource={resource} leftBar={leftBar} rightBar={rightBar} />
       )}
     </>
