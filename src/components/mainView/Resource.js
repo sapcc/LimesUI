@@ -183,6 +183,7 @@ const Resource = (props) => {
                   <ProjectBadges az={az} unit={unitName} displayValues={true} />
                 </div>
                 <ResourceBarBuilder
+                  parent={resource}
                   resource={az}
                   unit={unitName}
                   barType={"granular"}

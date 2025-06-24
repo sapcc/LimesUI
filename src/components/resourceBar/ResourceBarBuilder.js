@@ -29,7 +29,7 @@ const extraBaseStyle = `bg-theme-background-lvl-4`;
 const extraFillStyle = `bg-sap-purple-2`;
 
 const ResourceBarBuilder = (props) => {
-  const { resource, unit: unitName, barType, isEditableResource, showToolTip = false } = { ...props };
+  const { parent, resource, unit: unitName, barType, isEditableResource, showToolTip = false } = { ...props };
   const unit = new Unit(unitName || "");
   const { leftBar, rightBar } = useResourceBarValues(resource, barType);
   const isGranular = barType === ResourceBarType.granular;
@@ -40,7 +40,7 @@ const ResourceBarBuilder = (props) => {
 
   function getResourceBarLabel(bar) {
     if (isEmptyBar) {
-      return getEmptyBarLabel(resource);
+      return getEmptyBarLabel(parent, resource);
     }
 
     const hideLabelInfo = bar === rightBar && hasLeftBar;
