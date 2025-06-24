@@ -15,38 +15,38 @@
  */
 
 import React from "react";
-import { Stack } from "@cloudoperators/juno-ui-components";
+import { Stack, Tooltip, TooltipContent, TooltipTrigger } from "@cloudoperators/juno-ui-components";
 
 const baseResourceBar = `
-  rounded-sm 
-  border 
-  border-theme-background-lvl-5 
-  flex 
+rounded-sm 
+border 
+border-theme-background-lvl-5 
+flex 
 `;
 const baseBarBackground = `bg-theme-background-lvl-2`;
 const filledResourceBar = `
-  text-white
-  rounded-sm 
-  `;
-const filledBarBackground = `bg-sap-blue-3`;
+text-white
+rounded-sm 
+`;
 const noneResourceBar = `
-  rounded-sm 
-  border 
-  border-theme-background-lvl-4
-  flex 
-  p-0.5
-  text-theme-light 
-  italic
-  `;
+rounded-sm 
+border 
+border-theme-background-lvl-4
+flex 
+p-0.5
+text-theme-light 
+italic
+`;
 const disabledLabel = `
-    text-theme-light 
-    italic
-    px-1
-    text-sm
-    font-bold
-  `;
+text-theme-light 
+italic
+px-1
+text-sm
+font-bold
+`;
 
-const utilizedExceedsAvailable = "repeating-linear-gradient(55deg,#c9302c ,#c9302c  8px,#d9534f 8px,#d9534f 16px)";
+const filledBarBackground = `bg-sap-blue-3`;
+const utilizedExceedsAvailable = `utilized-exceeds-available`;
 
 export const resourceBar = {
   utilized: 0,
@@ -58,6 +58,16 @@ export const barStyles = {
   filled: null,
 };
 
+export function getAppliedBarColors(barValues, style = barStyles) {
+  if (barValues.utilized > barValues.available) {
+    return utilizedExceedsAvailable;
+  }
+  if (style.filled) {
+    return style.filled;
+  }
+  return filledBarBackground;
+}
+
 const ResourceBar = (props) => {
   const {
     barValues,
@@ -66,6 +76,7 @@ const ResourceBar = (props) => {
     isEmptyBar = false,
     styles = { ...barStyles },
     containerWidth = 100,
+    toolTip = "",
   } = props;
 
   if (isEmptyBar) {
@@ -88,16 +99,9 @@ const ResourceBar = (props) => {
     widthPercent = 0.5;
   }
 
-  let gradientBar;
-  if (barValues.utilized > barValues.available) {
-    gradientBar = {
-      background: utilizedExceedsAvailable,
-    };
-  }
-
-  let barStyle = {
+  const barStyle = {
     width: widthPercent + "%",
-    background: gradientBar?.background,
+    background: getAppliedBarColors(barValues, styles)
   };
 
   const barVariant = {
@@ -105,16 +109,25 @@ const ResourceBar = (props) => {
     large: "h-8 p-0.5",
   };
 
+  function buildResourceBar() {
+    return (
+      <div className={`${baseResourceBar} ${styles.base || baseBarBackground} ${barVariant[variant]}`}>
+        <div key="base-bar" className={`${filledResourceBar} ${barStyle.background} w-[${barStyle.width}%]`} style={barStyle} />
+      </div>
+    );
+  }
+
   return (
     <Stack direction="vertical" distribution="between" style={{ width: containerWidth + "%" }}>
       {barLabel}
-      <div className={`${baseResourceBar} ${styles.base || baseBarBackground} ${barVariant[variant]}`}>
-        <div
-          key="base-bar"
-          className={`${filledResourceBar} ${styles.filled || filledBarBackground}`}
-          style={barStyle}
-        />
-      </div>
+      {toolTip ? (
+        <Tooltip triggerEvent="hover">
+          <TooltipTrigger>{buildResourceBar()}</TooltipTrigger>
+          <TooltipContent>{toolTip}</TooltipContent>
+        </Tooltip>
+      ) : (
+        buildResourceBar()
+      )}
     </Stack>
   );
 };
