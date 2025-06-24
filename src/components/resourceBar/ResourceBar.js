@@ -101,7 +101,7 @@ const ResourceBar = (props) => {
 
   const barStyle = {
     width: widthPercent + "%",
-    background: getAppliedBarColors(barValues, styles)
+    background: getAppliedBarColors(barValues, styles),
   };
 
   const barVariant = {
@@ -112,7 +112,11 @@ const ResourceBar = (props) => {
   function buildResourceBar() {
     return (
       <div className={`${baseResourceBar} ${styles.base || baseBarBackground} ${barVariant[variant]}`}>
-        <div key="base-bar" className={`${filledResourceBar} ${barStyle.background} w-[${barStyle.width}%]`} style={barStyle} />
+        <div
+          key="base-bar"
+          className={`${filledResourceBar} ${barStyle.background} w-[${barStyle.width}%]`}
+          style={barStyle}
+        />
       </div>
     );
   }
