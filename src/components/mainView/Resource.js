@@ -15,7 +15,7 @@
  */
 
 import React from "react";
-import { globalStore } from "../StoreProvider";
+import { globalStore, createCommitmentStore } from "../StoreProvider";
 import { t } from "../../lib/utils";
 import { CustomZones, PanelType } from "../../lib/constants";
 import { Stack, Button } from "@cloudoperators/juno-ui-components";
@@ -85,6 +85,7 @@ const Resource = (props) => {
   const { unit: unitName, editableResource } = resource;
   const { scope } = globalStore();
   const displayName = t(resource.name);
+  const { isEditing } = createCommitmentStore();
   const { resetCommitment } = useResetCommitment();
 
   const maxQuotaForwardProps = {
@@ -147,7 +148,13 @@ const Resource = (props) => {
           </Stack>
         )}
       </Stack>
-      <ResourceBarBuilder resource={resource} unit={unitName} barType={"total"} isEditableResource={editableResource} />
+      <ResourceBarBuilder
+        resource={resource}
+        unit={unitName}
+        barType={"total"}
+        isEditableResource={editableResource}
+        showToolTip={!isEditing || isPanelView}
+      />
       {isAZUnaware(props.resource.per_az) && <PhysicalUsage resource={props.resource} unit={unitName} />}
       <div className={props.isPanelView && `az-container ${azPanelContent} ${props.isPanelView && "gap-2"}`}>
         {props.resource.per_az?.map((az) => {

@@ -15,7 +15,7 @@
  */
 
 import React from "react";
-import ResourceBar from "./ResourceBar";
+import ResourceBar, { getAppliedBarColors } from "./ResourceBar";
 import { Unit } from "../../lib/unit";
 import useResourceBarValues, { ResourceBarType } from "../../hooks/useResourceBarValues";
 import { Stack } from "@cloudoperators/juno-ui-components/index";
@@ -25,19 +25,18 @@ const barConainer = `
   min-w-full 
   gap-1
 `;
-const extraBaseStyle = `
-  bg-theme-background-lvl-4 
-  `;
+const extraBaseStyle = `bg-theme-background-lvl-4`;
 const extraFillStyle = `bg-sap-purple-2`;
 
 const ResourceBarBuilder = (props) => {
-  const { resource, unit: unitName, barType, isEditableResource } = { ...props };
+  const { resource, unit: unitName, barType, isEditableResource, showToolTip = false } = { ...props };
   const unit = new Unit(unitName || "");
   const { leftBar, rightBar } = useResourceBarValues(resource, barType);
   const isGranular = barType === ResourceBarType.granular;
   const hasLeftBar = leftBar.utilized > 0 || leftBar.available > 0;
   const hasRightBar = rightBar.utilized > 0 || rightBar.available > 0;
   const isEmptyBar = !hasLeftBar && !hasRightBar;
+  const paygStyle = { base: hasLeftBar && extraBaseStyle, filled: isEditableResource && extraFillStyle };
 
   function getResourceBarLabel(bar) {
     if (isEmptyBar) {
@@ -53,6 +52,23 @@ const ResourceBarBuilder = (props) => {
     );
   }
 
+  function getResourceBarToolTip(bar) {
+    let barBackGround;
+    let toolTipContent;
+    if (bar === rightBar) {
+      barBackGround = getAppliedBarColors(bar, paygStyle);
+      toolTipContent = "Pay as you go";
+    } else {
+      barBackGround = getAppliedBarColors(bar);
+      toolTipContent = "Committed usage";
+    }
+    return (
+      <Stack gap="1">
+        <div className={`size-3 m-auto ${barBackGround}`} /> <>{toolTipContent}</>
+      </Stack>
+    );
+  }
+
   return (
     <Stack distribution="between" className={`${barConainer}`}>
       {hasLeftBar && (
@@ -61,6 +77,7 @@ const ResourceBarBuilder = (props) => {
           barLabel={getResourceBarLabel(leftBar)}
           variant={isGranular ? "small" : "large"}
           containerWidth={70}
+          toolTip={showToolTip && getResourceBarToolTip(leftBar)}
         />
       )}
       <ResourceBar
@@ -68,8 +85,9 @@ const ResourceBarBuilder = (props) => {
         barLabel={getResourceBarLabel(rightBar)}
         variant={isGranular ? "small" : "large"}
         containerWidth={hasLeftBar ? 30 : 100}
-        styles={{ base: hasLeftBar && extraBaseStyle, filled: isEditableResource && extraFillStyle }}
+        styles={paygStyle}
         isEmptyBar={isEmptyBar}
+        toolTip={showToolTip && getResourceBarToolTip(rightBar)}
       />
     </Stack>
   );
