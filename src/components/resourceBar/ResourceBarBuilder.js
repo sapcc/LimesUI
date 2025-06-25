@@ -95,7 +95,7 @@ const ResourceBarBuilder = (props) => {
         />
       </Stack>
       {displayResourceInfo && !isEmptyBar && (
-        <ResourceInfo parent={parent} resource={resource} leftBar={leftBar} rightBar={rightBar} />
+        <ResourceInfo parent={parent} resource={resource} leftBar={leftBar} rightBar={rightBar} unit={unit} />
       )}
     </>
   );

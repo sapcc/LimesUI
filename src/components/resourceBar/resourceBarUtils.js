@@ -42,7 +42,7 @@ export function getEmptyBarLabel(parent, resource) {
 }
 
 export function getBaseQuotaObject(resource) {
-  return resource.per_az.find((az) => az.name === CustomZones.ANY) || false;
+  return resource?.per_az.find((az) => az.name === CustomZones.ANY) || false;
 }
 
 export function hasAnyBarValues(barValues) {
