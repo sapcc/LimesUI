@@ -65,9 +65,10 @@ const ResourceBarBuilder = (props) => {
       toolTipContent = "Committed usage";
     }
     return (
-      <Stack gap="1">
-        <div className={`size-3 m-auto ${barBackGround}`} /> <>{toolTipContent}</>
-      </Stack>
+      <span className="flex justify-center gap-1">
+        <span className={`size-3 m-auto ${barBackGround} block`} />
+        <>{toolTipContent}</>
+      </span>
     );
   }
 
