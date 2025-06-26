@@ -116,7 +116,9 @@ const Resource = (props) => {
             {displayName}
             {resourceHasQuota && !isPanelView && (
               <Icon
+                data-testid="detailedResourceInfo"
                 icon={displayResourceInfo ? "expandMore" : "chevronRight"}
+                title={displayResourceInfo ? "hide info" : "display info"}
                 onClick={() => {
                   setDisplayResourceInfo(!displayResourceInfo);
                 }}

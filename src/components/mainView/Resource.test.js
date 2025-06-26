@@ -493,4 +493,79 @@ describe("Resource bar test", () => {
     // zone-c
     expect(screen.getByText(/no capacity/i)).toBeInTheDocument();
   });
+
+  test("resource with baseQuota display", async () => {
+    let scope = new Scope({ projectID: "123", domainID: "456" });
+    function getProjectData() {
+      return {
+        project: {
+          id: "123",
+          services: [
+            {
+              type: "testType",
+              resources: [
+                {
+                  name: "testResource",
+                  area: "testArea",
+                  commitment_config: {
+                    durations: ["1 year", "2 years", "3 years"],
+                  },
+                  per_az: {
+                    "zone-a": {
+                      usage: 0,
+                      quota: 0,
+                    },
+                    any: {
+                      usage: 0,
+                      quota: 50,
+                    },
+                  },
+                  quota: 50,
+                  usage: 0,
+                },
+              ],
+            },
+          ],
+        },
+      };
+    }
+
+    const forwardProps = {
+      area: "testArea",
+      canEdit: true,
+      categoryName: "testCategory",
+      serviceType: "testService",
+    };
+
+    let res = actions.restructureReport(getProjectData().project).categories.testType.resources[0];
+
+    const wrapper = ({ children }) => (
+      <PortalProvider>
+        <StoreProvider>
+          <QueryClientProvider client={queryClient}>
+            <MemoryRouter>
+              <Resource key={res.name} resource={res} {...forwardProps} tracksQuota={tracksQuota(res)} />
+              {children}
+            </MemoryRouter>
+          </QueryClientProvider>
+        </StoreProvider>
+      </PortalProvider>
+    );
+    const { result } = await waitFor(() => {
+      return renderHook(
+        () => ({
+          globalStore: globalStore(),
+          globalStoreActions: globalStoreActions(),
+        }),
+        { wrapper }
+      );
+    });
+
+    act(() => {
+      result.current.globalStoreActions.setScope(scope);
+    });
+
+    expect(screen.getByTestId("detailedResourceInfo")).toBeInTheDocument();
+    expect(screen.getByText("No usage (has base quota)")).toBeInTheDocument();
+  });
 });
