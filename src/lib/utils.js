@@ -139,3 +139,8 @@ export function isAZUnaware(az) {
   if (az?.length == 1 && az[0].name == CustomZones.ANY) return true;
   return false;
 }
+
+export function locateBaseQuotaAZ(resource) {
+  if (isAZUnaware(resource?.per_az)) return null;
+  return resource?.per_az?.find((az) => az.name === CustomZones.ANY) || null;
+}
