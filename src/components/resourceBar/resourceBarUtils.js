@@ -28,13 +28,12 @@ export function getBarLabel(resource) {
 }
 
 export function getEmptyBarLabel(resource) {
-  if (locateBaseQuotaAZ(resource)) {
-    return "No usage (has base quota)";
-  }
-
   if (resource.hasOwnProperty("capacity")) {
     return "No capacity";
   } else {
+    if (locateBaseQuotaAZ(resource)) {
+      return "No usage (has base quota)";
+    }
     return "No quota";
   }
 }
