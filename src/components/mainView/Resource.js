@@ -196,8 +196,8 @@ const Resource = (props) => {
                   <ProjectBadges az={az} unit={unitName} displayValues={true} />
                 </div>
                 <ResourceBarBuilder
-                  parent={resource}
-                  resource={az}
+                  resource={resource}
+                  az={az}
                   unit={unitName}
                   barType={"granular"}
                   isEditableResource={editableResource}

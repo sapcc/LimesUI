@@ -27,11 +27,9 @@ export function getBarLabel(resource) {
   }
 }
 
-export function getEmptyBarLabel(parent, resource) {
-  if (parent) {
-    if (getBaseQuotaObject(parent)) {
-      return "No usage (has base quota)";
-    }
+export function getEmptyBarLabel(resource) {
+  if (locateAnyAZ(resource)) {
+    return "No usage (has base quota)";
   }
 
   if (resource.hasOwnProperty("capacity")) {
@@ -41,8 +39,8 @@ export function getEmptyBarLabel(parent, resource) {
   }
 }
 
-export function getBaseQuotaObject(resource) {
-  return resource?.per_az.find((az) => az.name === CustomZones.ANY) || false;
+export function locateAnyAZ(resource) {
+  return resource?.per_az?.find((az) => az.name === CustomZones.ANY) || false;
 }
 
 export function hasAnyBarValues(barValues) {

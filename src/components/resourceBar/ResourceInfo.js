@@ -18,25 +18,26 @@ import React from "react";
 import { IntroBox } from "@cloudoperators/juno-ui-components/index";
 import { resourceBar } from "./ResourceBar";
 import { Unit } from "../../lib/unit";
-import { getBaseQuotaObject, hasAnyBarValues } from "./resourceBarUtils";
+import { locateAnyAZ, hasAnyBarValues } from "./resourceBarUtils";
 import { CustomZones } from "../../lib/constants";
 import { globalStore } from "../StoreProvider";
 import { Scope } from "../../lib/scope";
 
 export function getCommittedUsageInfo(leftBar = resourceBar, unit = new Unit()) {
   const remaining = leftBar.available - leftBar.utilized;
-  switch (true) {
-    case remaining === 0:
-      return `Committments are fully utilized.`;
-    case remaining > 0:
-      return (
-        <>
-          Unused committments: <strong>{unit.format(remaining)}</strong>
-        </>
-      );
-    default:
-      return `Displayed usage should not exceed commitments. Please report your case.`;
+
+  if (remaining === 0) {
+    return `Commitments are fully utilized.`;
   }
+
+  if (remaining > 0) {
+    return (
+      <>
+        Unused commitments: <strong>{unit.format(remaining)}</strong>
+      </>
+    );
+  }
+  return `Displayed usage should not exceed commitments. Please report your case.`;
 }
 
 export function getPaygInfo(rightBar = resourceBar, unit) {
@@ -52,12 +53,14 @@ export function getPaygInfo(rightBar = resourceBar, unit) {
   }
 }
 
-export function getBaseQuotaInfo(resource, unit) {
-  const anyAZ = getBaseQuotaObject(resource);
+export function getBaseQuotaInfo(resource, az, unit) {
+  const anyAZ = locateAnyAZ(resource);
   if (!anyAZ) return;
+  const isUnknownAZ = az.name === CustomZones.UNKNOWN;
   return (
     <>
-      Remaining base quota: <strong>{unit.format(anyAZ.quota)}</strong>. Commitments or usage assign quota to this AZ.
+      Remaining base quota: <strong>{unit.format(anyAZ.quota)}</strong>.{" "}
+      {isUnknownAZ ? "Usage assigns" : "Commitments and usage assign"} quota to this AZ.
     </>
   );
 }
@@ -73,12 +76,12 @@ export function getRemainingQuotaIsNegativeInfo(
   if (!availableIsNegative) return sections;
 
   if (scope.isCluster()) {
-    sections.push(<>Remaining capacity is: {unit.format(rightBar.available)}. Resource might not report capacity.</>);
+    sections.push(<>Remaining capacity is: <strong>{unit.format(rightBar.available)}</strong>. Resource might not report capacity.</>);
     return sections;
   }
 
-  const anyAZ = getBaseQuotaObject(resource);
-  if (anyAZ) {
+  const hasAnyAZ = locateAnyAZ(resource);
+  if (hasAnyAZ) {
     sections.push(
       <>
         Remaining quota is: <strong>{unit.format(rightBar.available)}</strong>. Base quota is in the process of being
@@ -91,7 +94,7 @@ export function getRemainingQuotaIsNegativeInfo(
 }
 
 const ResourceInfo = (props) => {
-  const { parent, resource, unit } = { ...props };
+  const { resource, az, unit } = { ...props };
   const { leftBar, rightBar } = { ...props };
   const hasLeftBar = hasAnyBarValues(leftBar);
   const hasRightBar = hasAnyBarValues(rightBar);
@@ -109,15 +112,13 @@ const ResourceInfo = (props) => {
     if (hasRightBar) {
       infos.push(getPaygInfo(rightBar, unit));
     }
-    if (parent) {
-      infos.push(getBaseQuotaInfo(parent, unit));
+    if (!scope.isCluster() && az) {
+      infos.push(getBaseQuotaInfo(resource, az, unit));
     }
-    infos.push(...getRemainingQuotaIsNegativeInfo(parent || resource, rightBar, unit, scope));
+    infos.push(...getRemainingQuotaIsNegativeInfo(resource, rightBar, unit, scope));
 
     return infos;
-  }, [parent, resource, leftBar, rightBar]);
-
-  console.log(resourceInfos);
+  }, [resource, az, leftBar, rightBar]);
 
   return (
     <IntroBox className="my-1 text-sm">
