@@ -16,109 +16,91 @@
 
 import React from "react";
 import { IntroBox } from "@cloudoperators/juno-ui-components/index";
-import { resourceBar } from "./ResourceBar";
-import { Unit } from "../../lib/unit";
-import { locateAnyAZ, hasAnyBarValues } from "./resourceBarUtils";
+import { hasAnyBarValues } from "./resourceBarUtils";
+import { locateBaseQuotaAZ } from "../../lib/utils";
 import { CustomZones } from "../../lib/constants";
-import { globalStore } from "../StoreProvider";
+import { Unit } from "../../lib/unit";
+import {
+  UnknownAZLabel,
+  CommittedUsageLabels,
+  PAYGLabels,
+  BaseQuotaLabels,
+  NegativeRemainingQuotaLabels,
+} from "./ResourceInfoLabels";
 import { Scope } from "../../lib/scope";
 
-export function getCommittedUsageInfo(leftBar = resourceBar, unit = new Unit()) {
-  const remaining = leftBar.available - leftBar.utilized;
-
-  if (remaining === 0) {
-    return `Commitments are fully utilized.`;
-  }
-
-  if (remaining > 0) {
-    return (
-      <>
-        Unused commitments: <strong>{unit.format(remaining)}</strong>
-      </>
-    );
-  }
-  return `Displayed usage should not exceed commitments. Please report your case.`;
-}
-
-export function getPaygInfo(rightBar = resourceBar, unit) {
-  switch (true) {
-    case rightBar.utilized >= 0:
-      return (
-        <>
-          Pay as you go usage: <strong>{unit.format(rightBar.utilized)}</strong>
-        </>
-      );
-    default:
-      return `Invalid pay as you go usage detected. Please report your case.`;
-  }
-}
-
-export function getBaseQuotaInfo(resource, az, unit) {
-  const anyAZ = locateAnyAZ(resource);
-  if (!anyAZ) return;
-  const isUnknownAZ = az.name === CustomZones.UNKNOWN;
-  return (
-    <>
-      Remaining base quota: <strong>{unit.format(anyAZ.quota)}</strong>.{" "}
-      {isUnknownAZ ? "Usage assigns" : "Commitments and usage assign"} quota to this AZ.
-    </>
-  );
-}
-
-export function getRemainingQuotaIsNegativeInfo(
-  resource,
-  rightBar = resourceBar,
-  unit = new Unit(),
-  scope = new Scope()
-) {
-  const sections = [];
-  const availableIsNegative = rightBar.available < 0;
-  if (!availableIsNegative) return sections;
-
-  if (scope.isCluster()) {
-    sections.push(<>Remaining capacity is: <strong>{unit.format(rightBar.available)}</strong>. Resource might not report capacity.</>);
-    return sections;
-  }
-
-  const hasAnyAZ = locateAnyAZ(resource);
-  if (hasAnyAZ) {
-    sections.push(
-      <>
-        Remaining quota is: <strong>{unit.format(rightBar.available)}</strong>. Base quota is in the process of being
-        applied.
-      </>
-    );
-    sections.push(`Please refresh the page to receive updated quota values.`);
-    return sections;
-  }
-}
-
 const ResourceInfo = (props) => {
-  const { resource, az, unit } = { ...props };
+  const { scope = new Scope(), resource, az, unit = new Unit("") } = { ...props };
   const { leftBar, rightBar } = { ...props };
   const hasLeftBar = hasAnyBarValues(leftBar);
   const hasRightBar = hasAnyBarValues(rightBar);
-  const { scope } = globalStore();
 
   const resourceInfos = React.useMemo(() => {
     const infos = [];
 
-    if (resource.name === CustomZones.UNKNOWN) {
-      infos.push("This AZ contains assets in error states.");
+    if (az?.name === CustomZones.UNKNOWN) {
+      infos.push(UnknownAZLabel);
     }
     if (hasLeftBar) {
-      infos.push(getCommittedUsageInfo(leftBar, unit));
+      infos.push(getCommittedUsageInfo());
     }
     if (hasRightBar) {
-      infos.push(getPaygInfo(rightBar, unit));
+      infos.push(getPaygInfo());
     }
-    if (!scope.isCluster() && az) {
-      infos.push(getBaseQuotaInfo(resource, az, unit));
+    if (!scope.isCluster()) {
+      infos.push(getBaseQuotaInfo());
     }
-    infos.push(...getRemainingQuotaIsNegativeInfo(resource, rightBar, unit, scope));
+    infos.push(...getNegativeRemainingQuotaInfo());
 
     return infos;
-  }, [resource, az, leftBar, rightBar]);
+  }, [scope, resource, az, leftBar, rightBar]);
+
+  function getCommittedUsageInfo() {
+    const remaining = leftBar.available - leftBar.utilized;
+
+    if (remaining === 0) {
+      return CommittedUsageLabels.FULLY_UTILIZED;
+    }
+
+    if (remaining > 0) {
+      return CommittedUsageLabels.UNUSED(unit.format(remaining));
+    }
+    return CommittedUsageLabels.INVALID;
+  }
+
+  function getPaygInfo() {
+    if (rightBar.utilized >= 0) {
+      return PAYGLabels.AVAILABLE(unit.format(rightBar.utilized));
+    }
+    if (rightBar.utilized < 0) {
+      return PAYGLabels.INVALID;
+    }
+  }
+
+  function getBaseQuotaInfo() {
+    const baseQuotaAZ = locateBaseQuotaAZ(resource);
+    if (!baseQuotaAZ) return;
+    return BaseQuotaLabels.AVAILABLE(unit.format(baseQuotaAZ.quota), az);
+  }
+
+  function getNegativeRemainingQuotaInfo() {
+    const sections = [];
+    const availableIsNegative = rightBar.available < 0;
+    if (!availableIsNegative) return sections;
+
+    if (scope.isCluster()) {
+      sections.push(NegativeRemainingQuotaLabels.CAPACITY(unit.format(rightBar.available)));
+      return sections;
+    }
+
+    const hasAnyAZ = locateBaseQuotaAZ(resource);
+    if (hasAnyAZ) {
+      sections.push(NegativeRemainingQuotaLabels.QUOTA(unit.format(rightBar.available)));
+      sections.push(NegativeRemainingQuotaLabels.REFRESH);
+      return sections;
+    }
+    return sections;
+  }
 
   return (
     <IntroBox className="my-1 text-sm">

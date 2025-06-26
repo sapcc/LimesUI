@@ -19,7 +19,8 @@ import ResourceBar, { getAppliedBarColors } from "./ResourceBar";
 import { Unit } from "../../lib/unit";
 import useResourceBarValues, { ResourceBarType } from "../../hooks/useResourceBarValues";
 import { Stack } from "@cloudoperators/juno-ui-components/index";
-import { getBarLabel, locateAnyAZ, getEmptyBarLabel, hasAnyBarValues } from "./resourceBarUtils";
+import { getBarLabel, getEmptyBarLabel, hasAnyBarValues } from "./resourceBarUtils";
+import { locateBaseQuotaAZ } from "../../lib/utils";
 import ResourceInfo from "./ResourceInfo";
 
 const barConainer = `
@@ -30,16 +31,16 @@ const extraBaseStyle = `bg-theme-background-lvl-4`;
 const extraFillStyle = `bg-sap-purple-2`;
 
 const ResourceBarBuilder = (props) => {
-  const { resource, az, unit: unitName, barType, isEditableResource } = { ...props };
+  const { scope, resource, az, unit: unitName, barType, isEditableResource } = { ...props };
   const { showToolTip = false, displayResourceInfo = false } = { ...props };
-  const currentResource = az ? az : resource;
   const unit = new Unit(unitName || "");
-  const { leftBar, rightBar } = useResourceBarValues(currentResource, barType);
   const isGranular = barType === ResourceBarType.granular;
+  const currentResource = isGranular ? az : resource;
+  const { leftBar, rightBar } = useResourceBarValues(currentResource, barType);
   const hasLeftBar = hasAnyBarValues(leftBar);
   const hasRightBar = hasAnyBarValues(rightBar);
   const isEmptyBar = !hasLeftBar && !hasRightBar;
-  const isEmptyBarWithBaseQuota = isEmptyBar && locateAnyAZ(resource);
+  const isEmptyBarWithBaseQuota = isEmptyBar && locateBaseQuotaAZ(resource);
 
   const paygStyle = { base: hasLeftBar && extraBaseStyle, filled: isEditableResource && extraFillStyle };
   function getResourceBarLabel(bar) {
@@ -97,7 +98,7 @@ const ResourceBarBuilder = (props) => {
         />
       </Stack>
       {displayResourceInfo && (!isEmptyBar || isEmptyBarWithBaseQuota) && (
-        <ResourceInfo resource={resource} az={az} leftBar={leftBar} rightBar={rightBar} unit={unit} />
+        <ResourceInfo scope={scope} resource={resource} az={az} leftBar={leftBar} rightBar={rightBar} unit={unit} />
       )}
     </>
   );

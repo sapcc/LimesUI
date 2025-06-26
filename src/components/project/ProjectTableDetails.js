@@ -137,6 +137,7 @@ const ProjectTableDetails = (props) => {
         </DataGridCell>
         <DataGridCell>
           <ResourceBarBuilder
+            scope={scope}
             resource={resource}
             az={az}
             unit={unit}

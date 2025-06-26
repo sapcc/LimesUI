@@ -161,6 +161,7 @@ const Resource = (props) => {
         )}
       </Stack>
       <ResourceBarBuilder
+        scope={scope}
         resource={resource}
         unit={unitName}
         barType={"total"}
@@ -196,6 +197,7 @@ const Resource = (props) => {
                   <ProjectBadges az={az} unit={unitName} displayValues={true} />
                 </div>
                 <ResourceBarBuilder
+                  scope={scope}
                   resource={resource}
                   az={az}
                   unit={unitName}

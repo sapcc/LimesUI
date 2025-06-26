@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { CustomZones } from "../../lib/constants";
+import { locateBaseQuotaAZ } from "../../lib/utils";
 
 export function getBarLabel(resource) {
   if (resource.commitmentSum > 0) {
@@ -28,7 +28,7 @@ export function getBarLabel(resource) {
 }
 
 export function getEmptyBarLabel(resource) {
-  if (locateAnyAZ(resource)) {
+  if (locateBaseQuotaAZ(resource)) {
     return "No usage (has base quota)";
   }
 
@@ -37,10 +37,6 @@ export function getEmptyBarLabel(resource) {
   } else {
     return "No quota";
   }
-}
-
-export function locateAnyAZ(resource) {
-  return resource?.per_az?.find((az) => az.name === CustomZones.ANY) || false;
 }
 
 export function hasAnyBarValues(barValues) {
