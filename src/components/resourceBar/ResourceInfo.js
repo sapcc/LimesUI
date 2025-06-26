@@ -26,7 +26,7 @@ import {
   PAYGLabels,
   BaseQuotaLabels,
   NegativeRemainingQuotaLabels,
-} from "./ResourceInfoLabels";
+} from "./resourceInfoLabels";
 import { Scope } from "../../lib/scope";
 
 const ResourceInfo = (props) => {
