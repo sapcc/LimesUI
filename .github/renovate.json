@@ -20,7 +20,25 @@
   ],
   "prHourlyLimit": 0,
   "schedule": [
-    "on Friday"
+    "before 8am on Friday"
+  ],
+  "packageRules": [
+    {
+      "description": "Updates for React and related packages separately",
+      "schedule": ["before 8am on Friday"],
+      "matchPackageNames": ["/^react$/", "/^react-.*/"]
+    },
+    {
+      "description": "Updates for all @cloudoperators packages separately",
+      "schedule": ["before 8am on Friday"],
+      "matchPackageNames": ["/^@cloudoperators/.*/"]
+    },
+    {
+      "description": "Group all other dependencies",
+      "groupName": "all-dependencies-except-react-and-cloudoperators",
+      "schedule": ["before 8am on Friday"],
+      "matchPackageNames": ["/.*/"]
+    }
   ],
   "semanticCommits": "disabled"
 }
