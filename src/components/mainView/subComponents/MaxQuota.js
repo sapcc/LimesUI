@@ -38,7 +38,7 @@ const MaxQuota = (props) => {
       <MaxQuotaEdit {...maxQuotaEditProps} iconOnlyView={true} subduedView={true} />
     </span>
   ) : (
-    maxQuotaValue > 0 && <span data-testid={"maxQuotaDisplay"}>| Max Quota: {valueWithUnit(maxQuotaValue, unit)}</span>
+    maxQuotaValue >= 0 && <span data-testid={"maxQuotaDisplay"}>| Max Quota: {valueWithUnit(maxQuotaValue, unit)}</span>
   );
 };
 
