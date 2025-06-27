@@ -144,7 +144,7 @@ describe("Resource info tests", () => {
     rerender(<ResourceInfo {...props} />);
     expect(screen.queryByTestId(/BaseQuota.AVAILABLE/i)).not.toBeInTheDocument();
   });
-  test("renders negative remaining quota info and refresh link when not in cluster scope", () => {
+  test("renders negative remaining quota info", () => {
     const props = {
       scope: new Scope({}),
       resource: {
