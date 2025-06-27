@@ -17,7 +17,11 @@
 import React from "react";
 import { CustomZones } from "../../lib/constants";
 
-export const UnknownAZLabel = <span data-testid="UnknownAZ">This usage number accounts for assets in error states that are not associated with a real AZ.</span>;
+export const UnknownAZLabel = (
+  <span data-testid="UnknownAZ">
+    This usage number accounts for assets in error states that are not associated with a real AZ.
+  </span>
+);
 
 export const CommittedUsageLabels = {
   FULLY_UTILIZED: <span data-testid="CommittedUsage.FULLY_UTILIZED">Commitments are fully utilized.</span>,
@@ -40,7 +44,9 @@ export const PAYGLabels = {
     </span>
   ),
   UNAVAILABLE: <span data-testid="PAYG.UNAVAILABLE">No Pay-As-You-Go usage present.</span>,
-  INVALID: <span data-testid="PAYG.INVALID">Invalid Pay-As-You-Go usage detected. Please create a support ticket.</span>,
+  INVALID: (
+    <span data-testid="PAYG.INVALID">Invalid Pay-As-You-Go usage detected. Please create a support ticket.</span>
+  ),
 };
 
 export const BaseQuotaLabels = {
@@ -75,6 +81,8 @@ export const NegativeRemainingQuotaLabels = {
     </span>
   ),
   REFRESH: (
-    <span data-testid="NegativeRemainingQuota.REFRESH">Please refresh the page after a while to receive updated quota values.</span>
+    <span data-testid="NegativeRemainingQuota.REFRESH">
+      Please refresh the page after a while to receive updated quota values.
+    </span>
   ),
 };
