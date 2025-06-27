@@ -17,7 +17,7 @@
 import React from "react";
 import { CustomZones } from "../../lib/constants";
 
-export const UnknownAZLabel = <span data-testid="UnknownAZ">This AZ contains assets in error states.</span>;
+export const UnknownAZLabel = <span data-testid="UnknownAZ">This usage number accounts for assets in error states that are not associated with a real AZ.</span>;
 
 export const CommittedUsageLabels = {
   FULLY_UTILIZED: <span data-testid="CommittedUsage.FULLY_UTILIZED">Commitments are fully utilized.</span>,
