@@ -28,7 +28,7 @@ export const CommittedUsageLabels = {
   ),
   INVALID: (
     <span data-testid="CommittedUsage.INVALID">
-      Displayed usage should not exceed commitments. Please report your case.
+      Displayed usage should not exceed commitments. Please create a support ticket.
     </span>
   ),
 };
@@ -36,11 +36,11 @@ export const CommittedUsageLabels = {
 export const PAYGLabels = {
   AVAILABLE: (amount) => (
     <span data-testid="PAYG.AVAILABLE">
-      Pay as you go usage: <strong>{amount}</strong>
+      Pay-As-You-Go usage: <strong>{amount}</strong>
     </span>
   ),
-  UNAVAILABLE: <span data-testid="PAYG.UNAVAILABLE">No pay as you go usage present.</span>,
-  INVALID: <span data-testid="PAYG.INVALID">Invalid pay as you go usage detected. Please report your case.</span>,
+  UNAVAILABLE: <span data-testid="PAYG.UNAVAILABLE">No Pay-As-You-Go usage present.</span>,
+  INVALID: <span data-testid="PAYG.INVALID">Invalid Pay-As-You-Go usage detected. Please create a support ticket.</span>,
 };
 
 export const BaseQuotaLabels = {
