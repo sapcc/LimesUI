@@ -86,6 +86,11 @@ describe("Resource info tests", () => {
     rerender(<ResourceInfo {...props} />);
     expect(screen.queryByTestId(/PAYG.AVAILABLE/i)).not.toBeInTheDocument();
     expect(screen.queryByTestId(/PAYG.INVALID/i)).not.toBeInTheDocument();
+
+    // resoruces with payg usage 0 should not display info.
+    props.rightBar = resourceBar;
+    rerender(<ResourceInfo {...props} />);
+    expect(screen.queryByTestId(/PAYG.AVAILABLE/i)).not.toBeInTheDocument();
   });
 
   test("renders base quota info", () => {
