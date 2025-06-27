@@ -69,7 +69,7 @@ const ResourceInfo = (props) => {
   }
 
   function getPaygInfo() {
-    if (rightBar.utilized >= 0) {
+    if (rightBar.utilized > 0) {
       return PAYGLabels.AVAILABLE(unit.format(rightBar.utilized));
     }
     if (rightBar.utilized < 0) {
