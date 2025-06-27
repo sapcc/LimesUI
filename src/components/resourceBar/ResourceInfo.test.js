@@ -88,8 +88,9 @@ describe("Resource info tests", () => {
     expect(screen.queryByTestId(/PAYG.INVALID/i)).not.toBeInTheDocument();
 
     // resoruces with payg usage 0 should not display info.
-    props.rightBar = resourceBar;
+    props.rightBar = { utilized: 0, available: 1 };
     rerender(<ResourceInfo {...props} />);
+    expect(screen.getByTestId(/PAYG.UNAVAILABLE/i)).toBeInTheDocument();
     expect(screen.queryByTestId(/PAYG.AVAILABLE/i)).not.toBeInTheDocument();
   });
 
