@@ -27,7 +27,7 @@ export const CommittedUsageLabels = {
   FULLY_UTILIZED: <span data-testid="CommittedUsage.FULLY_UTILIZED">Commitments are fully utilized.</span>,
   UNUSED: (amount) => (
     <span data-testid="CommittedUsage.UNUSED">
-      Unused commitments: <strong>{amount}</strong>{" "}
+      Unused commitments: <strong>{amount}</strong>.{" "}
     </span>
   ),
   INVALID: (
@@ -40,7 +40,7 @@ export const CommittedUsageLabels = {
 export const PAYGLabels = {
   AVAILABLE: (amount) => (
     <span data-testid="PAYG.AVAILABLE">
-      Pay-As-You-Go usage: <strong>{amount}</strong>
+      Pay-As-You-Go usage: <strong>{amount}</strong>.
     </span>
   ),
   UNAVAILABLE: <span data-testid="PAYG.UNAVAILABLE">No Pay-As-You-Go usage present.</span>,
