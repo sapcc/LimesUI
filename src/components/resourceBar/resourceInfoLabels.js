@@ -75,6 +75,6 @@ export const NegativeRemainingQuotaLabels = {
     </span>
   ),
   REFRESH: (
-    <span data-testid="NegativeRemainingQuota.REFRESH">Please refresh the page to receive updated quota values.</span>
+    <span data-testid="NegativeRemainingQuota.REFRESH">Please refresh the page after a while to receive updated quota values.</span>
   ),
 };
