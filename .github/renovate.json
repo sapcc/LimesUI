@@ -59,6 +59,7 @@
       "schedule": [
         "before 8am on Friday"
       ],
+      "separateMajorMinor": false,
       "matchPackageNames": [
         "!/^react.*/",
         "!/^@cloudoperators/.*/",
