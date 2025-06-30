@@ -62,7 +62,7 @@ export const BaseQuotaLabels = {
           ) : (
             <span data-testid="BaseQuota.AZ">Commitments and usage assign</span>
           )}{" "}
-          quota to this AZ.
+          base quota to this AZ.
         </span>
       )}
     </>
