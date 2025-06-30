@@ -24,33 +24,33 @@
   ],
   "packageRules": [
     {
+      "groupName": "react updates",
       "description": "Updates for React and related packages separately",
       "schedule": [
         "before 8am on Friday"
       ],
-      "groupName": "react updates",
       "matchPackageNames": [
         "/^react$/",
         "/^react-.*/"
       ]
     },
     {
+      "groupName": "cloudoperators updates",
       "description": "Updates for all @cloudoperators packages separately",
       "schedule": [
         "before 8am on Friday"
       ],
-      "groupName": "cloudoperators updates",
       "matchPackageNames": [
         "/^@cloudoperators/.*/"
       ]
     },
     {
+      "groupName": "tailwind updates",
       "description": "Updates for Tailwind and related packages separately",
       "matchPackageNames": [
         "/^tailwindcss$/",
         "/^tailwindcss-.*/"
       ],
-      "groupName": "tailwind updates",
       "schedule": [
         "before 8am on Friday"
       ]
