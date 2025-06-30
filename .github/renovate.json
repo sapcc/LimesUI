@@ -24,7 +24,7 @@
   ],
   "packageRules": [
     {
-      "groupName": "react updates",
+      "groupName": "react packages",
       "description": "Updates for React and related packages separately",
       "schedule": [
         "before 8am on Friday"
@@ -35,7 +35,7 @@
       ]
     },
     {
-      "groupName": "cloudoperators updates",
+      "groupName": "cloudoperators packages",
       "description": "Updates for all @cloudoperators packages separately",
       "schedule": [
         "before 8am on Friday"
@@ -45,7 +45,7 @@
       ]
     },
     {
-      "groupName": "tailwind updates",
+      "groupName": "tailwind packages",
       "description": "Updates for Tailwind and related packages separately",
       "matchPackageNames": [
         "/^tailwindcss/",
@@ -56,7 +56,7 @@
       ]
     },
     {
-      "groupName": "miscellaneous updates",
+      "groupName": "miscellaneous packages",
       "description": "Group all other dependencies",
       "schedule": [
         "before 8am on Friday"
