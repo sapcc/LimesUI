@@ -30,8 +30,7 @@
         "before 8am on Friday"
       ],
       "matchPackageNames": [
-        "/^react$/",
-        "/^react-.*/"
+        "/^react.*/"
       ]
     },
     {
@@ -48,8 +47,7 @@
       "groupName": "tailwind packages",
       "description": "Updates for Tailwind and related packages separately",
       "matchPackageNames": [
-        "/^tailwindcss/",
-        "/^tailwindcss-.*/"
+        "/^tailwindcss.*/"
       ],
       "schedule": [
         "before 8am on Friday"
@@ -62,6 +60,9 @@
         "before 8am on Friday"
       ],
       "matchPackageNames": [
+        "!/^react.*/",
+        "!/^@cloudoperators/.*/",
+        "!/^tailwindcss.*/",
         "/.*/"
       ]
     }
