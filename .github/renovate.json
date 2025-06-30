@@ -48,7 +48,7 @@
       "groupName": "tailwind updates",
       "description": "Updates for Tailwind and related packages separately",
       "matchPackageNames": [
-        "/^tailwindcss$/",
+        "/^tailwindcss/",
         "/^tailwindcss-.*/"
       ],
       "schedule": [
