@@ -32,7 +32,7 @@ export const CommittedUsageLabels = {
   ),
   INVALID: (
     <span data-testid="CommittedUsage.INVALID">
-      Displayed usage should not exceed commitments. Please create a support ticket.
+      Displayed commitment usage should not exceed commitment amount. Please create a support ticket.
     </span>
   ),
 };
