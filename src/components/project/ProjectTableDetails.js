@@ -136,7 +136,14 @@ const ProjectTableDetails = (props) => {
           </Stack>
         </DataGridCell>
         <DataGridCell>
-          <ResourceBarBuilder resource={az} unit={unit} barType={"granular"} isEditableResource={isEditableResource} />
+          <ResourceBarBuilder
+            scope={scope}
+            resource={resource}
+            az={az}
+            unit={unit}
+            barType={"granular"}
+            isEditableResource={isEditableResource}
+          />
         </DataGridCell>
         <DataGridCell>
           <div key={metadata.name}>
