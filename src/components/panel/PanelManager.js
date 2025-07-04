@@ -50,7 +50,7 @@ const PanelManager = (props) => {
   React.useEffect(() => {
     if ((isEditableResource || subRoute) && currentResource) {
       setIsEditing(true);
-      document.documentElement.style.overflow = 'hidden';
+      document.documentElement.style.overflow = "hidden";
     }
     // reset state if user presses return button at the browser
     return () => {
@@ -62,7 +62,7 @@ const PanelManager = (props) => {
   }, [currentResource]);
 
   function onPanelClose() {
-    document.documentElement.style.overflow = '';
+    document.documentElement.style.overflow = "";
     setCommitment(initialCommitmentObject);
     setToast(null);
     // create commitment
