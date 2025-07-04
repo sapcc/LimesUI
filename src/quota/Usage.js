@@ -25,7 +25,7 @@ import StoreProvider, {
 } from "../components/StoreProvider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useQuery } from "@tanstack/react-query";
-import styles from "../styles.scss";
+import styles from "../styles.css";
 import { getBaseURL } from "../lib/scope";
 import AsyncWorker from "../AsyncWorker";
 import getQuotaFromResources from "./quota";

@@ -143,7 +143,7 @@ const build = async () => {
 
               // postcss plugins
               const plugins = [
-                require("tailwindcss"),
+                require("@tailwindcss/postcss"),
                 require("autoprefixer"),
                 // rewrite urls inside css
                 url({

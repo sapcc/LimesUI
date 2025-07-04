@@ -19,7 +19,7 @@ import React from "react";
 import { AppShell, AppShellProvider, Message, LoadingIndicator } from "@cloudoperators/juno-ui-components";
 import StoreProvider, { apiStore, apiStoreActions, globalStoreActions } from "./components/StoreProvider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import styles from "./styles.scss";
+import styles from "./styles.css";
 import dayPickerStyle from "react-day-picker/dist/style.css?inline";
 import AsyncWorker from "./AsyncWorker";
 import { Scope } from "./lib/scope";
