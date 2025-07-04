@@ -1,5 +1,11 @@
 # @sapcc/limes-ui
 
+## 1.9.0
+
+### Minor Changes
+
+- 4d556a1: Add explanatory info segments for resources and availability zones. Make base quota easier to understand.
+
 ## 1.8.1
 
 ### Patch Changes
