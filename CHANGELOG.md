@@ -1,5 +1,11 @@
 # @sapcc/limes-ui
 
+## 1.10.0
+
+### Minor Changes
+
+- 905e365: update juno to v5, tailwind to v4
+
 ## 1.9.0
 
 ### Minor Changes
