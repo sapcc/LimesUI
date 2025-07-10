@@ -30,7 +30,9 @@
         "before 8am on Friday"
       ],
       "matchPackageNames": [
-        "/^react.*/"
+        "/^react$/",
+        "/^react-dom$/",
+        "/^react-test-renderer$/"
       ]
     },
     {
@@ -61,7 +63,9 @@
       ],
       "separateMajorMinor": false,
       "matchPackageNames": [
-        "!/^react.*/",
+        "!/^react$/",
+        "!/^react-dom$/",
+        "!/^react-test-renderer$/",
         "!/^@cloudoperators/.*/",
         "!/^tailwindcss.*/",
         "/.*/"
