@@ -112,16 +112,18 @@ const Resource = (props) => {
           gap="1"
           distribution={canEdit && !editableResource && "between"}
         >
-          <Stack>
-            {displayName}
+          <Stack gap="1">
+            <div className="m-auto">{displayName}</div>
             {resourceHasQuota && !isPanelView && (
-              <Icon
+              <Button
                 data-testid="detailedResourceInfo"
                 icon={displayResourceInfo ? "expandMore" : "chevronRight"}
-                title={displayResourceInfo ? "hide info" : "display info"}
+                label="Explain"
                 onClick={() => {
                   setDisplayResourceInfo(!displayResourceInfo);
                 }}
+                title={displayResourceInfo ? "hide info" : "display info for this resource"}
+                size="small"
               />
             )}
           </Stack>
