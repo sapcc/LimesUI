@@ -112,7 +112,7 @@ const Resource = (props) => {
           gap="1"
           distribution={canEdit && !editableResource && "between"}
         >
-          <Stack gap="1">
+          <Stack gap="2">
             <div className="m-auto">{displayName}</div>
             {resourceHasQuota && !isPanelView && (
               <Button
