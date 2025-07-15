@@ -18,7 +18,7 @@ import React from "react";
 import { globalStore, createCommitmentStore } from "../StoreProvider";
 import { t } from "../../lib/utils";
 import { CustomZones, PanelType } from "../../lib/constants";
-import { Button, Icon, Stack } from "@cloudoperators/juno-ui-components";
+import { Button, Stack } from "@cloudoperators/juno-ui-components";
 import { Link } from "react-router";
 import { ProjectBadges } from "../shared/LimesBadges";
 import { isAZUnaware } from "../../lib/utils";
