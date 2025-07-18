@@ -18,7 +18,7 @@ import React from "react";
 import { globalStore, createCommitmentStore } from "../StoreProvider";
 import { t } from "../../lib/utils";
 import { CustomZones, PanelType } from "../../lib/constants";
-import { Button, Icon, Stack } from "@cloudoperators/juno-ui-components";
+import { Button, Stack } from "@cloudoperators/juno-ui-components";
 import { Link } from "react-router";
 import { ProjectBadges } from "../shared/LimesBadges";
 import { isAZUnaware } from "../../lib/utils";
@@ -112,16 +112,18 @@ const Resource = (props) => {
           gap="1"
           distribution={canEdit && !editableResource && "between"}
         >
-          <Stack>
-            {displayName}
+          <Stack gap="2">
+            <div className="m-auto">{displayName}</div>
             {resourceHasQuota && !isPanelView && (
-              <Icon
+              <Button
                 data-testid="detailedResourceInfo"
                 icon={displayResourceInfo ? "expandMore" : "chevronRight"}
-                title={displayResourceInfo ? "hide info" : "display info"}
+                label="Explain"
                 onClick={() => {
                   setDisplayResourceInfo(!displayResourceInfo);
                 }}
+                title={displayResourceInfo ? "hide info" : "display info for this resource"}
+                size="small"
               />
             )}
           </Stack>
