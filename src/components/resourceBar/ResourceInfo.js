@@ -89,7 +89,7 @@ const ResourceInfo = (props) => {
     const deductedBaseQuota = unit.format(resource.quota - baseQuotaAZ.quota);
     !az && sections.push(BaseQuotaLabels.REMAINING({ totalQuota, remainingBaseQuota, deductedBaseQuota }));
     !az && sections.push(BaseQuotaLabels.BASEINFO);
-    az && sections.push(BaseQuotaLabels.AZINFO(az));
+    az && az.name != CustomZones.UNKNOWN && sections.push(BaseQuotaLabels.AZINFO(az));
     return sections;
   }
 

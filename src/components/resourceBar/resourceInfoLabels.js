@@ -15,7 +15,6 @@
  */
 
 import React from "react";
-import { CustomZones } from "../../lib/constants";
 
 export const UnknownAZLabel = (
   <span data-testid="UnknownAZ">
@@ -57,15 +56,9 @@ export const BaseQuotaLabels = {
       commitments and usage.
     </p>
   ),
-  AZINFO: (az) => (
-    <span data-testid="BaseQuota.ADDITION">
-      {az.name === CustomZones.UNKNOWN ? (
-        <span data-testid="BaseQuota.UNKNOWN">Usage assigns base quota to this AZ.</span>
-      ) : (
-        <span data-testid="BaseQuota.AZ">
-          Resources in this AZ can also be deployed using the region-wide base quota seen above.
-        </span>
-      )}
+  AZINFO: () => (
+    <span data-testid="BaseQuota.AZ">
+      Resources in this AZ can also be deployed using the region-wide base quota seen above.
     </span>
   ),
   BASEINFO: (

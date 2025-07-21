@@ -117,14 +117,12 @@ describe("Resource info tests", () => {
     // AZ info should contain the info addition.
     props.az = { name: "AZ1" };
     rerender(<ResourceInfo {...props} />);
-    expect(screen.getByTestId(/BaseQuota.ADDITION/i)).toBeInTheDocument();
     expect(screen.getByTestId(/BaseQuota.AZ/i)).toBeInTheDocument();
 
     // unknown AZ info should contain specific info.
     props.az = { name: CustomZones.UNKNOWN };
     rerender(<ResourceInfo {...props} />);
-    expect(screen.getByTestId(/BaseQuota.ADDITION/i)).toBeInTheDocument();
-    expect(screen.getByTestId(/BaseQuota.UNKNOWN/i)).toBeInTheDocument();
+    expect(screen.queryByTestId(/BaseQuota.AZ/i)).not.toBeInTheDocument();
 
     // Provided AZ's without a base quota AZ should not display info.
     props.resource = {
