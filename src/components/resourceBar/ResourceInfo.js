@@ -48,7 +48,7 @@ const ResourceInfo = (props) => {
       infos.push(getPaygInfo());
     }
     if (!scope.isCluster()) {
-      infos.push(getBaseQuotaInfo());
+      infos.push(...getBaseQuotaInfo());
     }
     infos.push(...getNegativeRemainingQuotaInfo());
 
@@ -83,7 +83,14 @@ const ResourceInfo = (props) => {
   function getBaseQuotaInfo() {
     const baseQuotaAZ = locateBaseQuotaAZ(resource);
     if (!baseQuotaAZ) return;
-    return BaseQuotaLabels.AVAILABLE(unit.format(baseQuotaAZ.quota), az);
+    const sections = [];
+    const totalQuota = unit.format(resource.quota);
+    const remainingBaseQuota = unit.format(baseQuotaAZ.quota);
+    const deductedBaseQuota = unit.format(resource.quota - baseQuotaAZ.quota);
+    !az && sections.push(BaseQuotaLabels.REMAINING({ totalQuota, remainingBaseQuota, deductedBaseQuota }));
+    !az && sections.push(BaseQuotaLabels.BASEINFO);
+    az && sections.push(BaseQuotaLabels.AZINFO(az));
+    return sections;
   }
 
   function getNegativeRemainingQuotaInfo() {
@@ -108,7 +115,7 @@ const ResourceInfo = (props) => {
   return (
     <IntroBox className="my-1 text-sm">
       {resourceInfos.map((info, index) => (
-        <p key={index}>{info}</p>
+        <div key={index}>{info}</div>
       ))}
     </IntroBox>
   );

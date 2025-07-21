@@ -50,22 +50,24 @@ export const PAYGLabels = {
 };
 
 export const BaseQuotaLabels = {
-  AVAILABLE: (amount, az) => (
-    <>
-      <span data-testid="BaseQuota.AVAILABLE">
-        Available base quota: <strong>{amount}</strong>.{" "}
-      </span>{" "}
-      {az && (
-        <span data-testid="BaseQuota.ADDITION">
-          {az.name === CustomZones.UNKNOWN ? (
-            <span data-testid="BaseQuota.UNKNOWN">Usage assigns</span>
-          ) : (
-            <span data-testid="BaseQuota.AZ">Commitments and usage assign</span>
-          )}{" "}
-          base quota to this AZ.
-        </span>
+  REMAINING: ({ totalQuota, remainingBaseQuota, deductedBaseQuota }) => (
+    <p data-testid="BaseQuota.AVAILABLE">
+      Base quota: <strong>{remainingBaseQuota}</strong> out of the original <strong>{totalQuota}</strong> are still
+      available. <strong>{deductedBaseQuota}</strong> have been deducted because of AZ-aware quotas based on existing
+      commitments and usage.
+    </p>
+  ),
+  AZINFO: (az) => (
+    <span data-testid="BaseQuota.ADDITION">
+      {az.name === CustomZones.UNKNOWN ? (
+        <span data-testid="BaseQuota.UNKNOWN">Usage assigns base quota to this AZ.</span>
+      ) : (
+        <span data-testid="BaseQuota.AZ">Resources in this AZ can also be deployed using the region-wide base quota seen above.</span>
       )}
-    </>
+    </span>
+  ),
+  BASEINFO: (
+    <span>Base quota can be used to deploy into any AZ of your choice. Quota does not incur costs until used.</span>
   ),
 };
 
