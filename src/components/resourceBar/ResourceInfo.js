@@ -82,8 +82,8 @@ const ResourceInfo = (props) => {
 
   function getBaseQuotaInfo() {
     const baseQuotaAZ = locateBaseQuotaAZ(resource);
-    if (!baseQuotaAZ) return;
     const sections = [];
+    if (!baseQuotaAZ) return sections;
     const totalQuota = unit.format(resource.quota);
     const remainingBaseQuota = unit.format(baseQuotaAZ.quota);
     const deductedBaseQuota = unit.format(resource.quota - baseQuotaAZ.quota);

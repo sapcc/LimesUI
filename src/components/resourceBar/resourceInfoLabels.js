@@ -62,7 +62,9 @@ export const BaseQuotaLabels = {
       {az.name === CustomZones.UNKNOWN ? (
         <span data-testid="BaseQuota.UNKNOWN">Usage assigns base quota to this AZ.</span>
       ) : (
-        <span data-testid="BaseQuota.AZ">Resources in this AZ can also be deployed using the region-wide base quota seen above.</span>
+        <span data-testid="BaseQuota.AZ">
+          Resources in this AZ can also be deployed using the region-wide base quota seen above.
+        </span>
       )}
     </span>
   ),

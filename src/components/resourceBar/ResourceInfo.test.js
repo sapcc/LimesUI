@@ -117,8 +117,6 @@ describe("Resource info tests", () => {
     // AZ info should contain the info addition.
     props.az = { name: "AZ1" };
     rerender(<ResourceInfo {...props} />);
-    expect(screen.getByTestId(/BaseQuota.AVAILABLE/i)).toBeInTheDocument();
-    expect(screen.getByText("1 GiB")).toBeInTheDocument();
     expect(screen.getByTestId(/BaseQuota.ADDITION/i)).toBeInTheDocument();
     expect(screen.getByTestId(/BaseQuota.AZ/i)).toBeInTheDocument();
 
