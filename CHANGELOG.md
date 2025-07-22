@@ -1,5 +1,11 @@
 # @sapcc/limes-ui
 
+## 1.10.1
+
+### Patch Changes
+
+- aae7290: Change indicator for additional resource info from an icon to a button.
+
 ## 1.10.0
 
 ### Minor Changes
