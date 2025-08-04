@@ -19,7 +19,7 @@
     "@eslint/compat": "^1.1.1",
     "@svgr/core": "^8.0.0",
     "@svgr/plugin-jsx": "^8.0.0",
-    "@tanstack/react-query": "5.83.0",
+    "@tanstack/react-query": "5.84.1",
     "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
@@ -45,7 +45,7 @@
     "shadow-dom-testing-library": "^1.7.1",
     "tailwindcss": "^4.1.11",
     "util": "^0.12.4",
-    "zustand": "5.0.6"
+    "zustand": "5.0.7"
   },
   "scripts": {
     "build": "NODE_ENV=production node esbuild.config.js",
