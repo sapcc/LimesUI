@@ -34,7 +34,7 @@ const CommitmentTable = (props) => {
   const { serviceType, currentCategory, currentResource, currentAZ, commitmentData, mergeOps } = {
     ...props,
   };
-  const durations = getResourceDurations(currentResource)
+  const durations = getResourceDurations(currentResource);
   const { setMergeIsActive } = mergeOps;
   const resourceName = currentResource?.name;
   const { per_az: availabilityZones } = props.resource;
