@@ -30,7 +30,6 @@ import { useQuery } from "@tanstack/react-query";
 import { DataGridRow, DataGridCell, Stack, Icon, LoadingIndicator, Button } from "@cloudoperators/juno-ui-components";
 import { DomainBadges, ProjectBadges } from "../shared/LimesBadges";
 import useResetCommitment from "../../hooks/useResetCommitment";
-import { getResourceDurations } from "../../lib/utils";
 
 const ProjectTableDetails = (props) => {
   const {
@@ -51,7 +50,6 @@ const ProjectTableDetails = (props) => {
   const { name: projectName, id: projectID } = metadata;
   const { unit } = resource;
   const isEditableResource = resource.editableResource;
-  const hasDurations = getResourceDurations(resource).length > 0;
   const { commitments } = projectStore();
   const { currentProject } = createCommitmentStore();
   const { refetchCommitmentAPI } = createCommitmentStore();
@@ -162,13 +160,12 @@ const ProjectTableDetails = (props) => {
             <>
               {!isTransferring || originProject ? (
                 <div>
-                  {hasDurations && (
-                    <AddCommitments
-                      label="Add"
-                      disabled={!showCommitments || transferCommitment || isLoading}
-                      size="small"
-                    />
-                  )}
+                  <AddCommitments
+                    label="Add"
+                    resource={resource}
+                    disabled={!showCommitments || transferCommitment || isLoading}
+                    size="small"
+                  />
                   <Button
                     className={"ml-1"}
                     data-cy="moveCommitment"

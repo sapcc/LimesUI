@@ -21,12 +21,10 @@ import { Stack, Tabs, Tab, TabList, TabPanel, Container } from "@cloudoperators/
 import useResetCommitment from "../../hooks/useResetCommitment";
 import MergeCommitment from "../shared/MergeCommitments";
 import { CustomZones } from "../../lib/constants";
-import { getResourceDurations } from "../../lib/utils";
 
 const AvailabilityZoneNav = (props) => {
   const azIndex = props.az.findIndex((az) => az.name === props.currentAZ);
   const { scope, resource, setCurrentAZ, mergeOps } = props;
-  const hasResourceDurations = getResourceDurations(resource).length > 0;
   const { setIsMerging, setCommitmentsToMerge } = mergeOps;
   const { resetCommitment } = useResetCommitment();
 
@@ -61,7 +59,7 @@ const AvailabilityZoneNav = (props) => {
           <Stack className="h-8 my-auto ml-auto mr-2" gap="1">
             {scope.isProject() && (
               <>
-                {hasResourceDurations && <AddCommitments label="Add" />}
+                {<AddCommitments label="Add" resource={resource} />}
                 <ReceiveCommitment />
               </>
             )}
