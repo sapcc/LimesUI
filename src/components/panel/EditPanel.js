@@ -381,6 +381,7 @@ const EditPanel = (props) => {
       {!subRoute && (
         <AvailabilityZoneNav
           az={currentResource.per_az}
+          resource={currentResource}
           currentAZ={currentAZ}
           scope={scope}
           setCurrentAZ={setCurrentAZ}

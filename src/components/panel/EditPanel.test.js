@@ -40,7 +40,8 @@ queryClient.setQueryDefaults(["projectsInDomain"], {
   queryFn: ({ queryKey }) => {
     const id = queryKey[3];
     function getMockProject() {
-      const commitment_config = id === 1 ? { durations: ["1 year"] } : {};
+      const commitment_config = id === "committable" ? { durations: ["1 year"] } : {};
+      const committments = id === "decomissioned" ? { committed: { "1 year": 10 } } : {};
       return {
         projects: [
           {
@@ -56,6 +57,7 @@ queryClient.setQueryDefaults(["projectsInDomain"], {
                       az1: {
                         quota: 10,
                         usage: 1,
+                        ...committments,
                       },
                       az2: {
                         quota: 20,
@@ -206,6 +208,15 @@ describe("EditPanel tests", () => {
       expect(screen.getByTestId("addCommitment")).toBeEnabled();
       expect(screen.queryByTestId("commitmentSave")).not.toBeInTheDocument();
     });
+
+    // Decommissioned resources that contain remaining commitments can't create new commitments.
+    delete resource.commitment_config;
+    rerender();
+    act(() => {
+      result.current.globalStoreActions.setScope(scope);
+      result.current.projectStoreActions.setCommitments(commitments);
+    });
+    expect(screen.queryByTestId("addCommitment")).not.toBeInTheDocument();
   });
 
   test("Commitment merging", async () => {
@@ -321,7 +332,7 @@ describe("EditPanel tests", () => {
     const scope = new Scope({});
     let domains = [
       {
-        id: 1,
+        id: "committable",
         name: "exampleDomain",
         services: [],
       },
@@ -365,14 +376,16 @@ describe("EditPanel tests", () => {
     expect(selectedAZ).toHaveAttribute("aria-selected", "true");
 
     // Expect commitment edit option at a committable resource.
+    //
     await waitFor(() => {
       expect(screen.getByTestId("committableTableEntry")).toBeInTheDocument();
+      expect(screen.getByTestId("addCommitment")).toBeInTheDocument();
     });
 
     // Expect info for unccommittable resource.
     domains = [
       {
-        id: 2,
+        id: "uncommittable",
         name: "exampleDomain",
         services: [],
       },
@@ -384,6 +397,25 @@ describe("EditPanel tests", () => {
     });
     await waitFor(() => {
       expect(screen.getByTestId("uncommittableTableEntry")).toBeInTheDocument();
+    });
+
+    // The resource has commitments, but can't receive new ones. This occurs when resources are decommissioned.
+    // Commitments can still be displayed, but the function to add commitments is not available.
+    domains = [
+      {
+        id: "decomissioned",
+        name: "exampleDomain",
+        services: [],
+      },
+    ];
+    rerender();
+    act(() => {
+      result.current.globalStoreActions.setScope(scope);
+      result.current.clusterStoreActions.setDomainData(domains);
+    });
+    await waitFor(() => {
+      expect(screen.getByTestId("committableTableEntry")).toBeInTheDocument();
+      expect(screen.queryByTestId("addCommitment")).not.toBeInTheDocument();
     });
   });
 });

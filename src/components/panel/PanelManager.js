@@ -32,7 +32,7 @@ const PanelManager = (props) => {
   // currentResource has to be provided from the props. The location state is static and does not refresh on rerender once the project data gets requeried.
   const { resources, serviceType } = props.categories[categoryName];
   const currentResource = getCurrentResource(resources, resourceName);
-  const isEditableResource = currentResource.commitment_config?.durations ?? false;
+  const isEditableResource = currentResource.editableResource;
   const resourceTracksQuota = tracksQuota(currentResource);
   const { isEditing } = createCommitmentStore();
   const { resetValidDurations } = createCommitmentStoreActions();

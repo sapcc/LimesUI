@@ -15,7 +15,7 @@
  */
 
 import { CEREBROKEY, COMMITMENTRENEWALKEY, CustomZones } from "../constants";
-import { unusedCommitments, uncommittedUsage } from "../../lib/utils";
+import { unusedCommitments, uncommittedUsage, getResourceDurations } from "../../lib/utils";
 import { Scope } from "../scope";
 
 const limesStore = (set, get) => ({
@@ -211,11 +211,11 @@ const limesStore = (set, get) => ({
           let editableResourceCount = 0;
           for (let res of resourceList) {
             filterAZs(res);
+            getQuotaNewOrOldModel(res);
+            addCommitmentSum(res);
             if (identifyEditableResource(res)) {
               editableResourceCount++;
             }
-            getQuotaNewOrOldModel(res);
-            addCommitmentSum(res);
             categories[res.category || serviceType].resources.push(res);
           }
           if (editableResourceCount == 0) {
@@ -317,14 +317,11 @@ function filterAZs(res) {
 
 // Add a attribute that defines if a resource can be managed (edited)
 function identifyEditableResource(res) {
-  const hasDurations = res?.commitment_config?.durations ? true : false;
+  const hasDurations = getResourceDurations(res).length > 0;
   // editableResource indicates the color of the resource bar.
-  const editableResource = hasDurations;
-  res.editableResource = editableResource;
-  if (!hasDurations) {
-    return false;
-  }
-  return true;
+  const isEditableResource = hasDurations || res.commitmentSum > 0;
+  res.editableResource = isEditableResource;
+  return isEditableResource;
 }
 
 // old model: Resources have a quota attribute attached to them.

@@ -110,6 +110,10 @@ export function getCurrentResource(resources, resourceName) {
   });
 }
 
+export function getResourceDurations(resource) {
+  return resource.commitment_config?.durations ?? [];
+}
+
 // project chunks for table pagination in the EditPanel.
 export const chunkProjects = (projects) => {
   const projectChunks = [];
