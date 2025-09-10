@@ -41,7 +41,7 @@ queryClient.setQueryDefaults(["projectsInDomain"], {
     const id = queryKey[3];
     function getMockProject() {
       const commitment_config = id === "committable" ? { durations: ["1 year"] } : {};
-      const committments = id === "decomissioned" ? { committed: { "1 year": 10 } } : {};
+      const committments = id === "decommissioned" ? { committed: { "1 year": 10 } } : {};
       return {
         projects: [
           {
@@ -403,7 +403,7 @@ describe("EditPanel tests", () => {
     // Commitments can still be displayed, but the function to add commitments is not available.
     domains = [
       {
-        id: "decomissioned",
+        id: "decommissioned",
         name: "exampleDomain",
         services: [],
       },
