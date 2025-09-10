@@ -21,8 +21,6 @@ import { Unit, valueWithUnit } from "../../../lib/unit";
 const MaxQuota = (props) => {
   const { project, resource, serviceType, postMaxQuota } = props;
   const { editMode = false } = props;
-  const maxQuotaValue = resource?.max_quota;
-  const unit = new Unit(resource.unit);
 
   const { MaxQuotaInput, maxQuotaInputProps, MaxQuotaEdit, maxQuotaEditProps } = useMaxQuotaSets({
     project: project,
@@ -31,15 +29,23 @@ const MaxQuota = (props) => {
     postMaxQuota: postMaxQuota,
   });
 
-  return editMode ? (
-    <span className={"gap-1 inline-flex"}>
-      Max Quota:{" "}
-      <MaxQuotaInput {...maxQuotaInputProps} reducedView={true} styles="h-[1.75rem] py-0" wrapperStyles="w-28" />{" "}
-      <MaxQuotaEdit {...maxQuotaEditProps} iconOnlyView={true} subduedView={true} />
-    </span>
-  ) : (
-    maxQuotaValue >= 0 && <span data-testid={"maxQuotaDisplay"}>| Max Quota: {valueWithUnit(maxQuotaValue, unit)}</span>
+  return (
+    editMode && (
+      <span className={"gap-1 inline-flex"}>
+        Max Quota:{" "}
+        <MaxQuotaInput {...maxQuotaInputProps} reducedView={true} styles="h-[1.75rem] py-0" wrapperStyles="w-28" />{" "}
+        <MaxQuotaEdit {...maxQuotaEditProps} iconOnlyView={true} subduedView={true} />
+      </span>
+    )
   );
 };
 
-export default MaxQuota;
+const MaxQuotaDisplay = ({ maxQuotaValue, unitName, editMode = false }) => {
+  const unit = new Unit(unitName);
+  return (
+    !editMode &&
+    maxQuotaValue >= 0 && <span data-testid={"maxQuotaDisplay"}>Max Quota: {valueWithUnit(maxQuotaValue, unit)}</span>
+  );
+};
+
+export { MaxQuota, MaxQuotaDisplay };
