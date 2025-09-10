@@ -175,7 +175,11 @@ const Resource = (props) => {
           {!isAZUnaware(props.resource.per_az) && (
             <ProjectBadges az={props.resource.per_az[0]} unit={unitName} displayValues={true} />
           )}
-          <MaxQuotaDisplay maxQuotaValue={resource?.max_quota} unit={unitName} editMode={maxQuotaForwardProps.editMode} />
+          <MaxQuotaDisplay
+            maxQuotaValue={resource?.max_quota}
+            unit={unitName}
+            editMode={maxQuotaForwardProps.editMode}
+          />
         </Stack>
       )}
       <ResourceBarBuilder
