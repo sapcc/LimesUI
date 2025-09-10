@@ -24,7 +24,7 @@ import { CustomZones } from "../../lib/constants";
 import { Scope } from "../../lib/scope";
 
 describe("Resource info tests", () => {
-  test("renders AZ error state info", async () => {
+  test("renders AZ error state info", () => {
     const props = {
       resource: {},
       az: { name: CustomZones.UNKNOWN },
@@ -33,6 +33,26 @@ describe("Resource info tests", () => {
     };
     render(<ResourceInfo {...props} />);
     expect(screen.getByTestId(/UnknownAZ/i)).toBeInTheDocument();
+  });
+
+  test("renders API labels", () => {
+    const props = {
+      resource: {
+        name: "resource",
+        per_az: [{ name: "AZ1", quota: 1024 }],
+      },
+      isGranular: true,
+      isEmptyBar: true,
+      categoryName: "service",
+      leftBar: {},
+      rightBar: {},
+    };
+    const { rerender } = render(<ResourceInfo {...props} />);
+    expect(screen.queryByTestId(/fullResourceName/i)).not.toBeInTheDocument();
+    props.isGranular = false;
+    rerender(<ResourceInfo {...props} />);
+    expect(screen.getByTestId(/fullResourceName/i)).toBeInTheDocument();
+    expect(screen.getByText("service/resource")).toBeInTheDocument();
   });
 
   test("renders committed usage info when leftBar has values", () => {
@@ -146,6 +166,7 @@ describe("Resource info tests", () => {
     rerender(<ResourceInfo {...props} />);
     expect(screen.queryByTestId(/BaseQuota.AVAILABLE/i)).not.toBeInTheDocument();
   });
+
   test("renders negative remaining quota info", () => {
     const props = {
       scope: new Scope({}),
@@ -164,5 +185,40 @@ describe("Resource info tests", () => {
     rerender(<ResourceInfo {...props} />);
     expect(screen.getByTestId(/NegativeRemainingQuota.QUOTA/i)).toBeInTheDocument();
     expect(screen.getByTestId(/NegativeRemainingQuota.REFRESH/i)).toBeInTheDocument();
+  });
+
+  test("Cluster: renders capacity allocation ratio", () => {
+    const props = (leftBar, rightBar, isEmptyBar = false) => ({
+      scope: new Scope({}),
+      resource: {
+        name: "resource",
+        per_az: [{ name: "AZ1", quota: 1024 }],
+      },
+      isEmptyBar: isEmptyBar,
+      leftBar: leftBar,
+      rightBar: rightBar,
+    });
+
+    // Full allocation - commitments and payg consume the available capacity.
+    let leftBar = { utilized: 10, available: 40 };
+    let rightBar = { utilized: 10, available: 10 };
+    const { rerender } = render(<ResourceInfo {...props(leftBar, rightBar)} />);
+    expect(screen.getByTestId(/allocationRatio/i)).toBeInTheDocument();
+    expect(screen.getByText("100.00 %")).toBeInTheDocument();
+    // Partial allocation
+    leftBar = { utilized: 10, available: 40 };
+    rightBar = { utilized: 5, available: 10 };
+    rerender(<ResourceInfo {...props(leftBar, rightBar)} />);
+    expect(screen.getByText("90.00 %")).toBeInTheDocument();
+    // Only pay as you go available.
+    leftBar = { utilized: 0, available: 0 };
+    rightBar = { utilized: 5, available: 10 };
+    rerender(<ResourceInfo {...props(leftBar, rightBar)} />);
+    expect(screen.getByText("50.00 %")).toBeInTheDocument();
+    // No Capacity
+    leftBar = { utilized: 0, available: 0 };
+    rightBar = { utilized: 0, available: 0 };
+    rerender(<ResourceInfo {...props(leftBar, rightBar, true)} />);
+    expect(screen.queryByTestId(/allocationRatio/i)).not.toBeInTheDocument();
   });
 });

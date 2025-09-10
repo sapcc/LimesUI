@@ -16,6 +16,22 @@
 
 import React from "react";
 
+export const FullResourceName = {
+  LABEL: (categoryName, resourceName) => (
+    <span data-testid="fullResourceName">
+      Full name: <strong>{categoryName + "/" + resourceName}</strong>
+    </span>
+  ),
+};
+
+export const AllocationRatio = {
+  LABEL: (ratio) => (
+    <span data-testid="allocationRatio">
+      Capacity allocation ratio: <strong>{ratio}</strong>
+    </span>
+  ),
+};
+
 export const UnknownAZLabel = (
   <span data-testid="UnknownAZ">
     This usage number accounts for assets in error states that are not associated with a real AZ.

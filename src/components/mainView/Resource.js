@@ -80,15 +80,24 @@ const azContentHover = `
     `;
 
 const Resource = (props) => {
-  const { canEdit, project, resource, isPanelView, subRoute, setCurrentAZ, serviceType, setIsMerging, tracksQuota } =
-    props;
+  const {
+    canEdit,
+    categoryName,
+    project,
+    resource,
+    isPanelView,
+    subRoute,
+    setCurrentAZ,
+    serviceType,
+    setIsMerging,
+    tracksQuota,
+  } = props;
   const { unit: unitName, editableResource } = resource;
   const { scope } = globalStore();
   const displayName = t(resource.name);
   const { isEditing } = createCommitmentStore();
   const { resetCommitment } = useResetCommitment();
   const [displayResourceInfo, setDisplayResourceInfo] = React.useState(false);
-  const resourceHasQuota = resource?.quota > 0;
 
   const maxQuotaForwardProps = {
     editMode: isPanelView || (canEdit && !editableResource),
@@ -114,7 +123,7 @@ const Resource = (props) => {
         >
           <Stack gap="2">
             <div className="m-auto">{displayName}</div>
-            {resourceHasQuota && !isPanelView && (
+            {!isPanelView && (
               <Button
                 data-testid="detailedResourceInfo"
                 icon={displayResourceInfo ? "expandMore" : "chevronRight"}
@@ -139,7 +148,7 @@ const Resource = (props) => {
               <ProjectBadges az={props.resource.per_az[0]} unit={unitName} displayValues={true} />
             )}
             {canEdit && !isPanelView && editableResource && (
-              <Link to={`/${props.area}/edit/${props.categoryName}/${props.resource.name}`} state={props}>
+              <Link to={`/${props.area}/edit/${categoryName}/${props.resource.name}`} state={props}>
                 <Button
                   data-cy={`edit/${props.resource.name}`}
                   data-testid={`edit/${props.resource.name}`}
@@ -153,7 +162,7 @@ const Resource = (props) => {
             )}
             {!scope.isProject() && tracksQuota && (
               <Link
-                to={`/${props.area}/edit/${props.categoryName}/${props.resource.name}/${PanelType.quota.name}`}
+                to={`/${props.area}/edit/${categoryName}/${props.resource.name}/${PanelType.quota.name}`}
                 state={props}
               >
                 <Button data-testid={"setMaxQuotaPanel"} className="ml-1" size="small" icon="edit">
@@ -167,6 +176,7 @@ const Resource = (props) => {
       <ResourceBarBuilder
         scope={scope}
         resource={resource}
+        categoryName={categoryName}
         unit={unitName}
         barType={"total"}
         isEditableResource={editableResource}

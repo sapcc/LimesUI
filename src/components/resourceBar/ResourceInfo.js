@@ -26,11 +26,13 @@ import {
   PAYGLabels,
   BaseQuotaLabels,
   NegativeRemainingQuotaLabels,
+  AllocationRatio,
+  FullResourceName,
 } from "./resourceInfoLabels";
 import { Scope } from "../../lib/scope";
 
 const ResourceInfo = (props) => {
-  const { scope = new Scope(), resource, az, unit = new Unit("") } = { ...props };
+  const { scope = new Scope(), categoryName, resource, az, unit = new Unit(""), isEmptyBar, isGranular } = { ...props };
   const { leftBar, rightBar } = { ...props };
   const hasLeftBar = hasAnyBarValues(leftBar);
   const hasRightBar = hasAnyBarValues(rightBar);
@@ -38,6 +40,17 @@ const ResourceInfo = (props) => {
   const resourceInfos = React.useMemo(() => {
     const infos = [];
 
+    if (!isGranular) {
+      infos.push(getFullResourceName());
+    }
+
+    if (isEmptyBar) {
+      return infos;
+    }
+
+    if (scope.isCluster()) {
+      infos.push(getCapacityAllocationRatio());
+    }
     if (az?.name === CustomZones.UNKNOWN) {
       infos.push(UnknownAZLabel);
     }
@@ -54,6 +67,23 @@ const ResourceInfo = (props) => {
 
     return infos;
   }, [scope, resource, az, leftBar, rightBar]);
+
+  function getFullResourceName() {
+    return FullResourceName.LABEL(categoryName, resource.name);
+  }
+
+  function getCapacityAllocationRatio() {
+    let allocationRatio = (
+      ((rightBar.utilized + leftBar.available) / (rightBar.available + leftBar.available)) *
+      100
+    ).toFixed(2);
+
+    if (isFinite(allocationRatio)) {
+      allocationRatio += " %";
+    }
+
+    return AllocationRatio.LABEL(allocationRatio);
+  }
 
   function getCommittedUsageInfo() {
     const remaining = leftBar.available - leftBar.utilized;
@@ -113,11 +143,13 @@ const ResourceInfo = (props) => {
   }
 
   return (
-    <IntroBox className="my-1 text-sm">
-      {resourceInfos.map((info, index) => (
-        <div key={index}>{info}</div>
-      ))}
-    </IntroBox>
+    resourceInfos.length > 0 && (
+      <IntroBox className="my-1 text-sm">
+        {resourceInfos.map((info, index) => (
+          <div key={index}>{info}</div>
+        ))}
+      </IntroBox>
+    )
   );
 };
 
