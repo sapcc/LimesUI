@@ -15,7 +15,7 @@
  */
 
 import React from "react";
-import MaxQuota from "./MaxQuota";
+import { MaxQuota } from "./MaxQuota";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { PortalProvider } from "@cloudoperators/juno-ui-components";
 import StoreProvider from "../../StoreProvider";
