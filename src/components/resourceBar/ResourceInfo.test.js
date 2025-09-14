@@ -55,6 +55,26 @@ describe("Resource info tests", () => {
     expect(screen.getByText("service/resource")).toBeInTheDocument();
   });
 
+  test("Autogrowth infos", () => {
+    const props = {
+      resource: {
+        name: "resource",
+        max_quota: 10,
+        forbid_autogrowth: true,
+      },
+      isGranular: false,
+      isEmptyBar: true,
+      categoryName: "service",
+      leftBar: {},
+      rightBar: {},
+    };
+    render(<ResourceInfo {...props} />);
+
+    expect(screen.getByTestId("isForbidden")).toBeInTheDocument();
+    expect(screen.getByTestId("maxQuota")).toBeInTheDocument();
+    expect(screen.getByTestId("maxQuota_AND_Forbidden")).toBeInTheDocument();
+  });
+
   test("renders committed usage info when leftBar has values", () => {
     const props = {
       resource: {},

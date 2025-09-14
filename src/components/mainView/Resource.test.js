@@ -78,24 +78,24 @@ describe("Resource tests", () => {
     act(() => {
       result.current.globalStoreActions.setScope(scope);
     });
-    // resource does not allow commitments, therfore the maxQuota edit option should be displayed.
-    expect(screen.getByTestId("maxQuotaEdit")).toBeInTheDocument();
+    // resource does not allow commitments, therfore the forbidAutogrowth edit option should be displayed.
+    expect(screen.getByTestId("forbidAutogrowthSwitch")).toBeInTheDocument();
     // edit option should not be invisible if no edit previleges are present
     forwardProps = { ...forwardProps, canEdit: false };
     rerender();
     act(() => {
       result.current.globalStoreActions.setScope(scope);
     });
-    expect(screen.queryByTestId("maxQuotaEdit")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("forbidAutogrowthSwitch")).toBeInTheDocument();
     forwardProps = { ...forwardProps, canEdit: true };
     rerender();
-    // resource allows commitments, therefore the maxQuota edit option should not be displayed.
+    // resource allows commitments, therefore the forbidAutogrowthSwitch edit option should be displayed.
     res.editableResource = true;
     rerender();
     act(() => {
       result.current.globalStoreActions.setScope(scope);
     });
-    expect(screen.queryByTestId("maxQuotaEdit")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("forbidAutogrowthSwitch")).toBeInTheDocument();
     expect(screen.getByTestId("edit/testResource")).toBeInTheDocument();
     expect(screen.queryByTestId("setMaxQuotaPanel")).not.toBeInTheDocument();
 

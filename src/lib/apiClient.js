@@ -144,6 +144,22 @@ const useQueryClientFn = () => {
       },
     });
 
+    queryClient.setMutationDefaults(["forbidAutogrowth"], {
+      mutationFn: async ({ payload }) => {
+        const url = `${endpoint}/v1/domains/${domainID}/projects/${projectID}/forbid-autogrowth`;
+        const response = await fetch(url, {
+          method: "PUT",
+          headers: { Accept: "application/json", "X-Auth-Token": token },
+          body: JSON.stringify(payload),
+        });
+        if (!response.ok) {
+          const text = await response.text();
+          throw new Error(`Network error: ${text} (Code: ${response.status})`);
+        }
+        return response;
+      },
+    });
+
     if (!queryClient || !endpoint || !token) return;
     queryClient.setQueryDefaults(["getConversions"], {
       queryFn: async ({ queryKey }) => {

@@ -25,7 +25,7 @@ import StoreProvider from "../StoreProvider";
 describe("test project quota details", () => {
   test("should fire quota change listener", async () => {
     const project = { metadata: { name: "testProject", id: 12, domainID: 13 } };
-    const resource = { usage: 8, quota: 10 };
+    const resource = { usage: 8, quota: 10, forbid_autogrowth: true };
     const scope = new Scope({ projectID: "123", domainID: "456" });
     const setMaxQuota = jest.fn((object, domainID, projectID) => {
       expect(projectID).toEqual(12);
@@ -60,6 +60,7 @@ describe("test project quota details", () => {
       result.current.globalStoreActions.setScope(scope);
     });
     expect(screen.queryByText(/not set/i)).not.toBe(null);
+    expect(screen.getByTestId("forbidAutogrowthInfo")).toBeInTheDocument();
     const editButton = screen.getByTestId("maxQuotaEdit");
     fireEvent.click(editButton);
     const cancelButton = screen.getByTestId("maxQuotaCancel");

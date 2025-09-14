@@ -16,7 +16,8 @@
 
 import React from "react";
 import { globalStore } from "../StoreProvider";
-import { DataGridCell, DataGridRow, Stack } from "@cloudoperators/juno-ui-components";
+import { DataGridCell, DataGridRow, Icon, Stack } from "@cloudoperators/juno-ui-components";
+import ToolTipWrapper from "../shared/ToolTipWrapper";
 import useMaxQuotaSets from "../shared/useMaxQuotaSets";
 import { Unit, valueWithUnit } from "../../lib/unit";
 
@@ -26,6 +27,7 @@ const ProjectQuotaDetails = (props) => {
   const { name: projectName, id: projectID } = metadata;
   const usage = resource.usage;
   const quota = resource.quota;
+  const forbidAutogrowth = resource?.forbid_autogrowth ?? false;
   const { scope } = globalStore();
   const unit = new Unit(resource.unit);
   const { MaxQuotaInput, maxQuotaInputProps, MaxQuotaEdit, maxQuotaEditProps } = useMaxQuotaSets({
@@ -46,7 +48,20 @@ const ProjectQuotaDetails = (props) => {
       <DataGridCell>{valueWithUnit(usage, unit)}</DataGridCell>
       <DataGridCell>{valueWithUnit(quota, unit)}</DataGridCell>
       <DataGridCell>
-        <MaxQuotaInput {...maxQuotaInputProps} />
+        <Stack gap="1">
+          {forbidAutogrowth && (
+            <ToolTipWrapper
+              trigger={<Icon data-testid="forbidAutogrowthInfo" icon="warning" size="18" />}
+              content={
+                <div>
+                  <div>Pay-As-You-Go is disabled on project level.</div>
+                  <div>This setting is more restrictive than Max-Quota.</div>
+                </div>
+              }
+            />
+          )}
+          <MaxQuotaInput {...maxQuotaInputProps} />
+        </Stack>
       </DataGridCell>
       <DataGridCell>
         <MaxQuotaEdit {...maxQuotaEditProps} />

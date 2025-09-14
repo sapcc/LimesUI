@@ -25,7 +25,7 @@ import { isAZUnaware } from "../../lib/utils";
 import ResourceBarBuilder from "../resourceBar/ResourceBarBuilder";
 import useResetCommitment from "../../hooks/useResetCommitment";
 import HistoricalUsage from "./subComponents/HistoricalUsage";
-import { MaxQuota, MaxQuotaDisplay } from "./subComponents/MaxQuota";
+import ForbidAutogrowth from "./subComponents/ForbidAutogrowth";
 import PhysicalUsage from "./subComponents/PhysicalUsage";
 
 const barGroupContainer = `
@@ -99,8 +99,8 @@ const Resource = (props) => {
   const { resetCommitment } = useResetCommitment();
   const [displayResourceInfo, setDisplayResourceInfo] = React.useState(false);
 
-  const maxQuotaForwardProps = {
-    editMode: isPanelView || (canEdit && !editableResource),
+  const forbidAutogrowthForwardProps = {
+    editMode: canEdit,
     project: project,
     resource: resource,
     serviceType: serviceType,
@@ -136,11 +136,6 @@ const Resource = (props) => {
               />
             )}
           </Stack>
-          {scope.isProject() && (
-            <span className="font-light">
-              <MaxQuota {...maxQuotaForwardProps} />
-            </span>
-          )}
         </Stack>
         {canEdit && (
           <Stack className="items-center" gap="1">
@@ -171,15 +166,11 @@ const Resource = (props) => {
         )}
       </Stack>
       {!isPanelView && (
-        <Stack distribution="end">
-          {!isAZUnaware(props.resource.per_az) && (
+        <Stack distribution="end" gap="1">
+          {isAZUnaware(props.resource.per_az) && (
             <ProjectBadges az={props.resource.per_az[0]} unit={unitName} displayValues={true} />
           )}
-          <MaxQuotaDisplay
-            maxQuotaValue={resource?.max_quota}
-            unit={unitName}
-            editMode={maxQuotaForwardProps.editMode}
-          />
+          {scope.isProject() && <ForbidAutogrowth {...forbidAutogrowthForwardProps} />}
         </Stack>
       )}
       <ResourceBarBuilder
