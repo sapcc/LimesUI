@@ -27,7 +27,7 @@ export const FullResourceName = {
 export const Autogrowth = {
   FORBIDDEN: (
     <span data-testid="isForbidden">
-      Pay-As-You-Go is disabled. Existing usage is still present, but any further usage will be prevented.
+      Pay-As-You-Go is disabled. Existing PAYG-usage might still be present, but any further provisioning from PAYG will be prevented.
     </span>
   ),
   MAXQUOTA: <span data-testid="maxQuota">Max-Quota is active. Assigned quota will not exceed the limit.</span>,
