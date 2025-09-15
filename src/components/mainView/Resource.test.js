@@ -64,7 +64,7 @@ describe("Resource tests", () => {
         </StoreProvider>
       </PortalProvider>
     );
-    const { result, rerender } = await waitFor(() => {
+    const { result } = await waitFor(() => {
       return renderHook(
         () => ({
           globalStore: globalStore(),
@@ -79,7 +79,6 @@ describe("Resource tests", () => {
       result.current.globalStoreActions.setScope(scope);
     });
     // The forbidAutogrowthSwitch edit option is available for project level.
-    rerender();
     act(() => {
       result.current.globalStoreActions.setScope(scope);
     });
