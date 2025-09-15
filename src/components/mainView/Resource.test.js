@@ -43,7 +43,7 @@ describe("Resource tests", () => {
       quota: 500,
       capacity: 0,
       commitmentSum: 10,
-      editableResource: false,
+      editableResource: true,
       per_az: [["az1", { projects_usage: 10 }]],
     };
     let forwardProps = {
@@ -64,7 +64,7 @@ describe("Resource tests", () => {
         </StoreProvider>
       </PortalProvider>
     );
-    const { result, rerender } = await waitFor(() => {
+    const { result } = await waitFor(() => {
       return renderHook(
         () => ({
           globalStore: globalStore(),
@@ -78,40 +78,29 @@ describe("Resource tests", () => {
     act(() => {
       result.current.globalStoreActions.setScope(scope);
     });
-    // resource does not allow commitments, therfore the maxQuota edit option should be displayed.
-    expect(screen.getByTestId("maxQuotaEdit")).toBeInTheDocument();
-    // edit option should not be invisible if no edit previleges are present
-    forwardProps = { ...forwardProps, canEdit: false };
-    rerender();
+    // The forbidAutogrowthSwitch edit option is available for project level.
     act(() => {
       result.current.globalStoreActions.setScope(scope);
     });
-    expect(screen.queryByTestId("maxQuotaEdit")).not.toBeInTheDocument();
-    forwardProps = { ...forwardProps, canEdit: true };
-    rerender();
-    // resource allows commitments, therefore the maxQuota edit option should not be displayed.
-    res.editableResource = true;
-    rerender();
-    act(() => {
-      result.current.globalStoreActions.setScope(scope);
-    });
-    expect(screen.queryByTestId("maxQuotaEdit")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("forbidAutogrowthSwitch")).toBeInTheDocument();
     expect(screen.getByTestId("edit/testResource")).toBeInTheDocument();
     expect(screen.queryByTestId("setMaxQuotaPanel")).not.toBeInTheDocument();
 
-    // Domain level
+    // Domain level allows setting Max-Quota.
     scope = new Scope({ domainID: "456" });
     act(() => {
       result.current.globalStoreActions.setScope(scope);
     });
     expect(screen.getByTestId("setMaxQuotaPanel")).toBeInTheDocument();
+    expect(screen.queryByTestId("forbidAutogrowthSwitch")).not.toBeInTheDocument();
 
-    // Cluster level
+    // Cluster level allows setting Max-Quota.
     scope = new Scope({});
     act(() => {
       result.current.globalStoreActions.setScope(scope);
     });
     expect(screen.getByTestId("setMaxQuotaPanel")).toBeInTheDocument();
+    expect(screen.queryByTestId("forbidAutogrowthSwitch")).not.toBeInTheDocument();
   });
 });
 

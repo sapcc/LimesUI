@@ -24,7 +24,7 @@ import { CustomZones } from "../../lib/constants";
 
 const AvailabilityZoneNav = (props) => {
   const azIndex = props.az.findIndex((az) => az.name === props.currentAZ);
-  const { scope, setCurrentAZ, mergeOps } = props;
+  const { scope, resource, setCurrentAZ, mergeOps } = props;
   const { setIsMerging, setCommitmentsToMerge } = mergeOps;
   const { resetCommitment } = useResetCommitment();
 
@@ -59,7 +59,7 @@ const AvailabilityZoneNav = (props) => {
           <Stack className="h-8 my-auto ml-auto mr-2" gap="1">
             {scope.isProject() && (
               <>
-                <AddCommitments label="Add" />
+                {<AddCommitments label="Add" resource={resource} />}
                 <ReceiveCommitment />
               </>
             )}

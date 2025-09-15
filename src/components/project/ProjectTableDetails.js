@@ -48,8 +48,8 @@ const ProjectTableDetails = (props) => {
   } = props;
   const { metadata } = project;
   const { name: projectName, id: projectID } = metadata;
-  const { unit, commitment_config } = resource;
-  const isEditableResource = commitment_config?.durations ? true : false;
+  const { unit } = resource;
+  const isEditableResource = resource.editableResource;
   const { commitments } = projectStore();
   const { currentProject } = createCommitmentStore();
   const { refetchCommitmentAPI } = createCommitmentStore();
@@ -162,6 +162,7 @@ const ProjectTableDetails = (props) => {
                 <div>
                   <AddCommitments
                     label="Add"
+                    resource={resource}
                     disabled={!showCommitments || transferCommitment || isLoading}
                     size="small"
                   />

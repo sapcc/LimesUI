@@ -20,7 +20,6 @@ import { Unit } from "../../lib/unit";
 import useResourceBarValues, { ResourceBarType } from "../../hooks/useResourceBarValues";
 import { Stack } from "@cloudoperators/juno-ui-components/index";
 import { getBarLabel, getEmptyBarLabel, hasAnyBarValues } from "./resourceBarUtils";
-import { locateBaseQuotaAZ } from "../../lib/utils";
 import ResourceInfo from "./ResourceInfo";
 
 const barConainer = `
@@ -31,7 +30,7 @@ const extraBaseStyle = `bg-theme-background-lvl-4`;
 const extraFillStyle = `bg-sap-purple-2`;
 
 const ResourceBarBuilder = (props) => {
-  const { scope, resource, az, unit: unitName, barType, isEditableResource } = { ...props };
+  const { scope, categoryName, resource, az, unit: unitName, barType, isEditableResource } = { ...props };
   const { showToolTip = false, displayResourceInfo = false } = { ...props };
   const unit = new Unit(unitName || "");
   const isGranular = barType === ResourceBarType.granular;
@@ -40,7 +39,6 @@ const ResourceBarBuilder = (props) => {
   const hasLeftBar = hasAnyBarValues(leftBar);
   const hasRightBar = hasAnyBarValues(rightBar);
   const isEmptyBar = !hasLeftBar && !hasRightBar;
-  const isEmptyBarWithBaseQuota = isEmptyBar && locateBaseQuotaAZ(resource);
 
   const paygStyle = { base: hasLeftBar && extraBaseStyle, filled: isEditableResource && extraFillStyle };
   function getResourceBarLabel(bar) {
@@ -97,8 +95,18 @@ const ResourceBarBuilder = (props) => {
           toolTip={showToolTip && getResourceBarToolTip(rightBar)}
         />
       </Stack>
-      {displayResourceInfo && (!isEmptyBar || isEmptyBarWithBaseQuota) && (
-        <ResourceInfo scope={scope} resource={resource} az={az} leftBar={leftBar} rightBar={rightBar} unit={unit} />
+      {displayResourceInfo && (
+        <ResourceInfo
+          scope={scope}
+          categoryName={categoryName}
+          isEmptyBar={isEmptyBar}
+          isGranular={isGranular}
+          resource={resource}
+          az={az}
+          leftBar={leftBar}
+          rightBar={rightBar}
+          unit={unit}
+        />
       )}
     </>
   );

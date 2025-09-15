@@ -22,9 +22,9 @@ import useCommitmentFilter from "../../hooks/useCommitmentFilter";
 import { createCommitmentStore } from "../StoreProvider";
 import { CustomZones } from "../../lib/constants";
 import { COMMITMENTID } from "../../lib/constants";
+import { getResourceDurations } from "../../lib/utils";
 
 const CommitmentTable = (props) => {
-  const durations = props.resource.commitment_config.durations;
   const unit = props.resource.unit;
   const { filterCommitments } = useCommitmentFilter();
   const { commitment: newCommitment } = createCommitmentStore();
@@ -34,6 +34,7 @@ const CommitmentTable = (props) => {
   const { serviceType, currentCategory, currentResource, currentAZ, commitmentData, mergeOps } = {
     ...props,
   };
+  const durations = getResourceDurations(currentResource);
   const { setMergeIsActive } = mergeOps;
   const resourceName = currentResource?.name;
   const { per_az: availabilityZones } = props.resource;

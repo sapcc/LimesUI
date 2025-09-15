@@ -16,6 +16,37 @@
 
 import React from "react";
 
+export const FullResourceName = {
+  LABEL: (categoryName, resourceName) => (
+    <span data-testid="fullResourceName">
+      Full name: <strong>{categoryName + "/" + resourceName}</strong>
+    </span>
+  ),
+};
+
+export const Autogrowth = {
+  FORBIDDEN: (
+    <span data-testid="autogrowthForbidden">
+      Pay-As-You-Go is disabled. Existing PAYG-usage might still be present, but any further provisioning from PAYG will
+      be prevented.
+    </span>
+  ),
+  MAXQUOTA: <span data-testid="maxQuota">Max-Quota is active. Assigned quota will not exceed the limit.</span>,
+  OVERLAP: (
+    <span data-testid="maxQuota_AND_AutogrowthForbidden">
+      Disabling Pay-As-You-Go is more restrictive than setting Max-Quota.
+    </span>
+  ),
+};
+
+export const AllocationRatio = {
+  LABEL: (ratio) => (
+    <span data-testid="allocationRatio">
+      Capacity allocation ratio: <strong>{ratio}</strong>
+    </span>
+  ),
+};
+
 export const UnknownAZLabel = (
   <span data-testid="UnknownAZ">
     This usage number accounts for assets in error states that are not associated with a real AZ.
