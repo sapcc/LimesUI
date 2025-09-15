@@ -25,13 +25,13 @@ const ForbidAutogrowth = (props) => {
   const { editMode = false } = props;
   const { resource, serviceType } = props;
   const { setRefetchProjectAPI } = projectStoreActions();
-  const [isForbidden, setIsForbidden] = React.useState(resource?.forbid_autogrowth ?? false);
+  const [autogrowthForbidden, setAutogrowthForbidden] = React.useState(resource?.forbid_autogrowth ?? false);
   const [showModal, setShowModal] = React.useState(false);
   const mutatation = useMutation({ mutationKey: ["forbidAutogrowth"] });
   const maxQuotaValue = resource?.max_quota;
   const unit = new Unit(resource?.unit);
 
-  function handleAction(isForbidden) {
+  function handleAction(autogrowthForbidden) {
     const parseTarget = {
       project: {
         services: [
@@ -40,7 +40,7 @@ const ForbidAutogrowth = (props) => {
             resources: [
               {
                 name: resource.name,
-                forbid_autogrowth: isForbidden,
+                forbid_autogrowth: autogrowthForbidden,
               },
             ],
           },
@@ -72,10 +72,10 @@ const ForbidAutogrowth = (props) => {
         )}
         <Switch
           data-testid="forbidAutogrowthSwitch"
-          on={isForbidden}
+          on={autogrowthForbidden}
           disabled={!editMode}
           onClick={() => {
-            setIsForbidden(!isForbidden);
+            setAutogrowthForbidden(!autogrowthForbidden);
             setShowModal(true);
           }}
         />
@@ -86,10 +86,10 @@ const ForbidAutogrowth = (props) => {
         confirmButtonLabel="Yes"
         cancelButtonLabel="No"
         onConfirm={() => {
-          handleAction(isForbidden);
+          handleAction(autogrowthForbidden);
         }}
         onCancel={() => {
-          setIsForbidden(!isForbidden);
+          setAutogrowthForbidden(!autogrowthForbidden);
           setShowModal(false);
           mutatation.reset();
         }}
@@ -103,7 +103,7 @@ const ForbidAutogrowth = (props) => {
           />
         )}
         <p data-testid="forbidAutogrowthConfirmText">
-          Do you want to <strong>{isForbidden ? "disable" : "enable"}</strong> Pay-As-You-Go?
+          Do you want to <strong>{autogrowthForbidden ? "disable" : "enable"}</strong> Pay-As-You-Go?
         </p>
       </Modal>
     </>

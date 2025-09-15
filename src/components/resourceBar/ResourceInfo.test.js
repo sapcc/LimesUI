@@ -70,9 +70,9 @@ describe("Resource info tests", () => {
     };
     render(<ResourceInfo {...props} />);
 
-    expect(screen.getByTestId("isForbidden")).toBeInTheDocument();
+    expect(screen.getByTestId("autogrowthForbidden")).toBeInTheDocument();
     expect(screen.getByTestId("maxQuota")).toBeInTheDocument();
-    expect(screen.getByTestId("maxQuota_AND_Forbidden")).toBeInTheDocument();
+    expect(screen.getByTestId("maxQuota_AND_AutogrowthForbidden")).toBeInTheDocument();
   });
 
   test("renders committed usage info when leftBar has values", () => {

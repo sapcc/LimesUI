@@ -75,16 +75,16 @@ const ResourceInfo = (props) => {
   }
 
   function getAutoGrowthInfo() {
-    const isForbidden = resource?.forbid_autogrowth ?? false;
+    const autogrowthForbidden = resource?.forbid_autogrowth ?? false;
     const maxQuota = resource?.max_quota;
     const sections = [];
-    if (isForbidden) {
+    if (autogrowthForbidden) {
       sections.push(Autogrowth.FORBIDDEN);
     }
     if (maxQuota >= 0) {
       sections.push(Autogrowth.MAXQUOTA);
     }
-    if (isForbidden && maxQuota >= 0) {
+    if (autogrowthForbidden && maxQuota >= 0) {
       sections.push(Autogrowth.OVERLAP);
     }
     return sections;

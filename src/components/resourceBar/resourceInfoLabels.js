@@ -26,13 +26,14 @@ export const FullResourceName = {
 
 export const Autogrowth = {
   FORBIDDEN: (
-    <span data-testid="isForbidden">
-      Pay-As-You-Go is disabled. Existing PAYG-usage might still be present, but any further provisioning from PAYG will be prevented.
+    <span data-testid="autogrowthForbidden">
+      Pay-As-You-Go is disabled. Existing PAYG-usage might still be present, but any further provisioning from PAYG will
+      be prevented.
     </span>
   ),
   MAXQUOTA: <span data-testid="maxQuota">Max-Quota is active. Assigned quota will not exceed the limit.</span>,
   OVERLAP: (
-    <span data-testid="maxQuota_AND_Forbidden">
+    <span data-testid="maxQuota_AND_AutogrowthForbidden">
       Disabling Pay-As-You-Go is more restrictive than setting Max-Quota.
     </span>
   ),

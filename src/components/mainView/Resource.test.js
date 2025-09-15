@@ -43,7 +43,7 @@ describe("Resource tests", () => {
       quota: 500,
       capacity: 0,
       commitmentSum: 10,
-      editableResource: false,
+      editableResource: true,
       per_az: [["az1", { projects_usage: 10 }]],
     };
     let forwardProps = {
@@ -78,19 +78,7 @@ describe("Resource tests", () => {
     act(() => {
       result.current.globalStoreActions.setScope(scope);
     });
-    // resource does not allow commitments, therfore the forbidAutogrowth edit option should be displayed.
-    expect(screen.getByTestId("forbidAutogrowthSwitch")).toBeInTheDocument();
-    // edit option should not be invisible if no edit previleges are present
-    forwardProps = { ...forwardProps, canEdit: false };
-    rerender();
-    act(() => {
-      result.current.globalStoreActions.setScope(scope);
-    });
-    expect(screen.queryByTestId("forbidAutogrowthSwitch")).toBeInTheDocument();
-    forwardProps = { ...forwardProps, canEdit: true };
-    rerender();
-    // resource allows commitments, therefore the forbidAutogrowthSwitch edit option should be displayed.
-    res.editableResource = true;
+    // The forbidAutogrowthSwitch edit option is available for project level.
     rerender();
     act(() => {
       result.current.globalStoreActions.setScope(scope);
@@ -99,19 +87,21 @@ describe("Resource tests", () => {
     expect(screen.getByTestId("edit/testResource")).toBeInTheDocument();
     expect(screen.queryByTestId("setMaxQuotaPanel")).not.toBeInTheDocument();
 
-    // Domain level
+    // Domain level allows setting Max-Quota.
     scope = new Scope({ domainID: "456" });
     act(() => {
       result.current.globalStoreActions.setScope(scope);
     });
     expect(screen.getByTestId("setMaxQuotaPanel")).toBeInTheDocument();
+    expect(screen.queryByTestId("forbidAutogrowthSwitch")).not.toBeInTheDocument();
 
-    // Cluster level
+    // Cluster level allows setting Max-Quota.
     scope = new Scope({});
     act(() => {
       result.current.globalStoreActions.setScope(scope);
     });
     expect(screen.getByTestId("setMaxQuotaPanel")).toBeInTheDocument();
+    expect(screen.queryByTestId("forbidAutogrowthSwitch")).not.toBeInTheDocument();
   });
 });
 
