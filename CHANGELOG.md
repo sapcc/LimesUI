@@ -1,5 +1,11 @@
 # @sapcc/limes-ui
 
+## 1.11.0
+
+### Minor Changes
+
+- d495de8: Allow commitment management for resources that previously had commitments enabled but don't have now; add backend naming and capacity allocation to the resource explanations; rearrange max quota and label display at the resources
+
 ## 1.10.1
 
 ### Patch Changes
