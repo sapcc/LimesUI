@@ -18,7 +18,7 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v5
       - name: Set up Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
       - name: Install addlicense
         run: go install github.com/google/addlicense@latest
       - name: check license headers
