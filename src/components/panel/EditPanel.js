@@ -41,7 +41,8 @@ import ProjectManager from "../project/ProjectManager";
 import DomainManager from "../domain/DomainManager";
 import useGetConversions from "./PanelHooks/useGetConversions";
 import useResetCommitment from "../../hooks/useResetCommitment";
-import { initialCommitmentObject, TransferStatus } from "../../lib/constants";
+import { CustomZones, initialCommitmentObject, TransferStatus } from "../../lib/constants";
+import Marketplace from "../commitment/Marketplace";
 
 const EditPanel = (props) => {
   const { scope } = globalStore();
@@ -386,18 +387,21 @@ const EditPanel = (props) => {
           mergeOps={mergeForwardProps}
         />
       )}
-      {scope.isProject() && (
-        <CommitmentTable
-          serviceType={serviceType}
-          currentCategory={currentCategory}
-          currentResource={currentResource}
-          resource={currentResource}
-          currentTab={currentTab}
-          commitmentData={commitments}
-          mergeOps={mergeForwardProps}
-          scope={scope}
-        />
-      )}
+      {scope.isProject() &&
+        (currentTab !== CustomZones.MARKETPLACE ? (
+          <CommitmentTable
+            serviceType={serviceType}
+            currentCategory={currentCategory}
+            currentResource={currentResource}
+            resource={currentResource}
+            currentTab={currentTab}
+            commitmentData={commitments}
+            mergeOps={mergeForwardProps}
+            scope={scope}
+          />
+        ) : (
+          <Marketplace />
+        ))}
       {scope.isDomain() && (
         <ProjectManager
           serviceType={serviceType}
