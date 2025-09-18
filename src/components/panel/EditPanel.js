@@ -372,7 +372,7 @@ const EditPanel = (props) => {
         setCurrentTab={setCurrentTab}
         tracksQuota={tracksQuota}
       />
-      <div className={"sticky top-0 z-[100] bg-juno-grey-light-1 h-8"}>
+      <div className={"sticky top-0 z-[100] h-8"}>
         {toast.message && (
           <Toast className={"pb-0"} text={toast.message} variant={toast.variant} onDismiss={() => dismissToast()} />
         )}

@@ -45,7 +45,7 @@ const AvailabilityZoneNav = (props) => {
   }
 
   return (
-    <Container px={false} className="pt-0 py-6 sticky top-[2rem] bg-juno-grey-light-1 z-[100]">
+    <Container px={false} className="pt-0 py-6 sticky top-[2rem] z-[100]">
       <Tabs selectedIndex={azIndex} onSelect={() => {}}>
         <TabList>
           {tabs.map((tabName) => {
