@@ -400,7 +400,7 @@ const EditPanel = (props) => {
             scope={scope}
           />
         ) : (
-          <Marketplace />
+          <Marketplace serviceType={serviceType} resource={currentResource} />
         ))}
       {scope.isDomain() && (
         <ProjectManager

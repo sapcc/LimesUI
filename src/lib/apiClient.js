@@ -275,6 +275,17 @@ const useQueryClientFn = () => {
   // ClusterView Endpoints
   React.useEffect(() => {
     if (!queryClient || !endpoint || !token) return;
+    queryClient.setQueryDefaults(["publicCommitments"], {
+      queryFn: async ({ queryKey }) => {
+        const [, { service, resource }] = queryKey;
+        const url = `${endpoint}/v1/public-commitments?service=${service}&resource=${resource}`;
+        const response = await fetch(url, {
+          method: "GET",
+          headers: { Accept: "application/json", "X-Limes-V2-API-Preview": "per-az", "X-Auth-Token": token },
+        });
+        return responseHandler(response);
+      },
+    });
     queryClient.setQueryDefaults(["clusterData"], {
       queryFn: async ({ queryKey }) => {
         const isDetail = queryKey[1];
