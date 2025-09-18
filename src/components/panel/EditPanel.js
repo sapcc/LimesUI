@@ -386,7 +386,7 @@ const EditPanel = (props) => {
           mergeOps={mergeForwardProps}
         />
       )}
-      {scope.isProject() && commitments && (
+      {scope.isProject() && (
         <CommitmentTable
           serviceType={serviceType}
           currentCategory={currentCategory}
