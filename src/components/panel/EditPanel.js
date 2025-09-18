@@ -85,7 +85,7 @@ const EditPanel = (props) => {
   const { setRefetchCommitmentAPI } = createCommitmentStoreActions();
   const { setCommitmentIsLoading } = createCommitmentStoreActions();
   const conversionResults = useGetConversions({ serviceType, resourceName });
-  const [currentAZ, setCurrentAZ] = React.useState(currentResource.per_az[0].name);
+  const [currentTab, setCurrentTab] = React.useState(currentResource.per_az[0].name);
   const [projectsAreSortable, setProjectsAreSortable] = React.useState(false);
   // Merge Commitments
   const [commitmentsToMerge, setCommitmentsToMerge] = React.useState([]);
@@ -366,11 +366,10 @@ const EditPanel = (props) => {
         project={currentProject}
         resource={currentResource}
         serviceType={serviceType}
-        currentAZ={currentAZ}
         isPanelView={true}
         subRoute={subRoute}
         setIsMerging={setIsMerging}
-        setCurrentAZ={setCurrentAZ}
+        setCurrentTab={setCurrentTab}
         tracksQuota={tracksQuota}
       />
       <div className={"sticky top-0 z-[100] bg-juno-grey-light-1 h-8"}>
@@ -380,11 +379,10 @@ const EditPanel = (props) => {
       </div>
       {!subRoute && (
         <AvailabilityZoneNav
-          az={currentResource.per_az}
           resource={currentResource}
-          currentAZ={currentAZ}
+          currentTab={currentTab}
+          setCurrentTab={setCurrentTab}
           scope={scope}
-          setCurrentAZ={setCurrentAZ}
           mergeOps={mergeForwardProps}
         />
       )}
@@ -394,7 +392,7 @@ const EditPanel = (props) => {
           currentCategory={currentCategory}
           currentResource={currentResource}
           resource={currentResource}
-          currentAZ={currentAZ}
+          currentTab={currentTab}
           commitmentData={commitments}
           mergeOps={mergeForwardProps}
           scope={scope}
@@ -405,7 +403,7 @@ const EditPanel = (props) => {
           serviceType={serviceType}
           currentCategory={currentCategory}
           currentResource={currentResource}
-          currentAZ={currentAZ}
+          currentTab={currentTab}
           subRoute={subRoute}
           sortProjectProps={sortProjectProps}
           mergeOps={mergeForwardProps}
@@ -416,7 +414,7 @@ const EditPanel = (props) => {
           serviceType={serviceType}
           currentCategory={currentCategory}
           currentResource={currentResource}
-          currentAZ={currentAZ}
+          currentTab={currentTab}
           subRoute={subRoute}
           sortProjectProps={sortProjectProps}
           mergeOps={mergeForwardProps}
@@ -425,7 +423,7 @@ const EditPanel = (props) => {
       {isSubmitting && canConfirm != null && (
         <CommitmentModal
           action={postCommitment}
-          az={currentAZ}
+          currentTab={currentTab}
           canConfirm={canConfirm}
           commitment={newCommitment}
           minConfirmDate={minConfirmDate}
@@ -487,7 +485,7 @@ const EditPanel = (props) => {
       {deleteCommitment && (
         <DeleteModal
           action={deleteCommitmentAPI}
-          az={currentAZ}
+          currentTab={currentTab}
           title="Delete Commitment"
           subText="Delete"
           commitment={deleteCommitment}

@@ -42,7 +42,7 @@ const ProjectTableDetails = (props) => {
     project,
     resource,
     az,
-    currentAZ,
+    currentTab,
     colSpan,
     mergeOps,
   } = props;
@@ -204,7 +204,7 @@ const ProjectTableDetails = (props) => {
                 currentCategory={currentCategory}
                 currentResource={resource}
                 resource={resource}
-                currentAZ={currentAZ}
+                currentTab={currentTab}
                 commitmentData={commitments}
                 mergeOps={mergeOps}
               />

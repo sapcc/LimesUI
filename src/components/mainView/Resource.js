@@ -87,7 +87,7 @@ const Resource = (props) => {
     resource,
     isPanelView,
     subRoute,
-    setCurrentAZ,
+    setCurrentTab,
     serviceType,
     setIsMerging,
     tracksQuota,
@@ -198,7 +198,7 @@ const Resource = (props) => {
                 }`}
                 onClick={() => {
                   if (!props.isPanelView || subRoute || azName == "unknown") return;
-                  setCurrentAZ(azName);
+                  setCurrentTab(azName);
                   setIsMerging(false);
                   resetCommitment();
                 }}

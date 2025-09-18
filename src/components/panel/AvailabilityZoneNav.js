@@ -21,54 +21,64 @@ import { Stack, Tabs, Tab, TabList, TabPanel, Container } from "@cloudoperators/
 import useResetCommitment from "../../hooks/useResetCommitment";
 import MergeCommitment from "../shared/MergeCommitments";
 import { CustomZones } from "../../lib/constants";
+import { isAZUnaware } from "../../lib/utils";
 
 const AvailabilityZoneNav = (props) => {
-  const azIndex = props.az.findIndex((az) => az.name === props.currentAZ);
-  const { scope, resource, setCurrentAZ, mergeOps } = props;
+  const { scope, resource, currentTab, setCurrentTab, mergeOps } = props;
   const { setIsMerging, setCommitmentsToMerge } = mergeOps;
   const { resetCommitment } = useResetCommitment();
+  const tabs = React.useMemo(() => {
+    const { per_az: azs } = resource;
+    const azUnaware = isAZUnaware(azs);
+    const azNames = azs
+      .map((az) => az.name)
+      .filter((name) => name !== CustomZones.UNKNOWN)
+      .filter((name) => !azUnaware ? name !== CustomZones.ANY : true);
+    return scope.isProject() ? [...azNames, CustomZones.MARKETPLACE] : azNames;
+  }, [resource]);
+  const azIndex = tabs.findIndex((tabName) => tabName === currentTab) || 0;
 
-  function resetCommitmentMerge() {
+  function handleTabSelect() {
     setIsMerging(false);
     setCommitmentsToMerge([]);
+    resetCommitment();
   }
 
   return (
     <Container px={false} className="pt-0 py-6 sticky top-[2rem] bg-juno-grey-light-1 z-[100]">
       <Tabs selectedIndex={azIndex} onSelect={() => {}}>
         <TabList>
-          {props.az.map((az) => {
-            const azName = az.name;
+          {tabs.map((tabName) => {
             return (
-              azName !== CustomZones.UNKNOWN &&
-              azName !== CustomZones.ANY && (
-                <Tab
-                  data-testid={`tab/${azName}`}
-                  key={azName}
-                  onClick={() => {
-                    setCurrentAZ(azName);
-                    resetCommitmentMerge();
-                    resetCommitment();
-                  }}
-                >
-                  {az.name}
-                </Tab>
-              )
+              <Tab
+                data-testid={`tab/${tabName}`}
+                key={tabName}
+                onClick={() => {
+                  setCurrentTab(tabName);
+                  handleTabSelect();
+                }}
+              >
+                {tabName}
+              </Tab>
             );
           })}
           <Stack className="h-8 my-auto ml-auto mr-2" gap="1">
-            {scope.isProject() && (
+            {currentTab != CustomZones.MARKETPLACE && (
               <>
-                {<AddCommitments label="Add" resource={resource} />}
-                <ReceiveCommitment />
+                {scope.isProject() && (
+                  <>
+                    {<AddCommitments label="Add" resource={resource} />}
+                    <ReceiveCommitment />
+                  </>
+                )}
+                <MergeCommitment mergeOps={mergeOps} />{" "}
               </>
             )}
-            <MergeCommitment mergeOps={mergeOps} />
           </Stack>
         </TabList>
-        {props.az.map(
-          (az) => az.name !== CustomZones.UNKNOWN && az.name !== CustomZones.ANY && <TabPanel key={az.name}></TabPanel>
-        )}
+        {tabs.map((tabName) => (
+          <TabPanel key={tabName}></TabPanel>
+        ))}
       </Tabs>
     </Container>
   );

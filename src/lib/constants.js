@@ -34,6 +34,7 @@ export const initialCommitmentObject = {
 export const CustomZones = Object.freeze({
   ANY: "any",
   UNKNOWN: "unknown",
+  MARKETPLACE: "Marketplace"
 });
 
 // Transfer commitment on project level
