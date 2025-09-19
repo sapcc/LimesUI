@@ -22,7 +22,6 @@ import { globalStore, createCommitmentStoreActions } from "../../StoreProvider";
 const useTransferAction = (props) => {
   const { commitment, updateActions } = props;
   const commitmentInTrasfer = commitment.transfer_status ? true : false;
-  const { confirmed_at: isConfirmed } = commitment;
   const { scope } = globalStore();
   const { setTransferredCommitment } = createCommitmentStoreActions();
   const { setTransferFromAndToProject } = createCommitmentStoreActions();
@@ -33,7 +32,7 @@ const useTransferAction = (props) => {
   }
 
   React.useEffect(() => {
-    if (scope.isProject() && isConfirmed) {
+    if (scope.isProject()) {
       const menuItem = (
         <MenuItemBuilder
           icon="upload"
@@ -47,7 +46,7 @@ const useTransferAction = (props) => {
       }
       updateActions("transfer", menuItem, toolTip);
     }
-  }, [isConfirmed, scope]);
+  }, [commitment, scope]);
 };
 
 export default useTransferAction;
