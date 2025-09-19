@@ -21,13 +21,16 @@ import {
   DataGridRow,
   DataGridCell,
   Checkbox,
+  Select,
   Stack,
   TextInput,
+  SelectOption,
 } from "@cloudoperators/juno-ui-components";
 import BaseFooter from "./BaseComponents/BaseFooter";
 import useConfirmInput from "./BaseComponents/useConfirmInput";
 import { valueWithUnit } from "../../../lib/unit";
 import { Unit } from "../../../lib/unit";
+import { TransferType } from "../../../lib/constants";
 
 const label = "font-semibold";
 
@@ -40,6 +43,7 @@ const TransferModal = (props) => {
   const { ConfirmInput, inputProps, checkInput } = useConfirmInput({
     confirmationText: subText,
   });
+  const [publicationType, setPublicationType] = React.useState(TransferType.UNLISTED);
   const [splitCommitment, setSplitCommitment] = React.useState(false);
   const [invalidSplitInput, setInvalidSplitInput] = React.useState(false);
   const splitInputRef = React.useRef(unit.format(commitment.amount, { ascii: true }));
@@ -58,7 +62,7 @@ const TransferModal = (props) => {
       }
       commitment.amount = parsedInput;
     }
-    onTransfer(transferProject, commitment);
+    onTransfer(transferProject, commitment, publicationType);
   }
 
   return (
@@ -103,6 +107,22 @@ const TransferModal = (props) => {
               label="Transfer only a part."
             />
           </DataGridCell>
+          {isProjectView && (
+            <DataGridRow>
+              <DataGridCell className={label}>Publication type:</DataGridCell>
+              <DataGridCell>
+                <Select
+                  defaultValue={TransferType.UNLISTED}
+                  onChange={(value) => {
+                    setPublicationType(value);
+                  }}
+                >
+                  <SelectOption value={TransferType.UNLISTED} label="Private" />
+                  <SelectOption value={TransferType.PUBLIC} label="Marketplace" />
+                </Select>
+              </DataGridCell>
+            </DataGridRow>
+          )}
         </DataGridRow>
       </DataGrid>
       <Stack direction="vertical" alignment="center" className="mb-1 mt-5">

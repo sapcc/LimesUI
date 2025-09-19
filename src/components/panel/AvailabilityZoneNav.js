@@ -17,14 +17,17 @@
 import React from "react";
 import AddCommitments from "../shared/AddCommitments";
 import ReceiveCommitment from "./ReceiveCommitment";
-import { Stack, Tabs, Tab, TabList, TabPanel, Container } from "@cloudoperators/juno-ui-components";
+import { Stack, Tabs, Tab, TabList, TabPanel, Container, Icon } from "@cloudoperators/juno-ui-components";
 import useResetCommitment from "../../hooks/useResetCommitment";
 import MergeCommitment from "../shared/MergeCommitments";
+import ToolTipWrapper from "../shared/ToolTipWrapper";
 import { CustomZones } from "../../lib/constants";
 import { isAZUnaware } from "../../lib/utils";
 
 const AvailabilityZoneNav = (props) => {
-  const { scope, resource, currentTab, setCurrentTab, mergeOps } = props;
+  const { scope, resource, currentTab, setCurrentTab, mergeOps, publicCommitmentQuery } = props;
+  const { data } = publicCommitmentQuery;
+  const publicCommitments = data?.commitments || [];
   const { setIsMerging, setCommitmentsToMerge } = mergeOps;
   const { resetCommitment } = useResetCommitment();
   const tabs = React.useMemo(() => {
@@ -33,7 +36,7 @@ const AvailabilityZoneNav = (props) => {
     const azNames = azs
       .map((az) => az.name)
       .filter((name) => name !== CustomZones.UNKNOWN)
-      .filter((name) => !azUnaware ? name !== CustomZones.ANY : true);
+      .filter((name) => (!azUnaware ? name !== CustomZones.ANY : true));
     return scope.isProject() ? [...azNames, CustomZones.MARKETPLACE] : azNames;
   }, [resource]);
   const azIndex = tabs.findIndex((tabName) => tabName === currentTab) || 0;
@@ -59,6 +62,12 @@ const AvailabilityZoneNav = (props) => {
                 }}
               >
                 {tabName}
+                {tabName == CustomZones.MARKETPLACE && publicCommitments.length > 0 && (
+                  <ToolTipWrapper
+                    trigger={<Icon className="mt-auto ml-1" size="16" icon="info" />}
+                    content={<span className="font-normal">{publicCommitments.length} available.</span>}
+                  />
+                )}
               </Tab>
             );
           })}

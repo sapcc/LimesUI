@@ -60,7 +60,11 @@ const Actions = (props) => {
             content={commitmentActions.map((action) => {
               const toolTip = action.toolTip;
               if (toolTip == null) return;
-              return <div key={action.key}>{toolTip}</div>;
+              return (
+                <span key={action.key}>
+                  {toolTip} <br />
+                </span>
+              );
             })}
           />
         )}

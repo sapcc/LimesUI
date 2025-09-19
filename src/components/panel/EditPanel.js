@@ -15,7 +15,7 @@
  */
 
 import React from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { PanelBody, Toast } from "@cloudoperators/juno-ui-components";
 import Resource from "../mainView/Resource";
 import {
@@ -41,7 +41,7 @@ import ProjectManager from "../project/ProjectManager";
 import DomainManager from "../domain/DomainManager";
 import useGetConversions from "./PanelHooks/useGetConversions";
 import useResetCommitment from "../../hooks/useResetCommitment";
-import { CustomZones, initialCommitmentObject, TransferStatus } from "../../lib/constants";
+import { CustomZones, initialCommitmentObject, TransferStatus, TransferType } from "../../lib/constants";
 import Marketplace from "../commitment/Marketplace";
 
 const EditPanel = (props) => {
@@ -103,6 +103,10 @@ const EditPanel = (props) => {
     mergeIsActive,
     setMergeIsActive,
   };
+  const publicCommitmentQuery = useQuery({
+    queryKey: ["publicCommitments", { service: serviceType, resource: currentResource.name }],
+    enabled: scope.isProject(),
+  });
 
   // Query can-confirm API. Determine if capacity is sufficient on limes.
   // If a minConfirmDate is set, skip the request. Limes handles capacity concerns.
@@ -174,12 +178,12 @@ const EditPanel = (props) => {
   // Transferring a commitment requires to mark the commitment as transferrable and then transfer it to it's target.
   // Cluster and domain level transfer the commitment immediately after
   // On project level we move between projects. First we initiate the transfer. On the target project we receive with the token input.
-  function startCommitmentTransfer(project, commitment) {
+  function startCommitmentTransfer(project, commitment, transferType = TransferType.UNLISTED) {
     const sourceProjectID = currentProject.metadata.id;
     const sourceDomainID = scope.isCluster() ? currentProject.metadata.domainID : null;
     startTransfer.mutate(
       {
-        payload: { commitment: { amount: commitment.amount, transfer_status: "unlisted" } },
+        payload: { commitment: { amount: commitment.amount, transfer_status: transferType } },
         domainID: sourceDomainID,
         projectID: sourceProjectID,
         commitmentID: commitment.id,
@@ -191,6 +195,7 @@ const EditPanel = (props) => {
             resetCommitmentTransfer();
             setRefetchProjectAPI(true);
             setRefetchCommitmentAPI(true);
+            publicCommitmentQuery.refetch();
             return;
           }
           const receivedCommitment = data.commitment;
@@ -226,6 +231,7 @@ const EditPanel = (props) => {
           setRefetchProjectAPI(true);
           setRefetchCommitmentAPI(true);
           setTransferProject(null);
+          scope.isProject() && publicCommitmentQuery.refetch();
         },
         onError: (error) => {
           resetCommitmentTransfer();
@@ -385,6 +391,7 @@ const EditPanel = (props) => {
           setCurrentTab={setCurrentTab}
           scope={scope}
           mergeOps={mergeForwardProps}
+          publicCommitmentQuery={publicCommitmentQuery}
         />
       )}
       {scope.isProject() &&
@@ -400,7 +407,7 @@ const EditPanel = (props) => {
             scope={scope}
           />
         ) : (
-          <Marketplace serviceType={serviceType} resource={currentResource} />
+          <Marketplace resource={currentResource} publicCommitmentQuery={publicCommitmentQuery} />
         ))}
       {scope.isDomain() && (
         <ProjectManager

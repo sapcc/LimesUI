@@ -1,13 +1,69 @@
 import React from "react";
-import { useQuery } from "@tanstack/react-query";
+import { DataGrid, DataGridRow, IntroBox, LoadingIndicator, Message } from "@cloudoperators/juno-ui-components/index";
+import useSortTableData from "../../hooks/useSortTable";
+import MarketplaceDetails from "./MarketplaceDetails";
 
 const Marketplace = (props) => {
-  const { serviceType, resource } = props;
-  const publicCommitmentQuery = useQuery({
-    queryKey: ["publicCommitments", { service: serviceType, resource: resource.name }],
-  });
-  const { data, isLoading, isError } = publicCommitmentQuery;
-  return <div>{JSON.stringify(data)}</div>;
+  const { resource, publicCommitmentQuery } = props;
+  const { data, isLoading, isError, error } = publicCommitmentQuery;
+  const publicCommitments = data?.commitments || [];
+
+  const initialSortConfig = {
+    expires_at: {
+      direction: "ascending",
+      sortStrategy: "numeric",
+    },
+  };
+  const { items, TableSortHeader } = useSortTableData(publicCommitments, initialSortConfig);
+
+  const headCells = [
+    {
+      key: "amount",
+      label: "Amount",
+      sortStrategy: "numeric",
+    },
+    {
+      key: "availability_zone",
+      label: "Zone",
+      sortStrategy: "text",
+    },
+    {
+      key: "duration",
+      label: "Duration",
+      sortStrategy: "text",
+    },
+    {
+      key: "expires_at",
+      label: "Expires",
+      sortStrategy: "numeric",
+    },
+    {
+      key: "edit",
+      label: "Actions",
+    },
+  ];
+
+  return (
+    (isLoading && <LoadingIndicator className="m-auto" />) ||
+    (isError && <Message variant="danger" text={error.toString()} />) ||
+    (publicCommitments.length == 0 && <IntroBox text="No commitments available." />) || (
+      <DataGrid columns={headCells.length}>
+        <DataGridRow>
+          {headCells.map((headCell) => (
+            <TableSortHeader
+              key={headCell.key}
+              identifier={headCell.key}
+              value={headCell.label}
+              sortStrategy={headCell.sortStrategy}
+            />
+          ))}
+        </DataGridRow>
+        {items.map((commitment) => (
+          <MarketplaceDetails key={commitment.id} commitment={commitment} resource={resource} />
+        ))}
+      </DataGrid>
+    )
+  );
 };
 
 export default Marketplace;
