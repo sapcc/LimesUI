@@ -46,6 +46,7 @@ export const TransferStatus = Object.freeze({
   START: 1,
   VIEW: 2,
   RECEIVE: 3,
+  CANCEL: 4,
 });
 export const TransferType = Object.freeze({
   UNLISTED: "unlisted",

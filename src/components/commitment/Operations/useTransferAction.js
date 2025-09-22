@@ -31,21 +31,31 @@ const useTransferAction = (props) => {
     setTransferredCommitment(commitment);
   }
 
+  function cancelTransferCommitment() {
+    setTransferFromAndToProject(TransferStatus.CANCEL);
+    setTransferredCommitment(commitment);
+  }
+
   React.useEffect(() => {
-    if (scope.isProject()) {
-      const menuItem = (
-        <MenuItemBuilder
-          icon="upload"
-          text={commitmentInTrasfer ? "Transferring" : "Transfer"}
-          callBack={transferCommitOnProjectLevel}
-        />
-      );
-      let toolTip = null;
-      if (commitmentInTrasfer) {
-        toolTip = "ready for transfer";
-      }
-      updateActions("transfer", menuItem, toolTip);
+    if (!scope.isProject()) return;
+    const menuItem = (
+      <MenuItemBuilder
+        icon="upload"
+        text={commitmentInTrasfer ? "Transferring" : "Transfer"}
+        callBack={transferCommitOnProjectLevel}
+      />
+    );
+    let toolTip = null;
+    if (commitmentInTrasfer) {
+      toolTip = "ready for transfer";
     }
+    updateActions("transfer", menuItem, toolTip);
+
+    if (!commitmentInTrasfer) return;
+    const cancelTransferMenuItem = (
+      <MenuItemBuilder icon="close" text="Cancel transfer" callBack={cancelTransferCommitment} />
+    );
+    updateActions("cancel_transfer", cancelTransferMenuItem, null);
   }, [commitment, scope]);
 };
 

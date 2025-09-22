@@ -43,6 +43,7 @@ import useGetConversions from "./PanelHooks/useGetConversions";
 import useResetCommitment from "../../hooks/useResetCommitment";
 import { CustomZones, initialCommitmentObject, TransferStatus, TransferType } from "../../lib/constants";
 import Marketplace from "../commitment/Marketplace";
+import TransferCancelModal from "../commitment/Modals/TransferCancelModal";
 
 const EditPanel = (props) => {
   const { scope } = globalStore();
@@ -195,7 +196,10 @@ const EditPanel = (props) => {
             resetCommitmentTransfer();
             setRefetchProjectAPI(true);
             setRefetchCommitmentAPI(true);
-            if (transferType == TransferType.PUBLIC) {
+            if (
+              transferType == TransferType.PUBLIC ||
+              (transferType == TransferType.NONE && commitment?.transfer_status == TransferType.PUBLIC)
+            ) {
               publicCommitmentQuery.refetch();
             }
             return;
@@ -490,6 +494,14 @@ const EditPanel = (props) => {
           serviceType={serviceType}
           currentResource={currentResource}
           transferCommitment={transferCommitment}
+          onModalClose={onTransferModalProjectClose}
+        />
+      )}
+      {scope.isProject() && transferFromAndToProject == TransferStatus.CANCEL && (
+        <TransferCancelModal
+          title="Cancel transfer state"
+          commitment={transferredCommitment}
+          startCommitmentTransfer={startCommitmentTransfer}
           onModalClose={onTransferModalProjectClose}
         />
       )}

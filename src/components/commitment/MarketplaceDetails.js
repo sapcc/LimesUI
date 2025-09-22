@@ -13,8 +13,6 @@ const MarketplaceDetails = (props) => {
   const { getCommitmentLabel } = useCommitmentFilter();
   const [showModal, setShowModal] = React.useState(false);
 
-  console.log(commitment)
-
   return (
     <DataGridRow>
       <DataGridCell>{valueWithUnit(commitment.amount, unit)}</DataGridCell>

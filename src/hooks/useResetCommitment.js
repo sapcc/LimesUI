@@ -38,7 +38,6 @@ const useResetCommitment = () => {
   function resetURLChangeState() {
     setIsCommitting(false);
     setCommitment(initialCommitmentObject);
-    setTransferredCommitment(initialCommitmentObject);
     setDeleteCommitment(null);
     setConversionCommitment(null);
     setUpdateDurationCommitment(null);
@@ -49,6 +48,7 @@ const useResetCommitment = () => {
   // Handle commitment transfer mode cancellation.
   function resetCommitmentTransfer() {
     setCommitment(initialCommitmentObject);
+    setTransferredCommitment(initialCommitmentObject);
     setTransferCommitment(false);
     setIsTransferring(false);
     setTransferFromAndToProject(null);
