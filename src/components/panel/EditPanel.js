@@ -195,7 +195,9 @@ const EditPanel = (props) => {
             resetCommitmentTransfer();
             setRefetchProjectAPI(true);
             setRefetchCommitmentAPI(true);
-            publicCommitmentQuery.refetch();
+            if (transferType == TransferType.PUBLIC) {
+              publicCommitmentQuery.refetch();
+            }
             return;
           }
           const receivedCommitment = data.commitment;
@@ -215,6 +217,7 @@ const EditPanel = (props) => {
     // Cluster View targets the custom field domainID. It is set in the cluster project handling logic.
     const targetDomainID = project?.metadata.domainID || null;
     const targetProjectID = project.metadata.id;
+    const transferStatus = commitment?.transfer_status || null;
 
     transfer.mutate(
       {
@@ -231,7 +234,9 @@ const EditPanel = (props) => {
           setRefetchProjectAPI(true);
           setRefetchCommitmentAPI(true);
           setTransferProject(null);
-          scope.isProject() && publicCommitmentQuery.refetch();
+          if (scope.isProject() && transferStatus == TransferType.PUBLIC) {
+            publicCommitmentQuery.refetch();
+          }
         },
         onError: (error) => {
           resetCommitmentTransfer();
@@ -407,7 +412,12 @@ const EditPanel = (props) => {
             scope={scope}
           />
         ) : (
-          <Marketplace resource={currentResource} publicCommitmentQuery={publicCommitmentQuery} />
+          <Marketplace
+            project={currentProject}
+            resource={currentResource}
+            publicCommitmentQuery={publicCommitmentQuery}
+            transferCommitment={transferCommitment}
+          />
         ))}
       {scope.isDomain() && (
         <ProjectManager
