@@ -38,7 +38,7 @@ const AvailabilityZoneNav = (props) => {
       .filter((name) => name !== CustomZones.UNKNOWN)
       .filter((name) => (!azUnaware ? name !== CustomZones.ANY : true));
     return scope.isProject() ? [...azNames, CustomZones.MARKETPLACE] : azNames;
-  }, [resource]);
+  }, [scope, resource]);
   const azIndex = tabs.findIndex((tabName) => tabName === currentTab) || 0;
 
   function handleTabSelect() {
@@ -64,7 +64,14 @@ const AvailabilityZoneNav = (props) => {
                 {tabName}
                 {tabName == CustomZones.MARKETPLACE && publicCommitments.length > 0 && (
                   <ToolTipWrapper
-                    trigger={<Icon className="mt-auto ml-1" size="16" icon="info" />}
+                    trigger={
+                      <Icon
+                        data-testid={`MarketplaceInfoCount:${publicCommitments.length}`}
+                        className="mt-auto ml-1"
+                        size="16"
+                        icon="info"
+                      />
+                    }
                     content={<span className="font-normal">{publicCommitments.length} available.</span>}
                   />
                 )}

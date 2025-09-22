@@ -29,6 +29,7 @@ import StoreProvider, {
   createCommitmentStore,
   createCommitmentStoreActions,
 } from "../StoreProvider";
+import { CustomZones } from "../../lib/constants";
 
 const queryClient = new QueryClient({ defaultOptions: { queries: { retry: 0 } } });
 queryClient.setQueryDefaults(["getConversions"], {
@@ -80,6 +81,20 @@ queryClient.setQueryDefaults(["projectsInDomain"], {
   },
 });
 
+queryClient.setQueryDefaults(["publicCommitments"], {
+  queryFn: ({}) => {
+    return {
+      commitments: [
+        {
+          id: "1",
+          amount: 10,
+          name: "commitment1",
+        },
+      ],
+    };
+  },
+});
+
 describe("EditPanel tests", () => {
   test("AZ selection state", async () => {
     const scope = new Scope({ projectID: "123", domainID: "456" });
@@ -120,6 +135,12 @@ describe("EditPanel tests", () => {
 
     const selectedAZ = screen.getByTestId("tab/az1");
     expect(selectedAZ).toHaveAttribute("aria-selected", "true");
+
+    // The Marketplace tab should be available, with an available item.
+    expect(screen.getByText(CustomZones.MARKETPLACE)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByTestId("MarketplaceInfoCount:1")).toBeInTheDocument();
+    });
   });
 
   test("Add commitment", async () => {
