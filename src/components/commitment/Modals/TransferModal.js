@@ -34,16 +34,23 @@ import { TransferType } from "../../../lib/constants";
 
 const label = "font-semibold";
 
+// The TransferModal displays the commitment transfer action for certain conditions.
+// Project level: Allows the set the target commitment into a private or public transfer state (private transfer or marketplace posting).
+// Cluster/Domain level: Allows to start and transfer the commitment in a single action.
+// Cluster/Domain level: Allows to set the target commitment into a public transfer state (marketplace posting).
 const TransferModal = (props) => {
   const { title, subText, onModalClose, onTransfer, currentProject, transferProject, commitment, isProjectView } =
     props;
   const { metadata: originMeta } = currentProject || {};
   const { metadata: targetMeta } = transferProject || {};
+  const isPrivateTransferAction = !isProjectView && transferProject ? true : false;
   const unit = new Unit(commitment.unit);
   const { ConfirmInput, inputProps, checkInput } = useConfirmInput({
     confirmationText: subText,
   });
-  const [publicationType, setPublicationType] = React.useState(TransferType.UNLISTED);
+  const [publicationType, setPublicationType] = React.useState(
+    isProjectView || isPrivateTransferAction ? TransferType.UNLISTED : TransferType.PUBLIC
+  );
   const [splitCommitment, setSplitCommitment] = React.useState(false);
   const [invalidSplitInput, setInvalidSplitInput] = React.useState(false);
   const splitInputRef = React.useRef(unit.format(commitment.amount, { ascii: true }));
@@ -84,13 +91,13 @@ const TransferModal = (props) => {
           <DataGridCell className={label}>Duration:</DataGridCell>
           <DataGridCell>{commitment.duration}</DataGridCell>
         </DataGridRow>
-        {!isProjectView && (
+        {isPrivateTransferAction && (
           <DataGridRow>
             <DataGridCell className={label}>Origin:</DataGridCell>
             <DataGridCell>{originMeta?.name}</DataGridCell>
           </DataGridRow>
         )}
-        {!isProjectView && (
+        {isPrivateTransferAction && (
           <DataGridRow>
             <DataGridCell className={label}>Target:</DataGridCell>
             <DataGridCell>{targetMeta?.name}</DataGridCell>
@@ -107,12 +114,12 @@ const TransferModal = (props) => {
               label="Transfer only a part."
             />
           </DataGridCell>
-          {isProjectView && (
-            <DataGridRow>
-              <DataGridCell className={label}>Publication type:</DataGridCell>
-              <DataGridCell>
+          <DataGridRow>
+            <DataGridCell className={label}>Publication type:</DataGridCell>
+            <DataGridCell>
+              {isProjectView ? (
                 <Select
-                  defaultValue={TransferType.UNLISTED}
+                  defaultValue={isProjectView ? TransferType.UNLISTED : TransferType.PUBLIC}
                   onChange={(value) => {
                     setPublicationType(value);
                   }}
@@ -120,9 +127,11 @@ const TransferModal = (props) => {
                   <SelectOption value={TransferType.UNLISTED} label="Private" />
                   <SelectOption value={TransferType.PUBLIC} label="Marketplace" />
                 </Select>
-              </DataGridCell>
-            </DataGridRow>
-          )}
+              ) : (
+                "Marketplace"
+              )}
+            </DataGridCell>
+          </DataGridRow>
         </DataGridRow>
       </DataGrid>
       <Stack direction="vertical" alignment="center" className="mb-1 mt-5">

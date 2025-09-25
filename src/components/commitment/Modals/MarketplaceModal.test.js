@@ -19,6 +19,29 @@ import { PortalProvider } from "@cloudoperators/juno-ui-components/index";
 import { render, fireEvent, screen } from "@testing-library/react";
 import MarketplaceModal from "./MarketplaceModal";
 
+function mockGlobalStore(isProject, isCluster, isDomain) {
+  return jest.fn(() => ({
+    scope: {
+      isProject: jest.fn(() => isProject),
+      isCluster: jest.fn(() => isCluster),
+      isDomain: jest.fn(() => isDomain),
+    },
+  }));
+}
+
+function mockDomainStore(projects) {
+  return jest.fn(() => ({
+    projects,
+  }));
+}
+
+jest.mock("../../StoreProvider", () => {
+  return {
+    globalStore: jest.fn(),
+    domainStore: jest.fn(),
+  };
+});
+
 describe("MarketplaceModal", () => {
   const mockProps = {
     action: jest.fn(),
@@ -36,6 +59,10 @@ describe("MarketplaceModal", () => {
   };
 
   it("should render the modal with the correct content", () => {
+    const mockGlobalStoreInstance = mockGlobalStore(true, false, false);
+    const mockDomainStoreInstance = mockDomainStore([]);
+    require("../../StoreProvider").globalStore.mockImplementation(mockGlobalStoreInstance);
+    require("../../StoreProvider").domainStore.mockImplementation(mockDomainStoreInstance);
     render(
       <PortalProvider>
         <MarketplaceModal {...mockProps} />
@@ -49,6 +76,10 @@ describe("MarketplaceModal", () => {
   });
 
   it("should call the action function when the confirm button is clicked", () => {
+    const mockGlobalStoreInstance = mockGlobalStore(true, false, false);
+    const mockDomainStoreInstance = mockDomainStore([]);
+    require("../../StoreProvider").globalStore.mockImplementation(mockGlobalStoreInstance);
+    require("../../StoreProvider").domainStore.mockImplementation(mockDomainStoreInstance);
     render(
       <PortalProvider>
         <MarketplaceModal {...mockProps} />
@@ -62,6 +93,10 @@ describe("MarketplaceModal", () => {
   });
 
   it("should call the onModalClose function when the cancel button is clicked", () => {
+    const mockGlobalStoreInstance = mockGlobalStore(true, false, false);
+    const mockDomainStoreInstance = mockDomainStore([]);
+    require("../../StoreProvider").globalStore.mockImplementation(mockGlobalStoreInstance);
+    require("../../StoreProvider").domainStore.mockImplementation(mockDomainStoreInstance);
     render(
       <PortalProvider>
         <MarketplaceModal {...mockProps} />

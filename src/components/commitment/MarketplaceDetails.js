@@ -25,7 +25,6 @@ import MarketplaceModal from "./Modals/MarketplaceModal";
 const MarketplaceDetails = (props) => {
   const { project, resource, commitment, transferCommitment } = props;
   const unit = new Unit(resource.unit);
-  const transferToken = commitment.transfer_token;
   const { getCommitmentLabel } = useCommitmentFilter();
   const [showModal, setShowModal] = React.useState(false);
 
@@ -48,14 +47,13 @@ const MarketplaceDetails = (props) => {
       </DataGridCell>
       {showModal && (
         <MarketplaceModal
-          action={() => {
-            transferCommitment(project, commitment, transferToken);
-          }}
+          action={transferCommitment}
           title="Marketplace: Receive commitment"
           subText="receive"
           onModalClose={() => {
             setShowModal(false);
           }}
+          project={project}
           commitment={commitment}
         />
       )}

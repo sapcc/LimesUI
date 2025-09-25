@@ -15,9 +15,18 @@
  */
 
 import React from "react";
-import { Modal, DataGrid, DataGridRow, DataGridCell } from "@cloudoperators/juno-ui-components";
+import {
+  Message,
+  Modal,
+  DataGrid,
+  DataGridRow,
+  DataGridCell,
+  Select,
+  SelectOption,
+} from "@cloudoperators/juno-ui-components";
 import BaseFooter from "./BaseComponents/BaseFooter";
 import useConfirmInput from "./BaseComponents/useConfirmInput";
+import { domainStore, globalStore } from "../../StoreProvider";
 import { formatTimeISO8160 } from "../../../lib/utils";
 import { valueWithUnit } from "../../../lib/unit";
 import { Unit } from "../../../lib/unit";
@@ -25,15 +34,33 @@ import { Unit } from "../../../lib/unit";
 const label = "font-semibold";
 
 const MarketplaceModal = (props) => {
-  const { action, title, subText, onModalClose, commitment } = props;
-  const { amount, availability_zone, duration, expires_at } = commitment;
+  const { action, title, subText, onModalClose, project, commitment } = props;
+  const { amount, availability_zone, duration, expires_at, transfer_token } = commitment;
   const unit = new Unit(commitment.unit);
   const { ConfirmInput, inputProps, checkInput } = useConfirmInput({
     confirmationText: subText,
   });
+  const { scope } = globalStore();
+  const isProjectView = scope.isProject();
+  const { projects } = domainStore();
+  const sortedProjects = React.useMemo(() => {
+    return (
+      projects?.sort((a, b) => {
+        if (scope.isCluster()) {
+          return a["metadata"]["fullName"].toLowerCase().localeCompare(b["metadata"]["fullName"].toLowerCase());
+        } else {
+          return a["metadata"]["name"].toLowerCase().localeCompare(b["metadata"]["name"].toLowerCase());
+        }
+      }) || []
+    );
+  }, [projects]);
+  const [targetProject, setTargetProject] = React.useState(isProjectView ? project : null);
+  const disabled = !isProjectView && !targetProject;
 
   function onConfirm() {
-    action(commitment);
+    if (disabled) return;
+    action(targetProject, commitment, transfer_token);
+    onModalClose();
   }
 
   return (
@@ -42,12 +69,23 @@ const MarketplaceModal = (props) => {
       title={title}
       open={true}
       modalFooter={
-        <BaseFooter onModalClose={onModalClose} guardFns={[checkInput]} actionFn={onConfirm} variant={"primary"} />
+        <BaseFooter
+          disabled={disabled}
+          onModalClose={onModalClose}
+          guardFns={[checkInput]}
+          actionFn={onConfirm}
+          variant={"primary"}
+        />
       }
       onCancel={() => {
         onModalClose();
       }}
     >
+      {disabled && (
+        <Message variant="info" className="ml-auto">
+          Select a target project.
+        </Message>
+      )}
       <DataGrid columns={2} columnMaxSize="1fr">
         <DataGridRow>
           <DataGridCell className={label}>Availability Zone:</DataGridCell>
@@ -62,11 +100,31 @@ const MarketplaceModal = (props) => {
           <DataGridCell>{duration}</DataGridCell>
         </DataGridRow>
         <DataGridRow>
-          <DataGridCell>Expires at:</DataGridCell>
+          <DataGridCell className={label}>Expires at:</DataGridCell>
           <DataGridCell>{formatTimeISO8160(expires_at)}</DataGridCell>
         </DataGridRow>
+        {!isProjectView && (
+          <DataGridRow>
+            <DataGridCell className={label}>Target project:</DataGridCell>
+            <DataGridCell>
+              <Select
+                disabled={sortedProjects.length == 0}
+                onChange={(project) => {
+                  setTargetProject(project);
+                }}
+              >
+                {sortedProjects.map((project) => (
+                  <SelectOption key={project["metadata"]["id"]} value={project}>
+                    {scope.isDomain() && project["metadata"]["name"]}
+                    {scope.isCluster() && project["metadata"]["fullName"]}
+                  </SelectOption>
+                ))}
+              </Select>
+            </DataGridCell>
+          </DataGridRow>
+        )}
       </DataGrid>
-      <ConfirmInput subText={subText} {...inputProps} />
+      <ConfirmInput disabled={disabled} subText={subText} {...inputProps} />
     </Modal>
   );
 };

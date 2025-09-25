@@ -78,6 +78,7 @@ const PanelManager = (props) => {
   //Durations get checked to avoid route call to uneditable resource.
   return (
     <Panel
+      className="bg-theme-background-lvl-0"
       size="large"
       opened={isEditing}
       onClose={() => {

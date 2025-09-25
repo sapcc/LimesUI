@@ -78,8 +78,8 @@ const Marketplace = (props) => {
           <MarketplaceDetails
             key={commitment.id}
             project={project}
-            commitment={commitment}
             resource={resource}
+            commitment={commitment}
             transferCommitment={transferCommitment}
           />
         ))}

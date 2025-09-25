@@ -32,6 +32,8 @@ const UpdateDurationModal = (props) => {
   const { validDurations: durations } = createCommitmentStore();
   const validDurations = durations.get(commitment.id) || [];
 
+  console.log(commitment);
+
   function onConfirm() {
     if (!selectedDuration) {
       return;

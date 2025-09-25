@@ -234,7 +234,9 @@ const CommitmentTableDetails = (props) => {
               }}
               disabled={newCommitment?.id == id}
             >
-              {commitment.id == commitmentTransferID.current ? transferLabel.Selected : transferLabel.Move}
+              {isTransferring && commitment.id == commitmentTransferID.current
+                ? transferLabel.Selected
+                : transferLabel.Move}
             </Button>
             <Button
               size="small"

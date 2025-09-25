@@ -88,6 +88,7 @@ const EditPanel = (props) => {
   const { setCommitmentIsLoading } = createCommitmentStoreActions();
   const conversionResults = useGetConversions({ serviceType, resourceName });
   const [currentTab, setCurrentTab] = React.useState(currentResource.per_az[0].name);
+  const isMarketplaceTab = currentTab === CustomZones.MARKETPLACE;
   const [projectsAreSortable, setProjectsAreSortable] = React.useState(false);
   // Merge Commitments
   const [commitmentsToMerge, setCommitmentsToMerge] = React.useState([]);
@@ -106,7 +107,6 @@ const EditPanel = (props) => {
   };
   const publicCommitmentQuery = useQuery({
     queryKey: ["publicCommitments", { service: serviceType, resource: currentResource.name }],
-    enabled: scope.isProject(),
   });
 
   // Query can-confirm API. Determine if capacity is sufficient on limes.
@@ -177,11 +177,13 @@ const EditPanel = (props) => {
   }
 
   // Transferring a commitment requires to mark the commitment as transferrable and then transfer it to it's target.
-  // Cluster and domain level transfer the commitment immediately after
+  // Cluster and domain level transfer the commitment immediately after, except for marketplace postings or the cancellation of existing postings.
   // On project level we move between projects. First we initiate the transfer. On the target project we receive with the token input.
   function startCommitmentTransfer(project, commitment, transferType = TransferType.UNLISTED) {
     const sourceProjectID = currentProject.metadata.id;
     const sourceDomainID = scope.isCluster() ? currentProject.metadata.domainID : null;
+    const shouldNotTransfer = transferType == TransferType.PUBLIC || transferType == TransferType.NONE;
+
     startTransfer.mutate(
       {
         payload: { commitment: { amount: commitment.amount, transfer_status: transferType } },
@@ -191,26 +193,23 @@ const EditPanel = (props) => {
       },
       {
         onSuccess: (data) => {
-          // On project level we end here and do not process the transfer directly.
-          if (scope.isProject()) {
+          // On Project level, the transfer start ends here. The transfer is handled with a separate request.
+          // On Cluster/Domain level, the transfer is only executed for private (unlisted) transfers.
+          if (scope.isProject() || shouldNotTransfer) {
             resetCommitmentTransfer();
             setRefetchProjectAPI(true);
             setRefetchCommitmentAPI(true);
-            if (
-              transferType == TransferType.PUBLIC ||
-              (transferType == TransferType.NONE && commitment?.transfer_status == TransferType.PUBLIC)
-            ) {
-              publicCommitmentQuery.refetch();
-            }
+            shouldNotTransfer && publicCommitmentQuery.refetch();
             return;
           }
+
+          // Proceed to transfer the commitment.
           const receivedCommitment = data.commitment;
           const transferToken = data.commitment.transfer_token;
           transferCommitment(project, receivedCommitment, transferToken);
         },
         onError: (error) => {
           resetCommitmentTransfer();
-          setTransferProject(null);
           setToast(error.toString());
         },
       }
@@ -221,7 +220,6 @@ const EditPanel = (props) => {
     // Cluster View targets the custom field domainID. It is set in the cluster project handling logic.
     const targetDomainID = project?.metadata.domainID || null;
     const targetProjectID = project.metadata.id;
-    const transferStatus = commitment?.transfer_status || null;
 
     transfer.mutate(
       {
@@ -238,9 +236,7 @@ const EditPanel = (props) => {
           setRefetchProjectAPI(true);
           setRefetchCommitmentAPI(true);
           setTransferProject(null);
-          if (scope.isProject() && transferStatus == TransferType.PUBLIC) {
-            publicCommitmentQuery.refetch();
-          }
+          publicCommitmentQuery.refetch();
         },
         onError: (error) => {
           resetCommitmentTransfer();
@@ -348,12 +344,10 @@ const EditPanel = (props) => {
   }
 
   function onTransferModalClose() {
-    setTransferProject(null);
-  }
-
-  function onTransferModalProjectClose() {
-    setTransferredCommitment(initialCommitmentObject);
     setTransferFromAndToProject(null);
+    setTransferProject(null);
+    // On project level the commitment in transfer needs to be reset, otherwise a previous transferred commitment will be displayed in the receive modal before entering a token.
+    scope.isProject() && setTransferredCommitment(initialCommitmentObject);
   }
 
   function onUpdateDurationClose() {
@@ -403,27 +397,19 @@ const EditPanel = (props) => {
           publicCommitmentQuery={publicCommitmentQuery}
         />
       )}
-      {scope.isProject() &&
-        (currentTab !== CustomZones.MARKETPLACE ? (
-          <CommitmentTable
-            serviceType={serviceType}
-            currentCategory={currentCategory}
-            currentResource={currentResource}
-            resource={currentResource}
-            currentTab={currentTab}
-            commitmentData={commitments}
-            mergeOps={mergeForwardProps}
-            scope={scope}
-          />
-        ) : (
-          <Marketplace
-            project={currentProject}
-            resource={currentResource}
-            publicCommitmentQuery={publicCommitmentQuery}
-            transferCommitment={transferCommitment}
-          />
-        ))}
-      {scope.isDomain() && (
+      {scope.isProject() && !isMarketplaceTab && (
+        <CommitmentTable
+          serviceType={serviceType}
+          currentCategory={currentCategory}
+          currentResource={currentResource}
+          resource={currentResource}
+          currentTab={currentTab}
+          commitmentData={commitments}
+          mergeOps={mergeForwardProps}
+          scope={scope}
+        />
+      )}
+      {scope.isDomain() && !isMarketplaceTab && (
         <ProjectManager
           serviceType={serviceType}
           currentCategory={currentCategory}
@@ -434,7 +420,7 @@ const EditPanel = (props) => {
           mergeOps={mergeForwardProps}
         />
       )}
-      {scope.isCluster() && (
+      {scope.isCluster() && !isMarketplaceTab && (
         <DomainManager
           serviceType={serviceType}
           currentCategory={currentCategory}
@@ -443,6 +429,14 @@ const EditPanel = (props) => {
           subRoute={subRoute}
           sortProjectProps={sortProjectProps}
           mergeOps={mergeForwardProps}
+        />
+      )}
+      {isMarketplaceTab && (
+        <Marketplace
+          project={currentProject}
+          resource={currentResource}
+          publicCommitmentQuery={publicCommitmentQuery}
+          transferCommitment={transferCommitment}
         />
       )}
       {isSubmitting && canConfirm != null && (
@@ -457,17 +451,7 @@ const EditPanel = (props) => {
           title="Confirm commitment creation"
         />
       )}
-      {scope.isProject() && transferFromAndToProject == TransferStatus.START && transferredCommitment && (
-        <TransferModal
-          title="Transfer Commitment"
-          subText="Transfer"
-          isProjectView={scope.isProject()}
-          onModalClose={onTransferModalProjectClose}
-          onTransfer={startCommitmentTransfer}
-          commitment={transferredCommitment}
-        />
-      )}
-      {transferProject && transferredCommitment && (
+      {transferFromAndToProject == TransferStatus.START && (
         <TransferModal
           title="Transfer Commitment"
           subText="Transfer"
@@ -479,10 +463,10 @@ const EditPanel = (props) => {
           transferProject={transferProject}
         />
       )}
-      {scope.isProject() && transferFromAndToProject == TransferStatus.VIEW && (
+      {transferFromAndToProject == TransferStatus.VIEW && (
         <TransferTokenModal
           title="Transfer Commitment"
-          onModalClose={onTransferModalProjectClose}
+          onModalClose={onTransferModalClose}
           commitment={transferredCommitment}
         />
       )}
@@ -494,15 +478,15 @@ const EditPanel = (props) => {
           serviceType={serviceType}
           currentResource={currentResource}
           transferCommitment={transferCommitment}
-          onModalClose={onTransferModalProjectClose}
+          onModalClose={onTransferModalClose}
         />
       )}
-      {scope.isProject() && transferFromAndToProject == TransferStatus.CANCEL && (
+      {transferFromAndToProject == TransferStatus.CANCEL && (
         <TransferCancelModal
           title="Cancel transfer state"
           commitment={transferredCommitment}
           startCommitmentTransfer={startCommitmentTransfer}
-          onModalClose={onTransferModalProjectClose}
+          onModalClose={onTransferModalClose}
         />
       )}
       {conversionCommitment && (

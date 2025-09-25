@@ -40,9 +40,13 @@ const Actions = (props) => {
 
   function updateActions(key, menuItem, toolTip) {
     const newAction = { key: key, menuItem: menuItem, toolTip: toolTip };
-    setCommitmentActions((commitmentActions) =>
-      [...commitmentActions, newAction].sort((a, b) => a.key.localeCompare(b.key))
-    );
+
+    setCommitmentActions((commitmentActions) => {
+      return commitmentActions
+        .filter((action) => action.key !== key)
+        .concat(newAction)
+        .sort((a, b) => a.key.localeCompare(b.key));
+    });
   }
 
   useConversionAction({ commitment, updateActions });

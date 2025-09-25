@@ -33,6 +33,7 @@ import {
   SelectOption,
 } from "@cloudoperators/juno-ui-components";
 import ProjectQuotaDetails from "./ProjectQuotaDetails";
+import { TransferStatus } from "../../lib/constants";
 import { labelTypes, matchAZLabel } from "../shared/LimesBadges";
 
 const projectTableHeadCells = [
@@ -88,6 +89,7 @@ const ProjectTable = (props) => {
   const { scope } = globalStore();
   const [selectedProject, setSelectedProject] = React.useState({ id: "", showCommitments: false });
   const { setSortedProjects } = domainStoreActions();
+  const { setTransferFromAndToProject } = createCommitmentStoreActions();
   const { setTransferProject } = createCommitmentStoreActions();
   const { setCurrentProject } = createCommitmentStoreActions();
   const { setToast } = createCommitmentStoreActions();
@@ -186,6 +188,7 @@ const ProjectTable = (props) => {
 
   function handleCommitmentTransfer(project) {
     setTransferProject(project);
+    setTransferFromAndToProject(TransferStatus.START);
   }
 
   return projects ? (

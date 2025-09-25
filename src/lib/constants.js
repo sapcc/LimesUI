@@ -42,6 +42,7 @@ export const CustomZones = Object.freeze({
 // 1. A view where a transfer can be initiated
 // 2. A view to copy the transfer token at the source project
 // 3. A view to enter the transfer token at the target project
+// 4. A view to reset the current transfer state
 export const TransferStatus = Object.freeze({
   START: 1,
   VIEW: 2,

@@ -21,12 +21,13 @@ import { globalStore, createCommitmentStoreActions } from "../../StoreProvider";
 
 const useTransferAction = (props) => {
   const { commitment, updateActions } = props;
-  const commitmentInTrasfer = commitment.transfer_status ? true : false;
+  const { transfer_status: transferStatus } = commitment;
+  const commitmentInTrasfer = transferStatus ? true : false;
   const { scope } = globalStore();
   const { setTransferredCommitment } = createCommitmentStoreActions();
   const { setTransferFromAndToProject } = createCommitmentStoreActions();
 
-  function transferCommitOnProjectLevel() {
+  function transferCommitment() {
     setTransferFromAndToProject(commitmentInTrasfer ? TransferStatus.VIEW : TransferStatus.START);
     setTransferredCommitment(commitment);
   }
@@ -37,23 +38,17 @@ const useTransferAction = (props) => {
   }
 
   React.useEffect(() => {
-    if (!scope.isProject()) return;
-    const menuItem = (
-      <MenuItemBuilder
-        icon="upload"
-        text={commitmentInTrasfer ? "Transferring" : "Transfer"}
-        callBack={transferCommitOnProjectLevel}
-      />
-    );
-    let toolTip = null;
-    if (commitmentInTrasfer) {
-      toolTip = "ready for transfer";
+    const toolTip = commitmentInTrasfer ? "ready for transfer" : null;
+    let transferText = commitmentInTrasfer ? "Transferring" : "Transfer";
+    if (!scope.isProject() && !commitmentInTrasfer) {
+      transferText = `${transferText} (Marketplace)`;
     }
+    const menuItem = <MenuItemBuilder icon="upload" text={transferText} callBack={transferCommitment} />;
     updateActions("transfer", menuItem, toolTip);
 
     if (!commitmentInTrasfer) return;
     const cancelTransferMenuItem = (
-      <MenuItemBuilder icon="close" text="Cancel transfer" callBack={cancelTransferCommitment} />
+      <MenuItemBuilder icon="close" text={"Cancel transfer"} callBack={cancelTransferCommitment} />
     );
     updateActions("cancel_transfer", cancelTransferMenuItem, null);
   }, [commitment, scope]);
