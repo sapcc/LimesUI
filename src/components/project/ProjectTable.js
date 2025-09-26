@@ -33,6 +33,7 @@ import {
   SelectOption,
 } from "@cloudoperators/juno-ui-components";
 import ProjectQuotaDetails from "./ProjectQuotaDetails";
+import { TransferStatus } from "../../lib/constants";
 import { labelTypes, matchAZLabel } from "../shared/LimesBadges";
 
 const projectTableHeadCells = [
@@ -82,12 +83,13 @@ const filterOpts = Object.freeze({
 
 // Display the project details in DomainView
 const ProjectTable = (props) => {
-  const { serviceType, currentResource, currentCategory, currentAZ, projects, subRoute, sortProjectProps, mergeOps } =
+  const { serviceType, currentResource, currentCategory, currentTab, projects, subRoute, sortProjectProps, mergeOps } =
     props;
   const resourceTracksQuota = tracksQuota(currentResource);
   const { scope } = globalStore();
   const [selectedProject, setSelectedProject] = React.useState({ id: "", showCommitments: false });
   const { setSortedProjects } = domainStoreActions();
+  const { setTransferFromAndToProject } = createCommitmentStoreActions();
   const { setTransferProject } = createCommitmentStoreActions();
   const { setCurrentProject } = createCommitmentStoreActions();
   const { setToast } = createCommitmentStoreActions();
@@ -135,7 +137,7 @@ const ProjectTable = (props) => {
 
     projects.forEach((project) => {
       project.categories[currentCategory].resources[0].per_az.forEach((az) => {
-        if (az.name !== currentAZ) return;
+        if (az.name !== currentTab) return;
         const matchingLabels = Object.values(labelTypes).filter((type) => matchAZLabel(az, type));
         if (matchingLabels.length > 0) {
           matchingLabels.forEach((label) => {
@@ -150,7 +152,7 @@ const ProjectTable = (props) => {
     });
 
     return { availableLabels: Array.from(uniqueLabels), projectsPerLabel: matchingProjects };
-  }, [currentAZ]);
+  }, [currentTab]);
 
   function getProjectsToFilter() {
     const projectsToFilter =
@@ -182,10 +184,11 @@ const ProjectTable = (props) => {
   }
   React.useEffect(() => {
     filterProjectsPerNameOrLabel();
-  }, [projects, currentAZ]);
+  }, [projects, currentTab]);
 
   function handleCommitmentTransfer(project) {
     setTransferProject(project);
+    setTransferFromAndToProject(TransferStatus.START);
   }
 
   return projects ? (
@@ -271,7 +274,7 @@ const ProjectTable = (props) => {
             const resource = getCurrentResource(resources, currentResource.name);
             const showCommitments = project.metadata.id === selectedProject.id && selectedProject.showCommitments;
             const az = resource.per_az.find((az) => {
-              return az.name === currentAZ;
+              return az.name === currentTab;
             });
             return !subRoute ? (
               <ProjectTableDetails
@@ -286,7 +289,7 @@ const ProjectTable = (props) => {
                 resource={resource}
                 tracksQuota={resourceTracksQuota}
                 az={az}
-                currentAZ={currentAZ}
+                currentTab={currentTab}
                 colSpan={colSpan}
                 mergeOps={mergeOps}
               />

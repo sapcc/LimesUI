@@ -31,7 +31,7 @@ const CommitmentTable = (props) => {
   const { commitmentIsFetching } = createCommitmentStore();
   const commitmentTransferID = React.useRef(null);
   const { isCommitting } = createCommitmentStore();
-  const { serviceType, currentCategory, currentResource, currentAZ, commitmentData, mergeOps } = {
+  const { serviceType, currentCategory, currentResource, currentTab, commitmentData, mergeOps } = {
     ...props,
   };
   const durations = getResourceDurations(currentResource);
@@ -90,9 +90,9 @@ const CommitmentTable = (props) => {
 
   //Add or remove edit commitment row.
   const filteredCommitments = React.useMemo(() => {
-    const filteredData = filterCommitments(resourceName, currentAZ);
+    const filteredData = filterCommitments(resourceName, currentTab);
     return filteredData;
-  }, [commitmentData, currentAZ, resourceName]);
+  }, [commitmentData, currentTab, resourceName]);
 
   const { items, TableSortHeader } = useSortTableData(filteredCommitments, initialSortConfig);
 
@@ -134,7 +134,7 @@ const CommitmentTable = (props) => {
           serviceType={serviceType}
           currentCategory={currentCategory}
           currentResource={currentResource}
-          currentAZ={currentAZ}
+          currentTab={currentTab}
           commitmentTransferID={commitmentTransferID}
           mergeOps={mergeOps}
         />

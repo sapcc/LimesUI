@@ -37,7 +37,7 @@ describe("test commitment creation modal", () => {
         <CommitmentModal
           title="Confirm commitment creation"
           subText="Commit"
-          az={"az1"}
+          currentTab={"az1"}
           canConfirm={false}
           minConfirmDate={null}
           commitment={newCommitment}
@@ -70,7 +70,7 @@ describe("test commitment creation modal", () => {
         <CommitmentModal
           title="Confirm commitment creation"
           subText="Commit"
-          az={"az1"}
+          currentTab={"az1"}
           canConfirm={true}
           minConfirmDate={moment(new Date("2024-01-01T00:00:00.000Z")).utc().unix()}
           commitment={newCommitment}
@@ -102,7 +102,7 @@ describe("test commitment creation modal", () => {
         <CommitmentModal
           title="Confirm commitment creation"
           subText="Commit"
-          az={"az1"}
+          currentTab={"az1"}
           canConfirm={true}
           minConfirmDate={moment(new Date("2024-01-02T00:00:00.000Z")).utc().unix()}
           commitment={newCommitment}
@@ -143,7 +143,7 @@ describe("test commitment creation modal", () => {
         <CommitmentModal
           title="Confirm commitment creation"
           subText="Commit"
-          az={"az1"}
+          currentTab={"az1"}
           canConfirm={true}
           commitment={newCommitment}
           action={onConfirm}
