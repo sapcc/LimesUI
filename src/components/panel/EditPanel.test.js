@@ -32,6 +32,19 @@ import StoreProvider, {
 import { CustomZones } from "../../lib/constants";
 
 const queryClient = new QueryClient({ defaultOptions: { queries: { retry: 0 } } });
+
+queryClient.setQueryDefaults(["domains"], {
+  queryFn: () => {
+    return [];
+  },
+});
+
+queryClient.setQueryDefaults(["commitmentData"], {
+  queryFn: () => {
+    return [];
+  },
+});
+
 queryClient.setQueryDefaults(["getConversions"], {
   queryFn: () => {
     return;

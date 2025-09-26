@@ -17,13 +17,13 @@
 import React from "react";
 import TransferModal from "./TransferModal";
 import { PortalProvider } from "@cloudoperators/juno-ui-components";
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { initialCommitmentObject } from "../../../lib/constants";
 
 describe("test transfer modal", () => {
   const onCancel = jest.fn(() => {});
 
-  test("project level: transfer whole commitment", () => {
+  test("project level: transfer whole commitment", async () => {
     const onTransfer = jest.fn((transferProject, commitment) => {
       expect(transferProject).toBeFalsy();
       expect(commitment.amount).toEqual(10);
@@ -50,7 +50,9 @@ describe("test transfer modal", () => {
     expect(screen.getByText(10)).toBeInTheDocument();
     expect(screen.getByText("1 year")).toBeInTheDocument();
     fireEvent.change(confirmInput, { target: { value: "wrongInput" } });
-    expect(onTransfer).not.toHaveBeenCalled();
+    await waitFor(() => {
+      expect(onTransfer).not.toHaveBeenCalled();
+    });
     fireEvent.change(confirmInput, { target: { value: "transfer" } });
     fireEvent.click(confirmButton);
     expect(onTransfer).toHaveBeenCalled();
