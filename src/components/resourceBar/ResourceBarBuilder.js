@@ -16,11 +16,11 @@
 
 import React from "react";
 import ResourceBar, { getAppliedBarColors } from "./ResourceBar";
-import { Unit } from "../../lib/unit";
-import useResourceBarValues, { ResourceBarType } from "../../hooks/useResourceBarValues";
-import { Stack } from "@cloudoperators/juno-ui-components/index";
-import { getBarLabel, getEmptyBarLabel, hasAnyBarValues } from "./resourceBarUtils";
 import ResourceInfo from "./ResourceInfo";
+import { Stack } from "@cloudoperators/juno-ui-components/index";
+import { Unit } from "../../lib/unit";
+import { getBarLabel, getBasicResourceInfo, getEmptyBarLabel, hasAnyBarValues } from "./resourceBarUtils";
+import useResourceBarValues, { ResourceBarType } from "../../hooks/useResourceBarValues";
 
 const barConainer = `
   min-w-full 
@@ -33,6 +33,7 @@ const ResourceBarBuilder = (props) => {
   const { scope, categoryName, resource, az, unit: unitName, barType, isEditableResource } = { ...props };
   const { showToolTip = false, displayResourceInfo = false } = { ...props };
   const unit = new Unit(unitName || "");
+  const isBasicResource = getBasicResourceInfo(resource);
   const isGranular = barType === ResourceBarType.granular;
   const currentResource = isGranular ? az : resource;
   const { leftBar, rightBar } = useResourceBarValues(currentResource, barType);
@@ -60,7 +61,7 @@ const ResourceBarBuilder = (props) => {
     let toolTipContent;
     if (bar === rightBar) {
       barBackGround = getAppliedBarColors(bar, paygStyle);
-      toolTipContent = "Pay as you go";
+      isBasicResource ? (toolTipContent = "Usage") : (toolTipContent = "Pay as you go");
     } else {
       barBackGround = getAppliedBarColors(bar);
       toolTipContent = "Committed usage";

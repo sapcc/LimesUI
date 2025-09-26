@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { locateBaseQuotaAZ } from "../../lib/utils";
+import { locateBaseQuotaAZ, getResourceDurations } from "../../lib/utils";
 
 export function getBarLabel(resource) {
   if (resource.commitmentSum > 0) {
@@ -40,4 +40,9 @@ export function getEmptyBarLabel(resource) {
 
 export function hasAnyBarValues(barValues) {
   return barValues.utilized > 0 || barValues.available > 0;
+}
+
+export function getBasicResourceInfo(resource) {
+  const commitmentSum = resource?.commitmentSum || 0;
+  return getResourceDurations(resource).length == 0 && commitmentSum == 0;
 }

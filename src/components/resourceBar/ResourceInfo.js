@@ -16,7 +16,7 @@
 
 import React from "react";
 import { IntroBox } from "@cloudoperators/juno-ui-components/index";
-import { hasAnyBarValues } from "./resourceBarUtils";
+import { getBasicResourceInfo, hasAnyBarValues } from "./resourceBarUtils";
 import { locateBaseQuotaAZ } from "../../lib/utils";
 import { CustomZones } from "../../lib/constants";
 import { Unit } from "../../lib/unit";
@@ -37,7 +37,7 @@ const ResourceInfo = (props) => {
   const { leftBar, rightBar } = { ...props };
   const hasLeftBar = hasAnyBarValues(leftBar);
   const hasRightBar = hasAnyBarValues(rightBar);
-
+  const isBasicResource = getBasicResourceInfo(resource);
   const resourceInfos = React.useMemo(() => {
     const infos = [];
 
@@ -121,7 +121,11 @@ const ResourceInfo = (props) => {
       return PAYGLabels.UNAVAILABLE;
     }
     if (rightBar.utilized > 0) {
-      return PAYGLabels.AVAILABLE(unit.format(rightBar.utilized));
+      if (isBasicResource) {
+        return PAYGLabels.AVAILABLE_BASIC(unit.format(rightBar.utilized));
+      } else {
+        return PAYGLabels.AVAILABLE(unit.format(rightBar.utilized));
+      }
     }
     if (rightBar.utilized < 0) {
       return PAYGLabels.INVALID;
