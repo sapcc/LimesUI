@@ -108,13 +108,14 @@ const MarketplaceModal = (props) => {
             <DataGridCell className={label}>Target project:</DataGridCell>
             <DataGridCell>
               <Select
+                data-testid={"targetProjectSelect"}
                 disabled={sortedProjects.length == 0}
                 onChange={(project) => {
                   setTargetProject(project);
                 }}
               >
                 {sortedProjects.map((project) => (
-                  <SelectOption key={project["metadata"]["id"]} value={project}>
+                  <SelectOption data-testid={`selectOption`} key={project["metadata"]["id"]} value={project}>
                     {scope.isDomain() && project["metadata"]["name"]}
                     {scope.isCluster() && project["metadata"]["fullName"]}
                   </SelectOption>

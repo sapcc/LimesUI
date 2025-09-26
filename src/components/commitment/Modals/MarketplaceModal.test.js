@@ -16,15 +16,17 @@
 
 import React from "react";
 import { PortalProvider } from "@cloudoperators/juno-ui-components/index";
-import { render, fireEvent, screen } from "@testing-library/react";
+import { render, fireEvent, screen, waitFor } from "@testing-library/react";
 import MarketplaceModal from "./MarketplaceModal";
 
-function mockGlobalStore(isProject, isCluster, isDomain) {
+const storeProviderPath = "../../StoreProvider";
+
+function mockGlobalStore(isCluster, isDomain, isProject) {
   return jest.fn(() => ({
     scope: {
-      isProject: jest.fn(() => isProject),
       isCluster: jest.fn(() => isCluster),
       isDomain: jest.fn(() => isDomain),
+      isProject: jest.fn(() => isProject),
     },
   }));
 }
@@ -50,6 +52,7 @@ describe("MarketplaceModal", () => {
     onModalClose: jest.fn(),
     commitment: {
       id: "commitment-1",
+      transfer_token: "testToken",
       amount: 100,
       availability_zone: "az_1",
       duration: "1 month",
@@ -58,11 +61,11 @@ describe("MarketplaceModal", () => {
     },
   };
 
-  it("should render the modal with the correct content", () => {
-    const mockGlobalStoreInstance = mockGlobalStore(true, false, false);
+  test("should render the modal with the correct commitment content", () => {
+    const mockGlobalStoreInstance = mockGlobalStore(false, false, true);
     const mockDomainStoreInstance = mockDomainStore([]);
-    require("../../StoreProvider").globalStore.mockImplementation(mockGlobalStoreInstance);
-    require("../../StoreProvider").domainStore.mockImplementation(mockDomainStoreInstance);
+    require(storeProviderPath).globalStore.mockImplementation(mockGlobalStoreInstance);
+    require(storeProviderPath).domainStore.mockImplementation(mockDomainStoreInstance);
     render(
       <PortalProvider>
         <MarketplaceModal {...mockProps} />
@@ -75,11 +78,11 @@ describe("MarketplaceModal", () => {
     expect(screen.getByText("1970-01-01")).toBeInTheDocument();
   });
 
-  it("should call the action function when the confirm button is clicked", () => {
-    const mockGlobalStoreInstance = mockGlobalStore(true, false, false);
+  test("should call the action function when the confirm button is clicked", () => {
+    const mockGlobalStoreInstance = mockGlobalStore(false, false, true);
     const mockDomainStoreInstance = mockDomainStore([]);
-    require("../../StoreProvider").globalStore.mockImplementation(mockGlobalStoreInstance);
-    require("../../StoreProvider").domainStore.mockImplementation(mockDomainStoreInstance);
+    require(storeProviderPath).globalStore.mockImplementation(mockGlobalStoreInstance);
+    require(storeProviderPath).domainStore.mockImplementation(mockDomainStoreInstance);
     render(
       <PortalProvider>
         <MarketplaceModal {...mockProps} />
@@ -92,11 +95,11 @@ describe("MarketplaceModal", () => {
     expect(mockProps.action).toHaveBeenCalled();
   });
 
-  it("should call the onModalClose function when the cancel button is clicked", () => {
-    const mockGlobalStoreInstance = mockGlobalStore(true, false, false);
+  test("should call the close function when the cancel button is clicked", () => {
+    const mockGlobalStoreInstance = mockGlobalStore(false, false, true);
     const mockDomainStoreInstance = mockDomainStore([]);
-    require("../../StoreProvider").globalStore.mockImplementation(mockGlobalStoreInstance);
-    require("../../StoreProvider").domainStore.mockImplementation(mockDomainStoreInstance);
+    require(storeProviderPath).globalStore.mockImplementation(mockGlobalStoreInstance);
+    require(storeProviderPath).domainStore.mockImplementation(mockDomainStoreInstance);
     render(
       <PortalProvider>
         <MarketplaceModal {...mockProps} />
@@ -104,5 +107,77 @@ describe("MarketplaceModal", () => {
     );
     fireEvent.click(screen.getByText("Cancel"));
     expect(mockProps.onModalClose).toHaveBeenCalled();
+  });
+
+  test("Cluster level: should provide the correct target projects", async () => {
+    const mockGlobalStoreInstance = mockGlobalStore(true, false, false);
+    const mockDomainStoreInstance = mockDomainStore([
+      { metadata: { id: 3, fullName: "bDomain/aProject" } },
+      { metadata: { id: 2, fullName: "aDomain/cProject" } },
+      { metadata: { id: 1, fullName: "aDomain/bProject" } },
+    ]);
+    require(storeProviderPath).globalStore.mockImplementation(mockGlobalStoreInstance);
+    require(storeProviderPath).domainStore.mockImplementation(mockDomainStoreInstance);
+    mockProps.action = jest.fn((targetProject, commitment, transfer_token) => {
+      expect(targetProject).toEqual({ metadata: { id: 1, fullName: "aDomain/bProject" } });
+      expect(transfer_token).toEqual("testToken");
+      expect(commitment.amount).toEqual(100);
+    });
+    render(
+      <PortalProvider>
+        <MarketplaceModal {...mockProps} />
+      </PortalProvider>
+    );
+    const selectElement = screen.getByTestId("targetProjectSelect");
+    fireEvent.click(selectElement);
+    const options = screen.getAllByTestId("selectOption");
+    await waitFor(() => {
+      expect(options).toHaveLength(3);
+      expect(options[0]).toHaveTextContent("aDomain/bProject");
+      expect(options[1]).toHaveTextContent("aDomain/cProject");
+      expect(options[2]).toHaveTextContent("bDomain/aProject");
+    });
+    fireEvent.click(options[0]);
+    let confirmButton = screen.getByTestId(/modalConfirm/i);
+    let confirmInput = screen.getByTestId(/confirmInput/i);
+    fireEvent.change(confirmInput, { target: { value: "receive" } });
+    fireEvent.click(confirmButton);
+    expect(mockProps.action).toHaveBeenCalled();
+  });
+
+  test("Domain level: should provide the correct target projects", async () => {
+    const mockGlobalStoreInstance = mockGlobalStore(false, true, false);
+    const mockDomainStoreInstance = mockDomainStore([
+      { metadata: { id: 3, name: "cProject" } },
+      { metadata: { id: 2, name: "bProject" } },
+      { metadata: { id: 1, name: "aProject" } },
+    ]);
+    require(storeProviderPath).globalStore.mockImplementation(mockGlobalStoreInstance);
+    require(storeProviderPath).domainStore.mockImplementation(mockDomainStoreInstance);
+    mockProps.action = jest.fn((targetProject, commitment, transfer_token) => {
+      expect(targetProject).toEqual({ metadata: { id: 1, name: "aProject" } });
+      expect(transfer_token).toEqual("testToken");
+      expect(commitment.amount).toEqual(100);
+    });
+    render(
+      <PortalProvider>
+        <MarketplaceModal {...mockProps} />
+      </PortalProvider>
+    );
+    const selectElement = screen.getByTestId("targetProjectSelect");
+    fireEvent.click(selectElement);
+    const options = screen.getAllByTestId("selectOption");
+    await waitFor(() => {
+      expect(options).toHaveLength(3);
+      expect(options[0]).toHaveTextContent("aProject");
+      expect(options[1]).toHaveTextContent("bProject");
+      expect(options[2]).toHaveTextContent("cProject");
+    });
+    fireEvent.click(options[0]);
+    let confirmButton = screen.getByTestId(/modalConfirm/i);
+    let confirmInput = screen.getByTestId(/confirmInput/i);
+    fireEvent.change(confirmInput, { target: { value: "receive" } });
+    fireEvent.click(confirmButton);
+    expect(mockProps.action).toHaveBeenCalled();
   });
 });

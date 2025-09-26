@@ -114,24 +114,27 @@ const TransferModal = (props) => {
               label="Transfer only a part."
             />
           </DataGridCell>
-          <DataGridRow>
-            <DataGridCell className={label}>Publication type:</DataGridCell>
-            <DataGridCell>
-              {isProjectView ? (
-                <Select
-                  defaultValue={isProjectView ? TransferType.UNLISTED : TransferType.PUBLIC}
-                  onChange={(value) => {
-                    setPublicationType(value);
-                  }}
-                >
-                  <SelectOption value={TransferType.UNLISTED} label="Private" />
-                  <SelectOption value={TransferType.PUBLIC} label="Marketplace" />
-                </Select>
-              ) : (
-                "Marketplace"
-              )}
-            </DataGridCell>
-          </DataGridRow>
+          {!transferProject && (
+            <DataGridRow>
+              <DataGridCell className={label}>Publication type:</DataGridCell>
+              <DataGridCell>
+                {isProjectView ? (
+                  <Select
+                    data-testid="publicationSelect"
+                    defaultValue={isProjectView ? TransferType.UNLISTED : TransferType.PUBLIC}
+                    onChange={(value) => {
+                      setPublicationType(value);
+                    }}
+                  >
+                    <SelectOption value={TransferType.UNLISTED} label="Private" />
+                    <SelectOption value={TransferType.PUBLIC} label="Marketplace" />
+                  </Select>
+                ) : (
+                  "Marketplace"
+                )}
+              </DataGridCell>
+            </DataGridRow>
+          )}
         </DataGridRow>
       </DataGrid>
       <Stack direction="vertical" alignment="center" className="mb-1 mt-5">
