@@ -105,9 +105,9 @@ describe("Resource info tests", () => {
   });
 
   test("renders PAYG info when rightBar has values", () => {
-    const resourceInfo = { commitment_config: { durations: ["1 month"] }, commitment_sum: 0 };
     const props = {
-      resource: resourceInfo,
+      resource: {},
+      isEditableResource: true,
       az: { name: "AZ1" },
       unit: new Unit("MiB"),
       leftBar: resourceBar,
@@ -118,10 +118,10 @@ describe("Resource info tests", () => {
     expect(screen.getByTestId("PAYG.AVAILABLE")).toBeInTheDocument();
     expect(screen.getByText("1 GiB")).toBeInTheDocument();
     // resources that are not committable and do not contain remaining committments should print a basic "usage" info.
-    props.resource = {};
+    props.isEditableResource = false;
     rerender(<ResourceInfo {...props} />);
     expect(screen.getByTestId("USAGE_BASIC")).toBeInTheDocument();
-    props.resource = resourceInfo;
+    props.isEditableResource = true;
 
     // invalid value distribution.
     props.rightBar = { utilized: -1024, available: 1024 };
