@@ -114,7 +114,7 @@ const TransferModal = (props) => {
               label="Transfer only a part."
             />
           </DataGridCell>
-          {!transferProject && (
+          {!isMoveAction && (
             <DataGridRow>
               <DataGridCell className={label}>Publication type:</DataGridCell>
               <DataGridCell>
