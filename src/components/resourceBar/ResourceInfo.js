@@ -16,7 +16,7 @@
 
 import React from "react";
 import { IntroBox } from "@cloudoperators/juno-ui-components/index";
-import { getBasicResourceInfo, hasAnyBarValues } from "./resourceBarUtils";
+import { hasAnyBarValues } from "./resourceBarUtils";
 import { locateBaseQuotaAZ } from "../../lib/utils";
 import { CustomZones } from "../../lib/constants";
 import { Unit } from "../../lib/unit";
@@ -33,11 +33,19 @@ import {
 import { Scope } from "../../lib/scope";
 
 const ResourceInfo = (props) => {
-  const { scope = new Scope(), categoryName, resource, az, unit = new Unit(""), isEmptyBar, isGranular } = { ...props };
+  const {
+    scope = new Scope(),
+    categoryName,
+    resource,
+    az,
+    unit = new Unit(""),
+    isEmptyBar,
+    isGranular,
+    isEditableResource,
+  } = { ...props };
   const { leftBar, rightBar } = { ...props };
   const hasLeftBar = hasAnyBarValues(leftBar);
   const hasRightBar = hasAnyBarValues(rightBar);
-  const isBasicResource = getBasicResourceInfo(resource);
   const resourceInfos = React.useMemo(() => {
     const infos = [];
 
@@ -121,10 +129,10 @@ const ResourceInfo = (props) => {
       return PAYGLabels.UNAVAILABLE;
     }
     if (rightBar.utilized > 0) {
-      if (isBasicResource) {
-        return PAYGLabels.AVAILABLE_BASIC(unit.format(rightBar.utilized));
-      } else {
+      if (isEditableResource) {
         return PAYGLabels.AVAILABLE(unit.format(rightBar.utilized));
+      } else {
+        return PAYGLabels.AVAILABLE_BASIC(unit.format(rightBar.utilized));
       }
     }
     if (rightBar.utilized < 0) {

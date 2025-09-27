@@ -19,7 +19,7 @@ import ResourceBar, { getAppliedBarColors } from "./ResourceBar";
 import ResourceInfo from "./ResourceInfo";
 import { Stack } from "@cloudoperators/juno-ui-components/index";
 import { Unit } from "../../lib/unit";
-import { getBarLabel, getBasicResourceInfo, getEmptyBarLabel, hasAnyBarValues } from "./resourceBarUtils";
+import { getBarLabel, getEmptyBarLabel, hasAnyBarValues } from "./resourceBarUtils";
 import useResourceBarValues, { ResourceBarType } from "../../hooks/useResourceBarValues";
 
 const barConainer = `
@@ -33,7 +33,6 @@ const ResourceBarBuilder = (props) => {
   const { scope, categoryName, resource, az, unit: unitName, barType, isEditableResource } = { ...props };
   const { showToolTip = false, displayResourceInfo = false } = { ...props };
   const unit = new Unit(unitName || "");
-  const isBasicResource = getBasicResourceInfo(resource);
   const isGranular = barType === ResourceBarType.granular;
   const currentResource = isGranular ? az : resource;
   const { leftBar, rightBar } = useResourceBarValues(currentResource, barType);
@@ -61,7 +60,7 @@ const ResourceBarBuilder = (props) => {
     let toolTipContent;
     if (bar === rightBar) {
       barBackGround = getAppliedBarColors(bar, paygStyle);
-      isBasicResource ? (toolTipContent = "Usage") : (toolTipContent = "Pay as you go");
+      isEditableResource ? (toolTipContent = "Pay as you go") : (toolTipContent = "Usage");
     } else {
       barBackGround = getAppliedBarColors(bar);
       toolTipContent = "Committed usage";
@@ -103,6 +102,7 @@ const ResourceBarBuilder = (props) => {
           isEmptyBar={isEmptyBar}
           isGranular={isGranular}
           resource={resource}
+          isEditableResource={isEditableResource}
           az={az}
           leftBar={leftBar}
           rightBar={rightBar}
