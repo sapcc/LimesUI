@@ -73,6 +73,11 @@ export const PAYGLabels = {
       Pay-As-You-Go usage: <strong>{amount}</strong>.
     </span>
   ),
+  AVAILABLE_BASIC: (amount) => (
+    <span data-testid="USAGE_BASIC">
+      Usage: <strong>{amount}</strong>.
+    </span>
+  ),
   UNAVAILABLE: <span data-testid="PAYG.UNAVAILABLE">No Pay-As-You-Go usage present.</span>,
   INVALID: (
     <span data-testid="PAYG.INVALID">Invalid Pay-As-You-Go usage detected. Please create a support ticket.</span>

@@ -107,7 +107,7 @@ describe("test Action Operation", () => {
         </StoreProvider>
       </PortalProvider>
     );
-    const { result } = await waitFor(() => {
+    const { result, rerender } = await waitFor(() => {
       return renderHook(
         () => ({
           commitmentStore: createCommitmentStore(),
@@ -130,6 +130,17 @@ describe("test Action Operation", () => {
     userEvent.click(contextMenu);
     await waitFor(() => {
       expect(screen.queryByText(/transfer/i)).not.toBe(null);
+    });
+
+    rerender();
+    commitment.transfer_status = "public";
+    act(() => {
+      result.current.globalStoreActions.setScope(scope);
+    });
+    userEvent.click(contextMenu);
+    await waitFor(() => {
+      expect(screen.queryByText(/transferring/i)).not.toBe(null);
+      expect(screen.queryByText(/cancel transfer/i)).not.toBe(null);
     });
   });
   test("should render duration update action", async () => {

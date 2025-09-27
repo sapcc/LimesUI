@@ -33,7 +33,7 @@ const mockProps = {
   serviceType: "Service1",
   currentResource: { name: "Resource1" },
   currentCategory: "Category1",
-  currentAZ: "AZ1",
+  currentTab: "AZ1",
   projects: [],
   sortProjectProps: { projectsAreSortable: true, setProjectsAreSortable: jest.fn() },
   mergeOps: {},
@@ -88,7 +88,7 @@ describe("ProjectTable", () => {
             resources: [
               {
                 name: mockProps.currentResource.name,
-                per_az: [{ name: mockProps.currentAZ, pending_commitments: { "1 year": 10 } }],
+                per_az: [{ name: mockProps.currentTab, pending_commitments: { "1 year": 10 } }],
               },
             ],
           },
@@ -98,7 +98,7 @@ describe("ProjectTable", () => {
         metadata: { id: "2", name: "Project2", fullName: "domain2/Project2" },
         categories: {
           [mockProps.currentCategory]: {
-            resources: [{ name: mockProps.currentResource.name, per_az: [{ name: mockProps.currentAZ }] }],
+            resources: [{ name: mockProps.currentResource.name, per_az: [{ name: mockProps.currentTab }] }],
           },
         },
       },

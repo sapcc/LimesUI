@@ -24,7 +24,7 @@ import { Unit } from "../../../lib/unit";
 const label = "font-semibold";
 
 const DeleteModal = (props) => {
-  const { action, az, title, subText, onModalClose, commitment } = props;
+  const { action, currentTab, title, subText, onModalClose, commitment } = props;
   const unit = new Unit(commitment.unit);
   const { ConfirmInput, inputProps, checkInput } = useConfirmInput({
     confirmationText: subText,
@@ -54,7 +54,7 @@ const DeleteModal = (props) => {
       <DataGrid columns={2} columnMaxSize="1fr">
         <DataGridRow>
           <DataGridCell className={label}>Availability Zone:</DataGridCell>
-          <DataGridCell>{az}</DataGridCell>
+          <DataGridCell>{currentTab}</DataGridCell>
         </DataGridRow>
         <DataGridRow>
           <DataGridCell className={label}>Amount:</DataGridCell>

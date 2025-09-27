@@ -34,6 +34,7 @@ export const initialCommitmentObject = {
 export const CustomZones = Object.freeze({
   ANY: "any",
   UNKNOWN: "unknown",
+  MARKETPLACE: "Marketplace",
 });
 
 // Transfer commitment on project level
@@ -41,10 +42,17 @@ export const CustomZones = Object.freeze({
 // 1. A view where a transfer can be initiated
 // 2. A view to copy the transfer token at the source project
 // 3. A view to enter the transfer token at the target project
+// 4. A view to reset the current transfer state
 export const TransferStatus = Object.freeze({
   START: 1,
   VIEW: 2,
   RECEIVE: 3,
+  CANCEL: 4,
+});
+export const TransferType = Object.freeze({
+  UNLISTED: "unlisted",
+  PUBLIC: "public",
+  NONE: "",
 });
 
 // Distinguish EditPanels with different purposes. F.e.: Max-Quota Editing or Commitment creation.
