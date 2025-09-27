@@ -43,13 +43,13 @@ const TransferModal = (props) => {
     props;
   const { metadata: originMeta } = currentProject || {};
   const { metadata: targetMeta } = transferProject || {};
-  const isPrivateTransferAction = !isProjectView && transferProject ? true : false;
+  const isMoveAction = transferProject ? true : false;
   const unit = new Unit(commitment.unit);
   const { ConfirmInput, inputProps, checkInput } = useConfirmInput({
     confirmationText: subText,
   });
   const [publicationType, setPublicationType] = React.useState(
-    isProjectView || isPrivateTransferAction ? TransferType.UNLISTED : TransferType.PUBLIC
+    isProjectView || isMoveAction ? TransferType.UNLISTED : TransferType.PUBLIC
   );
   const [splitCommitment, setSplitCommitment] = React.useState(false);
   const [invalidSplitInput, setInvalidSplitInput] = React.useState(false);
@@ -91,13 +91,13 @@ const TransferModal = (props) => {
           <DataGridCell className={label}>Duration:</DataGridCell>
           <DataGridCell>{commitment.duration}</DataGridCell>
         </DataGridRow>
-        {isPrivateTransferAction && (
+        {isMoveAction && (
           <DataGridRow>
             <DataGridCell className={label}>Origin:</DataGridCell>
             <DataGridCell>{originMeta?.name}</DataGridCell>
           </DataGridRow>
         )}
-        {isPrivateTransferAction && (
+        {isMoveAction && (
           <DataGridRow>
             <DataGridCell className={label}>Target:</DataGridCell>
             <DataGridCell>{targetMeta?.name}</DataGridCell>
