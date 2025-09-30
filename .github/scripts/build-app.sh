@@ -9,3 +9,4 @@ npm run build
 mkdir -p "$DEPLOY_PATH/$TARGET_FOLDER"
 cp -r "./build/." "$DEPLOY_PATH/$TARGET_FOLDER"
 cp -r "./public/." "$DEPLOY_PATH/$TARGET_FOLDER"
+cp secretProps.template.json "$DEPLOY_PATH/$TARGET_FOLDER"
