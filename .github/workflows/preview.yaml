@@ -35,4 +35,4 @@ jobs:
       - name: Deploy preview
         uses: rossjrw/pr-preview-action@v1
         with:
-          source-dir: ${{ env.DEPLOY_PATH }}/index.html
+          source-dir: ${{ env.DEPLOY_PATH }}
