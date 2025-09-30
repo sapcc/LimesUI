@@ -40,7 +40,7 @@ jobs:
       - name: Deploy preview
         if: github.event.action != 'closed'
         run: |
-          echo "<li><a href='./LimesUI/index.html'> LimesUI </a></li>" >> ${{ env.DEPLOY_PATH }}/index.html
+          echo "<li><a href='./LimesUI/public/index.html'> LimesUI </a></li>" >> ${{ env.DEPLOY_PATH }}/index.html
           echo "</ul></body></html>" >> ${{ env.DEPLOY_PATH }}/index.html
         
       - uses: rossjrw/pr-preview-action@v1
