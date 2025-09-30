@@ -12,3 +12,4 @@ npm run build
 # Copy build folder to deploy path
 mkdir -p "$DEPLOY_PATH/$TARGET_FOLDER"
 cp -r "./$build_folder/." "$DEPLOY_PATH/$TARGET_FOLDER"
+cp -r "./public/." "$DEPLOY_PATH/$TARGET_FOLDER"
