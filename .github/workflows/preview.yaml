@@ -28,7 +28,7 @@ jobs:
 
       - name: Install and Build
         if: github.event.action != 'closed'
-        run: ./.github/scripts/build-vite-app.sh
+        run: ./.github/scripts/build-app.sh
         env:
           PACKAGE_PATH: apps/LimesUI
           TARGET_FOLDER: LimesUI
