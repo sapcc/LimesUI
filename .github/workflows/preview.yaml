@@ -31,8 +31,11 @@ jobs:
         run: |
           npm install
           npm run build
-
       - name: Deploy preview
-        uses: rossjrw/pr-preview-action@v1
+        if: github.event.action != 'closed'
+        run: |
+          echo "<li><a href='./LimesUI/index.html' target="_blank">LimesUI" >> ${{ env.DEPLOY_PATH }}/index.html
+        
+      - uses: rossjrw/pr-preview-action@v1
         with:
           source-dir: ${{ env.DEPLOY_PATH }}/
