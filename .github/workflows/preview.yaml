@@ -9,12 +9,22 @@ on:
 
 concurrency: preview-${{ github.ref }}
 
+env:
+  DEPLOY_PATH: tmp
+  NODE_VERSION: "22.16.0"
+
 jobs:
   deploy-preview:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Create a folder with all compiled apps and pkgs
+        if: github.event.action != 'closed'
+        run: |
+          mkdir -p ${{ env.DEPLOY_PATH }}
+        
 
       - name: Install and Build
         if: github.event.action != 'closed'
@@ -25,4 +35,4 @@ jobs:
       - name: Deploy preview
         uses: rossjrw/pr-preview-action@v1
         with:
-          source-dir: ./public/index.html
+          source-dir: ${{ env.DEPLOY_PATH }}/index.html
