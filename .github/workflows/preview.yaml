@@ -34,7 +34,7 @@ jobs:
         if: github.event.action != 'closed'
         run: ./.github/scripts/build-app.sh
         env:
-          PACKAGE_PATH: apps/LimesUI
+          PACKAGE_PATH: LimesUI
           TARGET_FOLDER: LimesUI
         continue-on-error: true
    
