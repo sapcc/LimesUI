@@ -170,7 +170,7 @@ const Resource = (props) => {
           {isAZUnaware(props.resource.per_az) && (
             <ProjectBadges az={props.resource.per_az[0]} unit={unitName} displayValues={true} />
           )}
-          {scope.isProject() && <ForbidAutogrowth {...forbidAutogrowthForwardProps} />}
+          {scope.isProject() && editableResource && <ForbidAutogrowth {...forbidAutogrowthForwardProps} />}
         </Stack>
       )}
       <ResourceBarBuilder
