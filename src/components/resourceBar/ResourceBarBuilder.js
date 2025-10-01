@@ -60,7 +60,7 @@ const ResourceBarBuilder = (props) => {
     let toolTipContent;
     if (bar === rightBar) {
       barBackGround = getAppliedBarColors(bar, paygStyle);
-      isEditableResource ? (toolTipContent = "Pay as you go") : (toolTipContent = "Usage");
+      toolTipContent = isEditableResource ? "Pay as you go" : "Usage";
     } else {
       barBackGround = getAppliedBarColors(bar);
       toolTipContent = "Committed usage";
