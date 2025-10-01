@@ -1,5 +1,15 @@
 # @sapcc/limes-ui
 
+## 1.12.0
+
+### Minor Changes
+
+- 2eef0c5: Add commitment marketplace.
+
+### Patch Changes
+
+- 559f0c9: Fix usage explanation for basic resources from PAYG to usage
+
 ## 1.11.0
 
 ### Minor Changes
