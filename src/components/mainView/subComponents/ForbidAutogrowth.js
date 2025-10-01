@@ -107,7 +107,7 @@ const ForbidAutogrowth = (props) => {
           {autogrowthForbidden && (
             <div className="text-sm mt-2">
               Disabling will limit your available quota to either your existing commitments or your current usage,
-              whichever value is greater.
+              whichever value is greater. Changes to this setting typically take around 15 minutes to take effect.
             </div>
           )}
         </p>
