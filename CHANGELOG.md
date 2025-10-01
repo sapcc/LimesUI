@@ -1,5 +1,11 @@
 # @sapcc/limes-ui
 
+## 1.12.1
+
+### Patch Changes
+
+- 471315f: Remove forbid autogrowth setting for resources that are not committable and don't have remaining commitments"
+
 ## 1.12.0
 
 ### Minor Changes
