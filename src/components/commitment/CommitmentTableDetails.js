@@ -32,7 +32,7 @@ const transferLabel = Object.freeze({
 });
 
 const CommitmentTableDetails = (props) => {
-  const { commitment, commitmentTransferID, mergeOps } = props;
+  const { currentTab, commitment, commitmentTransferID, mergeOps } = props;
   const {
     id,
     amount,
@@ -49,7 +49,6 @@ const CommitmentTableDetails = (props) => {
   const serviceType = props.serviceType;
   const currentResource = props.currentResource;
   const resourceName = currentResource?.name;
-  const currentAZ = props.currentAZ;
   const isAddingCommitment = id === COMMITMENTID ? true : false;
   const { commitment: newCommitment } = createCommitmentStore();
   const { commitmentIsLoading } = createCommitmentStore();
@@ -110,7 +109,7 @@ const CommitmentTableDetails = (props) => {
       ...newCommitment,
       service_type: serviceType,
       resource_name: resourceName,
-      availability_zone: currentAZ,
+      availability_zone: currentTab,
       amount: parsedInput,
       durationLabel: durationLabel.current,
     });
@@ -235,7 +234,9 @@ const CommitmentTableDetails = (props) => {
               }}
               disabled={newCommitment?.id == id}
             >
-              {commitment.id == commitmentTransferID.current ? transferLabel.Selected : transferLabel.Move}
+              {isTransferring && commitment.id == commitmentTransferID.current
+                ? transferLabel.Selected
+                : transferLabel.Move}
             </Button>
             <Button
               size="small"

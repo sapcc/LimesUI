@@ -22,7 +22,7 @@ import { globalStoreActions, domainStoreActions, domainStore } from "../StorePro
 import { LoadingIndicator } from "@cloudoperators/juno-ui-components";
 
 const ProjectManager = (props) => {
-  const { serviceType, currentCategory, currentResource, currentAZ, subRoute, sortProjectProps, mergeOps } = props;
+  const { serviceType, currentCategory, currentResource, currentTab, subRoute, sortProjectProps, mergeOps } = props;
   const { enableSortActivities } = sortProjectProps;
   const resourceName = currentResource.name;
   const { refetchProjectAPI } = projectStore();
@@ -68,7 +68,7 @@ const ProjectManager = (props) => {
       serviceType={serviceType}
       currentCategory={currentCategory}
       currentResource={currentResource}
-      currentAZ={currentAZ}
+      currentTab={currentTab}
       projects={projects}
       subRoute={subRoute}
       sortProjectProps={sortProjectProps}

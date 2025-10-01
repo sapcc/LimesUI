@@ -17,58 +17,87 @@
 import React from "react";
 import AddCommitments from "../shared/AddCommitments";
 import ReceiveCommitment from "./ReceiveCommitment";
-import { Stack, Tabs, Tab, TabList, TabPanel, Container } from "@cloudoperators/juno-ui-components";
+import { Stack, Tabs, Tab, TabList, TabPanel, Container, Icon } from "@cloudoperators/juno-ui-components";
+import { domainStore } from "../StoreProvider";
 import useResetCommitment from "../../hooks/useResetCommitment";
 import MergeCommitment from "../shared/MergeCommitments";
+import ToolTipWrapper from "../shared/ToolTipWrapper";
 import { CustomZones } from "../../lib/constants";
+import { isAZUnaware } from "../../lib/utils";
 
 const AvailabilityZoneNav = (props) => {
-  const azIndex = props.az.findIndex((az) => az.name === props.currentAZ);
-  const { scope, resource, setCurrentAZ, mergeOps } = props;
+  const { scope, resource, currentTab, setCurrentTab, mergeOps, publicCommitmentQuery } = props;
+  const { data } = publicCommitmentQuery;
+  const publicCommitments = data?.commitments || [];
   const { setIsMerging, setCommitmentsToMerge } = mergeOps;
   const { resetCommitment } = useResetCommitment();
+  const { projects } = domainStore();
+  const tabs = React.useMemo(() => {
+    const { per_az: azs } = resource;
+    const azUnaware = isAZUnaware(azs);
+    const azNames = azs
+      .map((az) => az.name)
+      .filter((name) => name !== CustomZones.UNKNOWN)
+      .filter((name) => (!azUnaware ? name !== CustomZones.ANY : true));
+    return [...azNames, CustomZones.MARKETPLACE];
+  }, [scope, resource]);
+  const azIndex = tabs.findIndex((tabName) => tabName === currentTab) || 0;
 
-  function resetCommitmentMerge() {
+  function handleTabSelect() {
     setIsMerging(false);
     setCommitmentsToMerge([]);
+    resetCommitment();
   }
 
   return (
-    <Container px={false} className="pt-0 py-6 sticky top-[2rem] bg-juno-grey-light-1 z-[100]">
+    <Container px={false} className="pt-0 py-6 sticky top-[2rem] bg-theme-background-lvl-0 z-[100]">
       <Tabs selectedIndex={azIndex} onSelect={() => {}}>
         <TabList>
-          {props.az.map((az) => {
-            const azName = az.name;
+          {tabs.map((tabName) => {
             return (
-              azName !== CustomZones.UNKNOWN &&
-              azName !== CustomZones.ANY && (
-                <Tab
-                  data-testid={`tab/${azName}`}
-                  key={azName}
-                  onClick={() => {
-                    setCurrentAZ(azName);
-                    resetCommitmentMerge();
-                    resetCommitment();
-                  }}
-                >
-                  {az.name}
-                </Tab>
-              )
+              <Tab
+                data-testid={`tab/${tabName}`}
+                disabled={!scope.isProject() && !projects}
+                key={tabName}
+                onClick={() => {
+                  setCurrentTab(tabName);
+                  handleTabSelect();
+                }}
+              >
+                {tabName}
+                {tabName == CustomZones.MARKETPLACE && publicCommitments.length > 0 && (
+                  <ToolTipWrapper
+                    trigger={
+                      <Icon
+                        data-testid={`MarketplaceInfoCount:${publicCommitments.length}`}
+                        className="mt-auto ml-1"
+                        size="16"
+                        icon="info"
+                      />
+                    }
+                    content={<span className="font-normal">{publicCommitments.length} available.</span>}
+                  />
+                )}
+              </Tab>
             );
           })}
           <Stack className="h-8 my-auto ml-auto mr-2" gap="1">
-            {scope.isProject() && (
+            {currentTab != CustomZones.MARKETPLACE && (
               <>
-                {<AddCommitments label="Add" resource={resource} />}
-                <ReceiveCommitment />
+                {scope.isProject() && (
+                  <>
+                    {<AddCommitments label="Add" resource={resource} />}
+                    <ReceiveCommitment />
+                  </>
+                )}
+                <MergeCommitment mergeOps={mergeOps} />{" "}
               </>
             )}
-            <MergeCommitment mergeOps={mergeOps} />
           </Stack>
         </TabList>
-        {props.az.map(
-          (az) => az.name !== CustomZones.UNKNOWN && az.name !== CustomZones.ANY && <TabPanel key={az.name}></TabPanel>
-        )}
+        {tabs.map((tabName) => (
+          <TabPanel key={tabName}></TabPanel>
+        ))}
       </Tabs>
     </Container>
   );

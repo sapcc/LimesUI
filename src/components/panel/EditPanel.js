@@ -15,7 +15,7 @@
  */
 
 import React from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { PanelBody, Toast } from "@cloudoperators/juno-ui-components";
 import Resource from "../mainView/Resource";
 import {
@@ -41,7 +41,9 @@ import ProjectManager from "../project/ProjectManager";
 import DomainManager from "../domain/DomainManager";
 import useGetConversions from "./PanelHooks/useGetConversions";
 import useResetCommitment from "../../hooks/useResetCommitment";
-import { initialCommitmentObject, TransferStatus } from "../../lib/constants";
+import { CustomZones, initialCommitmentObject, TransferStatus, TransferType } from "../../lib/constants";
+import Marketplace from "../commitment/Marketplace";
+import TransferCancelModal from "../commitment/Modals/TransferCancelModal";
 
 const EditPanel = (props) => {
   const { scope } = globalStore();
@@ -85,7 +87,8 @@ const EditPanel = (props) => {
   const { setRefetchCommitmentAPI } = createCommitmentStoreActions();
   const { setCommitmentIsLoading } = createCommitmentStoreActions();
   const conversionResults = useGetConversions({ serviceType, resourceName });
-  const [currentAZ, setCurrentAZ] = React.useState(currentResource.per_az[0].name);
+  const [currentTab, setCurrentTab] = React.useState(currentResource.per_az[0].name);
+  const isMarketplaceTab = currentTab === CustomZones.MARKETPLACE;
   const [projectsAreSortable, setProjectsAreSortable] = React.useState(false);
   // Merge Commitments
   const [commitmentsToMerge, setCommitmentsToMerge] = React.useState([]);
@@ -102,6 +105,9 @@ const EditPanel = (props) => {
     mergeIsActive,
     setMergeIsActive,
   };
+  const publicCommitmentQuery = useQuery({
+    queryKey: ["publicCommitments", { service: serviceType, resource: currentResource.name }],
+  });
 
   // Query can-confirm API. Determine if capacity is sufficient on limes.
   // If a minConfirmDate is set, skip the request. Limes handles capacity concerns.
@@ -171,34 +177,39 @@ const EditPanel = (props) => {
   }
 
   // Transferring a commitment requires to mark the commitment as transferrable and then transfer it to it's target.
-  // Cluster and domain level transfer the commitment immediately after
+  // Cluster and domain level transfer the commitment immediately after, except for marketplace postings or the cancellation of existing postings.
   // On project level we move between projects. First we initiate the transfer. On the target project we receive with the token input.
-  function startCommitmentTransfer(project, commitment) {
+  function startCommitmentTransfer(project, commitment, transferType = TransferType.UNLISTED) {
     const sourceProjectID = currentProject.metadata.id;
     const sourceDomainID = scope.isCluster() ? currentProject.metadata.domainID : null;
+    const shouldNotTransfer = transferType == TransferType.PUBLIC || transferType == TransferType.NONE;
+
     startTransfer.mutate(
       {
-        payload: { commitment: { amount: commitment.amount, transfer_status: "unlisted" } },
+        payload: { commitment: { amount: commitment.amount, transfer_status: transferType } },
         domainID: sourceDomainID,
         projectID: sourceProjectID,
         commitmentID: commitment.id,
       },
       {
         onSuccess: (data) => {
-          // On project level we end here and do not process the transfer directly.
-          if (scope.isProject()) {
+          // On Project level, the transfer start ends here. The transfer is handled with a separate request.
+          // On Cluster/Domain level, the transfer is only executed for private (unlisted) transfers.
+          if (scope.isProject() || shouldNotTransfer) {
             resetCommitmentTransfer();
             setRefetchProjectAPI(true);
             setRefetchCommitmentAPI(true);
+            shouldNotTransfer && publicCommitmentQuery.refetch();
             return;
           }
+
+          // Proceed to transfer the commitment.
           const receivedCommitment = data.commitment;
           const transferToken = data.commitment.transfer_token;
           transferCommitment(project, receivedCommitment, transferToken);
         },
         onError: (error) => {
           resetCommitmentTransfer();
-          setTransferProject(null);
           setToast(error.toString());
         },
       }
@@ -225,6 +236,7 @@ const EditPanel = (props) => {
           setRefetchProjectAPI(true);
           setRefetchCommitmentAPI(true);
           setTransferProject(null);
+          publicCommitmentQuery.refetch();
         },
         onError: (error) => {
           resetCommitmentTransfer();
@@ -332,12 +344,10 @@ const EditPanel = (props) => {
   }
 
   function onTransferModalClose() {
-    setTransferProject(null);
-  }
-
-  function onTransferModalProjectClose() {
-    setTransferredCommitment(initialCommitmentObject);
     setTransferFromAndToProject(null);
+    setTransferProject(null);
+    // On project level the commitment in transfer needs to be reset, otherwise a previous transferred commitment will be displayed in the receive modal before entering a token.
+    scope.isProject() && setTransferredCommitment(initialCommitmentObject);
   }
 
   function onUpdateDurationClose() {
@@ -366,66 +376,73 @@ const EditPanel = (props) => {
         project={currentProject}
         resource={currentResource}
         serviceType={serviceType}
-        currentAZ={currentAZ}
         isPanelView={true}
         subRoute={subRoute}
         setIsMerging={setIsMerging}
-        setCurrentAZ={setCurrentAZ}
+        setCurrentTab={setCurrentTab}
         tracksQuota={tracksQuota}
       />
-      <div className={"sticky top-0 z-[100] bg-juno-grey-light-1 h-8"}>
+      <div className={"sticky top-0 z-[100] bg-theme-background-lvl-0 h-8"}>
         {toast.message && (
           <Toast className={"pb-0"} text={toast.message} variant={toast.variant} onDismiss={() => dismissToast()} />
         )}
       </div>
       {!subRoute && (
         <AvailabilityZoneNav
-          az={currentResource.per_az}
           resource={currentResource}
-          currentAZ={currentAZ}
+          currentTab={currentTab}
+          setCurrentTab={setCurrentTab}
           scope={scope}
-          setCurrentAZ={setCurrentAZ}
           mergeOps={mergeForwardProps}
+          publicCommitmentQuery={publicCommitmentQuery}
         />
       )}
-      {scope.isProject() && commitments && (
+      {scope.isProject() && !isMarketplaceTab && (
         <CommitmentTable
           serviceType={serviceType}
           currentCategory={currentCategory}
           currentResource={currentResource}
           resource={currentResource}
-          currentAZ={currentAZ}
+          currentTab={currentTab}
           commitmentData={commitments}
           mergeOps={mergeForwardProps}
           scope={scope}
         />
       )}
-      {scope.isDomain() && (
+      {scope.isDomain() && !isMarketplaceTab && (
         <ProjectManager
           serviceType={serviceType}
           currentCategory={currentCategory}
           currentResource={currentResource}
-          currentAZ={currentAZ}
+          currentTab={currentTab}
           subRoute={subRoute}
           sortProjectProps={sortProjectProps}
           mergeOps={mergeForwardProps}
         />
       )}
-      {scope.isCluster() && (
+      {scope.isCluster() && !isMarketplaceTab && (
         <DomainManager
           serviceType={serviceType}
           currentCategory={currentCategory}
           currentResource={currentResource}
-          currentAZ={currentAZ}
+          currentTab={currentTab}
           subRoute={subRoute}
           sortProjectProps={sortProjectProps}
           mergeOps={mergeForwardProps}
+        />
+      )}
+      {isMarketplaceTab && (
+        <Marketplace
+          project={currentProject}
+          resource={currentResource}
+          publicCommitmentQuery={publicCommitmentQuery}
+          transferCommitment={transferCommitment}
         />
       )}
       {isSubmitting && canConfirm != null && (
         <CommitmentModal
           action={postCommitment}
-          az={currentAZ}
+          currentTab={currentTab}
           canConfirm={canConfirm}
           commitment={newCommitment}
           minConfirmDate={minConfirmDate}
@@ -434,17 +451,7 @@ const EditPanel = (props) => {
           title="Confirm commitment creation"
         />
       )}
-      {scope.isProject() && transferFromAndToProject == TransferStatus.START && transferredCommitment && (
-        <TransferModal
-          title="Transfer Commitment"
-          subText="Transfer"
-          isProjectView={scope.isProject()}
-          onModalClose={onTransferModalProjectClose}
-          onTransfer={startCommitmentTransfer}
-          commitment={transferredCommitment}
-        />
-      )}
-      {transferProject && transferredCommitment && (
+      {transferFromAndToProject == TransferStatus.START && (
         <TransferModal
           title="Transfer Commitment"
           subText="Transfer"
@@ -456,10 +463,10 @@ const EditPanel = (props) => {
           transferProject={transferProject}
         />
       )}
-      {scope.isProject() && transferFromAndToProject == TransferStatus.VIEW && (
+      {transferFromAndToProject == TransferStatus.VIEW && (
         <TransferTokenModal
           title="Transfer Commitment"
-          onModalClose={onTransferModalProjectClose}
+          onModalClose={onTransferModalClose}
           commitment={transferredCommitment}
         />
       )}
@@ -471,7 +478,15 @@ const EditPanel = (props) => {
           serviceType={serviceType}
           currentResource={currentResource}
           transferCommitment={transferCommitment}
-          onModalClose={onTransferModalProjectClose}
+          onModalClose={onTransferModalClose}
+        />
+      )}
+      {transferFromAndToProject == TransferStatus.CANCEL && (
+        <TransferCancelModal
+          title="Cancel transfer state"
+          commitment={transferredCommitment}
+          startCommitmentTransfer={startCommitmentTransfer}
+          onModalClose={onTransferModalClose}
         />
       )}
       {conversionCommitment && (
@@ -487,7 +502,7 @@ const EditPanel = (props) => {
       {deleteCommitment && (
         <DeleteModal
           action={deleteCommitmentAPI}
-          az={currentAZ}
+          currentTab={currentTab}
           title="Delete Commitment"
           subText="Delete"
           commitment={deleteCommitment}

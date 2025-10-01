@@ -134,7 +134,7 @@ const limesStore = (set, get) => ({
     //requery API after commit POST to get fresh commitment data for the resource bars.
     projectData: null,
     refetchProjectAPI: false,
-    commitments: null,
+    commitments: [],
 
     actions: {
       setProjectData: (projectData) =>

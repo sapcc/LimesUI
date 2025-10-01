@@ -34,7 +34,7 @@ import { formatTimeISO8160 } from "../../../lib/utils";
 const label = "font-semibold";
 
 const CommitmentModal = (props) => {
-  const { action, az, canConfirm, commitment, minConfirmDate, onModalClose, subText, title } = { ...props };
+  const { action, currentTab, canConfirm, commitment, minConfirmDate, onModalClose, subText, title } = { ...props };
   const unit = new Unit(commitment.unit);
   const { ConfirmInput, inputProps, checkInput } = useConfirmInput({ confirmationText: subText });
   const hasMinConfirmDate = minConfirmDate ? true : false;
@@ -99,7 +99,7 @@ const CommitmentModal = (props) => {
       <DataGrid columns={2} className={!showCalendar ? "mb-6" : "mb-0"} columnMaxSize="1fr">
         <DataGridRow>
           <DataGridCell className={label}>Availability Zone:</DataGridCell>
-          <DataGridCell>{az}</DataGridCell>
+          <DataGridCell>{currentTab}</DataGridCell>
         </DataGridRow>
         <DataGridRow>
           <DataGridCell className={label}>Amount:</DataGridCell>
