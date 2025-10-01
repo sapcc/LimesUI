@@ -16,11 +16,11 @@
 
 import React from "react";
 import ResourceBar, { getAppliedBarColors } from "./ResourceBar";
-import { Unit } from "../../lib/unit";
-import useResourceBarValues, { ResourceBarType } from "../../hooks/useResourceBarValues";
-import { Stack } from "@cloudoperators/juno-ui-components/index";
-import { getBarLabel, getEmptyBarLabel, hasAnyBarValues } from "./resourceBarUtils";
 import ResourceInfo from "./ResourceInfo";
+import { Stack } from "@cloudoperators/juno-ui-components/index";
+import { Unit } from "../../lib/unit";
+import { getBarLabel, getEmptyBarLabel, hasAnyBarValues } from "./resourceBarUtils";
+import useResourceBarValues, { ResourceBarType } from "../../hooks/useResourceBarValues";
 
 const barConainer = `
   min-w-full 
@@ -60,7 +60,7 @@ const ResourceBarBuilder = (props) => {
     let toolTipContent;
     if (bar === rightBar) {
       barBackGround = getAppliedBarColors(bar, paygStyle);
-      toolTipContent = "Pay as you go";
+      toolTipContent = isEditableResource ? "Pay as you go" : "Usage";
     } else {
       barBackGround = getAppliedBarColors(bar);
       toolTipContent = "Committed usage";
@@ -102,6 +102,7 @@ const ResourceBarBuilder = (props) => {
           isEmptyBar={isEmptyBar}
           isGranular={isGranular}
           resource={resource}
+          isEditableResource={isEditableResource}
           az={az}
           leftBar={leftBar}
           rightBar={rightBar}

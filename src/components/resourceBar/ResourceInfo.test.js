@@ -107,6 +107,7 @@ describe("Resource info tests", () => {
   test("renders PAYG info when rightBar has values", () => {
     const props = {
       resource: {},
+      isEditableResource: true,
       az: { name: "AZ1" },
       unit: new Unit("MiB"),
       leftBar: resourceBar,
@@ -114,24 +115,30 @@ describe("Resource info tests", () => {
     };
 
     const { rerender } = render(<ResourceInfo {...props} />);
-    expect(screen.getByTestId(/PAYG.AVAILABLE/i)).toBeInTheDocument();
+    expect(screen.getByTestId("PAYG.AVAILABLE")).toBeInTheDocument();
     expect(screen.getByText("1 GiB")).toBeInTheDocument();
+    // resources that are not committable and do not contain remaining committments should print a basic "usage" info.
+    props.isEditableResource = false;
+    rerender(<ResourceInfo {...props} />);
+    expect(screen.getByTestId("USAGE_BASIC")).toBeInTheDocument();
+    props.isEditableResource = true;
 
+    // invalid value distribution.
     props.rightBar = { utilized: -1024, available: 1024 };
     rerender(<ResourceInfo {...props} />);
-    expect(screen.getByTestId(/PAYG.INVALID/i)).toBeInTheDocument();
+    expect(screen.getByTestId("PAYG.INVALID")).toBeInTheDocument();
 
     // resources without pay as you go usage should not display info.
     props.rightBar = resourceBar;
     rerender(<ResourceInfo {...props} />);
-    expect(screen.queryByTestId(/PAYG.AVAILABLE/i)).not.toBeInTheDocument();
-    expect(screen.queryByTestId(/PAYG.INVALID/i)).not.toBeInTheDocument();
+    expect(screen.queryByTestId("PAYG.AVAILABLE")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("PAYG.INVALID")).not.toBeInTheDocument();
 
     // resoruces with payg usage 0 should not display info.
     props.rightBar = { utilized: 0, available: 1 };
     rerender(<ResourceInfo {...props} />);
-    expect(screen.getByTestId(/PAYG.UNAVAILABLE/i)).toBeInTheDocument();
-    expect(screen.queryByTestId(/PAYG.AVAILABLE/i)).not.toBeInTheDocument();
+    expect(screen.getByTestId("PAYG.UNAVAILABLE")).toBeInTheDocument();
+    expect(screen.queryByTestId("PAYG.AVAILABLE")).not.toBeInTheDocument();
   });
 
   test("renders base quota info", () => {
