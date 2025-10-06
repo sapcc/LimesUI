@@ -1,5 +1,11 @@
 # @sapcc/limes-ui
 
+## 1.12.2
+
+### Patch Changes
+
+- d90a155: fix marketplace requeries, fix cluster/domain level navigation errors
+
 ## 1.12.1
 
 ### Patch Changes
