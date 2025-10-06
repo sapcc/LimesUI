@@ -54,12 +54,9 @@ const PanelManager = (props) => {
     }
     // reset state if user presses return button at the browser
     return () => {
-      setIsSubmitting(false);
-      setTransferProject(null);
-      setDeleteCommitment(null);
       onPanelClose();
     };
-  }, [currentResource]);
+  }, []);
 
   function onPanelClose() {
     document.documentElement.style.overflow = "";
@@ -73,6 +70,9 @@ const PanelManager = (props) => {
     // transfer commitment
     setTransferCommitment(false);
     setIsTransferring(false);
+    setIsSubmitting(false);
+    setTransferProject(null);
+    setDeleteCommitment(null);
   }
 
   //Durations get checked to avoid route call to uneditable resource.

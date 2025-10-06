@@ -147,6 +147,10 @@ const EditPanel = (props) => {
   }
   const sortProjectProps = { projectsAreSortable, setProjectsAreSortable, enableSortActivities };
 
+  function isCommitmentPublic(commitment) {
+    return commitment?.transfer_status == TransferType.PUBLIC;
+  }
+
   function postCommitment(confirm_by = null, notifyOnConfirm = false) {
     const currentProjectID = currentProject?.metadata?.id;
     const currentDomainID = scope.isCluster() ? currentProject.metadata.domainID : null;
@@ -262,6 +266,7 @@ const EditPanel = (props) => {
           setRefetchProjectAPI(true);
           setRefetchCommitmentAPI(true);
           setDeleteCommitment(null);
+          isCommitmentPublic(commitment) && publicCommitmentQuery.refetch();
         },
         onError: (error) => {
           setToast(error.toString());
@@ -284,6 +289,7 @@ const EditPanel = (props) => {
           setRefetchProjectAPI(true);
           setRefetchCommitmentAPI(true);
           setConversionCommitment(null);
+          isCommitmentPublic(commitment) && publicCommitmentQuery.refetch();
         },
         onError: (error) => {
           setToast(error.toString());
@@ -305,6 +311,7 @@ const EditPanel = (props) => {
           setRefetchProjectAPI(true);
           setRefetchCommitmentAPI(true);
           setUpdateDurationCommitment(null);
+          isCommitmentPublic(commitment) && publicCommitmentQuery.refetch();
         },
         onError: (error) => {
           setToast(error.toString());
@@ -321,6 +328,7 @@ const EditPanel = (props) => {
       {
         onSuccess: () => {
           setRefetchCommitmentAPI(true);
+          commitmentsToMerge.some((commitment) => isCommitmentPublic(commitment)) && publicCommitmentQuery.refetch();
           setCommitmentsToMerge([]);
           setConfirmMerge(false);
           setIsMerging(false);

@@ -102,15 +102,15 @@ const ForbidAutogrowth = (props) => {
             text={mutatation.error.message}
           />
         )}
-        <p data-testid="forbidAutogrowthConfirmText">
+        <div data-testid="forbidAutogrowthConfirmText">
           Do you want to <strong>{autogrowthForbidden ? "disable" : "enable"}</strong> Pay-As-You-Go?
           {autogrowthForbidden && (
-            <div className="text-sm mt-2">
+            <p className="text-sm mt-2">
               Disabling will limit your available quota to either your existing commitments or your current usage,
               whichever value is greater. Changes to this setting typically take around 15 minutes to take effect.
-            </div>
+            </p>
           )}
-        </p>
+        </div>
       </Modal>
     </>
   );
