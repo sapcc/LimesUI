@@ -276,7 +276,7 @@ const ProjectTable = (props) => {
             const az = resource?.per_az.find((az) => {
               return az.name === currentTab;
             });
-            return resource ? (
+            return !subRoute && resource ? (
               <ProjectTableDetails
                 key={project.metadata.id}
                 index={index}
