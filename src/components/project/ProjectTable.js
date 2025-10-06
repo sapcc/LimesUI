@@ -136,7 +136,7 @@ const ProjectTable = (props) => {
     const matchingProjects = new Map();
 
     projects.forEach((project) => {
-      project.categories[currentCategory].resources[0].per_az.forEach((az) => {
+      project.categories[currentCategory]?.resources[0]?.per_az.forEach((az) => {
         if (az.name !== currentTab) return;
         const matchingLabels = Object.values(labelTypes).filter((type) => matchAZLabel(az, type));
         if (matchingLabels.length > 0) {
@@ -273,10 +273,10 @@ const ProjectTable = (props) => {
             const { resources } = Object.values(categories)[0];
             const resource = getCurrentResource(resources, currentResource.name);
             const showCommitments = project.metadata.id === selectedProject.id && selectedProject.showCommitments;
-            const az = resource.per_az.find((az) => {
+            const az = resource?.per_az.find((az) => {
               return az.name === currentTab;
             });
-            return !subRoute ? (
+            return !subRoute && resource ? (
               <ProjectTableDetails
                 key={project.metadata.id}
                 index={index}
@@ -294,12 +294,14 @@ const ProjectTable = (props) => {
                 mergeOps={mergeOps}
               />
             ) : (
-              <ProjectQuotaDetails
-                key={project.metadata.id}
-                serviceType={serviceType}
-                project={project}
-                resource={resource}
-              />
+              subRoute && (
+                <ProjectQuotaDetails
+                  key={project.metadata.id}
+                  serviceType={serviceType}
+                  project={project}
+                  resource={resource}
+                />
+              )
             );
           })}
       </DataGrid>
