@@ -68,19 +68,20 @@ export const CommittedUsageLabels = {
 };
 
 export const PAYGLabels = {
-  AVAILABLE: (amount) => (
-    <span data-testid="PAYG.AVAILABLE">
-      Pay-As-You-Go usage: <strong>{amount}</strong>.
+  AVAILABLE: (amount, isEditableResource) => (
+    <span data-testid={`${isEditableResource ? "PAYG.AVAILABLE" : "USAGE.AVAILABLE"}`}>
+      {isEditableResource ? "Pay-As-You-Go usage" : "Usage"}: <strong>{amount}</strong>.
     </span>
   ),
-  AVAILABLE_BASIC: (amount) => (
-    <span data-testid="USAGE_BASIC">
-      Usage: <strong>{amount}</strong>.
+  UNAVAILABLE: (isEditableResource) => (
+    <span data-testid={`${isEditableResource ? "PAYG.UNAVAILABLE" : "USAGE.UNAVAILABLE"}`}>
+      No {isEditableResource && "Pay-As-You-Go "} usage present.
     </span>
   ),
-  UNAVAILABLE: <span data-testid="PAYG.UNAVAILABLE">No Pay-As-You-Go usage present.</span>,
-  INVALID: (
-    <span data-testid="PAYG.INVALID">Invalid Pay-As-You-Go usage detected. Please create a support ticket.</span>
+  INVALID: (isEditableResource) => (
+    <span data-testid={`${isEditableResource ? "PAYG.INVALID" : "USAGE.INVALID"}`}>
+      Invalid {isEditableResource && "Pay-As-You-Go "} usage detected. Please create a support ticket.
+    </span>
   ),
 };
 
