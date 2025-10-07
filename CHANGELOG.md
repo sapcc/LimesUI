@@ -1,5 +1,11 @@
 # @sapcc/limes-ui
 
+## 1.12.3
+
+### Patch Changes
+
+- 9f5bda6: fix usage explanation for unavailable und invalid usage cases
+
 ## 1.12.2
 
 ### Patch Changes
