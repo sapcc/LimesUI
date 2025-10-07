@@ -120,18 +120,26 @@ describe("Resource info tests", () => {
     // resources that are not committable and do not contain remaining committments should print a basic "usage" info.
     props.isEditableResource = false;
     rerender(<ResourceInfo {...props} />);
-    expect(screen.getByTestId("USAGE_BASIC")).toBeInTheDocument();
+    expect(screen.getByTestId("USAGE.AVAILABLE")).toBeInTheDocument();
     props.isEditableResource = true;
 
     // invalid value distribution.
     props.rightBar = { utilized: -1024, available: 1024 };
     rerender(<ResourceInfo {...props} />);
     expect(screen.getByTestId("PAYG.INVALID")).toBeInTheDocument();
+    props.isEditableResource = false;
+    rerender(<ResourceInfo {...props} />);
+    expect(screen.getByTestId("USAGE.INVALID")).toBeInTheDocument();
+    props.isEditableResource = true;
 
     // resources without pay as you go usage should not display info.
     props.rightBar = resourceBar;
     rerender(<ResourceInfo {...props} />);
     expect(screen.queryByTestId("PAYG.AVAILABLE")).not.toBeInTheDocument();
+    props.isEditableResource = false;
+    rerender(<ResourceInfo {...props} />);
+    expect(screen.queryByTestId("USAGE.AVAILABLE")).not.toBeInTheDocument();
+    props.isEditableResource = true;
     expect(screen.queryByTestId("PAYG.INVALID")).not.toBeInTheDocument();
 
     // resoruces with payg usage 0 should not display info.

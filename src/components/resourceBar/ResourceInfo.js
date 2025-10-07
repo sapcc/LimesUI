@@ -126,17 +126,13 @@ const ResourceInfo = (props) => {
 
   function getPaygInfo() {
     if (rightBar.utilized == 0) {
-      return PAYGLabels.UNAVAILABLE;
+      return PAYGLabels.UNAVAILABLE(isEditableResource);
     }
     if (rightBar.utilized > 0) {
-      if (isEditableResource) {
-        return PAYGLabels.AVAILABLE(unit.format(rightBar.utilized));
-      } else {
-        return PAYGLabels.AVAILABLE_BASIC(unit.format(rightBar.utilized));
-      }
+      return PAYGLabels.AVAILABLE(unit.format(rightBar.utilized), isEditableResource);
     }
     if (rightBar.utilized < 0) {
-      return PAYGLabels.INVALID;
+      return PAYGLabels.INVALID(isEditableResource);
     }
   }
 
