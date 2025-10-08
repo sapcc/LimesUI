@@ -1,5 +1,11 @@
 # @sapcc/limes-ui
 
+## 1.12.4
+
+### Patch Changes
+
+- 4a8cb21: Fix: Add missing dependency to commitment requery useEffect
+
 ## 1.12.3
 
 ### Patch Changes
