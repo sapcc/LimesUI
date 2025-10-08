@@ -85,7 +85,7 @@ const ProjectTableDetails = (props) => {
     if (!refetchCommitmentAPI || !showCommitments) return;
     setRefetchCommitmentAPI(false);
     commitQueryResult.refetch();
-  }, [refetchCommitmentAPI]);
+  }, [refetchCommitmentAPI, showCommitments]);
 
   // only display the move commitment button on projects with a commitment on them.
   React.useEffect(() => {
