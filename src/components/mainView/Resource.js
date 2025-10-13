@@ -21,7 +21,7 @@ import { CustomZones, PanelType } from "../../lib/constants";
 import { Button, Stack } from "@cloudoperators/juno-ui-components";
 import { Link } from "react-router";
 import { ProjectBadges } from "../shared/LimesBadges";
-import { isAZUnaware } from "../../lib/utils";
+import { isAZUnaware, getResourceDurations } from "../../lib/utils";
 import ResourceBarBuilder from "../resourceBar/ResourceBarBuilder";
 import useResetCommitment from "../../hooks/useResetCommitment";
 import HistoricalUsage from "./subComponents/HistoricalUsage";
@@ -93,6 +93,7 @@ const Resource = (props) => {
     tracksQuota,
   } = props;
   const { unit: unitName, editableResource } = resource;
+  const isCommittable = getResourceDurations(resource).length > 0 ? true : false;
   const { scope } = globalStore();
   const displayName = t(resource.name);
   const { isEditing } = createCommitmentStore();
@@ -170,7 +171,7 @@ const Resource = (props) => {
           {isAZUnaware(props.resource.per_az) && (
             <ProjectBadges az={props.resource.per_az[0]} unit={unitName} displayValues={true} />
           )}
-          {scope.isProject() && editableResource && <ForbidAutogrowth {...forbidAutogrowthForwardProps} />}
+          {scope.isProject() && isCommittable && <ForbidAutogrowth {...forbidAutogrowthForwardProps} />}
         </Stack>
       )}
       <ResourceBarBuilder
