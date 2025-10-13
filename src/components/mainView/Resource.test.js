@@ -45,6 +45,9 @@ describe("Resource tests", () => {
       commitmentSum: 10,
       editableResource: true,
       per_az: [["az1", { projects_usage: 10 }]],
+      commitment_config: {
+        durations: ["1 year"],
+      },
     };
     let forwardProps = {
       area: "testArea",
@@ -64,7 +67,7 @@ describe("Resource tests", () => {
         </StoreProvider>
       </PortalProvider>
     );
-    const { result } = await waitFor(() => {
+    const { rerender, result } = await waitFor(() => {
       return renderHook(
         () => ({
           globalStore: globalStore(),
@@ -73,18 +76,24 @@ describe("Resource tests", () => {
         { wrapper }
       );
     });
-
-    // Project level
-    act(() => {
-      result.current.globalStoreActions.setScope(scope);
-    });
-    // The forbidAutogrowthSwitch edit option is available for project level.
+    // The forbidAutogrowth edit option is available at the project level.
     act(() => {
       result.current.globalStoreActions.setScope(scope);
     });
     expect(screen.queryByTestId("forbidAutogrowthSwitch")).toBeInTheDocument();
     expect(screen.getByTestId("edit/testResource")).toBeInTheDocument();
     expect(screen.queryByTestId("setMaxQuotaPanel")).not.toBeInTheDocument();
+
+    // The forbidAutogrowth edit option is only available for committable resources.
+    delete res.commitment_config;
+    rerender();
+    act(() => {
+      result.current.globalStoreActions.setScope(scope);
+    });
+    expect(screen.queryByTestId("forbidAutogrowthSwitch")).not.toBeInTheDocument();
+    expect(screen.getByTestId("edit/testResource")).toBeInTheDocument();
+    expect(screen.queryByTestId("setMaxQuotaPanel")).not.toBeInTheDocument();
+    res.commitment_config = { durations: ["1 year"] };
 
     // Domain level allows setting Max-Quota.
     scope = new Scope({ domainID: "456" });
