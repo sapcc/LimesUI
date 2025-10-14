@@ -1,5 +1,11 @@
 # @sapcc/limes-ui
 
+## 1.12.5
+
+### Patch Changes
+
+- 11d17dd: restrict forbid autogrowth setting to committable resources
+
 ## 1.12.4
 
 ### Patch Changes
