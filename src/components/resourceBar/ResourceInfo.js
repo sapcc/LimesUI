@@ -99,6 +99,7 @@ const ResourceInfo = (props) => {
   }
 
   function getCapacityAllocationRatio() {
+    if (az?.name == CustomZones.UNKNOWN) return;
     let allocationRatio = (
       ((rightBar.utilized + leftBar.available) / (rightBar.available + leftBar.available)) *
       100
