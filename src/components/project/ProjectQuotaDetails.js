@@ -53,10 +53,10 @@ const ProjectQuotaDetails = (props) => {
             <ToolTipWrapper
               trigger={<Icon data-testid="forbidAutogrowthInfo" icon="warning" size="18" />}
               content={
-                <div>
-                  <div>Pay-As-You-Go is disabled on project level.</div>
-                  <div>This setting is more restrictive than Max-Quota.</div>
-                </div>
+                <span>
+                  Pay-As-You-Go is disabled on project level. <br />
+                  This setting is more restrictive than Max-Quota.
+                </span>
               }
             />
           )}
