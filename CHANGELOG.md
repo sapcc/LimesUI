@@ -1,5 +1,11 @@
 # @sapcc/limes-ui
 
+## 1.12.6
+
+### Patch Changes
+
+- 729f68a: disable capacity allocation info for unknown az
+
 ## 1.12.5
 
 ### Patch Changes
