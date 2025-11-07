@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2025 SAP SE or an SAP affiliate company
+// SPDX-License-Identifier: Apache-2.0
+
 const esbuild = require("esbuild");
 const fs = require("node:fs/promises");
 const pkg = require("./package.json");
