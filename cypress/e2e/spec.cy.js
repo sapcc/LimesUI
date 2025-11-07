@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2025 SAP SE or an SAP affiliate company
+// SPDX-License-Identifier: Apache-2.0
+
 /// <reference types="Cypress" />
 
 // Warning: There are elements from juno that cant be accessed via data-cy
