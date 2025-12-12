@@ -429,7 +429,7 @@ const EditPanel = (props) => {
       {isMarketplaceTab && (
         <Marketplace
           project={currentProject}
-          resource={currentResource}
+          projectCommitments={commitments}
           publicCommitmentQuery={publicCommitmentQuery}
           transferCommitment={transferCommitment}
         />

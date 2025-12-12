@@ -2,17 +2,16 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import React from "react";
-import { DataGridRow, DataGridCell, Stack, Button } from "@cloudoperators/juno-ui-components/index";
+import { DataGridRow, DataGridCell } from "@cloudoperators/juno-ui-components/index";
 import { valueWithUnit, Unit } from "../../lib/unit";
 import { formatTimeISO8160, formatTime } from "../../lib/utils";
-import useCommitmentFilter from "../../hooks/useCommitmentFilter";
 import ToolTipWrapper from "../shared/ToolTipWrapper";
 import MarketplaceModal from "./Modals/MarketplaceModal";
+import MarketplaceActions from "./MarketplaceActions";
 
 const MarketplaceDetails = (props) => {
-  const { project, resource, commitment, transferCommitment } = props;
-  const unit = new Unit(resource.unit);
-  const { getCommitmentLabel } = useCommitmentFilter();
+  const { project, commitment, transferCommitment } = props;
+  const unit = new Unit(commitment.unit);
   const [showModal, setShowModal] = React.useState(false);
 
   return (
@@ -27,16 +26,13 @@ const MarketplaceDetails = (props) => {
         />
       </DataGridCell>
       <DataGridCell>
-        <Stack gap="1" distribution="between">
-          {getCommitmentLabel(commitment)}{" "}
-          <Button variant="primary" icon="download" size="small" onClick={() => setShowModal(true)} />
-        </Stack>
+        <MarketplaceActions {...props} setShowModal={setShowModal} />
       </DataGridCell>
       {showModal && (
         <MarketplaceModal
           action={transferCommitment}
           title="Marketplace: Receive commitment"
-          subText="receive"
+          subText="Receive"
           onModalClose={() => {
             setShowModal(false);
           }}
