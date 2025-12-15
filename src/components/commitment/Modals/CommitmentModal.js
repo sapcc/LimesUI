@@ -75,14 +75,20 @@ const CommitmentModal = (props) => {
       }
       onCancel={() => onModalClose()}
     >
-      {!canConfirm && (
+      <Stack direction="vertical" gap="1">
         <Message
-          data-testid="noCapacityWarning"
-          className="m-auto"
-          variant="warning"
-          text="No capacity available. Confirmation delay possible."
+          data-testid="marketplaceInfo"
+          variant="info"
+          text="Explore the marketplace before committing."
         />
-      )}
+        {!canConfirm && (
+          <Message
+            data-testid="noCapacityWarning"
+            variant="warning"
+            text="No capacity available. Confirmation delay possible."
+          />
+        )}
+      </Stack>
       <DataGrid columns={2} className={!showCalendar ? "mb-6" : "mb-0"} columnMaxSize="1fr">
         <DataGridRow>
           <DataGridCell className={label}>Availability Zone:</DataGridCell>

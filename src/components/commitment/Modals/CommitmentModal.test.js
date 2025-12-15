@@ -38,7 +38,8 @@ describe("test commitment creation modal", () => {
     expect(screen.getByText(/az1/i)).toBeInTheDocument();
     expect(screen.getByText(/az1/i)).toBeInTheDocument();
     expect(screen.getByText(/activation date/i)).toBeInTheDocument();
-    expect(screen.getByTestId(/noCapacityWarning/i)).toBeInTheDocument();
+    expect(screen.getByTestId("marketplaceInfo")).toBeInTheDocument();
+    expect(screen.getByTestId("noCapacityWarning")).toBeInTheDocument();
     fireEvent.change(confirmInput, { target: { value: "commit" } });
     fireEvent.click(confirmButton);
     expect(onConfirm).toHaveBeenCalled();
