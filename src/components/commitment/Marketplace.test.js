@@ -1,6 +1,5 @@
 import React from "react";
-import { act, render, renderHook, screen, waitFor } from "@testing-library/react";
-import { globalStoreActions } from "../StoreProvider";
+import { render, screen,  } from "@testing-library/react";
 import { Scope } from "../../lib/scope";
 import StoreProvider from "../StoreProvider";
 import Marketplace from "./Marketplace";
@@ -46,6 +45,7 @@ describe("Marketplace tests", () => {
     render(
       <StoreProvider>
         <Marketplace
+          scope={new Scope({ projectID: "123", domainID: "456" })}
           projectCommitments={commitments}
           publicCommitmentQuery={publicCommitmentQuery}
           transferCommitment={jest.fn()}

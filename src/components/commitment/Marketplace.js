@@ -7,7 +7,7 @@ import useSortTableData from "../../hooks/useSortTable";
 import MarketplaceDetails from "./MarketplaceDetails";
 
 const Marketplace = (props) => {
-  const { project, projectCommitments, publicCommitmentQuery, transferCommitment } = props;
+  const { publicCommitmentQuery } = props;
   const { data, isLoading, isError, error } = publicCommitmentQuery;
   const publicCommitments = data?.commitments || [];
 
