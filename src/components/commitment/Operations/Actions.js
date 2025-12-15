@@ -10,9 +10,10 @@ import useTransferAction from "./useTransferAction";
 import useConversionAction from "./useConversionAction";
 import useUpdateDurationAction from "./useUpdateDurationAction";
 import CommitmentMergeSelect from "./CommitmentMergeSelect";
+import useMarketplaceAction from "./useMarketplaceAction";
 
 const Actions = (props) => {
-  const { commitment = {}, resource = {}, mergeOps = { isMerging: false } } = props;
+  const { commitment = {}, resource = {}, mergeOps = { isMerging: false }, marketplaceModalFn } = props;
   const { isMerging } = mergeOps;
   const { getCommitmentLabel, isActive } = useCommitmentFilter();
   const [commitmentActions, setCommitmentActions] = React.useState([]);
@@ -36,10 +37,11 @@ const Actions = (props) => {
     });
   }
 
-  useConversionAction({ commitment, updateActions });
+  useConversionAction({ commitment, marketplaceModalFn, updateActions });
   useDeleteAction({ commitment, updateActions });
   useUpdateDurationAction({ commitment, resource, updateActions });
   useTransferAction({ commitment, updateActions });
+  useMarketplaceAction({ commitment, marketplaceModalFn, updateActions });
 
   return (
     <Stack distribution="between">

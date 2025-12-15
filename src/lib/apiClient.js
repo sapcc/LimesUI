@@ -297,6 +297,31 @@ const useQueryClientFn = () => {
         return responseHandler(response);
       },
     });
+    queryClient.setMutationDefaults(["deleteClusterCommitment"], {
+      mutationFn: async ({ commitmentID }) => {
+        const url = `${endpoint}/v1/commitments/${commitmentID}`;
+        const response = await fetch(url, {
+          method: "DELETE",
+          headers: { Accept: "application/json", "X-Auth-Token": token },
+        });
+        if (!response.ok) {
+          const text = await response.text();
+          throw new Error(`Network error: ${text} (Code: ${response.status})`);
+        }
+        return response;
+      },
+    });
+    queryClient.setMutationDefaults(["startClusterCommitmentTransfer"], {
+      mutationFn: async ({ payload, commitmentID }) => {
+        const url = `${endpoint}/v1/commitments/${commitmentID}/start-transfer`;
+        const response = await fetch(url, {
+          method: "POST",
+          headers: { Accept: "application/json", "X-Auth-Token": token },
+          body: JSON.stringify(payload),
+        });
+        return responseHandler(response);
+      },
+    });
   }, [queryClient, endpoint, token]);
 
   // Cerebro API Client

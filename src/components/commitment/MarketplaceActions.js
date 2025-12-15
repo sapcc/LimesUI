@@ -1,5 +1,7 @@
 import React from "react";
+import { TransferStatus } from "../../lib/constants";
 import { Button, Icon, Stack } from "@cloudoperators/juno-ui-components/index";
+import { createCommitmentStoreActions } from "../StoreProvider";
 import Actions from "./Operations/Actions";
 import ToolTipWrapper from "../shared/ToolTipWrapper";
 import useCommitmentFilter from "../../hooks/useCommitmentFilter";
@@ -10,6 +12,8 @@ import useCommitmentFilter from "../../hooks/useCommitmentFilter";
 const MarketplaceActions = (props) => {
   const { scope, resource, projectCommitments, commitment, setShowModal } = props;
   const { getCommitmentLabel } = useCommitmentFilter();
+  const { setTransferredCommitment } = createCommitmentStoreActions();
+  const { setTransferFromAndToProject } = createCommitmentStoreActions();
   const projectOwnsCommitment = projectCommitments.some((pc) => pc.id == commitment.id);
 
   if (scope.isCluster()) {
@@ -29,9 +33,14 @@ const MarketplaceActions = (props) => {
     );
   }
 
+  function cancelCommitmentTransfer() {
+    setTransferFromAndToProject(TransferStatus.CANCEL);
+    setTransferredCommitment(commitment);
+  }
+
   return (
     <>
-      {scope.isCluster() && <Actions commitment={commitment} resource={resource} />}
+      {scope.isCluster() && <Actions commitment={commitment} resource={resource} marketplaceModalFn={setShowModal} />}
       {scope.isDomain() && (
         <Stack distribution="between">
           {getCommitmentLabel(commitment)}
@@ -47,7 +56,16 @@ const MarketplaceActions = (props) => {
             )}
           </Stack>
           {projectOwnsCommitment ? (
-            <Button data-testid="mp-cancel" variant="default" icon="cancel" size="small" />
+            <Button
+              data-testid="mp-cancel"
+              onClick={() => {
+                cancelCommitmentTransfer();
+              }}
+              variant="default"
+              icon="cancel"
+              title="Cancel transfer"
+              size="small"
+            />
           ) : (
             getReceiveBtn()
           )}
