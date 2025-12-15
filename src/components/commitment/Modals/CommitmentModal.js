@@ -76,11 +76,7 @@ const CommitmentModal = (props) => {
       onCancel={() => onModalClose()}
     >
       <Stack direction="vertical" gap="1">
-        <Message
-          data-testid="marketplaceInfo"
-          variant="info"
-          text="Explore the marketplace before committing."
-        />
+        <Message data-testid="marketplaceInfo" variant="info" text="Explore the marketplace before committing." />
         {!canConfirm && (
           <Message
             data-testid="noCapacityWarning"
