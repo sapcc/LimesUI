@@ -1,6 +1,5 @@
 import React from "react";
 import { Button, Icon, Stack } from "@cloudoperators/juno-ui-components/index";
-import { globalStore } from "../StoreProvider";
 import Actions from "./Operations/Actions";
 import ToolTipWrapper from "../shared/ToolTipWrapper";
 import useCommitmentFilter from "../../hooks/useCommitmentFilter";
@@ -9,8 +8,7 @@ import useCommitmentFilter from "../../hooks/useCommitmentFilter";
 // Domain level: Commitments can be received for a selected project.
 // Cluster level: Provides administrative actions. Utilizes cluster api endpoints.
 const MarketplaceActions = (props) => {
-  const { resource, projectCommitments, commitment, setShowModal } = props;
-  const { scope } = globalStore();
+  const { scope, resource, projectCommitments, commitment, setShowModal } = props;
   const { getCommitmentLabel } = useCommitmentFilter();
   const projectOwnsCommitment = projectCommitments.some((pc) => pc.id == commitment.id);
 

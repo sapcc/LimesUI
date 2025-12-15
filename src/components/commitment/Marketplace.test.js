@@ -60,7 +60,7 @@ describe("Marketplace tests", () => {
     expect(screen.queryByText("3 years")).not.toBeInTheDocument();
   });
 
-  test("correct actions for each UI view level", async () => {
+  test("correct actions for each UI view level", () => {
     const commitments = [...base];
     const publicCommitments = [...commitments];
     publicCommitments.push({
@@ -78,48 +78,31 @@ describe("Marketplace tests", () => {
       error: null,
     };
 
-    const wrapper = ({ children }) => (
+    const renderMarketplace = (scope) => (
       <StoreProvider>
         <Marketplace
+          scope={scope}
           projectCommitments={commitments}
           publicCommitmentQuery={publicCommitmentQuery}
           transferCommitment={jest.fn()}
         />
-        {children}
       </StoreProvider>
     );
 
     // Cluster level
-    const scope = new Scope({ projectID: null, domainID: null });
-    const { result, rerender } = await waitFor(() => {
-      return renderHook(
-        () => ({
-          globalStoreActions: globalStoreActions(),
-        }),
-        {
-          wrapper,
-        }
-      );
-    });
-    act(() => {
-      result.current.globalStoreActions.setScope(scope);
-    });
+    const clusterScope = new Scope({ projectID: null, domainID: null });
+    const {rerender} = render(renderMarketplace(clusterScope));
     expect(screen.getAllByTitle(/more/i).length).toBe(3);
 
     // Domain level
-    rerender();
     const domainScope = new Scope({ projectID: null, domainID: "456" });
-    act(() => {
-      result.current.globalStoreActions.setScope(domainScope);
-    });
+    rerender(renderMarketplace(domainScope));
     expect(screen.getAllByTestId("mp-receive").length).toBe(3);
 
     // Project level
     rerender();
     const projectScope = new Scope({ projectID: "123", domainID: "456" });
-    act(() => {
-      result.current.globalStoreActions.setScope(projectScope);
-    });
+    rerender(renderMarketplace(projectScope));
     expect(screen.getAllByTestId("mp-cancel").length).toBe(2);
     expect(screen.queryAllByTestId("mp-receive").length).toBe(1);
   });

@@ -62,13 +62,7 @@ const Marketplace = (props) => {
           ))}
         </DataGridRow>
         {items.map((commitment) => (
-          <MarketplaceDetails
-            key={commitment.id}
-            project={project}
-            projectCommitments={projectCommitments}
-            commitment={commitment}
-            transferCommitment={transferCommitment}
-          />
+          <MarketplaceDetails key={commitment.id} {...props} commitment={commitment} />
         ))}
       </DataGrid>
     )
