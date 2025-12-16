@@ -1,5 +1,11 @@
 # @sapcc/limes-ui
 
+## 1.13.0
+
+### Minor Changes
+
+- 9b36dc2: Improve the available marketplace actions for the project/domain/cluster UI.
+
 ## 1.12.6
 
 ### Patch Changes
