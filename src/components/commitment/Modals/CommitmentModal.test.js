@@ -20,7 +20,7 @@ describe("test commitment creation modal", () => {
     newCommitment.amount = 10;
     newCommitment.duration = "1 year";
 
-    const renderModal = (publicCommitmentQuery = {data: null}) => (
+    const renderModal = (publicCommitmentQuery = { data: null }) => (
       <PortalProvider>
         <CommitmentModal
           title="Confirm commitment creation"
@@ -48,7 +48,7 @@ describe("test commitment creation modal", () => {
     fireEvent.click(confirmButton);
     expect(onConfirm).toHaveBeenCalled();
     // Rerender with marketplace commitments
-    rerender(renderModal({data: {commitments: [{id: "commitment-1"}]}}));
+    rerender(renderModal({ data: { commitments: [{ id: "commitment-1" }] } }));
     expect(screen.getByTestId("marketplaceInfo")).toBeInTheDocument();
   });
   test("same day commit", () => {
@@ -71,7 +71,7 @@ describe("test commitment creation modal", () => {
           commitment={newCommitment}
           action={onConfirm}
           onModalClose={onClose}
-          publicCommitmentQuery={{data: null}}
+          publicCommitmentQuery={{ data: null }}
         />
       </PortalProvider>
     );
@@ -104,7 +104,7 @@ describe("test commitment creation modal", () => {
           commitment={newCommitment}
           action={onConfirm}
           onModalClose={onClose}
-          publicCommitmentQuery={{data: null}}
+          publicCommitmentQuery={{ data: null }}
         />
       </PortalProvider>
     );
@@ -145,7 +145,7 @@ describe("test commitment creation modal", () => {
           commitment={newCommitment}
           action={onConfirm}
           onModalClose={onClose}
-          publicCommitmentQuery={{data: null}}
+          publicCommitmentQuery={{ data: null }}
         />
       </PortalProvider>
     );
