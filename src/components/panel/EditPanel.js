@@ -174,8 +174,8 @@ const EditPanel = (props) => {
   // On project level we move between projects. First we initiate the transfer. On the target project we receive with the token input.
   function startCommitmentTransfer(project, commitment, transferType = TransferType.UNLISTED) {
     const mutation = scope.isCluster() ? startClusterTransfer : startTransfer;
-    const sourceProjectID = currentProject?.metadata.id;
-    const sourceDomainID = scope.isCluster() ? currentProject?.metadata.domainID : null;
+    const sourceProjectID = currentProject?.metadata.id || null;
+    const sourceDomainID = currentProject?.metadata.domainID || null;
     const shouldNotTransfer = transferType == TransferType.PUBLIC || transferType == TransferType.NONE;
 
     mutation.mutate(
@@ -447,6 +447,7 @@ const EditPanel = (props) => {
           currentTab={currentTab}
           canConfirm={canConfirm}
           commitment={newCommitment}
+          publicCommitmentQuery={publicCommitmentQuery}
           minConfirmDate={minConfirmDate}
           onModalClose={onPostModalClose}
           subText="Commit"

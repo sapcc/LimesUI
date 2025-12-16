@@ -21,8 +21,20 @@ import { formatTimeISO8160 } from "../../../lib/utils";
 const label = "font-semibold";
 
 const CommitmentModal = (props) => {
-  const { action, currentTab, canConfirm, commitment, minConfirmDate, onModalClose, subText, title } = { ...props };
+  const {
+    action,
+    currentTab,
+    canConfirm,
+    commitment,
+    publicCommitmentQuery,
+    minConfirmDate,
+    onModalClose,
+    subText,
+    title,
+  } = { ...props };
   const unit = new Unit(commitment.unit);
+  const { data: publicCommitmentData } = publicCommitmentQuery;
+  const publicCommitments = publicCommitmentData?.commitments || [];
   const { ConfirmInput, inputProps, checkInput } = useConfirmInput({ confirmationText: subText });
   const hasMinConfirmDate = minConfirmDate ? true : false;
   // Show Calendar if: 1.) min_confirm_by field is set 2.) Not enough capacity is available on limes.
@@ -76,7 +88,14 @@ const CommitmentModal = (props) => {
       onCancel={() => onModalClose()}
     >
       <Stack direction="vertical" gap="1">
-        <Message data-testid="marketplaceInfo" variant="info" text="You can also check the marketplace for a commitment to take over." />
+        {publicCommitments.length > 0 && (
+          <Message
+            data-testid="marketplaceInfo"
+            variant="info"
+            dismissible={true}
+            text="You can also check the marketplace for a commitment to take over."
+          />
+        )}
         {!canConfirm && (
           <Message
             data-testid="noCapacityWarning"

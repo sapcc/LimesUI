@@ -19,7 +19,8 @@ describe("test commitment creation modal", () => {
     const newCommitment = { ...initialCommitmentObject };
     newCommitment.amount = 10;
     newCommitment.duration = "1 year";
-    render(
+
+    const renderModal = (publicCommitmentQuery = {data: null}) => (
       <PortalProvider>
         <CommitmentModal
           title="Confirm commitment creation"
@@ -30,19 +31,25 @@ describe("test commitment creation modal", () => {
           commitment={newCommitment}
           action={onConfirm}
           onModalClose={onClose}
+          publicCommitmentQuery={publicCommitmentQuery}
         />
       </PortalProvider>
     );
+
+    const { rerender } = render(renderModal());
     const confirmInput = screen.getByTestId(/confirmInput/i);
     const confirmButton = screen.getByTestId(/modalConfirm/i);
     expect(screen.getByText(/az1/i)).toBeInTheDocument();
     expect(screen.getByText(/az1/i)).toBeInTheDocument();
     expect(screen.getByText(/activation date/i)).toBeInTheDocument();
-    expect(screen.getByTestId("marketplaceInfo")).toBeInTheDocument();
+    expect(screen.queryByTestId("marketplaceInfo")).not.toBeInTheDocument();
     expect(screen.getByTestId("noCapacityWarning")).toBeInTheDocument();
     fireEvent.change(confirmInput, { target: { value: "commit" } });
     fireEvent.click(confirmButton);
     expect(onConfirm).toHaveBeenCalled();
+    // Rerender with marketplace commitments
+    rerender(renderModal({data: {commitments: [{id: "commitment-1"}]}}));
+    expect(screen.getByTestId("marketplaceInfo")).toBeInTheDocument();
   });
   test("same day commit", () => {
     Date.now = jest.fn(() => new Date("2024-01-01T00:00:00.000Z"));
@@ -64,6 +71,7 @@ describe("test commitment creation modal", () => {
           commitment={newCommitment}
           action={onConfirm}
           onModalClose={onClose}
+          publicCommitmentQuery={{data: null}}
         />
       </PortalProvider>
     );
@@ -96,6 +104,7 @@ describe("test commitment creation modal", () => {
           commitment={newCommitment}
           action={onConfirm}
           onModalClose={onClose}
+          publicCommitmentQuery={{data: null}}
         />
       </PortalProvider>
     );
@@ -136,6 +145,7 @@ describe("test commitment creation modal", () => {
           commitment={newCommitment}
           action={onConfirm}
           onModalClose={onClose}
+          publicCommitmentQuery={{data: null}}
         />
       </PortalProvider>
     );
