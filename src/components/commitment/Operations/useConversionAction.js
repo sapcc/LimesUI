@@ -6,7 +6,7 @@ import MenuItemBuilder from "./MenuItemBuilder";
 import { createCommitmentStore, createCommitmentStoreActions } from "../../StoreProvider";
 
 const useConversionAction = (props) => {
-  const { commitment, updateActions } = props;
+  const { commitment, marketplaceModalFn, updateActions } = props;
   const { resource_name } = commitment;
   const { showConversionOption } = createCommitmentStore();
   const { setConversionCommitment } = createCommitmentStoreActions();
@@ -16,7 +16,7 @@ const useConversionAction = (props) => {
   }
 
   React.useEffect(() => {
-    if (!showConversionOption) return;
+    if (!showConversionOption || marketplaceModalFn) return;
     const validFlavors = new RegExp("^instances_hana.").exec(resource_name)?.[0];
     if (!validFlavors) return;
     const menuItem = <MenuItemBuilder icon="edit" text="Convert" callBack={convertCommitment} />;

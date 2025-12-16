@@ -7,7 +7,7 @@ import useSortTableData from "../../hooks/useSortTable";
 import MarketplaceDetails from "./MarketplaceDetails";
 
 const Marketplace = (props) => {
-  const { project, resource, publicCommitmentQuery, transferCommitment } = props;
+  const { publicCommitmentQuery } = props;
   const { data, isLoading, isError, error } = publicCommitmentQuery;
   const publicCommitments = data?.commitments || [];
 
@@ -62,13 +62,7 @@ const Marketplace = (props) => {
           ))}
         </DataGridRow>
         {items.map((commitment) => (
-          <MarketplaceDetails
-            key={commitment.id}
-            project={project}
-            resource={resource}
-            commitment={commitment}
-            transferCommitment={transferCommitment}
-          />
+          <MarketplaceDetails key={commitment.id} {...props} commitment={commitment} />
         ))}
       </DataGrid>
     )

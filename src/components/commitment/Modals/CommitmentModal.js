@@ -21,8 +21,20 @@ import { formatTimeISO8160 } from "../../../lib/utils";
 const label = "font-semibold";
 
 const CommitmentModal = (props) => {
-  const { action, currentTab, canConfirm, commitment, minConfirmDate, onModalClose, subText, title } = { ...props };
+  const {
+    action,
+    currentTab,
+    canConfirm,
+    commitment,
+    publicCommitmentQuery,
+    minConfirmDate,
+    onModalClose,
+    subText,
+    title,
+  } = { ...props };
   const unit = new Unit(commitment.unit);
+  const { data: publicCommitmentData } = publicCommitmentQuery;
+  const publicCommitments = publicCommitmentData?.commitments || [];
   const { ConfirmInput, inputProps, checkInput } = useConfirmInput({ confirmationText: subText });
   const hasMinConfirmDate = minConfirmDate ? true : false;
   // Show Calendar if: 1.) min_confirm_by field is set 2.) Not enough capacity is available on limes.
@@ -75,14 +87,23 @@ const CommitmentModal = (props) => {
       }
       onCancel={() => onModalClose()}
     >
-      {!canConfirm && (
-        <Message
-          data-testid="noCapacityWarning"
-          className="m-auto"
-          variant="warning"
-          text="No capacity available. Confirmation delay possible."
-        />
-      )}
+      <Stack direction="vertical" gap="1">
+        {publicCommitments.length > 0 && (
+          <Message
+            data-testid="marketplaceInfo"
+            variant="info"
+            dismissible={true}
+            text="You can also check the marketplace for a commitment to take over."
+          />
+        )}
+        {!canConfirm && (
+          <Message
+            data-testid="noCapacityWarning"
+            variant="warning"
+            text="No capacity available. Confirmation delay possible."
+          />
+        )}
+      </Stack>
       <DataGrid columns={2} className={!showCalendar ? "mb-6" : "mb-0"} columnMaxSize="1fr">
         <DataGridRow>
           <DataGridCell className={label}>Availability Zone:</DataGridCell>

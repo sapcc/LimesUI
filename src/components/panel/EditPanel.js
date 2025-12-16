@@ -43,8 +43,10 @@ const EditPanel = (props) => {
   const commit = useMutation({ mutationKey: ["newCommitment"] });
   const confirm = useMutation({ mutationKey: ["canConfirm"] });
   const startTransfer = useMutation({ mutationKey: ["startCommitmentTransfer"] });
+  const startClusterTransfer = useMutation({ mutationKey: ["startClusterCommitmentTransfer"] });
   const transfer = useMutation({ mutationKey: ["transferCommitment"] });
   const commitmentDelete = useMutation({ mutationKey: ["deleteCommitment"] });
+  const clusterCommitmentDelete = useMutation({ mutationKey: ["deleteClusterCommitment"] });
   const convert = useMutation({ mutationKey: ["convertCommitment"] });
   const updateDuration = useMutation({ mutationKey: ["updateCommitmentDuration"] });
   const merge = useMutation({ mutationKey: ["mergeCommitments"] });
@@ -171,11 +173,12 @@ const EditPanel = (props) => {
   // Cluster and domain level transfer the commitment immediately after, except for marketplace postings or the cancellation of existing postings.
   // On project level we move between projects. First we initiate the transfer. On the target project we receive with the token input.
   function startCommitmentTransfer(project, commitment, transferType = TransferType.UNLISTED) {
-    const sourceProjectID = currentProject.metadata.id;
-    const sourceDomainID = scope.isCluster() ? currentProject.metadata.domainID : null;
+    const mutation = scope.isCluster() ? startClusterTransfer : startTransfer;
+    const sourceProjectID = currentProject?.metadata.id || null;
+    const sourceDomainID = currentProject?.metadata.domainID || null;
     const shouldNotTransfer = transferType == TransferType.PUBLIC || transferType == TransferType.NONE;
 
-    startTransfer.mutate(
+    mutation.mutate(
       {
         payload: { commitment: { amount: commitment.amount, transfer_status: transferType } },
         domainID: sourceDomainID,
@@ -241,10 +244,13 @@ const EditPanel = (props) => {
   // Delete commitment
   function deleteCommitmentAPI(commitment) {
     if (!deleteCommitment) return;
+    const mutation = scope.isCluster() ? clusterCommitmentDelete : commitmentDelete;
+
     // Cluster View targets the custom field domainID. It is set in the cluster project handling logic.
     const targetDomainID = currentProject?.metadata.domainID || null;
     const targetProjectID = currentProject?.metadata.id || null;
-    commitmentDelete.mutate(
+
+    mutation.mutate(
       { domainID: targetDomainID, projectID: targetProjectID, commitmentID: commitment.id },
       {
         onSuccess: () => {
@@ -428,8 +434,9 @@ const EditPanel = (props) => {
       )}
       {isMarketplaceTab && (
         <Marketplace
+          scope={scope}
           project={currentProject}
-          resource={currentResource}
+          projectCommitments={commitments}
           publicCommitmentQuery={publicCommitmentQuery}
           transferCommitment={transferCommitment}
         />
@@ -440,6 +447,7 @@ const EditPanel = (props) => {
           currentTab={currentTab}
           canConfirm={canConfirm}
           commitment={newCommitment}
+          publicCommitmentQuery={publicCommitmentQuery}
           minConfirmDate={minConfirmDate}
           onModalClose={onPostModalClose}
           subText="Commit"
