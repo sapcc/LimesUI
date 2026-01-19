@@ -1,5 +1,11 @@
 # @sapcc/limes-ui
 
+## 1.13.1
+
+### Patch Changes
+
+- 0ad1e74: fix default environment variables to use proper booleans
+
 ## 1.13.0
 
 ### Minor Changes

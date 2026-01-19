@@ -1,6 +1,6 @@
 {
   "name": "@sapcc/limes-ui",
-  "version": "1.13.0",
+  "version": "1.13.1",
   "author": "VoigtS",
   "license": "MIT",
   "source": "src/index.js",
