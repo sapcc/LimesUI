@@ -10,6 +10,7 @@ export const labelTypes = Object.freeze({
   PLANNED: "planned",
   PENDING: "pending",
   UNUSED: "unused",
+  COMMITTED: "committed",
   UNCOMMITTED: "uncommitted",
 });
 
@@ -85,6 +86,8 @@ export function matchAZLabel(az, label) {
       return az.hasOwnProperty("pending_commitments");
     case labelTypes.UNUSED:
       return unusedCommitments(az.commitmentSum, az.usage);
+    case labelTypes.COMMITTED:
+      return az.commitmentSum > 0;
     case labelTypes.UNCOMMITTED:
       return uncommittedUsage(az.commitmentSum, az.usage);
     default:

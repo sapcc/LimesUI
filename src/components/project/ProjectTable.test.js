@@ -75,7 +75,7 @@ describe("ProjectTable", () => {
             resources: [
               {
                 name: mockProps.currentResource.name,
-                per_az: [{ name: mockProps.currentTab, pending_commitments: { "1 year": 10 } }],
+                per_az: [{ name: mockProps.currentTab, pending_commitments: { "1 year": 10 }, commitmentSum: 10 }],
               },
             ],
           },
@@ -117,10 +117,20 @@ describe("ProjectTable", () => {
       );
     });
 
-    // Simulate selecting a label
     const filter = screen.getByTestId("Filter");
+
+    // Show projects with commitments only
     fireEvent.click(filter);
-    const option = screen.getByText("pending");
+    const committedOpt = screen.getByTestId("filter-committed");
+    fireEvent.click(committedOpt);
+    await waitFor(() => {
+      expect(screen.getByText("domain1/Project1")).toBeInTheDocument();
+      expect(screen.queryByText("domain2/Project2")).not.toBeInTheDocument();
+    });
+
+    // Show projects with pending commitments only
+    fireEvent.click(filter);
+    const option = screen.getByTestId("filter-pending");
     fireEvent.click(option);
     await waitFor(() => {
       expect(screen.getByText("domain1/Project1")).toBeInTheDocument();

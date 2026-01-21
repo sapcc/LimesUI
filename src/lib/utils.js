@@ -113,17 +113,11 @@ export const chunkProjects = (projects) => {
 };
 
 export function unusedCommitments(committed, usage) {
-  if (committed > usage) {
-    return true;
-  }
-  return false;
+  return committed > usage
 }
 
 export function uncommittedUsage(committed, usage) {
-  if (usage > committed) {
-    return true;
-  }
-  return false;
+  return usage > committed
 }
 
 export function isAZUnaware(az) {

@@ -138,7 +138,7 @@ const ProjectTable = (props) => {
       });
     });
 
-    return { availableLabels: Array.from(uniqueLabels), projectsPerLabel: matchingProjects };
+    return { availableLabels: Array.from(uniqueLabels).sort(), projectsPerLabel: matchingProjects };
   }, [currentTab]);
 
   function getProjectsToFilter() {
@@ -196,7 +196,7 @@ const ProjectTable = (props) => {
                 }}
               >
                 {Object.values(availableLabels).map((label) => (
-                  <SelectOption key={label}>{label}</SelectOption>
+                  <SelectOption data-testid={`filter-${label}`} key={label}>{label}</SelectOption>
                 ))}
               </Select>
             )}
