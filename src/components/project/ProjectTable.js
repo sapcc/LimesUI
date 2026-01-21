@@ -196,7 +196,9 @@ const ProjectTable = (props) => {
                 }}
               >
                 {Object.values(availableLabels).map((label) => (
-                  <SelectOption data-testid={`filter-${label}`} key={label}>{label}</SelectOption>
+                  <SelectOption data-testid={`filter-${label}`} key={label}>
+                    {label}
+                  </SelectOption>
                 ))}
               </Select>
             )}
