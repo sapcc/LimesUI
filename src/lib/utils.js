@@ -113,11 +113,11 @@ export const chunkProjects = (projects) => {
 };
 
 export function unusedCommitments(committed, usage) {
-  return committed > usage
+  return committed > usage;
 }
 
 export function uncommittedUsage(committed, usage) {
-  return usage > committed
+  return usage > committed;
 }
 
 export function isAZUnaware(az) {
