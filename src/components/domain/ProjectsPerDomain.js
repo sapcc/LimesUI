@@ -25,7 +25,10 @@ const ProjectsPerDomain = (props) => {
   const { setProjects } = domainStoreActions();
   const projectQueries = useQueries({
     queries: domains.map((domain) => {
-      return { queryKey: ["projectsInDomain", serviceType, resourceName, domain.id] };
+      return {
+        queryKey: ["projectsInDomain", serviceType, resourceName, domain.id],
+        refetchOnMount: false,
+      };
     }),
   });
   const isLoading = projectQueries.some((query) => query.isLoading);
