@@ -49,7 +49,7 @@ jobs:
       - name: Deploy preview
         if: github.event.action != 'closed'
         run: |
-          echo "<li><a href='./LimesUI/index2.html'> LimesUI </a></li>" >> ${{ env.DEPLOY_PATH }}/index2.html
+          echo "<li><a href='./LimesUI/index2.html'> Limes </a></li>" >> ${{ env.DEPLOY_PATH }}/index2.html
           echo "</ul></body></html>" >> ${{ env.DEPLOY_PATH }}/index2.html
         
           
