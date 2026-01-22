@@ -23,6 +23,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+          fetch-depth: 0
 
       - name: Create a folder with all compiled apps and pkgs
         if: github.event.action != 'closed'
@@ -54,3 +57,6 @@ jobs:
       - uses: rossjrw/pr-preview-action@v1
         with:
           source-dir: ${{ env.DEPLOY_PATH }}/
+          token: ${{ secrets.DEPLOY_TOKEN }}
+        env:
+          PERSONAL_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
