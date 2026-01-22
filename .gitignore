@@ -2,6 +2,6 @@
 .envrc
 node_modules
 /public/build/
-secretProps.json
+appProps.json
 build/
 coverage/

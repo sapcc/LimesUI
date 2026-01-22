@@ -1,0 +1,626 @@
+{
+  "projectAPI": {
+    "project": {
+      "id": "projectID",
+      "name": "project1",
+      "parent_id": "parentID",
+      "bursting": {
+        "enabled": false,
+        "multiplier": 0.1
+      },
+      "services": [
+        {
+          "type": "compute",
+          "area": "compute",
+          "resources": [
+            {
+              "name": "cores",
+              "quota_distribution_model": "hierarchical",
+              "commitment_config": {
+                "durations": [
+                  "1 year",
+                  "2 years",
+                  "3 years"
+                ]
+              },
+              "per_az": {
+                "az-1a": {
+                  "quota": 4000,
+                  "usage": 4000,
+                  "historical_usage": {
+                    "min_usage": 3636.37,
+                    "max_usage": 4000,
+                    "duration": "48h"
+                  }
+                },
+                "az-1b": {
+                  "usage": 50,
+                  "quota": 50
+                },
+                "az-1d": {
+                  "usage": 50,
+                  "quota": 50
+                }
+              },
+              "quota": 4100,
+              "usable_quota": 4000,
+              "usage": 164,
+              "scales_with": {
+                "resource_name": "instances",
+                "service_type": "compute",
+                "factor": 2
+              },
+              "annotations": {
+                "can_autoscale": "true"
+              }
+            },
+            {
+              "name": "instances",
+              "quota_distribution_model": "hierarchical",
+              "commitment_config": {
+                "durations": [
+                  "1 year",
+                  "2 years",
+                  "3 years"
+                ]
+              },
+              "per_az": {
+                "az-1a": {
+                  "committed": {
+                    "1 year": 60
+                  },
+                  "pending_commitments": {
+                    "1 year": 20
+                  },
+                  "usage": 30,
+                  "quota": 400
+                },
+                "az-1b": {
+                  "committed": {
+                    "1 year": 5
+                  },
+                  "pending_commitments": {
+                    "1 year": 10
+                  },
+                  "usage": 6,
+                  "quota": 10
+                },
+                "az-1d": {
+                  "usage": 20,
+                  "quota": 20
+                },
+                "unknown": {
+                  "usage": 15,
+                  "quota": 20
+                },
+                "any": {
+                  "quota": 400
+                }
+              },
+              "usable_quota": 400,
+              "usage": 58,
+              "quota": 850,
+              "annotations": {
+                "can_autoscale": "true"
+              }
+            },
+            {
+              "name": "instances_hana_c120",
+              "category": "per_flavor",
+              "quota_distribution_model": "hierarchical",
+              "per_az": {
+                "az-1a": {
+                  "usage": 0,
+                  "quota": 0
+                },
+                "az-1b": {
+                  "usage": 0,
+                  "quota": 0
+                },
+                "az-1d": {
+                  "usage": 0,
+                  "quota": 0
+                }
+              },
+              "commitment_config": {
+                "durations": [
+                  "1 year",
+                  "2 years",
+                  "3 years"
+                ]
+              },
+              "quota": 0,
+              "usable_quota": 0,
+              "usage": 0,
+              "annotations": {
+                "can_autoscale": "false"
+              }
+            },
+            {
+              "name": "instances_hana_c60",
+              "category": "per_flavor",
+              "quota_distribution_model": "hierarchical",
+              "per_az": {
+                "az-1a": {
+                  "usage": 0,
+                  "quota": 0
+                },
+                "az-1b": {
+                  "usage": 0,
+                  "quota": 0
+                },
+                "az-1d": {
+                  "usage": 0,
+                  "quota": 0
+                }
+              },
+              "commitment_config": {
+                "durations": [
+                  "1 year",
+                  "2 years",
+                  "3 years"
+                ]
+              },
+              "quota": 0,
+              "usable_quota": 0,
+              "usage": 0,
+              "annotations": {
+                "can_autoscale": "false"
+              }
+            },
+            {
+              "name": "instances_regular",
+              "contained_in": "instances",
+              "per_az": {
+                "az-1a": {
+                  "usage": 32,
+                  "quota": 32
+                },
+                "az-1b": {
+                  "usage": 8,
+                  "quota": 8
+                },
+                "az-1d": {
+                  "usage": 20,
+                  "quota": 20
+                }
+              },
+              "usage": 60,
+              "quota": 60,
+              "annotations": {
+                "can_autoscale": "false"
+              }
+            },
+            {
+              "name": "ram",
+              "unit": "GiB",
+              "quota_distribution_model": "hierarchical",
+              "commitment_config": {
+                "durations": [
+                  "1 year",
+                  "2 years",
+                  "3 years"
+                ]
+              },
+              "per_az": {
+                "az-1a": {
+                  "committed": {
+                    "2 years": 100
+                  },
+                  "usage": 4096,
+                  "quota": 4096
+                },
+                "az-1b": {
+                  "usage": 2048,
+                  "quota": 2048
+                },
+                "az-1d": {
+                  "usage": 6144,
+                  "quota": 6144
+                }
+              },
+              "quota": 16384,
+              "usable_quota": 16384,
+              "scales_with": {
+                "resource_name": "instances",
+                "service_type": "compute",
+                "factor": 1024
+              },
+              "annotations": {
+                "can_autoscale": "true"
+              }
+            },
+            {
+              "name": "server_groups",
+              "quota_distribution_model": "hierarchical",
+              "per_az": {
+                "any": {
+                  "usage": 11
+                }
+              },
+              "quota": 10,
+              "usable_quota": 10,
+              "usage": 11,
+              "annotations": {
+                "can_autoscale": "true"
+              }
+            }
+          ],
+          "scraped_at": 0
+        },
+        {
+          "type": "dns",
+          "area": "dns",
+          "resources": [
+            {
+              "name": "recordsets",
+              "quota_distribution_model": "hierarchical",
+              "per_az": {
+                "any": {
+                  "usage": 8
+                }
+              },
+              "quota": 25000,
+              "usable_quota": 25000,
+              "usage": 8,
+              "annotations": {
+                "can_autoscale": "true"
+              }
+            },
+            {
+              "name": "zones",
+              "quota_distribution_model": "hierarchical",
+              "per_az": {
+                "any": {
+                  "usage": 15
+                }
+              },
+              "quota": 16,
+              "usable_quota": 16,
+              "usage": 15,
+              "annotations": {
+                "can_autoscale": "true"
+              }
+            }
+          ],
+          "scraped_at": 0
+        },
+        {
+          "type": "endpoint-services",
+          "area": "network",
+          "resources": [
+            {
+              "name": "endpoints",
+              "quota_distribution_model": "hierarchical",
+              "per_az": {
+                "any": {
+                  "usage": 0
+                }
+              },
+              "quota": 10,
+              "usable_quota": 10,
+              "usage": 0,
+              "annotations": {
+                "can_autoscale": "true"
+              }
+            },
+            {
+              "name": "services",
+              "quota_distribution_model": "hierarchical",
+              "per_az": {
+                "any": {
+                  "usage": 10
+                }
+              },
+              "quota": 10,
+              "usable_quota": 10,
+              "usage": 10,
+              "annotations": {
+                "can_autoscale": "true"
+              }
+            }
+          ],
+          "scraped_at": 0
+        },
+        {
+          "type": "keppel",
+          "area": "storage",
+          "resources": [
+            {
+              "name": "images",
+              "quota_distribution_model": "hierarchical",
+              "per_az": {
+                "any": {
+                  "usage": 52
+                }
+              },
+              "quota": 2500,
+              "usable_quota": 2500,
+              "usage": 52,
+              "annotations": {
+                "can_autoscale": "true"
+              }
+            }
+          ],
+          "scraped_at": 0
+        },
+        {
+          "type": "network",
+          "area": "network",
+          "resources": [
+            {
+              "name": "healthmonitors",
+              "category": "loadbalancing",
+              "quota_distribution_model": "hierarchical",
+              "per_az": {
+                "any": {
+                  "usage": 4
+                }
+              },
+              "quota": 200,
+              "usable_quota": 200,
+              "usage": 4,
+              "scales_with": {
+                "resource_name": "loadbalancers",
+                "service_type": "network",
+                "factor": 2
+              },
+              "annotations": {
+                "can_autoscale": "true"
+              }
+            },
+            {
+              "name": "loadbalancers",
+              "category": "loadbalancing",
+              "quota_distribution_model": "hierarchical",
+              "per_az": {
+                "any": {
+                  "usage": 17
+                }
+              },
+              "quota": 1200,
+              "usable_quota": 1200,
+              "usage": 17,
+              "annotations": {
+                "can_autoscale": "true"
+              }
+            },
+            {
+              "name": "ports",
+              "category": "networking",
+              "quota_distribution_model": "hierarchical",
+              "per_az": {
+                "any": {
+                  "usage": 436
+                }
+              },
+              "quota": 2700,
+              "usable_quota": 2700,
+              "usage": 436,
+              "annotations": {
+                "can_autoscale": "true"
+              }
+            },
+            {
+              "name": "routers",
+              "category": "networking",
+              "quota_distribution_model": "hierarchical",
+              "per_az": {
+                "any": {
+                  "usage": 20
+                }
+              },
+              "quota": 100,
+              "usable_quota": 100,
+              "usage": 20,
+              "scales_with": {
+                "resource_name": "networks",
+                "service_type": "network",
+                "factor": 1
+              },
+              "annotations": {
+                "can_autoscale": "true"
+              }
+            }
+          ],
+          "scraped_at": 0
+        },
+        {
+          "type": "object-store",
+          "area": "storage",
+          "resources": [
+            {
+              "name": "capacity",
+              "unit": "TiB",
+              "quota_distribution_model": "hierarchical",
+              "commitment_config": {
+                "durations": [
+                  "1 year",
+                  "2 years",
+                  "3 years"
+                ]
+              },
+              "per_az": {
+                "any": {
+                  "usage": 1.5,
+                  "committed": {
+                    "1 year": 1
+                  },
+                  "pending_commitments": {
+                    "1 year": 1
+                  },
+                  "planned_commitments": {
+                    "1 year": 50
+                  }
+                }
+              },
+              "quota": 5120,
+              "usable_quota": 1.5,
+              "physical_usage": 2,
+              "usage": 1.5,
+              "annotations": {
+                "can_autoscale": "true"
+              }
+            }
+          ],
+          "scraped_at": 0
+        },
+        {
+          "type": "sharev2",
+          "area": "storage",
+          "resources": [
+            {
+              "name": "share_capacity",
+              "unit": "GiB",
+              "category": "sharev2",
+              "quota_distribution_model": "hierarchical",
+              "per_az": {
+                "any": {
+                  "usage": 61,
+                  "physical_usage": 1
+                }
+              },
+              "quota": 11264,
+              "usable_quota": 11264,
+              "usage": 61,
+              "physical_usage": 1,
+              "scales_with": {
+                "resource_name": "shares",
+                "service_type": "sharev2",
+                "factor": 100
+              },
+              "annotations": {
+                "can_autoscale": "true"
+              }
+            },
+            {
+              "name": "shares",
+              "category": "sharev2",
+              "quota_distribution_model": "hierarchical",
+              "per_az": {
+                "any": {
+                  "usage": 12
+                }
+              },
+              "quota": 50,
+              "usable_quota": 50,
+              "usage": 12,
+              "annotations": {
+                "can_autoscale": "true"
+              }
+            },
+            {
+              "name": "snapmirror_capacity",
+              "unit": "GiB",
+              "category": "sharev2",
+              "contained_in": "share_capacity",
+              "per_az": {
+                "any": {
+                  "usage": 0,
+                  "physical_usage": 0
+                }
+              },
+              "usage": 0,
+              "physical_usage": 0,
+              "annotations": {
+                "can_autoscale": "true"
+              },
+              "quota": 0
+            },
+            {
+              "name": "snapshot_capacity",
+              "unit": "GiB",
+              "category": "sharev2",
+              "quota_distribution_model": "hierarchical",
+              "per_az": {
+                "any": {
+                  "usage": 0,
+                  "physical_usage": 1
+                }
+              },
+              "quota": 2048,
+              "usable_quota": 2048,
+              "usage": 0,
+              "physical_usage": 1,
+              "scales_with": {
+                "resource_name": "shares",
+                "service_type": "sharev2",
+                "factor": 100
+              },
+              "annotations": {
+                "can_autoscale": "true"
+              }
+            }
+          ],
+          "scraped_at": 0
+        },
+        {
+          "type": "volumev2",
+          "area": "storage",
+          "resources": [
+            {
+              "name": "capacity",
+              "unit": "GiB",
+              "category": "volumev2",
+              "quota_distribution_model": "hierarchical",
+              "per_az": {
+                "any": {
+                  "usage": 4171
+                }
+              },
+              "quota": 184320,
+              "usable_quota": 184320,
+              "usage": 4171,
+              "scales_with": {
+                "resource_name": "volumes",
+                "service_type": "volumev2",
+                "factor": 100
+              },
+              "annotations": {
+                "can_autoscale": "true"
+              }
+            },
+            {
+              "name": "snapshots",
+              "category": "volumev2",
+              "quota_distribution_model": "hierarchical",
+              "per_az": {
+                "any": {
+                  "usage": 0
+                }
+              },
+              "quota": 50,
+              "usable_quota": 50,
+              "usage": 0,
+              "scales_with": {
+                "resource_name": "volumes",
+                "service_type": "volumev2",
+                "factor": 1
+              },
+              "annotations": {
+                "can_autoscale": "true"
+              }
+            },
+            {
+              "name": "volumes",
+              "category": "volumev2",
+              "quota_distribution_model": "hierarchical",
+              "per_az": {
+                "any": {
+                  "usage": 97
+                }
+              },
+              "quota": 1200,
+              "usable_quota": 1200,
+              "usage": 97,
+              "annotations": {
+                "can_autoscale": "true"
+              }
+            }
+          ],
+          "scraped_at": 0
+        }
+      ]
+    }
+  }
+}

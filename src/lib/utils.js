@@ -27,7 +27,7 @@ export function formatTimeISO8160(unixTimeStamp) {
 
 // Used to provide a uniform time format throughout the UI.
 export function formatTime(unixTimeStamp, formatter) {
-  if (!moment.unix(unixTimeStamp).isValid() || unixTimeStamp == "") return false;
+  if (!moment.unix(unixTimeStamp).isValid()) return false;
   return moment.unix(unixTimeStamp).format(formatter);
 }
 

@@ -13,21 +13,42 @@ A more detailed description about the architecture can be found here:
 npm install
 ```
 
-2. Create a `secretProps.json` file in the root directory with the following contents:
+2. Create an `appProps.json` file in the root directory with the following contents:
 
 ```s
 {
-  "theme": "theme-light" or "theme-dark"
-  "endpoint": <Endpoint to the Limes API>
-  "projectID":
-  "domainID":
-  "token": <OpenStack Keystone Token>
-  "canEdit": <Defines if commitments can be created on resources>
-  "mockAPI": <Query real API or use provided mockdata.>
+  "endpoint": "https://endpoint",
+  "projectID": "c9f269de-6fae-40ac-8468-b90c609c04c5",
+  "domainID": "9e4ebc1e-3e83-4aa1-a0f6-a3303c96dc9e",
+  "token": "wrouyhyt08q3uya3eoruyhw3el5uykjghasy5obyuqby5a",
+  "canEdit": true,
+  "mockAPI": false
+  "theme": "theme-light",
+  "embedded": false,
+  "local": false,
 }
 ```
 
-If the `mockAPI` attribute is set to `true` the endpint attribute becomes optional.
+If you would like to use the additional quota plugin application, add the following contents:
+
+```s
+{
+  "quotaProject": "compute",
+  "quotaAlign": "end"
+}
+```
+
+| Field     | Type               | Description                                                                                                                                                                                                      |
+| :-------- | :----------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| endpoint  | string             | Base URL of the Limes API as stored in the Keystone catalog                                                                                                                                                      |
+| projectID | string             | Project ID (if scoped to a project)                                                                                                                                                                              |
+| domainID  | string             | Domain ID (if scoped to a project or domain)                                                                                                                                                                     |
+| token     | string             | Keystone token for the scope specified by `domain_id` and `project_id`                                                                                                                                           |
+| canEdit   | boolean            | Whether the user has edit permissions in the token's scope                                                                                                                                                       |
+| mockAPI   | boolean (optional) | Wheter the API data should be mocked. If the `mockAPI` attribute is set to `true` the endpint attribute becomes optional.                                                                                        |
+| theme     | string (optional)  | Override the default theme. Possible values are `theme-light` or `theme-dark` (default).                                                                                                                         |
+| embedded  | boolean (optional) | Set to `true` if the app is to be embedded in another existing app or page, like Elektra. If set to true the app won't render a page header/footer and will instead render only the content. Defaults to: false. |
+| local     | boolean (optional) | Used to display debug log data in local development.                                                                                                                                                             |
 
 3. Run the app:
 

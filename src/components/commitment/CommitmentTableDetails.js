@@ -31,7 +31,7 @@ const CommitmentTableDetails = (props) => {
     creator_name,
     unit: unitName,
   } = { ...commitment };
-  const startDate = confirm_by ? confirm_by : created_at;
+  const startDate = confirm_by ?? created_at;
   const durations = props.durations;
   const serviceType = props.serviceType;
   const currentResource = props.currentResource;
@@ -172,7 +172,7 @@ const CommitmentTableDetails = (props) => {
             <span className="grid grid-cols-3 gap-1">
               <span>created: </span>
               <span className="col-span-2">{formatTime(created_at, "YYYY-MM-DD HH:mm A")}</span>
-              {confirmed_at && (
+              {confirmed_at >= 0 && (
                 <>
                   <span>confirmed: </span>
                   <span className="col-span-2">{formatTime(confirmed_at, "YYYY-MM-DD HH:mm A")}</span>

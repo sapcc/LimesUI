@@ -2,65 +2,33 @@
   "cerebroAPI": {
     "id": "bigvm_resources",
     "version": 1,
-    "correlation_id": "b34596e4-3e56-40d5-8065-2855d0f77accb",
-    "deployed_version": "0BB44FB89C2BEE4F0BB86649E4E26650",
+    "correlation_id": "id-1",
+    "deployed_version": "id-2",
     "placeable_vms": {
       "version": 1,
       "result_per_availability_zone": {
-        "qa-de-1a": {
+        "az-1a": {
           "version": 1,
           "placeable_vms": {
-            "m1.tiny": 16889,
-            "hana_c180_m2880_v2": 0,
-            "hana_c240_m3840_v2": 0,
-            "g_c4_m8": 2533
+            "hana_c60": 20,
+            "hana_c120": 10
           },
           "timestamp_data_crawled": 1719216773
         },
-        "qa-de-1d": {
+        "az-1b": {
           "version": 1,
-          "placeable_vms": {
-            "m1.tiny": 118561,
-            "hana_c24_m365": 51,
-            "hana_c48_m729": 23,
-            "hana_c96_m1458": 0,
-            "hana_c144_m2188": 0,
-            "hana_c192_m2917": 0,
-            "hana_c384_m5835": 0,
-            "hana_c288_m4377": 0,
-            "hana_c448_m11671": 0,
-            "g_c2_m8": 15984,
-            "hana_c30_m480_v2": 8,
-            "hana_c60_m960_v2": 4,
-            "hana_c120_m1920_v2": 2,
-            "hana_c180_m2880_v2": 0,
-            "hana_c240_m3840_v2": 0
-          }
+          "placeable_vms": {}
         },
-        "qa-de-1b": {
+        "az-1d": {
           "version": 1,
           "placeable_vms": {
-            "m1.tiny": 38130,
-            "hana_c24_m365": 37,
-            "hana_c48_m729": 16,
-            "hana_c96_m1458": 3,
-            "hana_c144_m2188": 1,
-            "hana_c192_m2917": 1,
-            "hana_c384_m5835": 0,
-            "hana_c288_m4377": 0,
-            "hana_c448_m11671": 0,
-            "g_c2_m8": 15664,
-            "hana_c30_m480_v2": 0,
-            "hana_c60_m960_v2": 0,
-            "hana_c120_m1920_v2": 0,
-            "hana_c180_m2880_v2": 0,
-            "hana_c240_m3840_v2": 0,
-            "g_c4_m8": 9531
+            "hana_c60": 15,
+            "hana_c120": 5
           },
           "timestamp_data_crawled": 1719216942
         }
       },
-      "openstack_project_id": "F2ED6C641EB0437B56F453FA34C22174"
+      "openstack_project_id": "123"
     }
   }
 }

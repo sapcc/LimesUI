@@ -1,0 +1,38 @@
+{
+    "publicCommitmentAPI": {
+        "commitments": [
+            {
+                "id": 1001,
+                "service_type": "compute",
+                "resource_name": "instances",
+                "availability_zone": "az-1a",
+                "amount": 20,
+                "unit": "",
+                "duration": "1 year",
+                "can_be_deleted": true,
+                "creator_name": "anonymous",
+                "created_at": 0,
+                "confirm_by": 0,
+                "confirmed_at": 0,
+                "expires_at": 31536000,
+                "transfer_status": "public",
+                "transfer_token": "mock token"
+            },
+            {
+                "id": 1002,
+                "service_type": "compute",
+                "resource_name": "ram",
+                "availability_zone": "az-1b",
+                "amount": 51200,
+                "unit": "MiB",
+                "duration": "3 years",
+                "creator_name": "anonymous",
+                "created_at": 0,
+                "confirmed_at": 0,
+                "expires_at": 31536000,
+                "transfer_status": "public",
+                "transfer_token": "mock token"
+            }
+        ]
+    }
+}

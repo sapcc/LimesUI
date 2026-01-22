@@ -8,8 +8,6 @@ const postcss = require("postcss");
 const sass = require("sass");
 const { transform } = require("@svgr/core");
 const url = require("postcss-url");
-// this function generates app props based on package.json and propSecrets.json
-const appProps = require("./helpers/appProps");
 
 if (!/.+\/.+\.js/.test(pkg.module)) throw new Error("module value is incorrect, use DIR/FILE.js like build/index.js");
 
@@ -176,8 +174,7 @@ const build = async () => {
   if (watch || serve) {
     if (watch) await ctx.watch();
     if (serve) {
-      // generate app props based on package.json and secretProps.json
-      await fs.writeFile(`./${outdir}/appProps.js`, `export default ${JSON.stringify(appProps())}`);
+      await fs.copyFile(`./appProps.json`, `./public/build/appProps.json`);
 
       let { host, port } = await ctx.serve({
         host: "0.0.0.0",

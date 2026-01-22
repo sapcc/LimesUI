@@ -32,24 +32,45 @@
       }
     </style>
     <script>
-      // automatically reload on build changes
-      new EventSource("/esbuild").addEventListener("change", () => location.reload());
+      const urlParam = new URLSearchParams(window.location.search).get('location');
+      if (!urlParam) {
+        // automatically reload on build changes
+        new EventSource("/esbuild").addEventListener("change", () => location.reload());
+      }
     </script>
   </head>
   <body>
     <script type="module">
-      // appProps are generated in development env and added to the build
-      import appProps from "./build/appProps.js";
-      appProps.getTokenFuncName = "_getCurrentToken";
-      window._getCurrentToken = async () => {
-        return { authToken: appProps.token };
-      };
-      import("./build/index.js").then((app) => {
-        app.mount(document.getElementById("root"), { props: appProps });
-      });
-      import("./build/quotaPlugin.js").then((app) => {
-        app.mount(document.getElementById("quotaPlugin"), { props: appProps });
-      });
+      let ghProps = null;
+      if (urlParam === 'project' || urlParam === 'domain' || urlParam === 'cluster') {
+        const allowedPaths = {
+          project: 'config/project-appProps.json',
+          domain: 'config/domain-appProps.json',
+          cluster: 'config/cluster-appProps.json'
+        };
+        ghProps = allowedPaths[urlParam];
+      }
+      const defaultProps = "./build/appProps.json";
+      let appProps = ghProps || defaultProps;
+    
+      fetch(appProps)
+        .then((res) => res.json())
+        .catch((error) => {
+          console.warn("Failed to get appProps.json", error.message);
+          return fetch(defaultProps).then((res) => res.json());
+        })
+        .then((props) => {
+          props.getTokenFuncName = "_getCurrentToken";
+          window._getCurrentToken = async () => {
+            return { authToken: props.token };
+          };
+          import("./build/index.js").then((app) => {
+            app.mount(document.getElementById("root"), { props: props });
+          });
+          import("./build/quotaPlugin.js").then((app) => {
+            app.mount(document.getElementById("quotaPlugin"), { props: props });
+          });
+        });
     </script>
     <div id="quotaPlugin" data-juno-app="limesUI"></div>
     <div id="root" data-juno-app="limesUI"></div>

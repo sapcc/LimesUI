@@ -1,0 +1,56 @@
+{
+  "domainProjects": {
+    "domains": [
+      {
+        "id": "domainID1",
+        "name": "exampleDomain",
+        "services": []
+      }
+    ],
+    "projects": [
+      {
+        "id": "projectID1",
+        "name": "project1",
+        "parent_id": "parent",
+        "services": []
+      },
+      {
+        "id": "projectID2",
+        "name": "project2",
+        "parent_id": "parent",
+        "services": []
+      },
+      {
+        "id": "projectID3",
+        "name": "project3",
+        "parent_id": "parent",
+        "services": [
+          {
+            "type": "object-store",
+            "area": "storage",
+            "resources": [
+              {
+                "name": "capacity",
+                "unit": "TiB",
+                "quota_distribution_model": "hierarchical",
+                "per_az": {
+                  "any": {
+                    "usage": 0
+                  }
+                },
+                "quota": 0,
+                "usable_quota": 0,
+                "physical_usage": 0,
+                "usage": 0,
+                "annotations": {
+                  "can_autoscale": "true"
+                }
+              }
+            ],
+            "scraped_at": 0
+          }
+        ]
+      }
+    ]
+  }
+}
