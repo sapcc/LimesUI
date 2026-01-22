@@ -34,12 +34,6 @@ jobs:
           echo "<!doctype html><html><head><meta charset='utf-8'><title>PR Preview</title></head><body><h1>Previews</h1><ul>" > ${{ env.DEPLOY_PATH }}/index.html
         
 
-      - name: Install and Build
-        if: github.event.action != 'closed'
-        run: ./.github/scripts/build-app.sh
-        env:
-          TARGET_FOLDER: LimesUI
-        continue-on-error: true
 
       - name: Provide secret props for build
         if: github.event.action != 'closed'
@@ -47,6 +41,13 @@ jobs:
           if [ -f secretProps.template.json ]; then
             cp secretProps.template.json secretProps.json
           fi
+
+      - name: Install and Build
+        if: github.event.action != 'closed'
+        run: ./.github/scripts/build-app.sh
+        env:
+          TARGET_FOLDER: LimesUI
+        continue-on-error: true
    
       - name: Deploy preview
         if: github.event.action != 'closed'
@@ -60,3 +61,10 @@ jobs:
           token: ${{ secrets.DEPLOY_TOKEN }}
         env:
           PERSONAL_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+
+      - name: Setup git credentials for deploy
+        if: github.event.action != 'closed'
+        run: |
+          git remote set-url origin https://x-access-token:${{ secrets.DEPLOY_TOKEN }}@github.com/${{ github.repository }}.git
+        env:
+          DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
