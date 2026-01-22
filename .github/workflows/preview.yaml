@@ -28,7 +28,7 @@ jobs:
         if: github.event.action != 'closed'
         run: |
           mkdir -p ${{ env.DEPLOY_PATH }}
-          echo "<!doctype html><html><head><meta charset='utf-8'><title>PR Preview</title></head><body><h1>Previews</h1><ul>" > ${{ env.DEPLOY_PATH }}/index.html
+          echo "<!doctype html><html><head><meta charset='utf-8'><title>PR Preview</title></head><body><h1>Previews</h1><ul>" > ${{ env.DEPLOY_PATH }}/index2.html
         
 
 
@@ -49,7 +49,7 @@ jobs:
       - name: Deploy preview
         if: github.event.action != 'closed'
         run: |
-          echo "<li><a href='./LimesUI/index.html'> LimesUI </a></li>" >> ${{ env.DEPLOY_PATH }}/index.html
-          echo "</ul></body></html>" >> ${{ env.DEPLOY_PATH }}/index.html
+          echo "<li><a href='./LimesUI/index2.html'> LimesUI </a></li>" >> ${{ env.DEPLOY_PATH }}/index2.html
+          echo "</ul></body></html>" >> ${{ env.DEPLOY_PATH }}/index2.html
         
           
