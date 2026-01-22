@@ -1,5 +1,11 @@
 # @sapcc/limes-ui
 
+## 1.13.2
+
+### Patch Changes
+
+- af9ecf7: Cluster/domain level: Expand project caching, add commitment filter
+
 ## 1.13.1
 
 ### Patch Changes
