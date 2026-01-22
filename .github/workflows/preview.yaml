@@ -28,6 +28,7 @@ jobs:
         if: github.event.action != 'closed'
         run: |
           mkdir -p ${{ env.DEPLOY_PATH }}
+          echo "<!doctype html><html><head><meta charset='utf-8'><title>PR Preview</title></head><body><h1>Previews</h1><ul>" > ${{ env.DEPLOY_PATH }}/index.html
         
 
       - name: Install and Build
@@ -36,11 +37,18 @@ jobs:
         env:
           TARGET_FOLDER: LimesUI
         continue-on-error: true
+
+      - name: Provide secret props for build
+        if: github.event.action != 'closed'
+        run: |
+          if [ -f secretProps.template.json ]; then
+            cp secretProps.template.json secretProps.json
+          fi
    
       - name: Deploy preview
         if: github.event.action != 'closed'
         run: |
-          echo "<li><a href='./LimesUI/public/index.html'> LimesUI </a></li>" >> ${{ env.DEPLOY_PATH }}/index.html
+          echo "<li><a href='./LimesUI/index.html'> LimesUI </a></li>" >> ${{ env.DEPLOY_PATH }}/index.html
           echo "</ul></body></html>" >> ${{ env.DEPLOY_PATH }}/index.html
         
       - uses: rossjrw/pr-preview-action@v1
