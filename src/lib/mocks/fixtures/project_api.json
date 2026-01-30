@@ -534,7 +534,7 @@
               "quota_distribution_model": "hierarchical",
               "per_az": {
                 "any": {
-                  "usage": 0,
+                  "usage": 5,
                   "physical_usage": 1
                 }
               },
