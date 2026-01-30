@@ -15,10 +15,10 @@ permissions:
 
 env:
   DEPLOY_PATH: tmp
-  NODE_VERSION: "22.16.0"
 
 jobs:
   deploy-preview:
+    if: github.event.pull_request.head.repo.name == github.repository
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
