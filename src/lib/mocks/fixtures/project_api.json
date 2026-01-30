@@ -39,8 +39,8 @@
                 }
               },
               "quota": 4100,
-              "usable_quota": 4000,
-              "usage": 164
+              "usable_quota": 4100,
+              "usage": 4100
             },
             {
               "name": "instances",
@@ -53,6 +53,13 @@
                 ]
               },
               "per_az": {
+                "any": {
+                  "usage": 0,
+                  "quota": 400,
+                  "historical_usage": {
+                    "duration": "48 hours"
+                  }
+                },
                 "az-1a": {
                   "committed": {
                     "1 year": 60
@@ -80,14 +87,11 @@
                 "unknown": {
                   "usage": 15,
                   "quota": 20
-                },
-                "any": {
-                  "quota": 400
                 }
               },
-              "usable_quota": 400,
-              "usage": 58,
-              "quota": 850
+              "quota": 850,
+              "usable_quota": 850,
+              "usage": 71
             },
             {
               "name": "instances_hana_c120",
@@ -96,7 +100,10 @@
               "per_az": {
                 "az-1a": {
                   "usage": 0,
-                  "quota": 0
+                  "quota": 0,
+                  "historical_usage": {
+                    "duration": "48 hours"
+                  }
                 },
                 "az-1b": {
                   "usage": 0,
@@ -125,7 +132,10 @@
               "per_az": {
                 "az-1a": {
                   "usage": 0,
-                  "quota": 0
+                  "quota": 0,
+                  "historical_usage": {
+                    "duration": "48 hours"
+                  }
                 },
                 "az-1b": {
                   "usage": 0,
@@ -149,11 +159,14 @@
             },
             {
               "name": "instances_regular",
-              "contained_in": "instances",
+              "quota_distribution_model": "autogrow",
               "per_az": {
                 "az-1a": {
                   "usage": 32,
-                  "quota": 32
+                  "quota": 32,
+                  "historical_usage": {
+                    "duration": "48 hours"
+                  }
                 },
                 "az-1b": {
                   "usage": 8,
@@ -164,8 +177,9 @@
                   "quota": 20
                 }
               },
-              "usage": 60,
-              "quota": 60
+              "quota": 60,
+              "usable_quota": 60,
+              "usage": 60
             },
             {
               "name": "ram",
@@ -179,6 +193,13 @@
                 ]
               },
               "per_az": {
+                "any": {
+                  "usage": 0,
+                  "quota": 4096,
+                  "historical_usage": {
+                    "duration": "48 hours"
+                  }
+                },
                 "az-1a": {
                   "committed": {
                     "2 years": 100
@@ -192,17 +213,19 @@
                 },
                 "az-1d": {
                   "usage": 6144,
-                  "quota": 6144
+                  "quota": 10240
                 }
               },
               "quota": 16384,
-              "usable_quota": 16384
+              "usable_quota": 16384,
+              "usage": 12288
             },
             {
               "name": "server_groups",
               "quota_distribution_model": "autogrow",
               "per_az": {
                 "any": {
+                  "quota": 10,
                   "usage": 11
                 }
               },
@@ -222,7 +245,11 @@
               "quota_distribution_model": "autogrow",
               "per_az": {
                 "any": {
-                  "usage": 8
+                  "quota": 25000,
+                  "usage": 8,
+                  "historical_usage": {
+                    "duration": "48 hours"
+                  }
                 }
               },
               "quota": 25000,
@@ -234,7 +261,11 @@
               "quota_distribution_model": "autogrow",
               "per_az": {
                 "any": {
-                  "usage": 15
+                  "quota": 16,
+                  "usage": 15,
+                  "historical_usage": {
+                    "duration": "48 hours"
+                  }
                 }
               },
               "quota": 16,
@@ -253,7 +284,11 @@
               "quota_distribution_model": "autogrow",
               "per_az": {
                 "any": {
-                  "usage": 0
+                  "quota": 10,
+                  "usage": 0,
+                  "historical_usage": {
+                    "duration": "48 hours"
+                  }
                 }
               },
               "quota": 10,
@@ -265,7 +300,11 @@
               "quota_distribution_model": "autogrow",
               "per_az": {
                 "any": {
-                  "usage": 10
+                  "quota": 10,
+                  "usage": 10,
+                  "historical_usage": {
+                    "duration": "48 hours"
+                  }
                 }
               },
               "quota": 10,
@@ -284,7 +323,11 @@
               "quota_distribution_model": "autogrow",
               "per_az": {
                 "any": {
-                  "usage": 52
+                  "quota": 2500,
+                  "usage": 52,
+                  "historical_usage": {
+                    "duration": "48 hours"
+                  }
                 }
               },
               "quota": 2500,
@@ -304,7 +347,11 @@
               "quota_distribution_model": "autogrow",
               "per_az": {
                 "any": {
-                  "usage": 4
+                  "quota": 200,
+                  "usage": 4,
+                  "historical_usage": {
+                    "duration": "48 hours"
+                  }
                 }
               },
               "quota": 200,
@@ -317,7 +364,11 @@
               "quota_distribution_model": "autogrow",
               "per_az": {
                 "any": {
-                  "usage": 17
+                  "quota": 1200,
+                  "usage": 17,
+                  "historical_usage": {
+                    "duration": "48 hours"
+                  }
                 }
               },
               "quota": 1200,
@@ -330,7 +381,11 @@
               "quota_distribution_model": "autogrow",
               "per_az": {
                 "any": {
-                  "usage": 436
+                  "quota": 2700,
+                  "usage": 436,
+                  "historical_usage": {
+                    "duration": "48 hours"
+                  }
                 }
               },
               "quota": 2700,
@@ -343,7 +398,11 @@
               "quota_distribution_model": "autogrow",
               "per_az": {
                 "any": {
-                  "usage": 20
+                  "quota": 100,
+                  "usage": 20,
+                  "historical_usage": {
+                    "duration": "48 hours"
+                  }
                 }
               },
               "quota": 100,
@@ -370,6 +429,7 @@
               },
               "per_az": {
                 "any": {
+                  "quota": 51200,
                   "usage": 1536,
                   "committed": {
                     "1 year": 1024
@@ -379,13 +439,16 @@
                   },
                   "planned_commitments": {
                     "1 year": 51200
+                  },
+                  "historical_usage": {
+                    "duration": "48 hours"
                   }
                 }
               },
               "quota": 51200,
               "usable_quota": 51200,
               "physical_usage": 1024,
-              "usage": 1524
+              "usage": 1536
             }
           ],
           "scraped_at": 0
@@ -401,8 +464,12 @@
               "quota_distribution_model": "autogrow",
               "per_az": {
                 "any": {
+                  "quota": 11264,
                   "usage": 61,
-                  "physical_usage": 1
+                  "physical_usage": 1,
+                  "historical_usage": {
+                    "duration": "48 hours"
+                  }
                 }
               },
               "quota": 11264,
@@ -416,7 +483,11 @@
               "quota_distribution_model": "autogrow",
               "per_az": {
                 "any": {
-                  "usage": 12
+                  "quota": 50,
+                  "usage": 12,
+                  "historical_usage": {
+                    "duration": "48 hours"
+                  }
                 }
               },
               "quota": 50,
@@ -427,11 +498,15 @@
               "name": "snapmirror_capacity",
               "unit": "GiB",
               "category": "sharev2",
-              "contained_in": "share_capacity",
+              "quota_distribution_model": "autogrow",
               "per_az": {
                 "any": {
+                  "quota": 0,
                   "usage": 0,
-                  "physical_usage": 0
+                  "physical_usage": 0,
+                  "historical_usage": {
+                    "duration": "48 hours"
+                  }
                 }
               },
               "usage": 0,
@@ -445,8 +520,12 @@
               "quota_distribution_model": "autogrow",
               "per_az": {
                 "any": {
+                  "quota": 2048,
                   "usage": 5,
-                  "physical_usage": 1
+                  "physical_usage": 1,
+                  "historical_usage": {
+                    "duration": "48 hours"
+                  }
                 }
               },
               "quota": 2048,
@@ -468,7 +547,11 @@
               "quota_distribution_model": "autogrow",
               "per_az": {
                 "any": {
-                  "usage": 4171
+                  "quota": 184320,
+                  "usage": 4171,
+                  "historical_usage": {
+                    "duration": "48 hours"
+                  }
                 }
               },
               "quota": 184320,
@@ -481,7 +564,11 @@
               "quota_distribution_model": "autogrow",
               "per_az": {
                 "any": {
-                  "usage": 0
+                  "quota": 50,
+                  "usage": 0,
+                  "historical_usage": {
+                    "duration": "48 hours"
+                  }
                 }
               },
               "quota": 50,
@@ -494,7 +581,11 @@
               "quota_distribution_model": "autogrow",
               "per_az": {
                 "any": {
-                  "usage": 97
+                  "quota": 1200,
+                  "usage": 97,
+                  "historical_usage": {
+                    "duration": "48 hours"
+                  }
                 }
               },
               "quota": 1200,
