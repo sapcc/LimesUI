@@ -44,15 +44,7 @@
               },
               "quota": 4100,
               "usable_quota": 4000,
-              "usage": 164,
-              "scales_with": {
-                "resource_name": "instances",
-                "service_type": "compute",
-                "factor": 2
-              },
-              "annotations": {
-                "can_autoscale": "true"
-              }
+              "usage": 164
             },
             {
               "name": "instances",
@@ -220,15 +212,7 @@
                 }
               },
               "quota": 16384,
-              "usable_quota": 16384,
-              "scales_with": {
-                "resource_name": "instances",
-                "service_type": "compute",
-                "factor": 1024
-              },
-              "annotations": {
-                "can_autoscale": "true"
-              }
+              "usable_quota": 16384
             },
             {
               "name": "server_groups",
@@ -359,15 +343,7 @@
               },
               "quota": 200,
               "usable_quota": 200,
-              "usage": 4,
-              "scales_with": {
-                "resource_name": "loadbalancers",
-                "service_type": "network",
-                "factor": 2
-              },
-              "annotations": {
-                "can_autoscale": "true"
-              }
+              "usage": 4
             },
             {
               "name": "loadbalancers",
@@ -412,15 +388,7 @@
               },
               "quota": 100,
               "usable_quota": 100,
-              "usage": 20,
-              "scales_with": {
-                "resource_name": "networks",
-                "service_type": "network",
-                "factor": 1
-              },
-              "annotations": {
-                "can_autoscale": "true"
-              }
+              "usage": 20
             }
           ],
           "scraped_at": 0
@@ -483,15 +451,7 @@
               "quota": 11264,
               "usable_quota": 11264,
               "usage": 61,
-              "physical_usage": 1,
-              "scales_with": {
-                "resource_name": "shares",
-                "service_type": "sharev2",
-                "factor": 100
-              },
-              "annotations": {
-                "can_autoscale": "true"
-              }
+              "physical_usage": 1
             },
             {
               "name": "shares",
@@ -541,15 +501,7 @@
               "quota": 2048,
               "usable_quota": 2048,
               "usage": 0,
-              "physical_usage": 1,
-              "scales_with": {
-                "resource_name": "shares",
-                "service_type": "sharev2",
-                "factor": 100
-              },
-              "annotations": {
-                "can_autoscale": "true"
-              }
+              "physical_usage": 1
             }
           ],
           "scraped_at": 0
@@ -570,15 +522,7 @@
               },
               "quota": 184320,
               "usable_quota": 184320,
-              "usage": 4171,
-              "scales_with": {
-                "resource_name": "volumes",
-                "service_type": "volumev2",
-                "factor": 100
-              },
-              "annotations": {
-                "can_autoscale": "true"
-              }
+              "usage": 4171
             },
             {
               "name": "snapshots",
@@ -591,15 +535,7 @@
               },
               "quota": 50,
               "usable_quota": 50,
-              "usage": 0,
-              "scales_with": {
-                "resource_name": "volumes",
-                "service_type": "volumev2",
-                "factor": 1
-              },
-              "annotations": {
-                "can_autoscale": "true"
-              }
+              "usage": 0
             },
             {
               "name": "volumes",
