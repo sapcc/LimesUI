@@ -1,0 +1,133 @@
+{
+  "projectCommitmentAPI": {
+    "id": "projectID",
+    "commitments": [
+      {
+        "id": 101,
+        "service_type": "compute",
+        "resource_name": "instances",
+        "availability_zone": "az-1a",
+        "amount": 50,
+        "unit": "",
+        "duration": "1 year",
+        "can_be_deleted": true,
+        "creator_name": "anonymous",
+        "created_at": 0,
+        "confirm_by": 0,
+        "confirmed_at": 0,
+        "expires_at": 31536000,
+        "transfer_status": "public",
+        "transfer_token": "mock token"
+      },
+      {
+        "id": 102,
+        "service_type": "compute",
+        "resource_name": "instances",
+        "availability_zone": "az-1a",
+        "amount": 20,
+        "unit": "",
+        "duration": "1 year",
+        "creator_name": "anonymous",
+        "created_at": 0,
+        "confirm_by": 0,
+        "expires_at": 31536000
+      },
+      {
+        "id": 103,
+        "service_type": "compute",
+        "resource_name": "instances",
+        "availability_zone": "az-1a",
+        "amount": 10,
+        "unit": "",
+        "duration": "3 years",
+        "creator_name": "anonymous",
+        "created_at": 0,
+        "confirm_by": 0,
+        "confirmed_at": 0,
+        "expires_at": 94694400
+      },
+      {
+        "id": 104,
+        "service_type": "compute",
+        "resource_name": "instances",
+        "availability_zone": "az-1b",
+        "amount": 5,
+        "unit": "",
+        "duration": "1 year",
+        "creator_name": "anonymous",
+        "created_at": 0,
+        "confirm_by": 0,
+        "confirmed_at": 0,
+        "expires_at": 31536000
+      },
+      {
+        "id": 105,
+        "service_type": "compute",
+        "resource_name": "instances",
+        "availability_zone": "az-1b",
+        "amount": 10,
+        "unit": "",
+        "duration": "3 years",
+        "creator_name": "anonymous",
+        "created_at": 0,
+        "confirm_by": 0,
+        "expires_at": 94694400
+      },
+      {
+        "id": 106,
+        "service_type": "compute",
+        "resource_name": "ram",
+        "availability_zone": "az-1a",
+        "amount": 100,
+        "unit": "GiB",
+        "duration": "1 year",
+        "creator_name": "anonymous",
+        "created_at": 0,
+        "confirmed_at": 0,
+        "expires_at": 31536000,
+        "transfer_status": "public",
+        "transfer_token": "mock token"
+      },
+      {
+        "id": 107,
+        "service_type": "object-store",
+        "resource_name": "capacity",
+        "availability_zone": "any",
+        "amount": 1,
+        "unit": "TiB",
+        "duration": "1 year",
+        "creator_name": "anonymous",
+        "created_at": 0,
+        "confirm_by": 0,
+        "expires_at": 31536000
+      },
+      {
+        "id": 108,
+        "service_type": "object-store",
+        "resource_name": "capacity",
+        "availability_zone": "any",
+        "amount": 50,
+        "unit": "TiB",
+        "duration": "1 year",
+        "creator_name": "anonymous",
+        "created_at": 0,
+        "confirm_by": 0,
+        "expires_at": 31536000
+      },
+      {
+        "id": 109,
+        "service_type": "object-store",
+        "resource_name": "capacity",
+        "availability_zone": "any",
+        "amount": 1,
+        "unit": "TiB",
+        "duration": "1 year",
+        "creator_name": "anonymous",
+        "created_at": 0,
+        "confirm_by": 0,
+        "confirmed_at": 0,
+        "expires_at": 31536000
+      }
+    ]
+  }
+}

@@ -259,7 +259,7 @@ const ProjectTable = (props) => {
         {filteredProjects.length > 0 &&
           filteredProjects[currentPage].map((project, index) => {
             const { categories } = project;
-            const { resources } = Object.values(categories)[0];
+            const { resources } = categories[currentCategory] ?? { resources: [] };
             const resource = getCurrentResource(resources, currentResource.name);
             const showCommitments = project.metadata.id === selectedProject.id && selectedProject.showCommitments;
             const az = resource?.per_az.find((az) => {
@@ -283,7 +283,7 @@ const ProjectTable = (props) => {
                 mergeOps={mergeOps}
               />
             ) : (
-              subRoute && (
+              subRoute && resource && (
                 <ProjectQuotaDetails
                   key={project.metadata.id}
                   serviceType={serviceType}

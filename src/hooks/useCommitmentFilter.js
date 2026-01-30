@@ -35,7 +35,7 @@ const useCommitmentFilter = () => {
 
   function isActive(commitment) {
     const { confirmed_at: isConfirmed = false } = commitment;
-    return isConfirmed;
+    return isConfirmed !== false;
   }
 
   return { getCommitmentLabel, filterCommitments, isPending, isPlanned, isActive };

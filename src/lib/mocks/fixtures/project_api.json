@@ -1,0 +1,601 @@
+{
+  "projectAPI": {
+    "project": {
+      "id": "projectID",
+      "name": "project1",
+      "parent_id": "parentID",
+      "services": [
+        {
+          "type": "compute",
+          "area": "compute",
+          "resources": [
+            {
+              "name": "cores",
+              "quota_distribution_model": "autogrow",
+              "commitment_config": {
+                "durations": [
+                  "1 year",
+                  "2 years",
+                  "3 years"
+                ]
+              },
+              "per_az": {
+                "az-1a": {
+                  "quota": 4000,
+                  "usage": 4000,
+                  "historical_usage": {
+                    "min_usage": 3636,
+                    "max_usage": 4000,
+                    "duration": "48h"
+                  }
+                },
+                "az-1b": {
+                  "usage": 50,
+                  "quota": 50
+                },
+                "az-1d": {
+                  "usage": 50,
+                  "quota": 50
+                }
+              },
+              "quota": 4100,
+              "usable_quota": 4100,
+              "usage": 4100
+            },
+            {
+              "name": "instances",
+              "quota_distribution_model": "autogrow",
+              "commitment_config": {
+                "durations": [
+                  "1 year",
+                  "2 years",
+                  "3 years"
+                ]
+              },
+              "per_az": {
+                "any": {
+                  "usage": 0,
+                  "quota": 400,
+                  "historical_usage": {
+                    "duration": "48 hours"
+                  }
+                },
+                "az-1a": {
+                  "committed": {
+                    "1 year": 60
+                  },
+                  "pending_commitments": {
+                    "1 year": 20
+                  },
+                  "usage": 30,
+                  "quota": 400
+                },
+                "az-1b": {
+                  "committed": {
+                    "1 year": 5
+                  },
+                  "pending_commitments": {
+                    "1 year": 10
+                  },
+                  "usage": 6,
+                  "quota": 10
+                },
+                "az-1d": {
+                  "usage": 20,
+                  "quota": 20
+                },
+                "unknown": {
+                  "usage": 15,
+                  "quota": 20
+                }
+              },
+              "quota": 850,
+              "usable_quota": 850,
+              "usage": 71
+            },
+            {
+              "name": "instances_hana_c120",
+              "category": "per_flavor",
+              "quota_distribution_model": "autogrow",
+              "per_az": {
+                "az-1a": {
+                  "usage": 0,
+                  "quota": 0,
+                  "historical_usage": {
+                    "duration": "48 hours"
+                  }
+                },
+                "az-1b": {
+                  "usage": 0,
+                  "quota": 0
+                },
+                "az-1d": {
+                  "usage": 0,
+                  "quota": 0
+                }
+              },
+              "commitment_config": {
+                "durations": [
+                  "1 year",
+                  "2 years",
+                  "3 years"
+                ]
+              },
+              "quota": 0,
+              "usable_quota": 0,
+              "usage": 0
+            },
+            {
+              "name": "instances_hana_c60",
+              "category": "per_flavor",
+              "quota_distribution_model": "autogrow",
+              "per_az": {
+                "az-1a": {
+                  "usage": 0,
+                  "quota": 0,
+                  "historical_usage": {
+                    "duration": "48 hours"
+                  }
+                },
+                "az-1b": {
+                  "usage": 0,
+                  "quota": 0
+                },
+                "az-1d": {
+                  "usage": 0,
+                  "quota": 0
+                }
+              },
+              "commitment_config": {
+                "durations": [
+                  "1 year",
+                  "2 years",
+                  "3 years"
+                ]
+              },
+              "quota": 0,
+              "usable_quota": 0,
+              "usage": 0
+            },
+            {
+              "name": "instances_regular",
+              "quota_distribution_model": "autogrow",
+              "per_az": {
+                "az-1a": {
+                  "usage": 32,
+                  "quota": 32,
+                  "historical_usage": {
+                    "duration": "48 hours"
+                  }
+                },
+                "az-1b": {
+                  "usage": 8,
+                  "quota": 8
+                },
+                "az-1d": {
+                  "usage": 20,
+                  "quota": 20
+                }
+              },
+              "quota": 60,
+              "usable_quota": 60,
+              "usage": 60
+            },
+            {
+              "name": "ram",
+              "unit": "GiB",
+              "quota_distribution_model": "autogrow",
+              "commitment_config": {
+                "durations": [
+                  "1 year",
+                  "2 years",
+                  "3 years"
+                ]
+              },
+              "per_az": {
+                "any": {
+                  "usage": 0,
+                  "quota": 4096,
+                  "historical_usage": {
+                    "duration": "48 hours"
+                  }
+                },
+                "az-1a": {
+                  "committed": {
+                    "2 years": 100
+                  },
+                  "usage": 4096,
+                  "quota": 4096
+                },
+                "az-1b": {
+                  "usage": 2048,
+                  "quota": 2048
+                },
+                "az-1d": {
+                  "usage": 6144,
+                  "quota": 10240
+                }
+              },
+              "quota": 16384,
+              "usable_quota": 16384,
+              "usage": 12288
+            },
+            {
+              "name": "server_groups",
+              "quota_distribution_model": "autogrow",
+              "per_az": {
+                "any": {
+                  "quota": 10,
+                  "usage": 11
+                }
+              },
+              "quota": 10,
+              "usable_quota": 10,
+              "usage": 11
+            }
+          ],
+          "scraped_at": 0
+        },
+        {
+          "type": "dns",
+          "area": "dns",
+          "resources": [
+            {
+              "name": "recordsets",
+              "quota_distribution_model": "autogrow",
+              "per_az": {
+                "any": {
+                  "quota": 25000,
+                  "usage": 8,
+                  "historical_usage": {
+                    "duration": "48 hours"
+                  }
+                }
+              },
+              "quota": 25000,
+              "usable_quota": 25000,
+              "usage": 8
+            },
+            {
+              "name": "zones",
+              "quota_distribution_model": "autogrow",
+              "per_az": {
+                "any": {
+                  "quota": 16,
+                  "usage": 15,
+                  "historical_usage": {
+                    "duration": "48 hours"
+                  }
+                }
+              },
+              "quota": 16,
+              "usable_quota": 16,
+              "usage": 15
+            }
+          ],
+          "scraped_at": 0
+        },
+        {
+          "type": "endpoint-services",
+          "area": "network",
+          "resources": [
+            {
+              "name": "endpoints",
+              "quota_distribution_model": "autogrow",
+              "per_az": {
+                "any": {
+                  "quota": 10,
+                  "usage": 0,
+                  "historical_usage": {
+                    "duration": "48 hours"
+                  }
+                }
+              },
+              "quota": 10,
+              "usable_quota": 10,
+              "usage": 0
+            },
+            {
+              "name": "services",
+              "quota_distribution_model": "autogrow",
+              "per_az": {
+                "any": {
+                  "quota": 10,
+                  "usage": 10,
+                  "historical_usage": {
+                    "duration": "48 hours"
+                  }
+                }
+              },
+              "quota": 10,
+              "usable_quota": 10,
+              "usage": 10
+            }
+          ],
+          "scraped_at": 0
+        },
+        {
+          "type": "keppel",
+          "area": "storage",
+          "resources": [
+            {
+              "name": "images",
+              "quota_distribution_model": "autogrow",
+              "per_az": {
+                "any": {
+                  "quota": 2500,
+                  "usage": 52,
+                  "historical_usage": {
+                    "duration": "48 hours"
+                  }
+                }
+              },
+              "quota": 2500,
+              "usable_quota": 2500,
+              "usage": 52
+            }
+          ],
+          "scraped_at": 0
+        },
+        {
+          "type": "network",
+          "area": "network",
+          "resources": [
+            {
+              "name": "healthmonitors",
+              "category": "loadbalancing",
+              "quota_distribution_model": "autogrow",
+              "per_az": {
+                "any": {
+                  "quota": 200,
+                  "usage": 4,
+                  "historical_usage": {
+                    "duration": "48 hours"
+                  }
+                }
+              },
+              "quota": 200,
+              "usable_quota": 200,
+              "usage": 4
+            },
+            {
+              "name": "loadbalancers",
+              "category": "loadbalancing",
+              "quota_distribution_model": "autogrow",
+              "per_az": {
+                "any": {
+                  "quota": 1200,
+                  "usage": 17,
+                  "historical_usage": {
+                    "duration": "48 hours"
+                  }
+                }
+              },
+              "quota": 1200,
+              "usable_quota": 1200,
+              "usage": 17
+            },
+            {
+              "name": "ports",
+              "category": "networking",
+              "quota_distribution_model": "autogrow",
+              "per_az": {
+                "any": {
+                  "quota": 2700,
+                  "usage": 436,
+                  "historical_usage": {
+                    "duration": "48 hours"
+                  }
+                }
+              },
+              "quota": 2700,
+              "usable_quota": 2700,
+              "usage": 436
+            },
+            {
+              "name": "routers",
+              "category": "networking",
+              "quota_distribution_model": "autogrow",
+              "per_az": {
+                "any": {
+                  "quota": 100,
+                  "usage": 20,
+                  "historical_usage": {
+                    "duration": "48 hours"
+                  }
+                }
+              },
+              "quota": 100,
+              "usable_quota": 100,
+              "usage": 20
+            }
+          ],
+          "scraped_at": 0
+        },
+        {
+          "type": "object-store",
+          "area": "storage",
+          "resources": [
+            {
+              "name": "capacity",
+              "unit": "GiB",
+              "quota_distribution_model": "autogrow",
+              "commitment_config": {
+                "durations": [
+                  "1 year",
+                  "2 years",
+                  "3 years"
+                ]
+              },
+              "per_az": {
+                "any": {
+                  "quota": 51200,
+                  "usage": 1536,
+                  "committed": {
+                    "1 year": 1024
+                  },
+                  "pending_commitments": {
+                    "1 year": 1024
+                  },
+                  "planned_commitments": {
+                    "1 year": 51200
+                  },
+                  "historical_usage": {
+                    "duration": "48 hours"
+                  }
+                }
+              },
+              "quota": 51200,
+              "usable_quota": 51200,
+              "physical_usage": 1024,
+              "usage": 1536
+            }
+          ],
+          "scraped_at": 0
+        },
+        {
+          "type": "sharev2",
+          "area": "storage",
+          "resources": [
+            {
+              "name": "share_capacity",
+              "unit": "GiB",
+              "category": "sharev2",
+              "quota_distribution_model": "autogrow",
+              "per_az": {
+                "any": {
+                  "quota": 11264,
+                  "usage": 61,
+                  "physical_usage": 1,
+                  "historical_usage": {
+                    "duration": "48 hours"
+                  }
+                }
+              },
+              "quota": 11264,
+              "usable_quota": 11264,
+              "usage": 61,
+              "physical_usage": 1
+            },
+            {
+              "name": "shares",
+              "category": "sharev2",
+              "quota_distribution_model": "autogrow",
+              "per_az": {
+                "any": {
+                  "quota": 50,
+                  "usage": 12,
+                  "historical_usage": {
+                    "duration": "48 hours"
+                  }
+                }
+              },
+              "quota": 50,
+              "usable_quota": 50,
+              "usage": 12
+            },
+            {
+              "name": "snapmirror_capacity",
+              "unit": "GiB",
+              "category": "sharev2",
+              "quota_distribution_model": "autogrow",
+              "per_az": {
+                "any": {
+                  "quota": 0,
+                  "usage": 0,
+                  "physical_usage": 0,
+                  "historical_usage": {
+                    "duration": "48 hours"
+                  }
+                }
+              },
+              "usage": 0,
+              "physical_usage": 0,
+              "quota": 0
+            },
+            {
+              "name": "snapshot_capacity",
+              "unit": "GiB",
+              "category": "sharev2",
+              "quota_distribution_model": "autogrow",
+              "per_az": {
+                "any": {
+                  "quota": 2048,
+                  "usage": 5,
+                  "physical_usage": 1,
+                  "historical_usage": {
+                    "duration": "48 hours"
+                  }
+                }
+              },
+              "quota": 2048,
+              "usable_quota": 2048,
+              "usage": 5,
+              "physical_usage": 1
+            }
+          ],
+          "scraped_at": 0
+        },
+        {
+          "type": "volumev2",
+          "area": "storage",
+          "resources": [
+            {
+              "name": "capacity",
+              "unit": "GiB",
+              "category": "volumev2",
+              "quota_distribution_model": "autogrow",
+              "per_az": {
+                "any": {
+                  "quota": 184320,
+                  "usage": 4171,
+                  "historical_usage": {
+                    "duration": "48 hours"
+                  }
+                }
+              },
+              "quota": 184320,
+              "usable_quota": 184320,
+              "usage": 4171
+            },
+            {
+              "name": "snapshots",
+              "category": "volumev2",
+              "quota_distribution_model": "autogrow",
+              "per_az": {
+                "any": {
+                  "quota": 50,
+                  "usage": 0,
+                  "historical_usage": {
+                    "duration": "48 hours"
+                  }
+                }
+              },
+              "quota": 50,
+              "usable_quota": 50,
+              "usage": 0
+            },
+            {
+              "name": "volumes",
+              "category": "volumev2",
+              "quota_distribution_model": "autogrow",
+              "per_az": {
+                "any": {
+                  "quota": 1200,
+                  "usage": 97,
+                  "historical_usage": {
+                    "duration": "48 hours"
+                  }
+                }
+              },
+              "quota": 1200,
+              "usable_quota": 1200,
+              "usage": 97
+            }
+          ],
+          "scraped_at": 0
+        }
+      ]
+    }
+  }
+}

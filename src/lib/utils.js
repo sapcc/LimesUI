@@ -27,7 +27,7 @@ export function formatTimeISO8160(unixTimeStamp) {
 
 // Used to provide a uniform time format throughout the UI.
 export function formatTime(unixTimeStamp, formatter) {
-  if (!moment.unix(unixTimeStamp).isValid() || unixTimeStamp == "") return false;
+  if (!moment.unix(unixTimeStamp).isValid()) return false;
   return moment.unix(unixTimeStamp).format(formatter);
 }
 
@@ -62,17 +62,7 @@ export const sortByLogicalOrderAndName = (resources) => {
     if (cached) {
       return cached;
     }
-    const res = resources.find((res) => res.name == resName);
-    const parts = [];
-    if (res?.contained_in) {
-      parts.push(sortingKeyForName(res.contained_in));
-      parts.push("000"); //ensure that `contained_in` resources are sorted before `scales_with` resources
-    }
-    if (res?.scales_with) {
-      parts.push(sortingKeyForName(res.scales_with.resource_name));
-    }
-    parts.push(t(resName));
-    const key = parts.join("/");
+    const key = t(resName);
     sortingKeysByName[resName] = key;
     return key;
   };

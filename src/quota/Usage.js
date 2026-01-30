@@ -35,7 +35,7 @@ const QuotaUsage = (props) => {
   const [displayLabel, setDisplayLabel] = React.useState(null);
   const [service, setService] = React.useState({ type: null, resources: [] });
   const urlPath = getBaseURL();
-  const stackDistribution = props.quotaAlign != "" ? props.quotaAlign : "end";
+  const stackDistribution = props.quotaAlign ? props.quotaAlign : "end";
 
   React.useEffect(() => {
     // Determine the availability of the project first.
