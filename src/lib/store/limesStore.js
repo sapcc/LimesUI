@@ -314,7 +314,6 @@ function identifyEditableResource(res) {
 // old model: Resources have a quota attribute attached to them.
 // new model: quota gets calculated after the quota of all availability zones.
 function getQuotaNewOrOldModel(res) {
-  if ("contained_in" in res) return;
   if ("quota" in res) return;
   // Handle cluster level
   if ("domains_quota" in res) {
