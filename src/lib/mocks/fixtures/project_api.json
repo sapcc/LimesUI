@@ -28,7 +28,7 @@
                   "quota": 4000,
                   "usage": 4000,
                   "historical_usage": {
-                    "min_usage": 3636.37,
+                    "min_usage": 3636,
                     "max_usage": 4000,
                     "duration": "48h"
                   }
