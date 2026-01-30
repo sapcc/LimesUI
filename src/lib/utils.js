@@ -62,9 +62,7 @@ export const sortByLogicalOrderAndName = (resources) => {
     if (cached) {
       return cached;
     }
-    const parts = [];
-    parts.push(t(resName));
-    const key = parts.join("/");
+    const key = t(resName);
     sortingKeysByName[resName] = key;
     return key;
   };
