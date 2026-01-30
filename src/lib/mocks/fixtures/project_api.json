@@ -15,7 +15,7 @@
           "resources": [
             {
               "name": "cores",
-              "quota_distribution_model": "hierarchical",
+              "quota_distribution_model": "autogrow",
               "commitment_config": {
                 "durations": [
                   "1 year",
