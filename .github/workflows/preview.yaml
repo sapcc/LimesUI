@@ -18,7 +18,7 @@ env:
 
 jobs:
   deploy-preview:
-    if: github.event.pull_request.head.repo.name == github.repository
+    if: github.event.pull_request.head.repo.fork == true
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
