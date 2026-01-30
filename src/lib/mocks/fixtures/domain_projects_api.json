@@ -32,7 +32,7 @@
               {
                 "name": "capacity",
                 "unit": "TiB",
-                "quota_distribution_model": "hierarchical",
+                "quota_distribution_model": "autogrow",
                 "per_az": {
                   "any": {
                     "usage": 0
@@ -41,10 +41,7 @@
                 "quota": 0,
                 "usable_quota": 0,
                 "physical_usage": 0,
-                "usage": 0,
-                "annotations": {
-                  "can_autoscale": "true"
-                }
+                "usage": 0
               }
             ],
             "scraped_at": 0

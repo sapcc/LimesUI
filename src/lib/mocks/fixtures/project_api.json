@@ -4,10 +4,6 @@
       "id": "projectID",
       "name": "project1",
       "parent_id": "parentID",
-      "bursting": {
-        "enabled": false,
-        "multiplier": 0.1
-      },
       "services": [
         {
           "type": "compute",
@@ -48,7 +44,7 @@
             },
             {
               "name": "instances",
-              "quota_distribution_model": "hierarchical",
+              "quota_distribution_model": "autogrow",
               "commitment_config": {
                 "durations": [
                   "1 year",
@@ -91,15 +87,12 @@
               },
               "usable_quota": 400,
               "usage": 58,
-              "quota": 850,
-              "annotations": {
-                "can_autoscale": "true"
-              }
+              "quota": 850
             },
             {
               "name": "instances_hana_c120",
               "category": "per_flavor",
-              "quota_distribution_model": "hierarchical",
+              "quota_distribution_model": "autogrow",
               "per_az": {
                 "az-1a": {
                   "usage": 0,
@@ -123,15 +116,12 @@
               },
               "quota": 0,
               "usable_quota": 0,
-              "usage": 0,
-              "annotations": {
-                "can_autoscale": "false"
-              }
+              "usage": 0
             },
             {
               "name": "instances_hana_c60",
               "category": "per_flavor",
-              "quota_distribution_model": "hierarchical",
+              "quota_distribution_model": "autogrow",
               "per_az": {
                 "az-1a": {
                   "usage": 0,
@@ -155,10 +145,7 @@
               },
               "quota": 0,
               "usable_quota": 0,
-              "usage": 0,
-              "annotations": {
-                "can_autoscale": "false"
-              }
+              "usage": 0
             },
             {
               "name": "instances_regular",
@@ -178,15 +165,12 @@
                 }
               },
               "usage": 60,
-              "quota": 60,
-              "annotations": {
-                "can_autoscale": "false"
-              }
+              "quota": 60
             },
             {
               "name": "ram",
               "unit": "GiB",
-              "quota_distribution_model": "hierarchical",
+              "quota_distribution_model": "autogrow",
               "commitment_config": {
                 "durations": [
                   "1 year",
@@ -216,7 +200,7 @@
             },
             {
               "name": "server_groups",
-              "quota_distribution_model": "hierarchical",
+              "quota_distribution_model": "autogrow",
               "per_az": {
                 "any": {
                   "usage": 11
@@ -224,10 +208,7 @@
               },
               "quota": 10,
               "usable_quota": 10,
-              "usage": 11,
-              "annotations": {
-                "can_autoscale": "true"
-              }
+              "usage": 11
             }
           ],
           "scraped_at": 0
@@ -238,7 +219,7 @@
           "resources": [
             {
               "name": "recordsets",
-              "quota_distribution_model": "hierarchical",
+              "quota_distribution_model": "autogrow",
               "per_az": {
                 "any": {
                   "usage": 8
@@ -246,14 +227,11 @@
               },
               "quota": 25000,
               "usable_quota": 25000,
-              "usage": 8,
-              "annotations": {
-                "can_autoscale": "true"
-              }
+              "usage": 8
             },
             {
               "name": "zones",
-              "quota_distribution_model": "hierarchical",
+              "quota_distribution_model": "autogrow",
               "per_az": {
                 "any": {
                   "usage": 15
@@ -261,10 +239,7 @@
               },
               "quota": 16,
               "usable_quota": 16,
-              "usage": 15,
-              "annotations": {
-                "can_autoscale": "true"
-              }
+              "usage": 15
             }
           ],
           "scraped_at": 0
@@ -275,7 +250,7 @@
           "resources": [
             {
               "name": "endpoints",
-              "quota_distribution_model": "hierarchical",
+              "quota_distribution_model": "autogrow",
               "per_az": {
                 "any": {
                   "usage": 0
@@ -283,14 +258,11 @@
               },
               "quota": 10,
               "usable_quota": 10,
-              "usage": 0,
-              "annotations": {
-                "can_autoscale": "true"
-              }
+              "usage": 0
             },
             {
               "name": "services",
-              "quota_distribution_model": "hierarchical",
+              "quota_distribution_model": "autogrow",
               "per_az": {
                 "any": {
                   "usage": 10
@@ -298,10 +270,7 @@
               },
               "quota": 10,
               "usable_quota": 10,
-              "usage": 10,
-              "annotations": {
-                "can_autoscale": "true"
-              }
+              "usage": 10
             }
           ],
           "scraped_at": 0
@@ -312,7 +281,7 @@
           "resources": [
             {
               "name": "images",
-              "quota_distribution_model": "hierarchical",
+              "quota_distribution_model": "autogrow",
               "per_az": {
                 "any": {
                   "usage": 52
@@ -320,10 +289,7 @@
               },
               "quota": 2500,
               "usable_quota": 2500,
-              "usage": 52,
-              "annotations": {
-                "can_autoscale": "true"
-              }
+              "usage": 52
             }
           ],
           "scraped_at": 0
@@ -335,7 +301,7 @@
             {
               "name": "healthmonitors",
               "category": "loadbalancing",
-              "quota_distribution_model": "hierarchical",
+              "quota_distribution_model": "autogrow",
               "per_az": {
                 "any": {
                   "usage": 4
@@ -348,7 +314,7 @@
             {
               "name": "loadbalancers",
               "category": "loadbalancing",
-              "quota_distribution_model": "hierarchical",
+              "quota_distribution_model": "autogrow",
               "per_az": {
                 "any": {
                   "usage": 17
@@ -356,15 +322,12 @@
               },
               "quota": 1200,
               "usable_quota": 1200,
-              "usage": 17,
-              "annotations": {
-                "can_autoscale": "true"
-              }
+              "usage": 17
             },
             {
               "name": "ports",
               "category": "networking",
-              "quota_distribution_model": "hierarchical",
+              "quota_distribution_model": "autogrow",
               "per_az": {
                 "any": {
                   "usage": 436
@@ -372,15 +335,12 @@
               },
               "quota": 2700,
               "usable_quota": 2700,
-              "usage": 436,
-              "annotations": {
-                "can_autoscale": "true"
-              }
+              "usage": 436
             },
             {
               "name": "routers",
               "category": "networking",
-              "quota_distribution_model": "hierarchical",
+              "quota_distribution_model": "autogrow",
               "per_az": {
                 "any": {
                   "usage": 20
@@ -399,8 +359,8 @@
           "resources": [
             {
               "name": "capacity",
-              "unit": "TiB",
-              "quota_distribution_model": "hierarchical",
+              "unit": "GiB",
+              "quota_distribution_model": "autogrow",
               "commitment_config": {
                 "durations": [
                   "1 year",
@@ -410,25 +370,22 @@
               },
               "per_az": {
                 "any": {
-                  "usage": 1.5,
+                  "usage": 1536,
                   "committed": {
-                    "1 year": 1
+                    "1 year": 1024
                   },
                   "pending_commitments": {
-                    "1 year": 1
+                    "1 year": 1024
                   },
                   "planned_commitments": {
-                    "1 year": 50
+                    "1 year": 51200
                   }
                 }
               },
-              "quota": 5120,
-              "usable_quota": 1.5,
-              "physical_usage": 2,
-              "usage": 1.5,
-              "annotations": {
-                "can_autoscale": "true"
-              }
+              "quota": 51200,
+              "usable_quota": 51200,
+              "physical_usage": 1024,
+              "usage": 1524
             }
           ],
           "scraped_at": 0
@@ -441,7 +398,7 @@
               "name": "share_capacity",
               "unit": "GiB",
               "category": "sharev2",
-              "quota_distribution_model": "hierarchical",
+              "quota_distribution_model": "autogrow",
               "per_az": {
                 "any": {
                   "usage": 61,
@@ -456,7 +413,7 @@
             {
               "name": "shares",
               "category": "sharev2",
-              "quota_distribution_model": "hierarchical",
+              "quota_distribution_model": "autogrow",
               "per_az": {
                 "any": {
                   "usage": 12
@@ -464,10 +421,7 @@
               },
               "quota": 50,
               "usable_quota": 50,
-              "usage": 12,
-              "annotations": {
-                "can_autoscale": "true"
-              }
+              "usage": 12
             },
             {
               "name": "snapmirror_capacity",
@@ -482,16 +436,13 @@
               },
               "usage": 0,
               "physical_usage": 0,
-              "annotations": {
-                "can_autoscale": "true"
-              },
               "quota": 0
             },
             {
               "name": "snapshot_capacity",
               "unit": "GiB",
               "category": "sharev2",
-              "quota_distribution_model": "hierarchical",
+              "quota_distribution_model": "autogrow",
               "per_az": {
                 "any": {
                   "usage": 5,
@@ -500,7 +451,7 @@
               },
               "quota": 2048,
               "usable_quota": 2048,
-              "usage": 0,
+              "usage": 5,
               "physical_usage": 1
             }
           ],
@@ -514,7 +465,7 @@
               "name": "capacity",
               "unit": "GiB",
               "category": "volumev2",
-              "quota_distribution_model": "hierarchical",
+              "quota_distribution_model": "autogrow",
               "per_az": {
                 "any": {
                   "usage": 4171
@@ -527,7 +478,7 @@
             {
               "name": "snapshots",
               "category": "volumev2",
-              "quota_distribution_model": "hierarchical",
+              "quota_distribution_model": "autogrow",
               "per_az": {
                 "any": {
                   "usage": 0
@@ -540,7 +491,7 @@
             {
               "name": "volumes",
               "category": "volumev2",
-              "quota_distribution_model": "hierarchical",
+              "quota_distribution_model": "autogrow",
               "per_az": {
                 "any": {
                   "usage": 97
@@ -548,10 +499,7 @@
               },
               "quota": 1200,
               "usable_quota": 1200,
-              "usage": 97,
-              "annotations": {
-                "can_autoscale": "true"
-              }
+              "usage": 97
             }
           ],
           "scraped_at": 0
