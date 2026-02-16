@@ -2,9 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import React from "react";
-import { chunkProjects, getCurrentResource, tracksQuota } from "../../lib/utils";
 import { PanelType } from "../../lib/constants";
+import { chunkProjects, getCurrentResource, tracksQuota } from "../../lib/utils";
 import { globalStore, domainStoreActions, createCommitmentStoreActions } from "../StoreProvider";
+import useDebounce from "../shared/useDebounce";
 import ProjectTableDetails from "./ProjectTableDetails";
 import {
   Stack,
@@ -18,6 +19,7 @@ import {
   Button,
   Select,
   SelectOption,
+  IntroBox,
 } from "@cloudoperators/juno-ui-components";
 import ProjectQuotaDetails from "./ProjectQuotaDetails";
 import { TransferStatus } from "../../lib/constants";
@@ -64,9 +66,6 @@ const quotaTableHeadCells = [
     label: "Actions",
   },
 ];
-const filterOpts = Object.freeze({
-  Any: "any",
-});
 
 // Display the project details in DomainView
 const ProjectTable = (props) => {
@@ -74,18 +73,16 @@ const ProjectTable = (props) => {
     props;
   const resourceTracksQuota = tracksQuota(currentResource);
   const { scope } = globalStore();
-  const [selectedProject, setSelectedProject] = React.useState({ id: "", showCommitments: false });
   const { setSortedProjects } = domainStoreActions();
-  const { setTransferFromAndToProject } = createCommitmentStoreActions();
-  const { setTransferProject } = createCommitmentStoreActions();
-  const { setCurrentProject } = createCommitmentStoreActions();
-  const { setToast } = createCommitmentStoreActions();
-  const [filteredProjects, setFilteredProjects] = React.useState(chunkProjects(projects));
-  const labelFilter = React.useRef(filterOpts.Any);
-  const nameFilter = React.useRef("");
+  const { setTransferFromAndToProject, setTransferProject, setCurrentProject, setToast } =
+    createCommitmentStoreActions();
+  const [selectedProject, setSelectedProject] = React.useState({ id: "", showCommitments: false });
+  const [labelFilter, setLabelFilter] = React.useState(labelTypes.ANY);
+  const [nameFilter, setNameFilter] = React.useState("");
+  const debouncedNameFilter = useDebounce(nameFilter);
   const [currentPage, setCurrentPage] = React.useState(0);
 
-  if (!resourceTracksQuota && subRoute) return;
+  if (!resourceTracksQuota && subRoute) return null;
 
   let headCells;
   let gridColumSize;
@@ -99,86 +96,84 @@ const ProjectTable = (props) => {
       headCells = projectTableHeadCells;
   }
 
-  // Tailwind only accepts complete class names as string, otherwise it won't create the corresponding CSS.
-  const colSpan = "col-span-4";
+  const { projectsPerLabel, disabledLabels } = React.useMemo(() => {
+    if (subRoute) {
+      return { projectsPerLabel: new Map(), disabledLabels: new Set() };
+    }
+    const projectsPerLabel = new Map();
+    const disabledLabels = new Set();
+
+    projects.forEach((project) => {
+      project.categories[currentCategory]?.resources[0]?.per_az?.forEach((az) => {
+        if (az.name !== currentTab) return;
+        const matchingLabels = Object.values(labelTypes).filter((type) => matchAZLabel(az, type));
+        if (matchingLabels.length > 0) {
+          matchingLabels.forEach((label) => {
+            if (!projectsPerLabel.has(label)) {
+              projectsPerLabel.set(label, []);
+            }
+            projectsPerLabel.get(label).push(project);
+          });
+        }
+      });
+    });
+
+    Object.values(labelTypes).forEach((label) => {
+      if (!projectsPerLabel.has(label)) {
+        disabledLabels.add(label);
+      }
+    });
+
+    return { projectsPerLabel, disabledLabels };
+  }, [subRoute, projects, currentCategory, currentTab]);
+
+  const filteredProjects = React.useMemo(() => {
+    if (!projects) return [];
+
+    const effectiveLabel = disabledLabels.has(labelFilter) ? labelTypes.ANY : labelFilter;
+    const labelFilteredProjects =
+      effectiveLabel === labelTypes.ANY ? projects : projectsPerLabel.get(effectiveLabel) || [];
+
+    let result = labelFilteredProjects;
+    if (debouncedNameFilter.trim() !== "") {
+      const regex = new RegExp(debouncedNameFilter.trim(), "i");
+      result = labelFilteredProjects.filter((project) => {
+        const filterName = scope.isCluster() ? project.metadata.fullName : project.metadata.name;
+        const projectID = project.metadata.id;
+        return regex.exec(filterName) || regex.exec(projectID);
+      });
+    }
+
+    return chunkProjects(result);
+  }, [scope, projects, currentTab, labelFilter, debouncedNameFilter, projectsPerLabel, disabledLabels]);
+
+  // Defer page reset until after debounce completes to avoid sluggish input.
+  // Otherwise, setCurrentPage(0) would cause immediate re-renders on every keystroke.
+  React.useEffect(() => {
+    setCurrentPage(0);
+  }, [debouncedNameFilter]);
 
   function updateShowCommitments(index) {
     const project = filteredProjects[currentPage][index];
     const projectID = filteredProjects[currentPage][index].metadata.id;
     setCurrentProject(project);
 
-    if (projectID == selectedProject.id) {
-      // A click on the same (active) project disables it. Otherwise it enables it.
+    // A click on the same (active) project disables it. Otherwise it enables it.
+    if (projectID === selectedProject.id) {
       setSelectedProject({ id: projectID, showCommitments: !selectedProject.showCommitments });
     } else {
       setSelectedProject({ id: projectID, showCommitments: true });
     }
   }
 
-  const { availableLabels, projectsPerLabel } = React.useMemo(() => {
-    if (subRoute) {
-      return { availableLabels: [], projectsPerLabel: new Map() };
-    }
-    const uniqueLabels = new Set([filterOpts.Any]);
-    const matchingProjects = new Map();
-
-    projects.forEach((project) => {
-      project.categories[currentCategory]?.resources[0]?.per_az.forEach((az) => {
-        if (az.name !== currentTab) return;
-        const matchingLabels = Object.values(labelTypes).filter((type) => matchAZLabel(az, type));
-        if (matchingLabels.length > 0) {
-          matchingLabels.forEach((label) => {
-            uniqueLabels.add(label);
-            if (!matchingProjects.has(label)) {
-              matchingProjects.set(label, []);
-            }
-            matchingProjects.get(label).push(project);
-          });
-        }
-      });
-    });
-
-    return { availableLabels: Array.from(uniqueLabels).sort(), projectsPerLabel: matchingProjects };
-  }, [currentTab]);
-
-  function getProjectsToFilter() {
-    const projectsToFilter =
-      labelFilter.current == filterOpts.Any ? projects : projectsPerLabel.get(labelFilter.current) || [];
-    return projectsToFilter;
-  }
-
-  // Change the displayed projects corresponding to its filtered string
-  // The show commitment state will be transferred to filtered projects.
-  function filterProjectsByName(projects) {
-    const regex = new RegExp(nameFilter.current.trim(), "i");
-    const filteredProjects = projects.filter((project) => {
-      const filterName = scope.isCluster() ? project.metadata.fullName : project.metadata.name;
-      const projectID = project.metadata.id;
-      const matchesNameOrID = regex.exec(filterName) || regex.exec(projectID);
-      return matchesNameOrID;
-    });
-    setFilteredProjects(chunkProjects(filteredProjects));
-  }
-
-  function filterProjectsPerNameOrLabel() {
-    const projectsToFilter = getProjectsToFilter();
-    if (nameFilter.current === "") {
-      setFilteredProjects(chunkProjects(projectsToFilter));
-    } else {
-      filterProjectsByName(projectsToFilter);
-    }
-    setCurrentPage(0);
-  }
-  React.useEffect(() => {
-    filterProjectsPerNameOrLabel();
-  }, [projects, currentTab]);
-
   function handleCommitmentTransfer(project) {
     setTransferProject(project);
     setTransferFromAndToProject(TransferStatus.START);
   }
 
-  return projects ? (
+  return !projects ? (
+    <LoadingIndicator className={"m-auto"} />
+  ) : (
     <>
       <ContentAreaToolbar className={`p-0 sticky ${subRoute ? "top-8" : "top-24"} z-[100]`}>
         <Stack className="w-full mb-7" direction="horizontal" distribution="between">
@@ -189,29 +184,31 @@ const ProjectTable = (props) => {
                 className="w-40"
                 width="auto"
                 label="Filter"
-                placeholder={labelFilter.current}
+                value={disabledLabels.has(labelFilter) ? labelTypes.ANY : labelFilter}
                 onChange={(label) => {
-                  labelFilter.current = label;
-                  filterProjectsPerNameOrLabel();
+                  setLabelFilter(label);
                 }}
               >
-                {Object.values(availableLabels).map((label) => (
-                  <SelectOption data-testid={`filter-${label}`} key={label}>
-                    {label}
-                  </SelectOption>
-                ))}
+                {Object.values(labelTypes).map((label) => {
+                  return (
+                    <SelectOption
+                      data-testid={`filter-${label}`}
+                      key={label}
+                      disabled={disabledLabels.has(label) && label !== labelTypes.ANY}
+                      value={label}
+                    />
+                  );
+                })}
               </Select>
             )}
             <SearchInput
               data-testid="Search"
-              value={nameFilter.current}
+              value={nameFilter}
               onChange={(e) => {
-                nameFilter.current = e.target.value;
-                filterProjectsPerNameOrLabel();
+                setNameFilter(e.target.value);
               }}
               onClear={() => {
-                nameFilter.current = "";
-                filterProjectsPerNameOrLabel();
+                setNameFilter("");
               }}
             />
             {!subRoute && (
@@ -245,19 +242,20 @@ const ProjectTable = (props) => {
           />
         </Stack>
       </ContentAreaToolbar>
-      <DataGrid columns={headCells.length} gridColumnTemplate={gridColumSize}>
-        <DataGridRow>
-          {headCells.map((headCell) => (
-            <DataGridHeadCell
-              key={headCell.key}
-              className={`p-0 sticky ${subRoute ? "top-[6.5rem]" : "top-40"} z-[100]`}
-            >
-              {headCell.label}
-            </DataGridHeadCell>
-          ))}
-        </DataGridRow>
-        {filteredProjects.length > 0 &&
-          filteredProjects[currentPage].map((project, index) => {
+      {filteredProjects.length === 0 && <IntroBox text="No projects found" />}
+      {filteredProjects.length > 0 && (
+        <DataGrid columns={headCells.length} gridColumnTemplate={gridColumSize}>
+          <DataGridRow>
+            {headCells.map((headCell) => (
+              <DataGridHeadCell
+                key={headCell.key}
+                className={`p-0 sticky ${subRoute ? "top-[6.5rem]" : "top-40"} z-[100]`}
+              >
+                {headCell.label}
+              </DataGridHeadCell>
+            ))}
+          </DataGridRow>
+          {filteredProjects[currentPage]?.map((project, index) => {
             const { categories } = project;
             const { resources } = categories[currentCategory] ?? { resources: [] };
             const resource = getCurrentResource(resources, currentResource.name);
@@ -279,7 +277,6 @@ const ProjectTable = (props) => {
                 tracksQuota={resourceTracksQuota}
                 az={az}
                 currentTab={currentTab}
-                colSpan={colSpan}
                 mergeOps={mergeOps}
               />
             ) : (
@@ -293,10 +290,9 @@ const ProjectTable = (props) => {
               )
             );
           })}
-      </DataGrid>
+        </DataGrid>
+      )}
     </>
-  ) : (
-    <LoadingIndicator className={"m-auto"} />
   );
 };
 

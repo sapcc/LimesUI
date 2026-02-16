@@ -34,14 +34,39 @@ queryClient.setQueryDefaults(["commitmentData"], {
 });
 
 describe("ProjectTable", () => {
+  const mockProjects = [
+    {
+      metadata: { id: "1", name: "Project1", fullName: "domain1/Project1" },
+      categories: {
+        [mockProps.currentCategory]: {
+          resources: [
+            {
+              name: mockProps.currentResource.name,
+              per_az: [{ name: mockProps.currentTab, pending_commitments: { "1 year": 10 }, commitmentSum: 10 }],
+            },
+          ],
+        },
+      },
+    },
+    {
+      metadata: { id: "2", name: "Project2", fullName: "domain2/Project2" },
+      categories: {
+        [mockProps.currentCategory]: {
+          resources: [{ name: mockProps.currentResource.name, per_az: [{ name: mockProps.currentTab }] }],
+        },
+      },
+    },
+  ];
+
   test("renders DataGrid with correct table headers", async () => {
+    const props = { ...mockProps, projects: mockProjects };
     const expectedHeaders = ["ProjectName", "Status", "Labels", "Actions"];
 
     const wrapper = ({ children }) => (
       <PortalProvider>
         <StoreProvider>
           <QueryClientProvider client={queryClient}>
-            <ProjectTable {...mockProps} />
+            <ProjectTable {...props} />
             {children}
           </QueryClientProvider>
         </StoreProvider>
@@ -67,36 +92,12 @@ describe("ProjectTable", () => {
   });
 
   test("handles filtering projects by name and label", async () => {
-    const mockProjects = [
-      {
-        metadata: { id: "1", name: "Project1", fullName: "domain1/Project1" },
-        categories: {
-          [mockProps.currentCategory]: {
-            resources: [
-              {
-                name: mockProps.currentResource.name,
-                per_az: [{ name: mockProps.currentTab, pending_commitments: { "1 year": 10 }, commitmentSum: 10 }],
-              },
-            ],
-          },
-        },
-      },
-      {
-        metadata: { id: "2", name: "Project2", fullName: "domain2/Project2" },
-        categories: {
-          [mockProps.currentCategory]: {
-            resources: [{ name: mockProps.currentResource.name, per_az: [{ name: mockProps.currentTab }] }],
-          },
-        },
-      },
-    ];
-    mockProps.projects = mockProjects;
-
+    const props = { ...mockProps, projects: mockProjects };
     const wrapper = ({ children }) => (
       <PortalProvider>
         <StoreProvider>
           <QueryClientProvider client={queryClient}>
-            <ProjectTable {...mockProps} />
+            <ProjectTable {...props} />
             {children}
           </QueryClientProvider>
         </StoreProvider>
@@ -153,12 +154,16 @@ describe("ProjectTable", () => {
 
     // Clear the name filter
     fireEvent.change(screen.getByTestId("Search"), { target: { value: "" } });
-    expect(screen.getByText("domain1/Project1")).toBeInTheDocument();
-    expect(screen.queryByText("domain2/Project2")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText("domain1/Project1")).toBeInTheDocument();
+      expect(screen.queryByText("domain2/Project2")).toBeInTheDocument();
+    });
 
     // enforce an empty list
     fireEvent.change(screen.getByTestId("Search"), { target: { value: "invalidSearchName" } });
-    expect(screen.queryByText("domain1/Project1")).not.toBeInTheDocument();
-    expect(screen.queryByText("domain2/Project2")).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.queryByText("domain1/Project1")).not.toBeInTheDocument();
+      expect(screen.queryByText("domain2/Project2")).not.toBeInTheDocument();
+    });
   });
 });

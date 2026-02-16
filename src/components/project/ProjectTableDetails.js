@@ -30,7 +30,6 @@ const ProjectTableDetails = (props) => {
     resource,
     az,
     currentTab,
-    colSpan,
     mergeOps,
   } = props;
   const { metadata } = project;
@@ -182,7 +181,7 @@ const ProjectTableDetails = (props) => {
         </DataGridCell>
       </DataGridRow>
       {showCommitments && (
-        <div className={`${colSpan} mt-2 mb-5`}>
+        <div className={`col-span-4 mt-2 mb-5`}>
           {commitments && !isLoading ? (
             <>
               {az.hasCommitments && <p className="font-semibold mb-5">Commitments:</p>}

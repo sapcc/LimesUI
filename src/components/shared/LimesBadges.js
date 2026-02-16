@@ -7,11 +7,14 @@ import { Unit, valueWithUnit } from "../../lib/unit";
 import { uncommittedUsage, unusedCommitments } from "../../lib/utils";
 
 export const labelTypes = Object.freeze({
-  PLANNED: "planned",
+  ANY: "any",
   PENDING: "pending",
-  UNUSED: "unused",
+  PLANNED: "planned",
   COMMITTED: "committed",
+  UNUSED: "underutilized",
   UNCOMMITTED: "uncommitted",
+  EMPTY: "empty",
+  NONEMPTY: "non-empty",
 });
 
 const DomainBadges = (props) => {
@@ -90,6 +93,10 @@ export function matchAZLabel(az, label) {
       return az.commitmentSum > 0;
     case labelTypes.UNCOMMITTED:
       return uncommittedUsage(az.commitmentSum, az.usage);
+    case labelTypes.EMPTY:
+      return az.commitmentSum == 0 && az.usage == 0;
+    case labelTypes.NONEMPTY:
+      return az.commitmentSum > 0 || az.usage > 0;
     default:
       return false;
   }
