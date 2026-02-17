@@ -68,7 +68,7 @@ const ProjectsPerDomain = (props) => {
     }
     setProjects(flattendProjects, sortProjects.current);
     projectsUpdated.current = true;
-  }, [isFetching]);
+  }, [isFetching, resource]);
 
   React.useEffect(() => {
     if (!refetchProjectAPI) return;

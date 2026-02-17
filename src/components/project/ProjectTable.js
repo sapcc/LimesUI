@@ -148,7 +148,7 @@ const ProjectTable = (props) => {
   }, [scope, projects, currentTab, labelFilter, debouncedNameFilter, projectsPerLabel, disabledLabels]);
 
   // Defer page reset until after debounce completes to avoid sluggish input.
-  // Otherwise, setCurrentPage(0) would cause immediate re-renders on every keystroke.
+  // Otherwise, setCurrentPage(0) would cause an immediate re-render on keystroke.
   React.useEffect(() => {
     setCurrentPage(0);
   }, [debouncedNameFilter]);
