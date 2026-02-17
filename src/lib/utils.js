@@ -106,6 +106,13 @@ export function unusedCommitments(committed, usage) {
   return committed > usage;
 }
 
+export function getUnusedCommitmentRatio(committed, usage) {
+  if (committed === 0 || usage > committed) {
+    return 0;
+  }
+  return Math.round((1 - usage / committed) * 100);
+}
+
 export function uncommittedUsage(committed, usage) {
   return usage > committed;
 }

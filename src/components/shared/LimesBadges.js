@@ -4,14 +4,14 @@
 import React from "react";
 import { Badge } from "@cloudoperators/juno-ui-components";
 import { Unit, valueWithUnit } from "../../lib/unit";
-import { uncommittedUsage, unusedCommitments } from "../../lib/utils";
+import { uncommittedUsage, getUnusedCommitmentRatio } from "../../lib/utils";
 
 export const labelTypes = Object.freeze({
   ANY: "any",
   PENDING: "pending",
   PLANNED: "planned",
   COMMITTED: "committed",
-  UNUSED: "underutilized",
+  UNDERUTILIZED: "underutilized",
   UNCOMMITTED: "uncommitted",
   EMPTY: "empty",
   NONEMPTY: "non-empty",
@@ -20,13 +20,16 @@ export const labelTypes = Object.freeze({
 const DomainBadges = (props) => {
   const { resource, az } = props;
   const { quota } = resource;
-  if (quota == 0) return;
+  if (quota === 0) return;
+  const underutilizedRatio = matchAZLabel(az, labelTypes.UNDERUTILIZED);
   return (
     <span>
-      {matchAZLabel(az, labelTypes.UNUSED) && (
+      {underutilizedRatio > 0 && (
         <Badge variant="info">
           {" "}
-          <b>{labelTypes.UNUSED}</b>
+          <b>
+            {underutilizedRatio} % {labelTypes.UNDERUTILIZED}
+          </b>
         </Badge>
       )}
       {matchAZLabel(az, labelTypes.UNCOMMITTED) && (
@@ -87,14 +90,14 @@ export function matchAZLabel(az, label) {
       return az.hasOwnProperty("planned_commitments");
     case labelTypes.PENDING:
       return az.hasOwnProperty("pending_commitments");
-    case labelTypes.UNUSED:
-      return unusedCommitments(az.commitmentSum, az.usage);
+    case labelTypes.UNDERUTILIZED:
+      return getUnusedCommitmentRatio(az.commitmentSum, az.usage);
     case labelTypes.COMMITTED:
       return az.commitmentSum > 0;
     case labelTypes.UNCOMMITTED:
       return uncommittedUsage(az.commitmentSum, az.usage);
     case labelTypes.EMPTY:
-      return az.commitmentSum == 0 && az.usage == 0;
+      return az.commitmentSum === 0 && az.usage === 0;
     case labelTypes.NONEMPTY:
       return az.commitmentSum > 0 || az.usage > 0;
     default:
