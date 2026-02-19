@@ -145,7 +145,7 @@ const ProjectTableDetails = (props) => {
           {isEditableResource && (
             <>
               {!isTransferring || originProject ? (
-                <div>
+                <Stack gap="1">
                   <AddCommitments
                     label="Add"
                     resource={resource}
@@ -164,7 +164,7 @@ const ProjectTableDetails = (props) => {
                   >
                     Move
                   </Button>
-                </div>
+                </Stack>
               ) : (
                 <Button
                   variant="primary"

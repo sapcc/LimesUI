@@ -72,15 +72,20 @@ const ProjectTable = (props) => {
   const { serviceType, currentResource, currentCategory, currentTab, projects, subRoute, sortProjectProps, mergeOps } =
     props;
   const resourceTracksQuota = tracksQuota(currentResource);
+  const { durations = {} } = currentResource?.commitment_config ?? {};
   const { scope } = globalStore();
   const { setSortedProjects } = domainStoreActions();
   const { setTransferFromAndToProject, setTransferProject, setCurrentProject, setToast } =
     createCommitmentStoreActions();
   const [selectedProject, setSelectedProject] = React.useState({ id: "", showCommitments: false });
-  const [labelFilter, setLabelFilter] = React.useState(labelTypes.ANY);
+  const [currentPage, setCurrentPage] = React.useState(0);
   const [nameFilter, setNameFilter] = React.useState("");
   const debouncedNameFilter = useDebounce(nameFilter);
-  const [currentPage, setCurrentPage] = React.useState(0);
+  const [selectedLabelFilter, setSelectedLabelFilter] = React.useState(labelTypes.ANY);
+  const [selectedDuration, setSelectedDuration] = React.useState(labelTypes.ANY);
+  const durationFilterValues = React.useMemo(() => {
+    return [labelTypes.ANY, ...Object.values(durations)];
+  }, [durations]);
 
   if (!resourceTracksQuota && subRoute) return null;
 
@@ -96,13 +101,13 @@ const ProjectTable = (props) => {
       headCells = projectTableHeadCells;
   }
 
-  const { projectsPerLabel, disabledLabels } = React.useMemo(() => {
+  const { projectsPerLabel, validLabels, validDurations } = React.useMemo(() => {
     if (subRoute) {
-      return { projectsPerLabel: new Map(), disabledLabels: new Set() };
+      return { projectsPerLabel: new Map(), validLabels: new Set(), validDurations: new Set() };
     }
-    const projectsPerLabel = new Map();
-    const disabledLabels = new Set();
 
+    const projectsPerLabel = new Map();
+    const validDurations = new Set();
     projects.forEach((project) => {
       project.categories[currentCategory]?.resources[0]?.per_az?.forEach((az) => {
         if (az.name !== currentTab) return;
@@ -115,37 +120,68 @@ const ProjectTable = (props) => {
             projectsPerLabel.get(label).push(project);
           });
         }
+
+        const commitments = az?.committed || {};
+        Object.values(durations).forEach((duration) => {
+          if (commitments[duration]) {
+            validDurations.add(duration);
+          }
+        });
       });
     });
 
+    const validLabels = new Set();
     Object.values(labelTypes).forEach((label) => {
-      if (!projectsPerLabel.has(label)) {
-        disabledLabels.add(label);
+      if (projectsPerLabel.has(label)) {
+        validLabels.add(label);
       }
     });
 
-    return { projectsPerLabel, disabledLabels };
+    return { projectsPerLabel, validLabels, validDurations };
   }, [subRoute, projects, currentCategory, currentTab]);
 
   const filteredProjects = React.useMemo(() => {
     if (!projects) return [];
 
-    const effectiveLabel = disabledLabels.has(labelFilter) ? labelTypes.ANY : labelFilter;
-    const labelFilteredProjects =
-      effectiveLabel === labelTypes.ANY ? projects : projectsPerLabel.get(effectiveLabel) || [];
+    // It is important to use the effective filters here to avoid returning an empty list in cases where the current filter selection is not valid for the current tab
+    // e.g. committed filter selected but no committed resources in the current tab.
+    // Otherwise the filter would lag behind and display empty results until the rerender for the filter reseset passes through.
+    const effectiveLabelFilter = validLabels.has(selectedLabelFilter) ? selectedLabelFilter : labelTypes.ANY;
+    const effectiveDurationFilter = validDurations.has(selectedDuration) ? selectedDuration : labelTypes.ANY;
 
-    let result = labelFilteredProjects;
+    let result = effectiveLabelFilter === labelTypes.ANY ? projects : projectsPerLabel.get(effectiveLabelFilter) || [];
+
     if (debouncedNameFilter.trim() !== "") {
       const regex = new RegExp(debouncedNameFilter.trim(), "i");
-      result = labelFilteredProjects.filter((project) => {
+      result = result.filter((project) => {
         const filterName = scope.isCluster() ? project.metadata.fullName : project.metadata.name;
         const projectID = project.metadata.id;
         return regex.exec(filterName) || regex.exec(projectID);
       });
     }
 
+    if (effectiveDurationFilter !== labelTypes.ANY) {
+      result = result.filter((project) => {
+        const resource = project.categories[currentCategory]?.resources[0];
+        const az = resource?.per_az?.find((az) => az.name === currentTab);
+        const commitments = az?.committed || {};
+        return commitments[effectiveDurationFilter] > 0;
+      });
+    }
+
     return chunkProjects(result);
-  }, [scope, projects, currentTab, labelFilter, debouncedNameFilter, projectsPerLabel, disabledLabels]);
+  }, [
+    scope,
+    projects,
+    currentCategory,
+    currentTab,
+    debouncedNameFilter,
+    projectsPerLabel,
+    validLabels,
+    validDurations,
+    selectedDuration,
+    selectedLabelFilter,
+  ]);
 
   // Defer page reset until after debounce completes to avoid sluggish input.
   // Otherwise, setCurrentPage(0) would cause an immediate re-render on keystroke.
@@ -153,6 +189,17 @@ const ProjectTable = (props) => {
     setCurrentPage(0);
   }, [debouncedNameFilter]);
 
+  // Sync filter state when it becomes invalid for the current tab.
+  React.useEffect(() => {
+    if (!validLabels.has(selectedLabelFilter)) {
+      setSelectedLabelFilter(labelTypes.ANY);
+    }
+    if (!validDurations.has(selectedDuration)) {
+      setSelectedDuration(labelTypes.ANY);
+    }
+  }, [validLabels, validDurations, selectedLabelFilter, selectedDuration]);
+
+  // Subcomponent handlers
   function updateShowCommitments(index) {
     const project = filteredProjects[currentPage][index];
     const projectID = filteredProjects[currentPage][index].metadata.id;
@@ -176,54 +223,80 @@ const ProjectTable = (props) => {
   ) : (
     <>
       <ContentAreaToolbar className={`p-0 sticky ${subRoute ? "top-8" : "top-24"} z-[100]`}>
-        <Stack className="w-full mb-7" direction="horizontal" distribution="between">
-          <Stack gap="1">
+        <Stack className="w-full mb-7 flex-wrap" direction="horizontal" distribution="between">
+          <Stack gap="1" className="flex-wrap">
             {!subRoute && (
-              <Select
-                data-testid="Filter"
-                className="w-40"
-                width="auto"
-                label="Filter"
-                value={disabledLabels.has(labelFilter) ? labelTypes.ANY : labelFilter}
-                onChange={(label) => {
-                  setLabelFilter(label);
-                }}
-              >
-                {Object.values(labelTypes).map((label) => {
-                  return (
-                    <SelectOption
-                      data-testid={`filter-${label}`}
-                      key={label}
-                      disabled={disabledLabels.has(label) && label !== labelTypes.ANY}
-                      value={label}
-                    />
-                  );
-                })}
-              </Select>
+              <Stack gap="1">
+                <Select
+                  data-testid="Filter"
+                  className="w-40"
+                  label="Filter"
+                  value={selectedLabelFilter}
+                  onChange={(label) => {
+                    setSelectedLabelFilter(label);
+                    setSelectedDuration(labelTypes.ANY);
+                  }}
+                >
+                  {Object.values(labelTypes).map((label) => {
+                    return (
+                      <SelectOption
+                        data-testid={`filter-${label}`}
+                        key={label}
+                        disabled={!validLabels.has(label) && label !== labelTypes.ANY}
+                        value={label}
+                      />
+                    );
+                  })}
+                </Select>
+                {selectedLabelFilter === labelTypes.COMMITTED && (
+                  <Select
+                    data-testid="durationFilter"
+                    className="w-30"
+                    label="Duration"
+                    value={selectedDuration}
+                    onChange={(value) => {
+                      setSelectedDuration(value);
+                    }}
+                  >
+                    {durationFilterValues.map((duration) => {
+                      return (
+                        <SelectOption
+                          data-testid={`filter-[${duration}]`}
+                          key={duration}
+                          disabled={!validDurations.has(duration) && duration !== labelTypes.ANY}
+                          value={duration}
+                        />
+                      );
+                    })}
+                  </Select>
+                )}
+              </Stack>
             )}
-            <SearchInput
-              data-testid="Search"
-              value={nameFilter}
-              onChange={(e) => {
-                setNameFilter(e.target.value);
-              }}
-              onClear={() => {
-                setNameFilter("");
-              }}
-            />
-            {!subRoute && (
-              <Button
-                disabled={!sortProjectProps.projectsAreSortable}
-                onClick={() => {
-                  setToast(null);
-                  setSortedProjects();
-                  sortProjectProps.setProjectsAreSortable(false);
+            <Stack gap="1">
+              <SearchInput
+                data-testid="Search"
+                value={nameFilter}
+                onChange={(e) => {
+                  setNameFilter(e.target.value);
                 }}
-                className={"m-auto mt-0"}
-              >
-                Sort
-              </Button>
-            )}
+                onClear={() => {
+                  setNameFilter("");
+                }}
+              />
+              {!subRoute && (
+                <Button
+                  disabled={!sortProjectProps.projectsAreSortable}
+                  onClick={() => {
+                    setToast(null);
+                    setSortedProjects();
+                    sortProjectProps.setProjectsAreSortable(false);
+                  }}
+                  className={"m-auto mt-0"}
+                >
+                  Sort
+                </Button>
+              )}
+            </Stack>
           </Stack>
           <Pagination
             currentPage={currentPage + 1}

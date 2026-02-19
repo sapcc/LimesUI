@@ -3,8 +3,8 @@
 
 import React from "react";
 import { Badge } from "@cloudoperators/juno-ui-components";
-import { Unit, valueWithUnit } from "../../lib/unit";
-import { uncommittedUsage, getUnusedCommitmentRatio } from "../../lib/utils";
+import { Unit } from "../../lib/unit";
+import { uncommittedUsage, unusedCommitments, getUnusedCommitmentRatio } from "../../lib/utils";
 
 export const labelTypes = Object.freeze({
   ANY: "any",
@@ -21,15 +21,13 @@ const DomainBadges = (props) => {
   const { resource, az } = props;
   const { quota } = resource;
   if (quota === 0) return;
-  const underutilizedRatio = matchAZLabel(az, labelTypes.UNDERUTILIZED);
+  const underutilizedRatio = getUnusedCommitmentRatio(az.commitmentSum, az.usage);
   return (
-    <span>
+    <span className="truncate">
       {underutilizedRatio > 0 && (
         <Badge variant="info">
           {" "}
-          <b>
-            {underutilizedRatio} % {labelTypes.UNDERUTILIZED}
-          </b>
+          <b className="whitespace-nowrap">{`${underutilizedRatio}% ${labelTypes.UNDERUTILIZED}`}</b>
         </Badge>
       )}
       {matchAZLabel(az, labelTypes.UNCOMMITTED) && (
@@ -63,21 +61,17 @@ const ProjectBadges = (props) => {
   }
 
   return (
-    <span>
+    <span className="truncate">
       {pending && (
         <Badge variant="info">
           {" "}
-          <b>
-            + {props.displayValues && valueWithUnit(pendingAmount, unit)} {labelTypes.PENDING}
-          </b>
+          <b>{`+ ${props.displayValues ? unit.format(pendingAmount, { ascii: true }) : ""} ${labelTypes.PENDING}`}</b>
         </Badge>
       )}
       {planned && (
         <Badge variant="info" className={`${pending && "ml-1"}`}>
           {" "}
-          <b>
-            + {props.displayValues && valueWithUnit(plannedAmount, unit)} {labelTypes.PLANNED}
-          </b>
+          <b>{`+ ${props.displayValues ? unit.format(plannedAmount, { ascii: true }) : ""} ${labelTypes.PLANNED}`}</b>
         </Badge>
       )}
     </span>
@@ -91,7 +85,7 @@ export function matchAZLabel(az, label) {
     case labelTypes.PENDING:
       return az.hasOwnProperty("pending_commitments");
     case labelTypes.UNDERUTILIZED:
-      return getUnusedCommitmentRatio(az.commitmentSum, az.usage);
+      return unusedCommitments(az.commitmentSum, az.usage);
     case labelTypes.COMMITTED:
       return az.commitmentSum > 0;
     case labelTypes.UNCOMMITTED:
