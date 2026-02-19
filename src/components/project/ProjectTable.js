@@ -82,7 +82,8 @@ const ProjectTable = (props) => {
   const [nameFilter, setNameFilter] = React.useState("");
   const debouncedNameFilter = useDebounce(nameFilter);
   const [selectedLabelFilter, setSelectedLabelFilter] = React.useState(labelTypes.ANY);
-  const [selectedDuration, setSelectedDuration] = React.useState(labelTypes.ANY);
+  const [selectedDurationFilter, setSelectedDurationFilter] = React.useState(labelTypes.ANY);
+  const filterNeedsUpdate = React.useRef(false);
   const durationFilterValues = React.useMemo(() => {
     return [labelTypes.ANY, ...Object.values(durations)];
   }, [durations]);
@@ -140,14 +141,21 @@ const ProjectTable = (props) => {
     return { projectsPerLabel, validLabels, validDurations };
   }, [subRoute, projects, currentCategory, currentTab]);
 
+  // The helper variables are a tradeoff to avoid multiple calculations of the project filter logic while still ensuring that the filters reset when they become invalid.
+  // 1. The Tab changes; validLabels/validDurations change; project filter would run
+  // 2. The useEffect resets selectedLabelFilter/selectedDurationFilter; project filter would run again
+  //    However, since the effective filter was already "any", the value doesn't change; project filter doesn't run again
+  const effectiveLabelFilter = React.useMemo(
+    () => (validLabels.has(selectedLabelFilter) ? selectedLabelFilter : labelTypes.ANY),
+    [validLabels, selectedLabelFilter]
+  );
+  const effectiveDurationFilter = React.useMemo(
+    () => (validDurations.has(selectedDurationFilter) ? selectedDurationFilter : labelTypes.ANY),
+    [validDurations, selectedDurationFilter]
+  );
+
   const filteredProjects = React.useMemo(() => {
     if (!projects) return [];
-
-    // It is important to use the effective filters here to avoid returning an empty list in cases where the current filter selection is not valid for the current tab
-    // e.g. committed filter selected but no committed resources in the current tab.
-    // Otherwise the filter would lag behind and display empty results until the rerender for the filter reseset passes through.
-    const effectiveLabelFilter = validLabels.has(selectedLabelFilter) ? selectedLabelFilter : labelTypes.ANY;
-    const effectiveDurationFilter = validDurations.has(selectedDuration) ? selectedDuration : labelTypes.ANY;
 
     let result = effectiveLabelFilter === labelTypes.ANY ? projects : projectsPerLabel.get(effectiveLabelFilter) || [];
 
@@ -177,10 +185,8 @@ const ProjectTable = (props) => {
     currentTab,
     debouncedNameFilter,
     projectsPerLabel,
-    validLabels,
-    validDurations,
-    selectedDuration,
-    selectedLabelFilter,
+    effectiveLabelFilter,
+    effectiveDurationFilter,
   ]);
 
   // Defer page reset until after debounce completes to avoid sluggish input.
@@ -191,13 +197,14 @@ const ProjectTable = (props) => {
 
   // Sync filter state when it becomes invalid for the current tab.
   React.useEffect(() => {
+    filterNeedsUpdate.current = true;
     if (!validLabels.has(selectedLabelFilter)) {
       setSelectedLabelFilter(labelTypes.ANY);
     }
-    if (!validDurations.has(selectedDuration)) {
-      setSelectedDuration(labelTypes.ANY);
+    if (!validDurations.has(selectedDurationFilter)) {
+      setSelectedDurationFilter(labelTypes.ANY);
     }
-  }, [validLabels, validDurations, selectedLabelFilter, selectedDuration]);
+  }, [validLabels, validDurations, selectedLabelFilter, selectedDurationFilter]);
 
   // Subcomponent handlers
   function updateShowCommitments(index) {
@@ -234,7 +241,7 @@ const ProjectTable = (props) => {
                   value={selectedLabelFilter}
                   onChange={(label) => {
                     setSelectedLabelFilter(label);
-                    setSelectedDuration(labelTypes.ANY);
+                    setSelectedDurationFilter(labelTypes.ANY);
                   }}
                 >
                   {Object.values(labelTypes).map((label) => {
@@ -253,9 +260,9 @@ const ProjectTable = (props) => {
                     data-testid="durationFilter"
                     className="w-30"
                     label="Duration"
-                    value={selectedDuration}
+                    value={selectedDurationFilter}
                     onChange={(value) => {
-                      setSelectedDuration(value);
+                      setSelectedDurationFilter(value);
                     }}
                   >
                     {durationFilterValues.map((duration) => {

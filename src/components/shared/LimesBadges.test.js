@@ -22,7 +22,7 @@ describe("LimesBadges", () => {
       render(<ProjectBadges az={az} unit="B" displayValues={true} />);
 
       // Check that pending badge shows the sum of pending commitments (100 + 50 = 150)
-      expect(screen.getByText("150 B", {exact: false})).toBeInTheDocument();
+      expect(screen.getByText("150 B", { exact: false })).toBeInTheDocument();
       expect(
         screen.getByText((content, element) => {
           return element.tagName.toLowerCase() === "b" && content.includes(labelTypes.PENDING);
