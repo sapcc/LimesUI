@@ -204,4 +204,12 @@ const ProjectTableDetails = (props) => {
   );
 };
 
-export default ProjectTableDetails;
+// Memoize component to prevent unnecessary re-renders when parent updates
+export default React.memo(ProjectTableDetails, (prevProps, nextProps) => {
+  return (
+    prevProps.project.metadata.id === nextProps.project.metadata.id &&
+    prevProps.showCommitments === nextProps.showCommitments &&
+    prevProps.currentTab === nextProps.currentTab &&
+    prevProps.resource === nextProps.resource
+  );
+});

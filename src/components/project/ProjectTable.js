@@ -159,21 +159,22 @@ const ProjectTable = (props) => {
 
     let result = effectiveLabelFilter === labelTypes.ANY ? projects : projectsPerLabel.get(effectiveLabelFilter) || [];
 
-    if (debouncedNameFilter.trim() !== "") {
-      const regex = new RegExp(debouncedNameFilter.trim(), "i");
-      result = result.filter((project) => {
-        const filterName = scope.isCluster() ? project.metadata.fullName : project.metadata.name;
-        const projectID = project.metadata.id;
-        return regex.exec(filterName) || regex.exec(projectID);
-      });
-    }
-
     if (effectiveDurationFilter !== labelTypes.ANY) {
       result = result.filter((project) => {
         const resource = project.categories[currentCategory]?.resources[0];
         const az = resource?.per_az?.find((az) => az.name === currentTab);
         const commitments = az?.committed || {};
         return commitments[effectiveDurationFilter] > 0;
+      });
+    }
+
+    if (debouncedNameFilter.trim() !== "") {
+      const searchTerm = debouncedNameFilter.toLowerCase();
+      const isCluster = scope.isCluster();
+      result = result.filter((project) => {
+        const filterName = isCluster ? project.metadata.fullName : project.metadata.name;
+        const projectID = project.metadata.id;
+        return filterName.toLowerCase().includes(searchTerm) || projectID.toLowerCase().includes(searchTerm);
       });
     }
 
