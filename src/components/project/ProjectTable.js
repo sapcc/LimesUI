@@ -193,15 +193,10 @@ const ProjectTable = (props) => {
     effectiveDurationFilter,
   ]);
 
-  // If user has clicked a table header to sort (sortConfig has a key), use table sort
-  // Otherwise use the default order from the backend which is sorted by project name, and then paginate it.
   const { items: sortedProjectData, TableSortHeader, sortConfig, resetSort } = useSortTableData(filteredProjects);
   const paginatedProjects = React.useMemo(() => {
-    if (Object.keys(sortConfig).length > 0) {
-      return chunkProjects(sortedProjectData);
-    }
-    return chunkProjects(filteredProjects);
-  }, [sortedProjectData, filteredProjects, sortConfig]);
+    return chunkProjects(sortedProjectData);
+  }, [sortedProjectData]);
 
   // Defer page reset until after debounce completes to avoid sluggish input.
   // Otherwise, setCurrentPage(0) would cause an immediate re-render on keystroke.
