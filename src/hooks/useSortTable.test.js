@@ -119,5 +119,11 @@ describe("useSortTableData", () => {
       { id: 1, value: "banana" },
       { id: 2, value: "apple" },
     ]);
+
+    // Reset the sort
+    act(() => {
+      result.current.resetSort();
+    });
+    expect(result.current.items).toEqual(items);
   });
 });

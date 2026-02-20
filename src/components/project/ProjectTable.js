@@ -6,6 +6,7 @@ import { PanelType } from "../../lib/constants";
 import { chunkProjects, getCurrentResource, tracksQuota } from "../../lib/utils";
 import { globalStore, domainStoreActions, createCommitmentStoreActions } from "../StoreProvider";
 import useDebounce from "../shared/useDebounce";
+import useSortTableData from "../../hooks/useSortTable";
 import ProjectTableDetails from "./ProjectTableDetails";
 import {
   Stack,
@@ -13,7 +14,6 @@ import {
   Pagination,
   ContentAreaToolbar,
   DataGrid,
-  DataGridHeadCell,
   DataGridRow,
   LoadingIndicator,
   Button,
@@ -29,6 +29,8 @@ const projectTableHeadCells = [
   {
     key: "projectName",
     label: "ProjectName",
+    sortValueFn: (project) => project.metadata?.fullName ?? project.metadata?.name,
+    sortStrategy: "text",
   },
   {
     key: "resourceBar",
@@ -48,6 +50,8 @@ const quotaTableHeadCells = [
   {
     key: "projectName",
     label: "ProjectName",
+    sortValueFn: (project) => project.metadata?.fullName ?? project.metadata?.name,
+    sortStrategy: "text",
   },
   {
     key: "projectUsage",
@@ -83,7 +87,6 @@ const ProjectTable = (props) => {
   const debouncedNameFilter = useDebounce(nameFilter);
   const [selectedLabelFilter, setSelectedLabelFilter] = React.useState(labelTypes.ANY);
   const [selectedDurationFilter, setSelectedDurationFilter] = React.useState(labelTypes.ANY);
-  const filterNeedsUpdate = React.useRef(false);
   const durationFilterValues = React.useMemo(() => {
     return [labelTypes.ANY, ...Object.values(durations)];
   }, [durations]);
@@ -178,7 +181,7 @@ const ProjectTable = (props) => {
       });
     }
 
-    return chunkProjects(result);
+    return result;
   }, [
     scope,
     projects,
@@ -190,6 +193,16 @@ const ProjectTable = (props) => {
     effectiveDurationFilter,
   ]);
 
+  // If user has clicked a table header to sort (sortConfig has a key), use table sort
+  // Otherwise use the default order from the backend which is sorted by project name, and then paginate it.
+  const { items: sortedProjectData, TableSortHeader, sortConfig, resetSort } = useSortTableData(filteredProjects);
+  const paginatedProjects = React.useMemo(() => {
+    if (Object.keys(sortConfig).length > 0) {
+      return chunkProjects(sortedProjectData);
+    }
+    return chunkProjects(filteredProjects);
+  }, [sortedProjectData, filteredProjects, sortConfig]);
+
   // Defer page reset until after debounce completes to avoid sluggish input.
   // Otherwise, setCurrentPage(0) would cause an immediate re-render on keystroke.
   React.useEffect(() => {
@@ -198,7 +211,6 @@ const ProjectTable = (props) => {
 
   // Sync filter state when it becomes invalid for the current tab.
   React.useEffect(() => {
-    filterNeedsUpdate.current = true;
     if (!validLabels.has(selectedLabelFilter)) {
       setSelectedLabelFilter(labelTypes.ANY);
     }
@@ -209,8 +221,8 @@ const ProjectTable = (props) => {
 
   // Subcomponent handlers
   function updateShowCommitments(index) {
-    const project = filteredProjects[currentPage][index];
-    const projectID = filteredProjects[currentPage][index].metadata.id;
+    const project = paginatedProjects[currentPage][index];
+    const projectID = paginatedProjects[currentPage][index].metadata.id;
     setCurrentProject(project);
 
     // A click on the same (active) project disables it. Otherwise it enables it.
@@ -293,11 +305,12 @@ const ProjectTable = (props) => {
               />
               {!subRoute && (
                 <Button
-                  disabled={!sortProjectProps.projectsAreSortable}
+                  disabled={Object.keys(sortConfig).length === 0 && !sortProjectProps.projectsAreSortable}
                   onClick={() => {
                     setToast(null);
-                    setSortedProjects();
+                    resetSort();
                     sortProjectProps.setProjectsAreSortable(false);
+                    setSortedProjects();
                   }}
                   className={"m-auto mt-0"}
                 >
@@ -314,7 +327,7 @@ const ProjectTable = (props) => {
             onPressNext={(page) => {
               setCurrentPage(page - 1);
             }}
-            pages={filteredProjects.length}
+            pages={paginatedProjects.length}
             onKeyPress={(page) => {
               if (isNaN(page)) return;
               setCurrentPage(page - 1);
@@ -323,20 +336,24 @@ const ProjectTable = (props) => {
           />
         </Stack>
       </ContentAreaToolbar>
-      {filteredProjects.length === 0 && <IntroBox text="No projects found" />}
-      {filteredProjects.length > 0 && (
+      {paginatedProjects.length === 0 && <IntroBox text="No projects found" />}
+      {paginatedProjects.length > 0 && (
         <DataGrid columns={headCells.length} gridColumnTemplate={gridColumSize}>
           <DataGridRow>
             {headCells.map((headCell) => (
-              <DataGridHeadCell
+              <TableSortHeader
                 key={headCell.key}
+                identifier={headCell.key}
+                value={headCell.label}
+                sortValueFn={headCell.sortValueFn}
+                sortStrategy={headCell.sortStrategy}
                 className={`p-0 sticky ${subRoute ? "top-[6.5rem]" : "top-40"} z-[100]`}
               >
                 {headCell.label}
-              </DataGridHeadCell>
+              </TableSortHeader>
             ))}
           </DataGridRow>
-          {filteredProjects[currentPage]?.map((project, index) => {
+          {paginatedProjects[currentPage]?.map((project, index) => {
             const { categories } = project;
             const { resources } = categories[currentCategory] ?? { resources: [] };
             const resource = getCurrentResource(resources, currentResource.name);

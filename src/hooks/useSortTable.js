@@ -39,6 +39,10 @@ const useSortTableData = (items, config = null) => {
     });
   };
 
+  const resetSort = () => {
+    setSortConfig({});
+  };
+
   const TableSortHeader = (headerProps) => {
     const { value = "", identifier = "", sortValueFn = null, sortStrategy = null } = headerProps;
     const direction = sortConfig[identifier]?.direction;
@@ -70,7 +74,7 @@ const useSortTableData = (items, config = null) => {
       </DataGridHeadCell>
     );
   };
-  return { items: sortedItems, requestSort, sortConfig, TableSortHeader };
+  return { items: sortedItems, requestSort, resetSort, sortConfig, TableSortHeader };
 };
 
 export default useSortTableData;
