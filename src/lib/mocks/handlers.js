@@ -40,12 +40,24 @@ const getDomainsForCluster = ({ endpoint }) => {
 
 const getProjectsForCluster = ({ endpoint }) => {
   return http.get(`${endpoint}/v1/domains/:domainID/projects`, () => {
-    domainProjects.domains.services = structuredClone(projectAPI.project.services);
-    domainProjects.projects.forEach((project) => {
+    const clusterData = structuredClone(domainProjects);
+    clusterData.domains.services = structuredClone(projectAPI.project.services);
+
+    for (let id = 4; id <= 1000; id++) {
+      const project = {
+        id: `projectID${id}`,
+        name: `project${id}`,
+        parent_id: "parent",
+        services: [],
+      };
+      clusterData.projects.push(project);
+    }
+
+    clusterData.projects.forEach((project) => {
       if (project.services.length > 0) return;
       project.services = structuredClone(projectAPI.project.services);
     });
-    return HttpResponse.json(domainProjects);
+    return HttpResponse.json(clusterData);
   });
 };
 

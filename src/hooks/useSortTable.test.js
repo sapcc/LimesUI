@@ -95,6 +95,29 @@ describe("useSortTableData", () => {
     }).toThrow("Missing sort strategy for key: value");
   });
 
+  test("should sort text with embedded numbers naturally", () => {
+    const items = [
+      { id: 1, value: "Project 10" },
+      { id: 2, value: "Project 2" },
+      { id: 3, value: "Project 1" },
+      { id: 4, value: "Project 20" },
+      { id: 5, value: "Project 3" },
+    ];
+
+    const { result } = renderHook(() => useSortTableData(items));
+    act(() => {
+      result.current.requestSort("value", null, "text");
+    });
+
+    expect(result.current.items).toEqual([
+      { id: 3, value: "Project 1" },
+      { id: 2, value: "Project 2" },
+      { id: 5, value: "Project 3" },
+      { id: 1, value: "Project 10" },
+      { id: 4, value: "Project 20" },
+    ]);
+  });
+
   test("should render header with sortable columns", () => {
     const items = [
       { id: 1, value: "banana" },
