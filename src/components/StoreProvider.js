@@ -26,6 +26,11 @@ export const clusterStoreActions = () => useAppStore((state) => state.cluster.ac
 export const domainStore = () => useAppStore((state) => state.domain);
 export const domainStoreActions = () => useAppStore((state) => state.domain.actions);
 
+// Domain Store - Specific selectors to avoid unnecessary re-renders
+export const useDomainData = () => useAppStore((state) => state.domain.domainData);
+export const useRefetchDomainAPI = () => useAppStore((state) => state.domain.refetchDomainAPI);
+export const useDomainProjects = () => useAppStore((state) => state.domain.projects);
+
 // Project and Commitment Store
 export const projectStore = () => useAppStore((state) => state.project);
 export const projectStoreActions = () => useAppStore((state) => state.project.actions);

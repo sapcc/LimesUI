@@ -6,7 +6,7 @@ import { useState } from "react";
 import { DataGridHeadCell, Icon, Stack } from "@cloudoperators/juno-ui-components/index";
 
 const sorters = {
-  text: (a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }),
+  text: (a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" }),
   numeric: (a, b) => a - b,
 };
 

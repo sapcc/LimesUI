@@ -52,11 +52,19 @@ const ProjectTableDetails = (props) => {
   // commitment query requires a domain ID that differs on cluster level.
   const { scope } = globalStore();
   const domainID = scope.isCluster() ? metadata.domainID : null;
+  // only display the move commitment button on projects with a commitment on them.
+  const moveCommitment = React.useMemo(() => {
+    return showCommitments && az.hasCommitments;
+  }, [showCommitments, az.hasCommitments]);
+  // Only display transfer button on other projects except the origin project which a commitments transfers from.
+  const originProject = React.useMemo(() => {
+    if (!currentProject) return false;
+    return project.metadata.id === currentProject.metadata.id;
+  }, [currentProject, project.metadata.id]);
   // Be careful here! If enabled state is passed in as undefined, the useQuery hook spams the limes API for all projects!
   const commitQueryResult = useQuery({ queryKey: ["commitmentData", projectID, domainID], enabled: showCommitments });
   const { data: commitmentData, isLoading, isFetching } = commitQueryResult;
-  const [moveCommitment, setMoveCommitment] = React.useState(false);
-  const [originProject, setOriginProject] = React.useState(false);
+  const prevIsFetchingRef = React.useRef(isFetching);
 
   React.useEffect(() => {
     if (!showCommitments || !commitmentData) return;
@@ -64,6 +72,9 @@ const ProjectTableDetails = (props) => {
   }, [showCommitments, commitmentData]);
 
   React.useEffect(() => {
+    // Only update state if the value actually changed
+    if (prevIsFetchingRef.current === isFetching) return;
+    prevIsFetchingRef.current = isFetching;
     setCommitmentIsFetching(isFetching);
   }, [isFetching]);
 
@@ -72,20 +83,6 @@ const ProjectTableDetails = (props) => {
     setRefetchCommitmentAPI(false);
     commitQueryResult.refetch();
   }, [refetchCommitmentAPI, showCommitments]);
-
-  // only display the move commitment button on projects with a commitment on them.
-  React.useEffect(() => {
-    az.hasCommitments ? setMoveCommitment(true) : setMoveCommitment(false);
-  }, [showCommitments, az]);
-
-  // Only display transfer button on other projects except the origin project which a commitments transfers from.
-  React.useEffect(() => {
-    if (!currentProject) {
-      setOriginProject(false);
-    } else {
-      setOriginProject(project.metadata.id == currentProject.metadata.id);
-    }
-  }, [currentProject]);
 
   const displayedName = scope.isCluster() ? metadata.fullName : projectName;
   return (
@@ -100,7 +97,6 @@ const ProjectTableDetails = (props) => {
                 onClick={() => {
                   if (isTransferring) return;
                   resetCommitmentTransfer();
-                  setMoveCommitment(false);
                   setIsCommitting(false);
                   setCommitmentsToMerge([]);
                   setMergeIsActive(false);
@@ -210,6 +206,8 @@ export default React.memo(ProjectTableDetails, (prevProps, nextProps) => {
     prevProps.project.metadata.id === nextProps.project.metadata.id &&
     prevProps.showCommitments === nextProps.showCommitments &&
     prevProps.currentTab === nextProps.currentTab &&
+    // It is important to check the object.
+    // This way the memo listens to create or transfer commitment and reacts to them properly
     prevProps.resource === nextProps.resource
   );
 });
