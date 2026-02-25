@@ -6,10 +6,10 @@ import { useQueries } from "@tanstack/react-query";
 import {
   globalStoreActions,
   clusterStoreActions,
-  domainStore,
   domainStoreActions,
-  projectStore,
   projectStoreActions,
+  useRefetchProjectAPI,
+  useDomainProjects,
 } from "../StoreProvider";
 import ProjectTable from "../project/ProjectTable";
 import { LoadingIndicator } from "@cloudoperators/juno-ui-components";
@@ -21,7 +21,7 @@ const ProjectsPerDomain = (props) => {
   const resourceName = resource.name;
   const { restructureReport } = globalStoreActions();
   const { setProjectsToDomain } = clusterStoreActions();
-  const { projects } = domainStore();
+  const projects = useDomainProjects();
   const { setProjects } = domainStoreActions();
   const projectQueries = useQueries({
     queries: domains.map((domain) => {
@@ -36,7 +36,7 @@ const ProjectsPerDomain = (props) => {
   const isFetching = projectQueries.some((query) => query.isFetching);
   const refetchTriggered = React.useRef(false);
   const { setRefetchProjectAPI } = projectStoreActions();
-  const { refetchProjectAPI } = projectStore();
+  const refetchProjectAPI = useRefetchProjectAPI();
   const sortProjects = React.useRef(true);
   // Required check for rendering. This is a fail save.
   // If not present: Projects might get pushed to panel table with the availability zones of the predecessor causing a crash.

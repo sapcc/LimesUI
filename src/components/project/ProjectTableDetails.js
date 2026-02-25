@@ -8,10 +8,14 @@ import AddCommitments from "../shared/AddCommitments";
 import ToolTipWrapper from "../shared/ToolTipWrapper";
 import {
   globalStore,
-  projectStore,
   projectStoreActions,
-  createCommitmentStore,
   createCommitmentStoreActions,
+  useCommitments,
+  useCurrentProject,
+  useRefetchCommitmentAPI,
+  useIsCommitting,
+  useTransferCommitment,
+  useIsTransferring,
 } from "../StoreProvider";
 import { useQuery } from "@tanstack/react-query";
 import { DataGridRow, DataGridCell, Stack, Icon, LoadingIndicator, Button } from "@cloudoperators/juno-ui-components";
@@ -36,15 +40,14 @@ const ProjectTableDetails = (props) => {
   const { name: projectName, id: projectID } = metadata;
   const { unit } = resource;
   const isEditableResource = resource.editableResource;
-  const { commitments } = projectStore();
-  const { currentProject } = createCommitmentStore();
-  const { refetchCommitmentAPI } = createCommitmentStore();
+  const commitments = useCommitments();
+  const currentProject = useCurrentProject();
+  const refetchCommitmentAPI = useRefetchCommitmentAPI();
   const { setCommitments } = projectStoreActions();
   const { setRefetchCommitmentAPI } = createCommitmentStoreActions();
-  const { isCommitting } = createCommitmentStore();
-  const { transferCommitment } = createCommitmentStore();
-  const { isTransferring } = createCommitmentStore();
-  const { setCommitmentIsFetching } = createCommitmentStoreActions();
+  const isCommitting = useIsCommitting();
+  const transferCommitment = useTransferCommitment();
+  const isTransferring = useIsTransferring();
   const { setIsCommitting } = createCommitmentStoreActions();
   const { setTransferCommitment } = createCommitmentStoreActions();
   const { setCommitmentsToMerge, setMergeIsActive } = mergeOps;
@@ -63,20 +66,12 @@ const ProjectTableDetails = (props) => {
   }, [currentProject, project.metadata.id]);
   // Be careful here! If enabled state is passed in as undefined, the useQuery hook spams the limes API for all projects!
   const commitQueryResult = useQuery({ queryKey: ["commitmentData", projectID, domainID], enabled: showCommitments });
-  const { data: commitmentData, isLoading, isFetching } = commitQueryResult;
-  const prevIsFetchingRef = React.useRef(isFetching);
+  const { data: commitmentData, isLoading } = commitQueryResult;
 
   React.useEffect(() => {
     if (!showCommitments || !commitmentData) return;
     setCommitments(commitmentData.commitments);
   }, [showCommitments, commitmentData]);
-
-  React.useEffect(() => {
-    // Only update state if the value actually changed
-    if (prevIsFetchingRef.current === isFetching) return;
-    prevIsFetchingRef.current = isFetching;
-    setCommitmentIsFetching(isFetching);
-  }, [isFetching]);
 
   React.useEffect(() => {
     if (!refetchCommitmentAPI || !showCommitments) return;

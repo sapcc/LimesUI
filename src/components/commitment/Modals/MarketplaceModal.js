@@ -13,7 +13,7 @@ import {
 } from "@cloudoperators/juno-ui-components";
 import BaseFooter from "./BaseComponents/BaseFooter";
 import useConfirmInput from "./BaseComponents/useConfirmInput";
-import { domainStore, globalStore } from "../../StoreProvider";
+import { globalStore, useDomainProjects } from "../../StoreProvider";
 import { formatTimeISO8160 } from "../../../lib/utils";
 import { valueWithUnit } from "../../../lib/unit";
 import { Unit } from "../../../lib/unit";
@@ -29,7 +29,7 @@ const MarketplaceModal = (props) => {
   });
   const { scope } = globalStore();
   const isProjectView = scope.isProject();
-  const { projects } = domainStore();
+  const projects = useDomainProjects();
   const sortedProjects = React.useMemo(() => {
     return (
       projects?.sort((a, b) => {

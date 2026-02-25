@@ -9,10 +9,19 @@ import {
   globalStore,
   clusterStoreActions,
   domainStoreActions,
-  projectStore,
   projectStoreActions,
-  createCommitmentStore,
   createCommitmentStoreActions,
+  useCommitments,
+  useCommitment,
+  useToast,
+  useConversionCommitment,
+  useCurrentProject,
+  useDeleteCommitment,
+  useTransferredCommitment,
+  useTransferProject,
+  useTransferFromAndToProject,
+  useUpdateDurationCommitment,
+  useIsSubmitting,
 } from "../StoreProvider";
 import AvailabilityZoneNav from "./AvailabilityZoneNav";
 import CommitmentTable from "../commitment/CommitmentTable";
@@ -38,7 +47,7 @@ const EditPanel = (props) => {
   const resourceName = currentResource.name;
   const minConfirmDate = currentResource?.commitment_config?.min_confirm_by;
   const [canConfirm, setCanConfirm] = React.useState(null);
-  const { commitments } = projectStore();
+  const commitments = useCommitments();
   const { setRefetchProjectAPI } = projectStoreActions();
   const commit = useMutation({ mutationKey: ["newCommitment"] });
   const confirm = useMutation({ mutationKey: ["canConfirm"] });
@@ -51,20 +60,20 @@ const EditPanel = (props) => {
   const updateDuration = useMutation({ mutationKey: ["updateCommitmentDuration"] });
   const merge = useMutation({ mutationKey: ["mergeCommitments"] });
   const { resetCommitmentTransfer } = useResetCommitment();
-  const { commitment: newCommitment } = createCommitmentStore();
-  const { toast } = createCommitmentStore();
-  const { conversionCommitment } = createCommitmentStore();
-  const { currentProject } = createCommitmentStore();
-  const { deleteCommitment } = createCommitmentStore();
-  const { transferredCommitment } = createCommitmentStore();
-  const { transferProject } = createCommitmentStore();
-  const { transferFromAndToProject } = createCommitmentStore();
-  const { updateDurationCommitment } = createCommitmentStore();
+  const newCommitment = useCommitment();
+  const toast = useToast();
+  const conversionCommitment = useConversionCommitment();
+  const currentProject = useCurrentProject();
+  const deleteCommitment = useDeleteCommitment();
+  const transferredCommitment = useTransferredCommitment();
+  const transferProject = useTransferProject();
+  const transferFromAndToProject = useTransferFromAndToProject();
+  const updateDurationCommitment = useUpdateDurationCommitment();
   const { setCommitment } = createCommitmentStoreActions();
   const { setConversionCommitment } = createCommitmentStoreActions();
   const { setDeleteCommitment } = createCommitmentStoreActions();
   const { setIsCommitting } = createCommitmentStoreActions();
-  const { isSubmitting } = createCommitmentStore();
+  const isSubmitting = useIsSubmitting();
   const { setIsSubmitting } = createCommitmentStoreActions();
   const { setToast } = createCommitmentStoreActions();
   const { setTransferredCommitment } = createCommitmentStoreActions();

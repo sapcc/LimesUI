@@ -4,7 +4,7 @@
 import React from "react";
 import { DataGrid, DataGridRow, DataGridCell, Modal, Select, SelectOption } from "@cloudoperators/juno-ui-components";
 import BaseFooter from "./BaseComponents/BaseFooter";
-import { createCommitmentStore } from "../../StoreProvider";
+import { useValidDurations } from "../../StoreProvider";
 import { Unit, valueWithUnit } from "../../../lib/unit";
 import useConfirmInput from "./BaseComponents/useConfirmInput";
 
@@ -16,7 +16,7 @@ const UpdateDurationModal = (props) => {
   const { ConfirmInput, inputProps, checkInput } = useConfirmInput({
     confirmationText: subText,
   });
-  const { validDurations: durations } = createCommitmentStore();
+  const durations = useValidDurations();
   const validDurations = durations.get(commitment.id) || [];
 
   function onConfirm() {

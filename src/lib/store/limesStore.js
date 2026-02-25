@@ -32,7 +32,6 @@ const limesStore = (set, get) => ({
           });
 
           return {
-            ...state,
             cluster: { ...state.cluster, domainData: domains },
           };
         }),
@@ -68,7 +67,6 @@ const limesStore = (set, get) => ({
           }
 
           return {
-            ...state,
             domain: { ...state.domain, projects: projects },
           };
         }),
@@ -111,7 +109,6 @@ const limesStore = (set, get) => ({
           const projects = state.domain.projects;
           const sortedProjects = state.domain.actions.sortProjects([...projects]);
           return {
-            ...state,
             domain: { ...state.domain, projects: sortedProjects },
           };
         }),
@@ -133,12 +130,9 @@ const limesStore = (set, get) => ({
           project: { ...state.project, refetchProjectAPI: refetchProjectAPI },
         })),
       setCommitments: (commitments) =>
-        set((state) => {
-          return {
-            ...state,
-            project: { ...state.project, commitments: commitments },
-          };
-        }),
+        set((state) => ({
+          project: { ...state.project, commitments: commitments },
+        })),
     },
   },
   global: {

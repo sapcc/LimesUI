@@ -53,9 +53,9 @@ describe("check update duration modal", () => {
         durations: ["2 years", "3 years"],
       });
     });
-    const input = screen.getByTestId(/updateDurationInput/i);
-    const confirmInput = screen.getByTestId(/confirmInput/i);
-    const confirmButton = screen.getByTestId(/modalConfirm/i);
+    const input = await screen.findByTestId(/updateDurationInput/i);
+    const confirmInput = await screen.findByTestId(/confirmInput/i);
+    const confirmButton = await screen.findByTestId(/modalConfirm/i);
     fireEvent.click(input);
     const inputVal = screen.getByTestId("2 years");
     await waitFor(() => {

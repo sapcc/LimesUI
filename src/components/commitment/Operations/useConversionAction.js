@@ -3,12 +3,12 @@
 
 import React from "react";
 import MenuItemBuilder from "./MenuItemBuilder";
-import { createCommitmentStore, createCommitmentStoreActions } from "../../StoreProvider";
+import { createCommitmentStoreActions, useShowConversionOption } from "../../StoreProvider";
 
 const useConversionAction = (props) => {
   const { commitment, marketplaceModalFn, updateActions } = props;
   const { resource_name } = commitment;
-  const { showConversionOption } = createCommitmentStore();
+  const showConversionOption = useShowConversionOption();
   const { setConversionCommitment } = createCommitmentStoreActions();
 
   function convertCommitment() {

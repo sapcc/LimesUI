@@ -5,7 +5,7 @@ import React from "react";
 import AddCommitments from "../shared/AddCommitments";
 import ReceiveCommitment from "./ReceiveCommitment";
 import { Stack, Tabs, Tab, TabList, TabPanel, Container, Icon } from "@cloudoperators/juno-ui-components";
-import { domainStore } from "../StoreProvider";
+import { useDomainProjects } from "../StoreProvider";
 import useResetCommitment from "../../hooks/useResetCommitment";
 import MergeCommitment from "../shared/MergeCommitments";
 import ToolTipWrapper from "../shared/ToolTipWrapper";
@@ -18,7 +18,7 @@ const AvailabilityZoneNav = (props) => {
   const publicCommitments = data?.commitments || [];
   const { setIsMerging, setCommitmentsToMerge } = mergeOps;
   const { resetCommitment } = useResetCommitment();
-  const { projects } = domainStore();
+  const projects = useDomainProjects();
   const tabs = React.useMemo(() => {
     const { per_az: azs } = resource;
     const azUnaware = isAZUnaware(azs);

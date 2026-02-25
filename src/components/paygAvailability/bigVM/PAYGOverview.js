@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import React from "react";
-import { clusterStore } from "../../StoreProvider";
+import { useClusterData } from "../../StoreProvider";
 import { Message, LoadingIndicator } from "@cloudoperators/juno-ui-components";
 import { byUIString, byNameIn } from "../../../lib/utils";
 import PAYGCategory from "./PAYGCategory";
@@ -11,7 +11,7 @@ import { parseApiData } from "./parseApiData";
 import { getCerebroTime } from "../../../lib/getScrapeTime";
 
 const PAYGOverview = () => {
-  const { clusterData } = clusterStore();
+  const clusterData = useClusterData();
   if (!clusterData) {
     return <Message>Unable to retrieve cluster data</Message>;
   }

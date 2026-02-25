@@ -3,7 +3,7 @@
 
 import React from "react";
 import Category from "./Category";
-import { globalStore, createCommitmentStore } from "../StoreProvider";
+import { globalStore, useIsEditing } from "../StoreProvider";
 import useResetCommitment from "../../hooks/useResetCommitment";
 import { useParams, useNavigate, useLocation, Outlet } from "react-router";
 import { t, byUIString } from "../../lib/utils";
@@ -17,7 +17,7 @@ const Overview = (props) => {
   const { canEdit } = props;
   const navigate = useNavigate();
   const location = useLocation();
-  const { isEditing } = createCommitmentStore();
+  const isEditing = useIsEditing();
   const { scope } = globalStore();
   const editableAreas = props.overview.editableAreas;
   const [advancedView, setAdvancedView] = React.useState(JSON.parse(localStorage.getItem(ADVANCEDVIEW)) || false);

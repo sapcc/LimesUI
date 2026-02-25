@@ -6,23 +6,24 @@ import { useQuery } from "@tanstack/react-query";
 import useClusterAPI from "./hooks/useClusterAPI";
 import { LoadingIndicator, Message } from "@cloudoperators/juno-ui-components";
 import {
-  createCommitmentStore,
   createCommitmentStoreActions,
   globalStoreActions,
-  projectStore,
   projectStoreActions,
+  useProjectData,
+  useRefetchProjectAPI,
+  useCommitments,
+  useRefetchCommitmentAPI,
 } from "./components/StoreProvider";
 import ContentRoutes from "./ContentRoutes";
 
 const AppResourceContent = (props) => {
-  const { projectData } = projectStore();
-  const { refetchProjectAPI } = projectStore();
+  const projectData = useProjectData();
+  const refetchProjectAPI = useRefetchProjectAPI();
   const { setRefetchProjectAPI } = projectStoreActions();
-  const { refetchCommitmentAPI } = createCommitmentStore();
+  const refetchCommitmentAPI = useRefetchCommitmentAPI();
   const { setRefetchCommitmentAPI } = createCommitmentStoreActions();
   const { setCurrentProject } = createCommitmentStoreActions();
-  const { commitments } = projectStore();
-  const { setCommitmentIsFetching } = createCommitmentStoreActions();
+  const commitments = useCommitments();
   const { setProjectData } = projectStoreActions();
   const { restructureReport } = globalStoreActions();
   const { setCommitments } = projectStoreActions();
@@ -37,7 +38,6 @@ const AppResourceContent = (props) => {
   const {
     data: commitmentAPIData,
     isLoading: commitmentLoads,
-    isFetching: commitmentIsFetching,
     isError: commitmentIsError,
     error: commitmentError,
   } = commitQueryResult;
@@ -53,10 +53,6 @@ const AppResourceContent = (props) => {
     setRefetchCommitmentAPI(false);
     commitQueryResult.refetch();
   }, [refetchCommitmentAPI]);
-
-  React.useEffect(() => {
-    setCommitmentIsFetching(commitmentIsFetching);
-  }, [commitmentIsFetching]);
 
   React.useEffect(() => {
     // Initial Commitment-API data fetch.
@@ -79,10 +75,10 @@ const AppResourceContent = (props) => {
     <Message>{commitmentError.message}</Message>
   ) : cluster.isError ? (
     <Message>{cluster.error.message}</Message>
-  ) : commitmentLoads || !cluster.data ? (
+  ) : commitmentLoads || !cluster.data || !commitments ? (
     <LoadingIndicator className={"m-auto"} />
   ) : (
-    commitments && <ContentRoutes queryResult={projectQueryResult} parsedData={projectData} canEdit={props.canEdit} />
+    <ContentRoutes queryResult={projectQueryResult} parsedData={projectData} canEdit={props.canEdit} />
   );
 };
 

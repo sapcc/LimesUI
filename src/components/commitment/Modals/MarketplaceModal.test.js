@@ -28,6 +28,7 @@ jest.mock("../../StoreProvider", () => {
   return {
     globalStore: jest.fn(),
     domainStore: jest.fn(),
+    useDomainProjects: jest.fn(),
   };
 });
 
@@ -53,6 +54,7 @@ describe("MarketplaceModal", () => {
     const mockDomainStoreInstance = mockDomainStore([]);
     require(storeProviderPath).globalStore.mockImplementation(mockGlobalStoreInstance);
     require(storeProviderPath).domainStore.mockImplementation(mockDomainStoreInstance);
+    require(storeProviderPath).useDomainProjects.mockReturnValue([]);
     render(
       <PortalProvider>
         <MarketplaceModal {...mockProps} />
@@ -70,6 +72,7 @@ describe("MarketplaceModal", () => {
     const mockDomainStoreInstance = mockDomainStore([]);
     require(storeProviderPath).globalStore.mockImplementation(mockGlobalStoreInstance);
     require(storeProviderPath).domainStore.mockImplementation(mockDomainStoreInstance);
+    require(storeProviderPath).useDomainProjects.mockReturnValue([]);
     render(
       <PortalProvider>
         <MarketplaceModal {...mockProps} />
@@ -87,6 +90,7 @@ describe("MarketplaceModal", () => {
     const mockDomainStoreInstance = mockDomainStore([]);
     require(storeProviderPath).globalStore.mockImplementation(mockGlobalStoreInstance);
     require(storeProviderPath).domainStore.mockImplementation(mockDomainStoreInstance);
+    require(storeProviderPath).useDomainProjects.mockReturnValue([]);
     render(
       <PortalProvider>
         <MarketplaceModal {...mockProps} />
@@ -98,13 +102,15 @@ describe("MarketplaceModal", () => {
 
   test("Cluster level: should provide the correct target projects", async () => {
     const mockGlobalStoreInstance = mockGlobalStore(true, false, false);
-    const mockDomainStoreInstance = mockDomainStore([
+    const projects = [
       { metadata: { id: 3, fullName: "bDomain/aProject" } },
       { metadata: { id: 2, fullName: "aDomain/cProject" } },
       { metadata: { id: 1, fullName: "aDomain/bProject" } },
-    ]);
+    ];
+    const mockDomainStoreInstance = mockDomainStore(projects);
     require(storeProviderPath).globalStore.mockImplementation(mockGlobalStoreInstance);
     require(storeProviderPath).domainStore.mockImplementation(mockDomainStoreInstance);
+    require(storeProviderPath).useDomainProjects.mockReturnValue(projects);
     mockProps.action = jest.fn((targetProject, commitment, transfer_token) => {
       expect(targetProject).toEqual({ metadata: { id: 1, fullName: "aDomain/bProject" } });
       expect(transfer_token).toEqual("testToken");
@@ -134,13 +140,15 @@ describe("MarketplaceModal", () => {
 
   test("Domain level: should provide the correct target projects", async () => {
     const mockGlobalStoreInstance = mockGlobalStore(false, true, false);
-    const mockDomainStoreInstance = mockDomainStore([
+    const projects = [
       { metadata: { id: 3, name: "cProject" } },
       { metadata: { id: 2, name: "bProject" } },
       { metadata: { id: 1, name: "aProject" } },
-    ]);
+    ];
+    const mockDomainStoreInstance = mockDomainStore(projects);
     require(storeProviderPath).globalStore.mockImplementation(mockGlobalStoreInstance);
     require(storeProviderPath).domainStore.mockImplementation(mockDomainStoreInstance);
+    require(storeProviderPath).useDomainProjects.mockReturnValue(projects);
     mockProps.action = jest.fn((targetProject, commitment, transfer_token) => {
       expect(targetProject).toEqual({ metadata: { id: 1, name: "aProject" } });
       expect(transfer_token).toEqual("testToken");

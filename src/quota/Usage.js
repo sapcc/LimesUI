@@ -6,9 +6,9 @@ import { AppShell, AppShellProvider, Icon, Stack, Spinner } from "@cloudoperator
 import StoreProvider, {
   apiStore,
   apiStoreActions,
-  projectStore,
   projectStoreActions,
   globalStoreActions,
+  useProjectData,
 } from "../components/StoreProvider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useQuery } from "@tanstack/react-query";
@@ -25,7 +25,7 @@ import getQuotaFromResources from "./quota";
 
 const QuotaUsage = (props) => {
   const { quotaProject } = props;
-  const { projectData } = projectStore();
+  const projectData = useProjectData();
   const { setProjectData } = projectStoreActions();
   const { restructureReport } = globalStoreActions();
   const projectQueryResult = useQuery({

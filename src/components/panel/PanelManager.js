@@ -8,7 +8,7 @@ import { tracksQuota } from "../../lib/utils";
 import { useParams, useNavigate } from "react-router";
 import { t, getCurrentResource } from "../../lib/utils";
 import { initialCommitmentObject } from "../../lib/constants";
-import { createCommitmentStore, createCommitmentStoreActions } from "../StoreProvider";
+import { createCommitmentStoreActions, useIsEditing } from "../StoreProvider";
 import { ErrorBoundary } from "../../lib/ErrorBoundary";
 
 // Panel needs to be rendered first to enable the fading UI animation.
@@ -21,7 +21,7 @@ const PanelManager = (props) => {
   const currentResource = getCurrentResource(resources, resourceName);
   const isEditableResource = currentResource.editableResource;
   const resourceTracksQuota = tracksQuota(currentResource);
-  const { isEditing } = createCommitmentStore();
+  const isEditing = useIsEditing();
   const { resetValidDurations } = createCommitmentStoreActions();
   const { setIsEditing } = createCommitmentStoreActions();
   const { setCommitment } = createCommitmentStoreActions();

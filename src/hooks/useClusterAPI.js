@@ -3,15 +3,20 @@
 
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
-import { clusterStore, clusterStoreActions, globalStoreActions } from "../components/StoreProvider";
+import {
+  clusterStoreActions,
+  useClusterData,
+  useRefetchClusterAPI,
+  globalStoreActions,
+} from "../components/StoreProvider";
 
 // Used accross all views to display PAYG Availability content.
 const useClusterAPI = ({ isDetail }) => {
-  const { clusterData } = clusterStore();
+  const clusterData = useClusterData();
+  const refetchClusterAPI = useRefetchClusterAPI();
+  const { setRefetchClusterAPI } = clusterStoreActions();
   const { setClusterData } = clusterStoreActions();
   const { receiveCapacity } = globalStoreActions();
-  const { refetchClusterAPI } = clusterStore();
-  const { setRefetchClusterAPI } = clusterStoreActions();
   const clusterQueryResult = useQuery({
     queryKey: ["clusterData", isDetail],
   });
