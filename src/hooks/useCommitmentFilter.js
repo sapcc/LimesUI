@@ -1,10 +1,10 @@
 // SPDX-FileCopyrightText: 2024 SAP SE or an SAP affiliate company
 // SPDX-License-Identifier: Apache-2.0
 
-import { useCommitments } from "../components/StoreProvider";
+import { useProjectStore } from "../components/StoreProvider";
 
 const useCommitmentFilter = () => {
-  const commitments = useCommitments();
+  const commitments = useProjectStore((state) => state.commitments);
 
   function filterCommitments(resourceName, azName) {
     return commitments.filter((commitment) => {

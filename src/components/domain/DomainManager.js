@@ -3,12 +3,12 @@
 
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useClusterDomainData, clusterStoreActions } from "../StoreProvider";
+import { useClusterStore, clusterStoreActions } from "../StoreProvider";
 import ProjectsPerDomain from "./ProjectsPerDomain";
 
 const DomainManager = (props) => {
   const { serviceType, currentCategory, currentResource, currentTab, subRoute, sortProjectProps, mergeOps } = props;
-  const domainData = useClusterDomainData();
+  const domainData = useClusterStore((state) => state.domainData);
   const { setDomainData } = clusterStoreActions();
   const domainQueryResult = useQuery({ queryKey: ["domains", "", ""] });
   const { data: domainAPIData, isLoading } = domainQueryResult;

@@ -5,7 +5,7 @@ import React from "react";
 import UpdateDurationModal from "./UpdateDurationModal";
 import { act, renderHook, screen, fireEvent, waitFor } from "@testing-library/react";
 import { PortalProvider } from "@cloudoperators/juno-ui-components";
-import StoreProvider, { createCommitmentStore, createCommitmentStoreActions } from "../../StoreProvider";
+import StoreProvider, { useCreateCommitmentStore, createCommitmentStoreActions } from "../../StoreProvider";
 import { initialCommitmentObject } from "../../../lib/constants";
 
 const commitment = { ...initialCommitmentObject };
@@ -36,15 +36,13 @@ describe("check update duration modal", () => {
         </StoreProvider>
       </PortalProvider>
     );
-    store = await waitFor(() => {
-      return renderHook(
-        () => ({
-          commitmentStore: createCommitmentStore(),
-          commitmentStoreActions: createCommitmentStoreActions(),
-        }),
-        { wrapper }
-      );
-    });
+    store = renderHook(
+      () => ({
+        commitmentStore: useCreateCommitmentStore(),
+        commitmentStoreActions: createCommitmentStoreActions(),
+      }),
+      { wrapper }
+    );
   });
   test("duration update", async () => {
     act(() => {

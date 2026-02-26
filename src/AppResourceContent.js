@@ -6,24 +6,22 @@ import { useQuery } from "@tanstack/react-query";
 import useClusterAPI from "./hooks/useClusterAPI";
 import { LoadingIndicator, Message } from "@cloudoperators/juno-ui-components";
 import {
+  useProjectStore,
   createCommitmentStoreActions,
   globalStoreActions,
   projectStoreActions,
-  useProjectData,
-  useRefetchProjectAPI,
-  useCommitments,
-  useRefetchCommitmentAPI,
+  useCreateCommitmentStore,
 } from "./components/StoreProvider";
 import ContentRoutes from "./ContentRoutes";
 
 const AppResourceContent = (props) => {
-  const projectData = useProjectData();
-  const refetchProjectAPI = useRefetchProjectAPI();
+  const projectData = useProjectStore((state) => state.projectData);
+  const refetchProjectAPI = useProjectStore((state) => state.refetchProjectAPI);
   const { setRefetchProjectAPI } = projectStoreActions();
-  const refetchCommitmentAPI = useRefetchCommitmentAPI();
+  const refetchCommitmentAPI = useCreateCommitmentStore((state) => state.refetchCommitmentAPI);
   const { setRefetchCommitmentAPI } = createCommitmentStoreActions();
   const { setCurrentProject } = createCommitmentStoreActions();
-  const commitments = useCommitments();
+  const commitments = useProjectStore((state) => state.commitments);
   const { setProjectData } = projectStoreActions();
   const { restructureReport } = globalStoreActions();
   const { setCommitments } = projectStoreActions();

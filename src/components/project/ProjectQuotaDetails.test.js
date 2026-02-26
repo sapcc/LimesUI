@@ -4,7 +4,7 @@
 import React from "react";
 import { act, fireEvent, renderHook, screen, waitFor } from "@testing-library/react";
 import ProjectQuotaDetails from "./ProjectQuotaDetails";
-import { createCommitmentStoreActions, globalStoreActions } from "../StoreProvider";
+import { globalStoreActions } from "../StoreProvider";
 import { PortalProvider } from "@cloudoperators/juno-ui-components";
 import { Scope } from "../../lib/scope";
 import StoreProvider from "../StoreProvider";
@@ -32,17 +32,14 @@ describe("test project quota details", () => {
         </StoreProvider>
       </PortalProvider>
     );
-    const { result } = await waitFor(() => {
-      return renderHook(
-        () => ({
-          commitmentStoreActions: createCommitmentStoreActions(),
-          globalStoreActions: globalStoreActions(),
-        }),
-        {
-          wrapper,
-        }
-      );
-    });
+    const { result } = renderHook(
+      () => ({
+        globalStoreActions: globalStoreActions(),
+      }),
+      {
+        wrapper,
+      }
+    );
     act(() => {
       result.current.globalStoreActions.setScope(scope);
     });

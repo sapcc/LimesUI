@@ -3,7 +3,7 @@
 
 import React from "react";
 import { renderHook, act } from "@testing-library/react";
-import StoreProvider, { apiStore, apiStoreActions } from "../../components/StoreProvider";
+import StoreProvider, { useApiStore, apiStoreActions } from "../../components/StoreProvider";
 
 const token = "TestToken";
 describe("apiStore", () => {
@@ -12,7 +12,7 @@ describe("apiStore", () => {
     const wrapper = ({ children }) => <StoreProvider>{children}</StoreProvider>;
     store = renderHook(
       () => ({
-        apiStore: apiStore(),
+        apiStore: useApiStore(),
         apiStoreActions: apiStoreActions(),
       }),
       { wrapper }
@@ -22,13 +22,13 @@ describe("apiStore", () => {
     act(() => {
       store.result.current.apiStoreActions.setToken(token);
     });
-    expect(store.result.current.apiStore.token).toEqual(token);
+    expect(store.result.current.apiStore.globalAPI.token).toEqual(token);
   });
 
   test("api Ready", () => {
     act(() => {
       store.result.current.apiStoreActions.setApiReady(true);
     });
-    expect(store.result.current.apiStore.apiReady).toBe(true);
+    expect(store.result.current.apiStore.globalAPI.apiReady).toBe(true);
   });
 });

@@ -4,13 +4,13 @@
 import React from "react";
 import MenuItemBuilder from "./MenuItemBuilder";
 import { TransferStatus } from "../../../lib/constants";
-import { globalStore, createCommitmentStoreActions } from "../../StoreProvider";
+import { useGlobalStore, createCommitmentStoreActions } from "../../StoreProvider";
 
 const useTransferAction = (props) => {
   const { commitment, updateActions } = props;
   const { transfer_status: transferStatus } = commitment;
   const commitmentInTrasfer = transferStatus ? true : false;
-  const { scope } = globalStore();
+  const scope = useGlobalStore((state) => state.scope);
   const { setTransferredCommitment } = createCommitmentStoreActions();
   const { setTransferFromAndToProject } = createCommitmentStoreActions();
 

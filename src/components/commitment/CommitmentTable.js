@@ -6,7 +6,7 @@ import { DataGrid, DataGridRow, IntroBox } from "@cloudoperators/juno-ui-compone
 import CommitmentTableDetails from "./CommitmentTableDetails";
 import useSortTableData from "../../hooks/useSortTable";
 import useCommitmentFilter from "../../hooks/useCommitmentFilter";
-import { useCommitment, useIsCommitting } from "../StoreProvider";
+import { useCreateCommitmentStore } from "../StoreProvider";
 import { CustomZones } from "../../lib/constants";
 import { COMMITMENTID } from "../../lib/constants";
 import { getResourceDurations } from "../../lib/utils";
@@ -14,9 +14,9 @@ import { getResourceDurations } from "../../lib/utils";
 const CommitmentTable = (props) => {
   const unit = props.resource.unit;
   const { filterCommitments } = useCommitmentFilter();
-  const newCommitment = useCommitment();
+  const newCommitment = useCreateCommitmentStore((state) => state.commitment);
   const commitmentTransferID = React.useRef(null);
-  const isCommitting = useIsCommitting();
+  const isCommitting = useCreateCommitmentStore((state) => state.isCommitting);
   const { serviceType, currentCategory, currentResource, currentTab, commitmentData, mergeOps } = {
     ...props,
   };

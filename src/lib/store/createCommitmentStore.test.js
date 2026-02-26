@@ -3,7 +3,7 @@
 
 import React from "react";
 import { renderHook, act } from "@testing-library/react";
-import StoreProvider, { createCommitmentStore, createCommitmentStoreActions } from "../../components/StoreProvider";
+import StoreProvider, { useCreateCommitmentStore, createCommitmentStoreActions } from "../../components/StoreProvider";
 
 const currentAZ = ["qa-de-1", "unknown"];
 describe("createCommitmentStore", () => {
@@ -12,7 +12,7 @@ describe("createCommitmentStore", () => {
       const wrapper = ({ children }) => <StoreProvider>{children}</StoreProvider>;
       const store = renderHook(
         () => ({
-          commitmentStore: createCommitmentStore(),
+          commitmentStore: useCreateCommitmentStore(),
           commitmentActions: createCommitmentStoreActions(),
         }),
         { wrapper }

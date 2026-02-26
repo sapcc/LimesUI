@@ -13,7 +13,7 @@ import StoreProvider, {
   projectStoreActions,
   clusterStoreActions,
   domainStoreActions,
-  createCommitmentStore,
+  useCreateCommitmentStore,
   createCommitmentStoreActions,
 } from "../StoreProvider";
 import { CustomZones } from "../../lib/constants";
@@ -117,18 +117,16 @@ describe("EditPanel tests", () => {
         </StoreProvider>
       </PortalProvider>
     );
-    const { result } = await waitFor(() => {
-      return renderHook(
-        () => ({
-          globalStoreActions: globalStoreActions(),
-          clusterStoreActions: clusterStoreActions(),
-          domainStoreActions: domainStoreActions(),
-          commitmentStore: createCommitmentStore(),
-          commitmentStoreActions: createCommitmentStoreActions(),
-        }),
-        { wrapper }
-      );
-    });
+    const { result } = renderHook(
+      () => ({
+        globalStoreActions: globalStoreActions(),
+        clusterStoreActions: clusterStoreActions(),
+        domainStoreActions: domainStoreActions(),
+        commitmentStore: useCreateCommitmentStore(),
+        commitmentStoreActions: createCommitmentStoreActions(),
+      }),
+      { wrapper }
+    );
     act(() => {
       result.current.globalStoreActions.setScope(scope);
     });
@@ -163,19 +161,17 @@ describe("EditPanel tests", () => {
         </StoreProvider>
       </PortalProvider>
     );
-    const { result, rerender } = await waitFor(() => {
-      return renderHook(
-        () => ({
-          globalStoreActions: globalStoreActions(),
-          projectStoreActions: projectStoreActions(),
-          clusterStoreActions: clusterStoreActions(),
-          domainStoreActions: domainStoreActions(),
-          commitmentStore: createCommitmentStore(),
-          commitmentStoreActions: createCommitmentStoreActions(),
-        }),
-        { wrapper }
-      );
-    });
+    const { result, rerender } = renderHook(
+      () => ({
+        globalStoreActions: globalStoreActions(),
+        projectStoreActions: projectStoreActions(),
+        clusterStoreActions: clusterStoreActions(),
+        domainStoreActions: domainStoreActions(),
+        commitmentStore: useCreateCommitmentStore(),
+        commitmentStoreActions: createCommitmentStoreActions(),
+      }),
+      { wrapper }
+    );
 
     // Commitment add row should be visible with commitments already present.
     const commitments = [
@@ -295,19 +291,17 @@ describe("EditPanel tests", () => {
         </StoreProvider>
       </PortalProvider>
     );
-    const { result } = await waitFor(() => {
-      return renderHook(
-        () => ({
-          globalStoreActions: globalStoreActions(),
-          projectStoreActions: projectStoreActions(),
-          clusterStoreActions: clusterStoreActions(),
-          domainStoreActions: domainStoreActions(),
-          commitmentStore: createCommitmentStore(),
-          commitmentStoreActions: createCommitmentStoreActions(),
-        }),
-        { wrapper }
-      );
-    });
+    const { result } = renderHook(
+      () => ({
+        globalStoreActions: globalStoreActions(),
+        projectStoreActions: projectStoreActions(),
+        clusterStoreActions: clusterStoreActions(),
+        domainStoreActions: domainStoreActions(),
+        commitmentStore: useCreateCommitmentStore(),
+        commitmentStoreActions: createCommitmentStoreActions(),
+      }),
+      { wrapper }
+    );
     act(() => {
       result.current.globalStoreActions.setScope(scope);
       result.current.projectStoreActions.setCommitments(commitments);
@@ -373,19 +367,17 @@ describe("EditPanel tests", () => {
         </StoreProvider>
       </PortalProvider>
     );
-    const { result, rerender } = await waitFor(() => {
-      return renderHook(
-        () => ({
-          globalStoreActions: globalStoreActions(),
-          clusterStoreActions: clusterStoreActions(),
-          domainStoreActions: domainStoreActions(),
-          projectStoreActions: projectStoreActions(),
-          commitmentStore: createCommitmentStore(),
-          commitmentStoreActions: createCommitmentStoreActions(),
-        }),
-        { wrapper }
-      );
-    });
+    const { result, rerender } = renderHook(
+      () => ({
+        globalStoreActions: globalStoreActions(),
+        clusterStoreActions: clusterStoreActions(),
+        domainStoreActions: domainStoreActions(),
+        projectStoreActions: projectStoreActions(),
+        commitmentStore: useCreateCommitmentStore(),
+        commitmentStoreActions: createCommitmentStoreActions(),
+      }),
+      { wrapper }
+    );
     act(() => {
       result.current.globalStoreActions.setScope(scope);
       result.current.clusterStoreActions.setDomainData(domains);

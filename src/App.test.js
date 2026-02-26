@@ -7,9 +7,16 @@ import { render, act } from "@testing-library/react";
 // https://reactjsexample.com/an-extension-of-dom-testing-library-to-provide-hooks-into-the-shadow-dom/
 import { screen } from "shadow-dom-testing-library";
 import App from "./App";
+import StoreProvider from "./components/StoreProvider";
 
 test("renders app", async () => {
-  await act(() => render(<App />));
+  await act(() =>
+    render(
+      <StoreProvider>
+        <App />
+      </StoreProvider>
+    )
+  );
 
   let loginTitle = await screen.queryAllByShadowText(/token/i);
   expect(loginTitle.length > 0).toBe(true);

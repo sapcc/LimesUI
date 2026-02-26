@@ -3,7 +3,11 @@
 
 import React from "react";
 import { renderHook, act } from "@testing-library/react";
-import StoreProvider, { projectStore, projectStoreActions, globalStoreActions } from "../../components/StoreProvider";
+import StoreProvider, {
+  useProjectStore,
+  projectStoreActions,
+  globalStoreActions,
+} from "../../components/StoreProvider";
 
 // Expected is a dual bar display at the UI
 // Because only qa-de-1a has commitments: usagePerCommitted only takes this into account
@@ -58,7 +62,7 @@ describe("limesStore", () => {
     store = renderHook(
       () => ({
         globalStoreActions: globalStoreActions(),
-        projectStore: projectStore(),
+        projectStore: useProjectStore(),
         projectStoreActions: projectStoreActions(),
       }),
       { wrapper }

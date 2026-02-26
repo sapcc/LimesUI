@@ -7,15 +7,11 @@ import CommitmentTable from "../commitment/CommitmentTable";
 import AddCommitments from "../shared/AddCommitments";
 import ToolTipWrapper from "../shared/ToolTipWrapper";
 import {
-  globalStore,
+  useGlobalStore,
   projectStoreActions,
   createCommitmentStoreActions,
-  useCommitments,
-  useCurrentProject,
-  useRefetchCommitmentAPI,
-  useIsCommitting,
-  useTransferCommitment,
-  useIsTransferring,
+  useProjectStore,
+  useCreateCommitmentStore,
 } from "../StoreProvider";
 import { useQuery } from "@tanstack/react-query";
 import { DataGridRow, DataGridCell, Stack, Icon, LoadingIndicator, Button } from "@cloudoperators/juno-ui-components";
@@ -40,20 +36,20 @@ const ProjectTableDetails = (props) => {
   const { name: projectName, id: projectID } = metadata;
   const { unit } = resource;
   const isEditableResource = resource.editableResource;
-  const commitments = useCommitments();
-  const currentProject = useCurrentProject();
-  const refetchCommitmentAPI = useRefetchCommitmentAPI();
+  const commitments = useProjectStore((state) => state.commitments);
+  const currentProject = useCreateCommitmentStore((state) => state.currentProject);
+  const refetchCommitmentAPI = useCreateCommitmentStore((state) => state.refetchCommitmentAPI);
   const { setCommitments } = projectStoreActions();
   const { setRefetchCommitmentAPI } = createCommitmentStoreActions();
-  const isCommitting = useIsCommitting();
-  const transferCommitment = useTransferCommitment();
-  const isTransferring = useIsTransferring();
+  const isCommitting = useCreateCommitmentStore((state) => state.isCommitting);
+  const transferCommitment = useCreateCommitmentStore((state) => state.transferCommitment);
+  const isTransferring = useCreateCommitmentStore((state) => state.isTransferring);
   const { setIsCommitting } = createCommitmentStoreActions();
   const { setTransferCommitment } = createCommitmentStoreActions();
   const { setCommitmentsToMerge, setMergeIsActive } = mergeOps;
   const { resetCommitmentTransfer } = useResetCommitment();
   // commitment query requires a domain ID that differs on cluster level.
-  const { scope } = globalStore();
+  const scope = useGlobalStore((state) => state.scope);
   const domainID = scope.isCluster() ? metadata.domainID : null;
   // only display the move commitment button on projects with a commitment on them.
   const moveCommitment = React.useMemo(() => {

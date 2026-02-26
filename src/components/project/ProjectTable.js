@@ -4,7 +4,7 @@
 import React from "react";
 import { PanelType } from "../../lib/constants";
 import { chunkProjects, getCurrentResource, tracksQuota } from "../../lib/utils";
-import { globalStore, domainStoreActions, createCommitmentStoreActions } from "../StoreProvider";
+import { useGlobalStore, domainStoreActions, createCommitmentStoreActions } from "../StoreProvider";
 import useDebounce from "../shared/useDebounce";
 import useSortTableData from "../../hooks/useSortTable";
 import ProjectTableDetails from "./ProjectTableDetails";
@@ -77,7 +77,7 @@ const ProjectTable = (props) => {
     props;
   const resourceTracksQuota = tracksQuota(currentResource);
   const { durations = {} } = currentResource?.commitment_config ?? {};
-  const { scope } = globalStore();
+  const scope = useGlobalStore((state) => state.scope);
   const { setSortedProjects } = domainStoreActions();
   const { setTransferFromAndToProject, setTransferProject, setCurrentProject, setToast } =
     createCommitmentStoreActions();

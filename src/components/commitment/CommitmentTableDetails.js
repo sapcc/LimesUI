@@ -6,13 +6,7 @@ import { DataGridRow, DataGridCell, Button, Select, TextInput, Stack } from "@cl
 import Actions from "./Operations/Actions";
 import { valueWithUnit, Unit } from "../../lib/unit";
 import { formatTime, formatTimeISO8160 } from "../../lib/utils";
-import {
-  createCommitmentStoreActions,
-  useCommitment,
-  useCommitmentIsLoading,
-  useTransferCommitment,
-  useIsTransferring,
-} from "../StoreProvider";
+import { createCommitmentStoreActions, useCreateCommitmentStore } from "../StoreProvider";
 import CommitmentDurationInputLabel from "./CommitmentDurationInputLabel";
 import ToolTipWrapper from "../shared/ToolTipWrapper";
 import { initialCommitmentObject } from "../../lib/constants";
@@ -43,10 +37,10 @@ const CommitmentTableDetails = (props) => {
   const currentResource = props.currentResource;
   const resourceName = currentResource?.name;
   const isAddingCommitment = id === COMMITMENTID ? true : false;
-  const newCommitment = useCommitment();
-  const commitmentIsLoading = useCommitmentIsLoading();
-  const transferCommitment = useTransferCommitment();
-  const isTransferring = useIsTransferring();
+  const newCommitment = useCreateCommitmentStore((state) => state.commitment);
+  const commitmentIsLoading = useCreateCommitmentStore((state) => state.commitmentIsLoading);
+  const transferCommitment = useCreateCommitmentStore((state) => state.transferCommitment);
+  const isTransferring = useCreateCommitmentStore((state) => state.isTransferring);
   const [showTransfer, setShowTransfer] = React.useState(true);
   const { setCommitment } = createCommitmentStoreActions();
   const { setTransferredCommitment } = createCommitmentStoreActions();

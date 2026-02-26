@@ -3,7 +3,7 @@
 
 import React from "react";
 import Category from "./Category";
-import { globalStore, useIsEditing } from "../StoreProvider";
+import { useGlobalStore, useCreateCommitmentStore } from "../StoreProvider";
 import useResetCommitment from "../../hooks/useResetCommitment";
 import { useParams, useNavigate, useLocation, Outlet } from "react-router";
 import { t, byUIString } from "../../lib/utils";
@@ -15,8 +15,8 @@ import { getScrapeTime } from "../../lib/getScrapeTime";
 
 const Overview = (props) => {
   const { overview, canEdit } = props;
-  const { scope } = globalStore();
-  const isEditing = useIsEditing();
+  const scope = useGlobalStore((state) => state.scope);
+  const isEditing = useCreateCommitmentStore((state) => state.isEditing);
   const navigate = useNavigate();
   const location = useLocation();
   const editableAreas = overview.editableAreas;

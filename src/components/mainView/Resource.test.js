@@ -8,7 +8,7 @@ import { MemoryRouter } from "react-router";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { act, renderHook, screen, waitFor } from "@testing-library/react";
 import { PortalProvider } from "@cloudoperators/juno-ui-components";
-import StoreProvider, { globalStore, globalStoreActions } from "../StoreProvider";
+import StoreProvider, { useGlobalStore, globalStoreActions } from "../StoreProvider";
 import { tracksQuota } from "../../lib/utils";
 
 const queryClient = new QueryClient({
@@ -54,15 +54,13 @@ describe("Resource tests", () => {
         </StoreProvider>
       </PortalProvider>
     );
-    const { rerender, result } = await waitFor(() => {
-      return renderHook(
-        () => ({
-          globalStore: globalStore(),
-          globalStoreActions: globalStoreActions(),
-        }),
-        { wrapper }
-      );
-    });
+    const { rerender, result } = renderHook(
+      () => ({
+        globalStore: useGlobalStore(),
+        globalStoreActions: globalStoreActions(),
+      }),
+      { wrapper }
+    );
     // The forbidAutogrowth edit option is available at the project level.
     act(() => {
       result.current.globalStoreActions.setScope(scope);
@@ -178,15 +176,13 @@ describe("Resource bar test", () => {
         </StoreProvider>
       </PortalProvider>
     );
-    const { result, rerender } = await waitFor(() => {
-      return renderHook(
-        () => ({
-          globalStore: globalStore(),
-          globalStoreActions: globalStoreActions(),
-        }),
-        { wrapper }
-      );
-    });
+    const { result, rerender } = renderHook(
+      () => ({
+        globalStore: useGlobalStore(),
+        globalStoreActions: globalStoreActions(),
+      }),
+      { wrapper }
+    );
 
     act(() => {
       result.current.globalStoreActions.setScope(scope);
@@ -325,7 +321,7 @@ describe("Resource bar test", () => {
     const { result, rerender } = await waitFor(() => {
       return renderHook(
         () => ({
-          globalStore: globalStore(),
+          globalStore: useGlobalStore(),
           globalStoreActions: globalStoreActions(),
         }),
         { wrapper }
@@ -426,15 +422,13 @@ describe("Resource bar test", () => {
         </StoreProvider>
       </PortalProvider>
     );
-    const { result, rerender } = await waitFor(() => {
-      return renderHook(
-        () => ({
-          globalStore: globalStore(),
-          globalStoreActions: globalStoreActions(),
-        }),
-        { wrapper }
-      );
-    });
+    const { result, rerender } = renderHook(
+      () => ({
+        globalStore: useGlobalStore(),
+        globalStoreActions: globalStoreActions(),
+      }),
+      { wrapper }
+    );
 
     act(() => {
       result.current.globalStoreActions.setScope(scope);
@@ -536,15 +530,13 @@ describe("Resource bar test", () => {
         </StoreProvider>
       </PortalProvider>
     );
-    const { result } = await waitFor(() => {
-      return renderHook(
-        () => ({
-          globalStore: globalStore(),
-          globalStoreActions: globalStoreActions(),
-        }),
-        { wrapper }
-      );
-    });
+    const { result } = renderHook(
+      () => ({
+        globalStore: useGlobalStore(),
+        globalStoreActions: globalStoreActions(),
+      }),
+      { wrapper }
+    );
 
     act(() => {
       result.current.globalStoreActions.setScope(scope);

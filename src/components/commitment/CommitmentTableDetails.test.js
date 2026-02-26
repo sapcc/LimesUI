@@ -6,7 +6,7 @@ import { fireEvent, screen, renderHook, waitFor } from "@testing-library/react";
 import CommitmentTableDetails from "./CommitmentTableDetails";
 import { initialCommitmentObject } from "../../lib/constants";
 import { PortalProvider } from "@cloudoperators/juno-ui-components";
-import StoreProvider, { createCommitmentStore, createCommitmentStoreActions } from "../StoreProvider";
+import StoreProvider, { useCreateCommitmentStore, createCommitmentStoreActions } from "../StoreProvider";
 
 const durations = ["1 year", "2 years", "3 years"];
 const commitment = { ...initialCommitmentObject };
@@ -43,7 +43,7 @@ describe("CheckCommitedState", () => {
     await waitFor(() => {
       renderHook(
         () => ({
-          commitmentStore: createCommitmentStore(),
+          commitmentStore: useCreateCommitmentStore(),
           commitmentStoreActions: createCommitmentStoreActions(),
         }),
         { wrapper }
@@ -73,7 +73,7 @@ describe("EditCommitments", () => {
     store = await waitFor(() => {
       return renderHook(
         () => ({
-          commitmentStore: createCommitmentStore(),
+          commitmentStore: useCreateCommitmentStore(),
           commitmentStoreActions: createCommitmentStoreActions(),
         }),
         { wrapper }

@@ -3,14 +3,14 @@
 
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useDomainData, useRefetchDomainAPI, domainStoreActions, globalStoreActions } from "./components/StoreProvider";
+import { useDomainStore, domainStoreActions, globalStoreActions } from "./components/StoreProvider";
 import ContentRoutes from "./ContentRoutes";
 import { LoadingIndicator, Message } from "@cloudoperators/juno-ui-components";
 import useClusterAPI from "./hooks/useClusterAPI";
 
 const AppDomainContent = (props) => {
-  const domainData = useDomainData();
-  const refetchDomainAPI = useRefetchDomainAPI();
+  const domainData = useDomainStore((state) => state.domainData);
+  const refetchDomainAPI = useDomainStore((state) => state.refetchDomainAPI);
   const { setRefetchDomainAPI } = domainStoreActions();
   const { setDomainData } = domainStoreActions();
   const { restructureReport } = globalStoreActions();

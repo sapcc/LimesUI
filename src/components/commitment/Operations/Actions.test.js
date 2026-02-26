@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import React from "react";
-import { createCommitmentStore, createCommitmentStoreActions, globalStoreActions } from "../../StoreProvider";
+import { useCreateCommitmentStore, createCommitmentStoreActions, globalStoreActions } from "../../StoreProvider";
 import { initialCommitmentObject } from "../../../lib/constants";
 import { act, renderHook, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -27,17 +27,15 @@ describe("test Action Operation", () => {
       </PortalProvider>
     );
 
-    await waitFor(() => {
-      return renderHook(
-        () => ({
-          commitmentStore: createCommitmentStore(),
-          commitmentStoreActions: createCommitmentStoreActions(),
-        }),
-        {
-          wrapper,
-        }
-      );
-    });
+    renderHook(
+      () => ({
+        commitmentStore: useCreateCommitmentStore(),
+        commitmentStoreActions: createCommitmentStoreActions(),
+      }),
+      {
+        wrapper,
+      }
+    );
     expect(screen.queryByText(/committed/i)).not.toBe(null);
     const contextMenu = await waitFor(() => {
       return screen.getByTitle(/more/i);
@@ -59,17 +57,15 @@ describe("test Action Operation", () => {
         </StoreProvider>
       </PortalProvider>
     );
-    const { result } = await waitFor(() => {
-      return renderHook(
-        () => ({
-          commitmentStore: createCommitmentStore(),
-          commitmentStoreActions: createCommitmentStoreActions(),
-        }),
-        {
-          wrapper,
-        }
-      );
-    });
+    const { result } = renderHook(
+      () => ({
+        commitmentStore: useCreateCommitmentStore(),
+        commitmentStoreActions: createCommitmentStoreActions(),
+      }),
+      {
+        wrapper,
+      }
+    );
     act(() => {
       result.current.commitmentStoreActions.setShowConversionOption(true);
     });
@@ -94,18 +90,16 @@ describe("test Action Operation", () => {
         </StoreProvider>
       </PortalProvider>
     );
-    const { result, rerender } = await waitFor(() => {
-      return renderHook(
-        () => ({
-          commitmentStore: createCommitmentStore(),
-          commitmentStoreActions: createCommitmentStoreActions(),
-          globalStoreActions: globalStoreActions(),
-        }),
-        {
-          wrapper,
-        }
-      );
-    });
+    const { result, rerender } = renderHook(
+      () => ({
+        commitmentStore: useCreateCommitmentStore(),
+        commitmentStoreActions: createCommitmentStoreActions(),
+        globalStoreActions: globalStoreActions(),
+      }),
+      {
+        wrapper,
+      }
+    );
     act(() => {
       result.current.globalStoreActions.setScope(scope);
     });
@@ -144,17 +138,15 @@ describe("test Action Operation", () => {
         </StoreProvider>
       </PortalProvider>
     );
-    await waitFor(() => {
-      return renderHook(
-        () => ({
-          commitmentStore: createCommitmentStore(),
-          commitmentStoreActions: createCommitmentStoreActions(),
-        }),
-        {
-          wrapper,
-        }
-      );
-    });
+    renderHook(
+      () => ({
+        commitmentStore: useCreateCommitmentStore(),
+        commitmentStoreActions: createCommitmentStoreActions(),
+      }),
+      {
+        wrapper,
+      }
+    );
     const contextMenu = await waitFor(() => {
       return screen.getByTitle(/more/i);
     });

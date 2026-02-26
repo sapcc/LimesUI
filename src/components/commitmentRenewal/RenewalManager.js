@@ -5,7 +5,7 @@ import React from "react";
 import CommitmentRenewal from "./CommitmentRenewal";
 import moment from "moment";
 import { parseCommitmentDuration } from "../../lib/parseCommitmentDurations";
-import { useCommitments } from "../StoreProvider";
+import { useProjectStore } from "../StoreProvider";
 import useCommitmentFilter from "../../hooks/useCommitmentFilter";
 import { ErrorBoundary } from "../../lib/ErrorBoundary";
 
@@ -13,7 +13,7 @@ import { ErrorBoundary } from "../../lib/ErrorBoundary";
 // Currently only available at project level.
 const RenewalManager = (props) => {
   const { canEdit = false } = props;
-  const commitments = useCommitments();
+  const commitments = useProjectStore((state) => state.commitments);
   const { isActive, getCommitmentLabel } = useCommitmentFilter();
   const now = moment().utc();
   const [renewableCommitments, inconsistentCommitments] = React.useMemo(() => {

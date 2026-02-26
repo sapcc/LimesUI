@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import React from "react";
-import { globalStore } from "../StoreProvider";
+import { useGlobalStore } from "../StoreProvider";
 import { DataGridCell, DataGridRow, Icon, Stack } from "@cloudoperators/juno-ui-components";
 import ToolTipWrapper from "../shared/ToolTipWrapper";
 import useMaxQuotaSets from "../shared/useMaxQuotaSets";
@@ -15,7 +15,7 @@ const ProjectQuotaDetails = (props) => {
   const usage = resource.usage;
   const quota = resource.quota;
   const forbidAutogrowth = resource?.forbid_autogrowth ?? false;
-  const { scope } = globalStore();
+  const scope = useGlobalStore((state) => state.scope);
   const unit = new Unit(resource.unit);
   const { MaxQuotaInput, maxQuotaInputProps, MaxQuotaEdit, maxQuotaEditProps } = useMaxQuotaSets({
     project: project,

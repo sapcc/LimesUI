@@ -4,17 +4,17 @@
 import React from "react";
 import ProjectTable from "./ProjectTable";
 import { useQuery } from "@tanstack/react-query";
-import { projectStoreActions, useRefetchProjectAPI } from "../StoreProvider";
-import { globalStoreActions, domainStoreActions, useDomainProjects } from "../StoreProvider";
+import { projectStoreActions, useProjectStore } from "../StoreProvider";
+import { globalStoreActions, domainStoreActions, useDomainStore } from "../StoreProvider";
 import { LoadingIndicator } from "@cloudoperators/juno-ui-components";
 
 const ProjectManager = (props) => {
   const { serviceType, currentCategory, currentResource, currentTab, subRoute, sortProjectProps, mergeOps } = props;
   const { enableSortActivities } = sortProjectProps;
   const resourceName = currentResource.name;
-  const refetchProjectAPI = useRefetchProjectAPI();
+  const refetchProjectAPI = useProjectStore((state) => state.refetchProjectAPI);
   const { setRefetchProjectAPI } = projectStoreActions();
-  const projects = useDomainProjects();
+  const projects = useDomainStore((state) => state.projects);
   const { setProjects } = domainStoreActions();
   const { restructureReport } = globalStoreActions();
   const projectsQueryResult = useQuery({

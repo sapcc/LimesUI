@@ -4,7 +4,7 @@
 import React from "react";
 import CommitmentRenewal from "./CommitmentRenewal";
 import moment from "moment";
-import StoreProvider, { createCommitmentStoreActions, projectStore, projectStoreActions } from "../StoreProvider";
+import StoreProvider, { createCommitmentStoreActions, useProjectStore, projectStoreActions } from "../StoreProvider";
 import { PortalProvider } from "@cloudoperators/juno-ui-components";
 import { act, fireEvent, renderHook, screen, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -69,7 +69,7 @@ describe("Renewal Manger", () => {
     const { result } = renderHook(
       () => ({
         commitmentStoreActions: createCommitmentStoreActions(),
-        projectStore: projectStore(),
+        projectStore: useProjectStore(),
         projectStoreActions: projectStoreActions(),
       }),
       { wrapper }
