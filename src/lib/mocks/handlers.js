@@ -57,6 +57,7 @@ const getProjectsForCluster = ({ endpoint }) => {
       if (project.services.length > 0) return;
       project.services = structuredClone(projectAPI.project.services);
     });
+
     return HttpResponse.json(clusterData);
   });
 };

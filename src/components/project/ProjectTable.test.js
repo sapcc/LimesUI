@@ -160,8 +160,41 @@ describe("ProjectTable", () => {
 
     // Simulate project search by name
     fireEvent.change(screen.getByTestId("Search"), { target: { value: "project1" } });
-    expect(screen.getByText("domain1/Project1")).toBeInTheDocument();
-    expect(screen.queryByText("domain2/Project2")).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText("domain1/Project1")).toBeInTheDocument();
+      expect(screen.queryByText("domain2/Project2")).not.toBeInTheDocument();
+    });
+
+    // Search with leading and trailing whitespace should still find the project (trimmed)
+    fireEvent.change(screen.getByTestId("Search"), { target: { value: "  project1  " } });
+    await waitFor(() => {
+      expect(screen.getByText("domain1/Project1")).toBeInTheDocument();
+      expect(screen.queryByText("domain2/Project2")).not.toBeInTheDocument();
+    });
+
+    // Clear the select filter
+    fireEvent.click(filter);
+    const anyOpt = screen.getByText("any");
+    fireEvent.click(anyOpt);
+
+    // Search with only whitespace should show all projects (treated as empty search)
+    fireEvent.change(screen.getByTestId("Search"), { target: { value: "   " } });
+    await waitFor(() => {
+      expect(screen.getByText("domain1/Project1")).toBeInTheDocument();
+      expect(screen.getByText("domain2/Project2")).toBeInTheDocument();
+    });
+
+    // Reset to normal search for remaining tests
+    fireEvent.change(screen.getByTestId("Search"), { target: { value: "project1" } });
+    await waitFor(() => {
+      expect(screen.getByText("domain1/Project1")).toBeInTheDocument();
+      expect(screen.queryByText("domain2/Project2")).not.toBeInTheDocument();
+    });
+
+    // Re-apply pending filter for remaining tests
+    fireEvent.click(filter);
+    const pendingOpt2 = screen.getByTestId(`filter-${labelTypes.PENDING}`);
+    fireEvent.click(pendingOpt2);
 
     // Clear the select filter
     fireEvent.click(filter);
@@ -385,6 +418,86 @@ describe("ProjectTable", () => {
     await waitFor(() => {
       expect(screen.getByText("domain1/Project1")).toBeInTheDocument();
       expect(filter).toHaveTextContent("committed");
+    });
+  });
+
+  test("duration filter correctly finds resource by name instead of using first resource", async () => {
+    // This test verifies the bug fix where the duration filter was incorrectly using resources[0]
+    // instead of finding the correct resource by name using getCurrentResource.
+    // The project has two resources: Resource0 (first, no commitments) and Resource1 (second, has commitments)
+    // When filtering for Resource1's commitments, the project should be found.
+    const projectWithMultipleResources = [
+      {
+        metadata: { id: "1", name: "Project1", fullName: "domain1/Project1" },
+        categories: {
+          Category1: {
+            resources: [
+              {
+                name: "Resource0",
+                per_az: [
+                  {
+                    name: "AZ1",
+                    commitmentSum: 0,
+                    usage: 0,
+                  },
+                ],
+              },
+              {
+                name: "Resource1",
+                per_az: [
+                  {
+                    name: "AZ1",
+                    committed: { "1 year": 10 },
+                    commitmentSum: 10,
+                  },
+                ],
+              },
+            ],
+          },
+        },
+      },
+    ];
+
+    const props = {
+      ...mockProps,
+      currentResource: {
+        name: "Resource1",
+        commitment_config: {
+          durations: { "1 year": "1 year" },
+        },
+      },
+      projects: projectWithMultipleResources,
+      currentTab: "AZ1",
+    };
+
+    render(
+      <PortalProvider>
+        <StoreProvider>
+          <QueryClientProvider client={queryClient}>
+            <ProjectTable {...props} />
+          </QueryClientProvider>
+        </StoreProvider>
+      </PortalProvider>
+    );
+
+    const filter = screen.getByTestId("Filter");
+
+    // Select "committed" filter
+    fireEvent.click(filter);
+    const committedOpt = screen.getByTestId(`filter-${labelTypes.COMMITTED}`);
+    fireEvent.click(committedOpt);
+
+    // Duration filter should be visible
+    const durationFilter = await screen.findByTestId("durationFilter");
+    expect(durationFilter).toBeInTheDocument();
+
+    // Select "1 year" duration filter
+    fireEvent.click(durationFilter);
+    fireEvent.click(screen.getByTestId("filter-[1 year]"));
+
+    // The project should still be visible because Resource1 (the correct resource) has the commitment
+    await waitFor(() => {
+      expect(screen.getByText("domain1/Project1")).toBeInTheDocument();
     });
   });
 

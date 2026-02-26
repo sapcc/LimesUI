@@ -105,6 +105,19 @@ const ProjectTable = (props) => {
       headCells = projectTableHeadCells;
   }
 
+  // Pre-compute resource and az data for all projects once to avoid redundant lookups
+  const projectResourceAZMap = React.useMemo(() => {
+    if (!projects) return new Map();
+    const map = new Map();
+    projects.forEach((project) => {
+      const { resources } = project.categories[currentCategory] ?? { resources: [] };
+      const resource = getCurrentResource(resources, currentResource.name);
+      const az = resource?.per_az?.find((az) => az.name === currentTab);
+      map.set(project.metadata.id, { resource, az });
+    });
+    return map;
+  }, [projects, currentCategory, currentResource.name, currentTab]);
+
   const { projectsPerLabel, validLabels, validDurations } = React.useMemo(() => {
     if (subRoute) {
       return { projectsPerLabel: new Map(), validLabels: new Set(), validDurations: new Set() };
@@ -113,24 +126,22 @@ const ProjectTable = (props) => {
     const projectsPerLabel = new Map();
     const validDurations = new Set();
     projects.forEach((project) => {
-      project.categories[currentCategory]?.resources[0]?.per_az?.forEach((az) => {
-        if (az.name !== currentTab) return;
-        const matchingLabels = Object.values(labelTypes).filter((type) => matchAZLabel(az, type));
-        if (matchingLabels.length > 0) {
-          matchingLabels.forEach((label) => {
-            if (!projectsPerLabel.has(label)) {
-              projectsPerLabel.set(label, []);
-            }
-            projectsPerLabel.get(label).push(project);
-          });
-        }
-
-        const commitments = az?.committed || {};
-        Object.values(durations).forEach((duration) => {
-          if (commitments[duration]) {
-            validDurations.add(duration);
+      const { az } = projectResourceAZMap.get(project.metadata.id);
+      const matchingLabels = az ? Object.values(labelTypes).filter((type) => matchAZLabel(az, type)) : [];
+      if (matchingLabels.length > 0) {
+        matchingLabels.forEach((label) => {
+          if (!projectsPerLabel.has(label)) {
+            projectsPerLabel.set(label, []);
           }
+          projectsPerLabel.get(label).push(project);
         });
+      }
+
+      const commitments = az?.committed || {};
+      Object.values(durations).forEach((duration) => {
+        if (commitments[duration]) {
+          validDurations.add(duration);
+        }
       });
     });
 
@@ -164,15 +175,14 @@ const ProjectTable = (props) => {
 
     if (effectiveDurationFilter !== labelTypes.ANY) {
       result = result.filter((project) => {
-        const resource = project.categories[currentCategory]?.resources[0];
-        const az = resource?.per_az?.find((az) => az.name === currentTab);
+        const { az } = projectResourceAZMap.get(project.metadata.id);
         const commitments = az?.committed || {};
         return commitments[effectiveDurationFilter] > 0;
       });
     }
 
-    if (debouncedNameFilter.trim() !== "") {
-      const searchTerm = debouncedNameFilter.toLowerCase();
+    const searchTerm = debouncedNameFilter.toLowerCase().trim();
+    if (searchTerm !== "") {
       const isCluster = scope.isCluster();
       result = result.filter((project) => {
         const filterName = isCluster ? project.metadata.fullName : project.metadata.name;
@@ -349,13 +359,8 @@ const ProjectTable = (props) => {
             ))}
           </DataGridRow>
           {paginatedProjects[currentPage]?.map((project, index) => {
-            const { categories } = project;
-            const { resources } = categories[currentCategory] ?? { resources: [] };
-            const resource = getCurrentResource(resources, currentResource.name);
+            const { resource, az } = projectResourceAZMap.get(project.metadata.id);
             const showCommitments = project.metadata.id === selectedProject.id && selectedProject.showCommitments;
-            const az = resource?.per_az.find((az) => {
-              return az.name === currentTab;
-            });
             return !subRoute && resource ? (
               <ProjectTableDetails
                 key={project.metadata.id}
