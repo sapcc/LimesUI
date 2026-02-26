@@ -14,57 +14,45 @@ import { Tabs, Tab, TabList, TabPanel, Container, Button, Box } from "@cloudoper
 import { getScrapeTime } from "../../lib/getScrapeTime";
 
 const Overview = (props) => {
-  const { canEdit } = props;
+  const { overview, canEdit } = props;
+  const { scope } = globalStore();
+  const isEditing = useIsEditing();
   const navigate = useNavigate();
   const location = useLocation();
-  const isEditing = useIsEditing();
-  const { scope } = globalStore();
-  const editableAreas = props.overview.editableAreas;
+  const editableAreas = overview.editableAreas;
   const [advancedView, setAdvancedView] = React.useState(JSON.parse(localStorage.getItem(ADVANCEDVIEW)) || false);
-  const allAreas = advancedView ? Object.keys(props.overview.areas) : editableAreas;
-  const { currentArea = allAreas[0] } = useParams();
-  const [currentTabIdx, setCurrentTabIdx] = React.useState(0);
   const { resetURLChangeState } = useResetCommitment();
+
+  const allAreas = React.useMemo(
+    () => (advancedView ? Object.keys(overview.areas) : editableAreas),
+    [advancedView, editableAreas, overview.areas]
+  );
+  const { currentArea: selectedArea } = useParams();
+  const currentArea = allAreas.includes(selectedArea) ? selectedArea : allAreas[0];
+  const currentTabIdx = allAreas.indexOf(currentArea);
 
   // EditPanel State should reset if the user changes the URL.
   React.useEffect(() => {
     resetURLChangeState();
   }, [location.pathname]);
 
+  // if the area from the URL is not in the list of available areas, navigate to the default one
+  React.useEffect(() => {
+    if (selectedArea !== currentArea) {
+      navigate(`/${currentArea}`);
+    }
+  }, [selectedArea, currentArea]);
+
   // Hitting edit view URL without edit permissions should lead to the main route.
   React.useEffect(() => {
-    if (canEdit || location.pathname == `/${currentArea}`) return;
+    if (canEdit || location.pathname === `/${currentArea}`) return;
     navigate(`/${currentArea}`);
-  }, [currentArea]);
+  }, [location.pathname, currentArea, canEdit]);
 
-  // Hitting backspace on the UI leads to the previous selected tab.
-  React.useEffect(() => {
-    setCurrentTabIdx(allAreas.findIndex((area) => area === currentArea));
-  }, [currentArea]);
-
-  // Hide tabs that should not be displayed in reduced resource view.
-  // A previous selected tab will route to the first displayed area.
+  // navigate to the selected area
   function onTabChange(selectedArea) {
-    const areaIdx = allAreas.findIndex((area) => area === selectedArea);
-    if (areaIdx < 0) {
-      setCurrentTabIdx(0);
-      navigate(`/${allAreas[0]}`);
-      return;
-    }
-    setCurrentTabIdx(areaIdx);
-    navigate(`/${allAreas[areaIdx]}`);
+    navigate(`/${selectedArea}`);
   }
-
-  // Consider advanced view button click.
-  // Set selected tab to the corresponding view (reduced | advanced)
-  React.useEffect(() => {
-    // Do not reroute on any other subroute. Matches: ("/", "/route", "/route/")
-    // This would cause the refresh of the EditPanel to be rerouted to the main route.
-    // '%' will be checked to capture special characters. F.e. URL encoding empty space = %20
-    const exp = new RegExp("^/[a-zA-Z0-9%]*/?$").exec(location.pathname);
-    if (!exp) return;
-    onTabChange(currentArea);
-  }, [advancedView]);
 
   function renderArea() {
     const { areas, categories } = props.overview;
@@ -135,7 +123,7 @@ const Overview = (props) => {
         <TabList>
           {allAreas.map((area) =>
             !scope.isProject() && area === COMMITMENTRENEWALKEY ? null : (
-              <Tab disabled={isEditing} onClick={() => onTabChange(area)} key={area}>
+              <Tab key={area} disabled={isEditing} onClick={() => onTabChange(area)}>
                 {t(area)}
               </Tab>
             )
