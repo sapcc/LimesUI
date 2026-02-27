@@ -14,12 +14,13 @@ import {
   ContentAreaToolbar,
   DataGrid,
   DataGridRow,
-  LoadingIndicator,
   Button,
   Select,
   SelectOption,
   IntroBox,
+  Icon,
 } from "@cloudoperators/juno-ui-components";
+import ToolTipWrapper from "../shared/ToolTipWrapper";
 import ProjectQuotaDetails from "./ProjectQuotaDetails";
 import { TransferStatus } from "../../lib/constants";
 import { labelTypes, matchAZLabel } from "../shared/LimesBadges";
@@ -127,9 +128,6 @@ const ProjectTable = (props) => {
     const projectsPerLabel = new Map();
     const validDurations = new Set();
     const validLabels = new Set();
-    if (subRoute) {
-      return { projectsPerLabel, validLabels, validDurations };
-    }
 
     projects.forEach((project) => {
       const { az } = projectResourceAZMap.get(project.metadata.id);
@@ -250,14 +248,12 @@ const ProjectTable = (props) => {
     setTransferFromAndToProject(TransferStatus.START);
   }
 
-  return !projects ? (
-    <LoadingIndicator className={"m-auto"} />
-  ) : (
-    <>
-      <ContentAreaToolbar className={`p-0 sticky ${subRoute ? "top-8" : "top-24"} z-[100]`}>
-        <Stack className="w-full mb-7 flex-wrap" direction="horizontal" distribution="between">
-          <Stack gap="1" className="flex-wrap">
-            {!subRoute && (
+  return (
+    projects && (
+      <>
+        <ContentAreaToolbar className={`p-0 sticky ${subRoute ? "top-8" : "top-24"} z-[100]`}>
+          <Stack className="w-full mb-7 flex-wrap" direction="horizontal" distribution="between">
+            <Stack gap="1" className="flex-wrap">
               <Stack gap="1">
                 <Select
                   data-testid="Filter"
@@ -303,10 +299,8 @@ const ProjectTable = (props) => {
                   </Select>
                 )}
               </Stack>
-            )}
-            <Stack gap="1">
-              <DebouncedSearchInput onChange={handleNameFilterChange} delay={300} />
-              {!subRoute && (
+              <Stack gap="1">
+                <DebouncedSearchInput onChange={handleNameFilterChange} delay={300} />
                 <Button
                   disabled={Object.keys(sortConfig).length === 0 && !sortProjectProps.projectsAreSortable}
                   onClick={() => {
@@ -319,96 +313,115 @@ const ProjectTable = (props) => {
                 >
                   Sort
                 </Button>
-              )}
+                <ToolTipWrapper
+                  trigger={<Icon color="text-theme-info" icon="info" size="24" title="Sort functionality" />}
+                  content={
+                    <span>
+                      <b>Default sort priority for projects:</b>
+                      <br />
+                      1. Highest unused commitments or uncommitted usage
+                      <br />
+                      2. Quota assigned but no commitments or usage
+                      <br />
+                      3. No quota (sorted alphabetically)
+                      <br />
+                      <br />
+                      User actions may alter the sort order.
+                      <br />
+                      When this occurs, the <b>Sort</b> button becomes active to restore the default order.
+                    </span>
+                  }
+                />
+              </Stack>
             </Stack>
-          </Stack>
-          <Stack gap="2">
-            <Stack alignment="center">
-              <Select
-                data-testid="PerPageSelect"
-                className="w-26"
-                label="Per Page"
-                value={pageSize}
-                onChange={(newPageSize) => {
-                  setCurrentPage(0);
-                  setPageSize(Number(newPageSize));
+            <Stack gap="2">
+              <Stack alignment="center">
+                <Select
+                  data-testid="PerPageSelect"
+                  className="w-26"
+                  label="Per Page"
+                  value={pageSize}
+                  onChange={(newPageSize) => {
+                    setCurrentPage(0);
+                    setPageSize(Number(newPageSize));
+                  }}
+                >
+                  {pageSizeOptions.map((size) => (
+                    <SelectOption key={size} value={size} label={size} />
+                  ))}
+                </Select>
+              </Stack>
+              <Pagination
+                data-testid="Pagination"
+                currentPage={currentPage + 1}
+                onPressPrevious={(page) => {
+                  setCurrentPage(page - 1);
                 }}
-              >
-                {pageSizeOptions.map((size) => (
-                  <SelectOption key={size} value={size} label={size} />
-                ))}
-              </Select>
-            </Stack>
-            <Pagination
-              data-testid="Pagination"
-              currentPage={currentPage + 1}
-              onPressPrevious={(page) => {
-                setCurrentPage(page - 1);
-              }}
-              onPressNext={(page) => {
-                setCurrentPage(page - 1);
-              }}
-              pages={paginatedProjects.length}
-              onKeyPress={(page) => {
-                if (isNaN(page)) return;
-                setCurrentPage(page - 1);
-              }}
-              variant="input"
-            />
-          </Stack>
-        </Stack>
-      </ContentAreaToolbar>
-      {paginatedProjects.length === 0 && <IntroBox text="No projects found" />}
-      {paginatedProjects.length > 0 && (
-        <DataGrid columns={headCells.length} gridColumnTemplate={gridColumSize}>
-          <DataGridRow>
-            {headCells.map((headCell) => (
-              <TableSortHeader
-                key={headCell.key}
-                identifier={headCell.key}
-                value={headCell.label}
-                sortValueFn={headCell.sortValueFn}
-                sortStrategy={headCell.sortStrategy}
-                className={`p-0 sticky ${subRoute ? "top-[6.5rem]" : "top-40"} z-[100]`}
-              >
-                {headCell.label}
-              </TableSortHeader>
-            ))}
-          </DataGridRow>
-          {paginatedProjects[currentPage]?.map((project, index) => {
-            const { resource, az } = projectResourceAZMap.get(project.metadata.id);
-            const showCommitments = project.metadata.id === selectedProject.id && selectedProject.showCommitments;
-
-            return !subRoute && resource ? (
-              <ProjectTableDetails
-                key={project.metadata.id}
-                index={index}
-                showCommitments={showCommitments}
-                updateShowCommitments={updateShowCommitments}
-                handleCommitmentTransfer={handleCommitmentTransfer}
-                serviceType={serviceType}
-                currentCategory={currentCategory}
-                project={project}
-                resource={resource}
-                tracksQuota={resourceTracksQuota}
-                az={az}
-                currentTab={currentTab}
-                mergeOps={mergeOps}
+                onPressNext={(page) => {
+                  setCurrentPage(page - 1);
+                }}
+                pages={paginatedProjects.length}
+                onKeyPress={(page) => {
+                  if (isNaN(page)) return;
+                  setCurrentPage(page - 1);
+                }}
+                variant="input"
               />
-            ) : (
-              subRoute && resource && (
-                <ProjectQuotaDetails
+            </Stack>
+          </Stack>
+        </ContentAreaToolbar>
+        {paginatedProjects.length === 0 && <IntroBox text="No projects found" />}
+        {paginatedProjects.length > 0 && (
+          <DataGrid columns={headCells.length} gridColumnTemplate={gridColumSize}>
+            <DataGridRow>
+              {headCells.map((headCell) => (
+                <TableSortHeader
+                  key={headCell.key}
+                  identifier={headCell.key}
+                  value={headCell.label}
+                  sortValueFn={headCell.sortValueFn}
+                  sortStrategy={headCell.sortStrategy}
+                  className={`p-0 sticky ${subRoute ? "top-[6.5rem]" : "top-40"} z-[100]`}
+                >
+                  {headCell.label}
+                </TableSortHeader>
+              ))}
+            </DataGridRow>
+            {paginatedProjects[currentPage]?.map((project, index) => {
+              const { resource, az } = projectResourceAZMap.get(project.metadata.id);
+              const showCommitments = project.metadata.id === selectedProject.id && selectedProject.showCommitments;
+
+              return !subRoute && resource ? (
+                <ProjectTableDetails
                   key={project.metadata.id}
+                  index={index}
+                  showCommitments={showCommitments}
+                  updateShowCommitments={updateShowCommitments}
+                  handleCommitmentTransfer={handleCommitmentTransfer}
                   serviceType={serviceType}
+                  currentCategory={currentCategory}
                   project={project}
                   resource={resource}
+                  tracksQuota={resourceTracksQuota}
+                  az={az}
+                  currentTab={currentTab}
+                  mergeOps={mergeOps}
                 />
-              )
-            );
-          })}
-        </DataGrid>
-      )}
-    </>
+              ) : (
+                subRoute && resource && (
+                  <ProjectQuotaDetails
+                    key={project.metadata.id}
+                    serviceType={serviceType}
+                    project={project}
+                    resource={resource}
+                  />
+                )
+              );
+            })}
+          </DataGrid>
+        )}
+      </>
+    )
   );
 };
 

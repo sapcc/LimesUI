@@ -38,7 +38,7 @@ const ProjectQuotaDetails = (props) => {
         <Stack gap="1">
           {forbidAutogrowth && (
             <ToolTipWrapper
-              trigger={<Icon data-testid="forbidAutogrowthInfo" icon="warning" size="18" />}
+              trigger={<Icon color="text-theme-warning" data-testid="forbidAutogrowthInfo" icon="warning" size="18" />}
               content={
                 <span>
                   Pay-As-You-Go is disabled on project level. <br />

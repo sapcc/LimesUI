@@ -129,7 +129,7 @@ const EditPanel = (props) => {
   }, [isSubmitting]);
 
   function enableSortActivities() {
-    if (!scope.isProject()) {
+    if (!scope.isProject() && !subRoute) {
       setToast("Order of projects might have updated. Please sort the table.", "info");
       setProjectsAreSortable(true);
     }
