@@ -21,7 +21,7 @@ const DebouncedSearchInput = ({ onChange, initialValue = "", delay = 300 }) => {
     return () => {
       clearTimeout(debounceHandler);
     };
-  }, [inputValue, delay, onChange]);
+  }, [inputValue, delay]);
 
   return (
     <SearchInput

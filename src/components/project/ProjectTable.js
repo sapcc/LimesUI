@@ -70,25 +70,31 @@ const quotaTableHeadCells = [
   },
 ];
 
+const DEFAULT_PAGE_SIZE = 30;
+
 // Display the project details in DomainView
 const ProjectTable = (props) => {
   const { serviceType, currentResource, currentCategory, currentTab, projects, subRoute, sortProjectProps, mergeOps } =
     props;
   const resourceTracksQuota = tracksQuota(currentResource);
-  const { durations = {} } = currentResource?.commitment_config ?? {};
+  const durations = currentResource?.commitment_config?.durations ?? {};
   const scope = useGlobalStore((state) => state.scope);
   const { setSortedProjects } = domainStoreActions();
   const { setTransferFromAndToProject, setTransferProject, setCurrentProject, setToast } =
     createCommitmentStoreActions();
   const [selectedProject, setSelectedProject] = React.useState({ id: "", showCommitments: false });
   const [currentPage, setCurrentPage] = React.useState(0);
-  // Use state for the debounced filter value only - the input component manages its own state
-  const [nameFilter, setNameFilter] = React.useState("");
+  const [pageSize, setPageSize] = React.useState(DEFAULT_PAGE_SIZE);
   const [selectedLabelFilter, setSelectedLabelFilter] = React.useState(labelTypes.ANY);
   const [selectedDurationFilter, setSelectedDurationFilter] = React.useState(labelTypes.ANY);
   const durationFilterValues = React.useMemo(() => {
     return [labelTypes.ANY, ...Object.values(durations)];
   }, [durations]);
+  const [nameFilter, setNameFilter] = React.useState("");
+  const handleNameFilterChange = React.useCallback((value) => {
+    setNameFilter(value);
+    setCurrentPage(0);
+  }, []);
 
   if (!resourceTracksQuota && subRoute) return null;
 
@@ -118,12 +124,13 @@ const ProjectTable = (props) => {
   }, [projects, currentCategory, currentResource.name, currentTab]);
 
   const { projectsPerLabel, validLabels, validDurations } = React.useMemo(() => {
-    if (subRoute) {
-      return { projectsPerLabel: new Map(), validLabels: new Set(), validDurations: new Set() };
-    }
-
     const projectsPerLabel = new Map();
     const validDurations = new Set();
+    const validLabels = new Set();
+    if (subRoute) {
+      return { projectsPerLabel, validLabels, validDurations };
+    }
+
     projects.forEach((project) => {
       const { az } = projectResourceAZMap.get(project.metadata.id);
       const matchingLabels = az ? Object.values(labelTypes).filter((type) => matchAZLabel(az, type)) : [];
@@ -144,7 +151,6 @@ const ProjectTable = (props) => {
       });
     });
 
-    const validLabels = new Set();
     Object.values(labelTypes).forEach((label) => {
       if (projectsPerLabel.has(label)) {
         validLabels.add(label);
@@ -152,7 +158,7 @@ const ProjectTable = (props) => {
     });
 
     return { projectsPerLabel, validLabels, validDurations };
-  }, [subRoute, projects, currentCategory, currentTab]);
+  }, [subRoute, projects, projectResourceAZMap, durations]);
 
   // The helper variables are a tradeoff to avoid multiple calculations of the project filter logic while still ensuring that the filters reset when they become invalid.
   // 1. The Tab changes; validLabels/validDurations change; project filter would run
@@ -204,23 +210,26 @@ const ProjectTable = (props) => {
 
   const { items: sortedProjectData, TableSortHeader, sortConfig, resetSort } = useSortTableData(filteredProjects);
   const paginatedProjects = React.useMemo(() => {
-    return chunkProjects(sortedProjectData);
-  }, [sortedProjectData]);
+    return chunkProjects(sortedProjectData, pageSize);
+  }, [sortedProjectData, pageSize]);
 
-  // Reset to first page when filter changes
-  React.useEffect(() => {
-    setCurrentPage(0);
-  }, [nameFilter]);
+  // Calculate available page size options based on filtered project count
+  const pageSizeOptions = React.useMemo(() => {
+    const allSizes = [DEFAULT_PAGE_SIZE, 50, 100, 150, 200];
+    const projectCount = filteredProjects.length;
+    return allSizes.filter((size) => size === DEFAULT_PAGE_SIZE || projectCount > allSizes[allSizes.indexOf(size) - 1]);
+  }, [filteredProjects.length]);
 
   // Sync filter state when it becomes invalid for the current tab.
+  // Only reset filters when validLabels/validDurations change (tab change), not on every render
   React.useEffect(() => {
-    if (!validLabels.has(selectedLabelFilter)) {
+    if (selectedLabelFilter !== labelTypes.ANY && !validLabels.has(selectedLabelFilter)) {
       setSelectedLabelFilter(labelTypes.ANY);
     }
-    if (!validDurations.has(selectedDurationFilter)) {
+    if (selectedDurationFilter !== labelTypes.ANY && !validDurations.has(selectedDurationFilter)) {
       setSelectedDurationFilter(labelTypes.ANY);
     }
-  }, [validLabels, validDurations, selectedLabelFilter, selectedDurationFilter]);
+  }, [validLabels, validDurations]);
 
   // Subcomponent handlers
   function updateShowCommitments(index) {
@@ -296,7 +305,7 @@ const ProjectTable = (props) => {
               </Stack>
             )}
             <Stack gap="1">
-              <DebouncedSearchInput onChange={(value) => setNameFilter(value)} delay={300} />
+              <DebouncedSearchInput onChange={handleNameFilterChange} delay={300} />
               {!subRoute && (
                 <Button
                   disabled={Object.keys(sortConfig).length === 0 && !sortProjectProps.projectsAreSortable}
@@ -313,21 +322,40 @@ const ProjectTable = (props) => {
               )}
             </Stack>
           </Stack>
-          <Pagination
-            currentPage={currentPage + 1}
-            onPressPrevious={(page) => {
-              setCurrentPage(page - 1);
-            }}
-            onPressNext={(page) => {
-              setCurrentPage(page - 1);
-            }}
-            pages={paginatedProjects.length}
-            onKeyPress={(page) => {
-              if (isNaN(page)) return;
-              setCurrentPage(page - 1);
-            }}
-            variant="input"
-          />
+          <Stack gap="2">
+            <Stack alignment="center">
+              <Select
+                data-testid="PerPageSelect"
+                className="w-26"
+                label="Per Page"
+                value={pageSize}
+                onChange={(newPageSize) => {
+                  setCurrentPage(0);
+                  setPageSize(Number(newPageSize));
+                }}
+              >
+                {pageSizeOptions.map((size) => (
+                  <SelectOption key={size} value={size} label={size} />
+                ))}
+              </Select>
+            </Stack>
+            <Pagination
+              data-testid="Pagination"
+              currentPage={currentPage + 1}
+              onPressPrevious={(page) => {
+                setCurrentPage(page - 1);
+              }}
+              onPressNext={(page) => {
+                setCurrentPage(page - 1);
+              }}
+              pages={paginatedProjects.length}
+              onKeyPress={(page) => {
+                if (isNaN(page)) return;
+                setCurrentPage(page - 1);
+              }}
+              variant="input"
+            />
+          </Stack>
         </Stack>
       </ContentAreaToolbar>
       {paginatedProjects.length === 0 && <IntroBox text="No projects found" />}

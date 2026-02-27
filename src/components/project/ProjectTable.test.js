@@ -550,4 +550,54 @@ describe("ProjectTable", () => {
       expect(filter).toHaveTextContent("any");
     });
   });
+
+  test("per page select changes page size and resets page when out of bounds", async () => {
+    // Create enough projects to test pagination
+    const manyProjects = Array.from({ length: 50 }, (_, i) => ({
+      metadata: { id: `${i}`, name: `Project${i}`, fullName: `domain/Project${i}` },
+      categories: {
+        [mockProps.currentCategory]: {
+          resources: [
+            {
+              name: mockProps.currentResource.name,
+              per_az: [{ name: "AZ1", commitmentSum: 0, usage: 0 }],
+            },
+          ],
+        },
+      },
+    }));
+
+    const props = { ...mockProps, projects: manyProjects, currentTab: "AZ1" };
+
+    render(
+      <PortalProvider>
+        <StoreProvider>
+          <QueryClientProvider client={queryClient}>
+            <ProjectTable {...props} />
+          </QueryClientProvider>
+        </StoreProvider>
+      </PortalProvider>
+    );
+
+    const pagination = screen.getByTestId("Pagination");
+    const paginationInput = pagination.querySelector("input");
+    expect(paginationInput).toHaveValue("1");
+
+    const nextButton = screen.getByRole("button", { name: /next/i });
+    fireEvent.click(nextButton);
+    await waitFor(() => {
+      expect(paginationInput).toHaveValue("2");
+    });
+
+    const perPageSelect = screen.getByTestId("PerPageSelect");
+    expect(perPageSelect).toHaveTextContent("30");
+    fireEvent.click(perPageSelect);
+
+    const option50 = screen.getByText("50");
+    fireEvent.click(option50);
+
+    await waitFor(() => {
+      expect(paginationInput).toHaveValue("1");
+    });
+  });
 });

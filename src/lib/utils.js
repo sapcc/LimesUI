@@ -92,9 +92,8 @@ export function getResourceDurations(resource) {
 }
 
 // project chunks for table pagination in the EditPanel.
-export const chunkProjects = (projects) => {
+export const chunkProjects = (projects, chunkSize = 30) => {
   const projectChunks = [];
-  const chunkSize = 30;
   for (let i = 0; i < projects.length; i += chunkSize) {
     const chunk = projects.slice(i, i + chunkSize);
     projectChunks.push(chunk);
