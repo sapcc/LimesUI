@@ -5,12 +5,11 @@ import React from "react";
 import { PanelType } from "../../lib/constants";
 import { chunkProjects, getCurrentResource, tracksQuota } from "../../lib/utils";
 import { useGlobalStore, domainStoreActions, createCommitmentStoreActions } from "../StoreProvider";
-import useDebounce from "../shared/useDebounce";
+import DebouncedSearchInput from "../shared/DebouncedSearchInput";
 import useSortTableData from "../../hooks/useSortTable";
 import ProjectTableDetails from "./ProjectTableDetails";
 import {
   Stack,
-  SearchInput,
   Pagination,
   ContentAreaToolbar,
   DataGrid,
@@ -83,8 +82,8 @@ const ProjectTable = (props) => {
     createCommitmentStoreActions();
   const [selectedProject, setSelectedProject] = React.useState({ id: "", showCommitments: false });
   const [currentPage, setCurrentPage] = React.useState(0);
+  // Use state for the debounced filter value only - the input component manages its own state
   const [nameFilter, setNameFilter] = React.useState("");
-  const debouncedNameFilter = useDebounce(nameFilter);
   const [selectedLabelFilter, setSelectedLabelFilter] = React.useState(labelTypes.ANY);
   const [selectedDurationFilter, setSelectedDurationFilter] = React.useState(labelTypes.ANY);
   const durationFilterValues = React.useMemo(() => {
@@ -181,7 +180,7 @@ const ProjectTable = (props) => {
       });
     }
 
-    const searchTerm = debouncedNameFilter.toLowerCase().trim();
+    const searchTerm = nameFilter.toLowerCase().trim();
     if (searchTerm !== "") {
       const isCluster = scope.isCluster();
       result = result.filter((project) => {
@@ -197,7 +196,7 @@ const ProjectTable = (props) => {
     projects,
     currentCategory,
     currentTab,
-    debouncedNameFilter,
+    nameFilter,
     projectsPerLabel,
     effectiveLabelFilter,
     effectiveDurationFilter,
@@ -208,11 +207,10 @@ const ProjectTable = (props) => {
     return chunkProjects(sortedProjectData);
   }, [sortedProjectData]);
 
-  // Defer page reset until after debounce completes to avoid sluggish input.
-  // Otherwise, setCurrentPage(0) would cause an immediate re-render on keystroke.
+  // Reset to first page when filter changes
   React.useEffect(() => {
     setCurrentPage(0);
-  }, [debouncedNameFilter]);
+  }, [nameFilter]);
 
   // Sync filter state when it becomes invalid for the current tab.
   React.useEffect(() => {
@@ -298,16 +296,7 @@ const ProjectTable = (props) => {
               </Stack>
             )}
             <Stack gap="1">
-              <SearchInput
-                data-testid="Search"
-                value={nameFilter}
-                onChange={(e) => {
-                  setNameFilter(e.target.value);
-                }}
-                onClear={() => {
-                  setNameFilter("");
-                }}
-              />
+              <DebouncedSearchInput onChange={(value) => setNameFilter(value)} delay={300} />
               {!subRoute && (
                 <Button
                   disabled={Object.keys(sortConfig).length === 0 && !sortProjectProps.projectsAreSortable}
@@ -361,6 +350,7 @@ const ProjectTable = (props) => {
           {paginatedProjects[currentPage]?.map((project, index) => {
             const { resource, az } = projectResourceAZMap.get(project.metadata.id);
             const showCommitments = project.metadata.id === selectedProject.id && selectedProject.showCommitments;
+
             return !subRoute && resource ? (
               <ProjectTableDetails
                 key={project.metadata.id}
