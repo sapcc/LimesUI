@@ -8,6 +8,7 @@ import { PortalProvider } from "@cloudoperators/juno-ui-components/index";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import StoreProvider from "../StoreProvider";
 import { labelTypes } from "../shared/LimesBadges";
+import { PAGE_SIZES } from "./ProjectTable";
 
 const mockProps = {
   serviceType: "Service1",
@@ -139,6 +140,7 @@ describe("ProjectTable", () => {
     );
 
     const filter = screen.getByTestId("Filter");
+    expect(screen.getByText("Filter (2)")).toBeInTheDocument();
 
     // Show projects with commitments only
     fireEvent.click(filter);
@@ -147,6 +149,7 @@ describe("ProjectTable", () => {
     await waitFor(() => {
       expect(screen.getByText("domain1/Project1")).toBeInTheDocument();
       expect(screen.queryByText("domain2/Project2")).not.toBeInTheDocument();
+      expect(screen.getByText("Filter (1)")).toBeInTheDocument();
     });
 
     // Show projects with pending commitments only
@@ -163,6 +166,7 @@ describe("ProjectTable", () => {
     await waitFor(() => {
       expect(screen.getByText("domain1/Project1")).toBeInTheDocument();
       expect(screen.queryByText("domain2/Project2")).not.toBeInTheDocument();
+      expect(screen.getByText("Filter (1)")).toBeInTheDocument();
     });
 
     // Search with leading and trailing whitespace should still find the project (trimmed)
@@ -553,7 +557,7 @@ describe("ProjectTable", () => {
 
   test("per page select changes page size and resets page when out of bounds", async () => {
     // Create enough projects to test pagination
-    const manyProjects = Array.from({ length: 50 }, (_, i) => ({
+    const manyProjects = Array.from({ length: 51 }, (_, i) => ({
       metadata: { id: `${i}`, name: `Project${i}`, fullName: `domain/Project${i}` },
       categories: {
         [mockProps.currentCategory]: {
@@ -590,14 +594,90 @@ describe("ProjectTable", () => {
     });
 
     const perPageSelect = screen.getByTestId("PerPageSelect");
-    expect(perPageSelect).toHaveTextContent("30");
+    expect(perPageSelect).toHaveTextContent(PAGE_SIZES[0]);
     fireEvent.click(perPageSelect);
 
-    const option50 = screen.getByText("50");
-    fireEvent.click(option50);
+    const nextOption = screen.getByText(PAGE_SIZES[1]);
+    fireEvent.click(nextOption);
 
     await waitFor(() => {
       expect(paginationInput).toHaveValue("1");
     });
+  });
+
+  test("excludes projects without matching AZ data from display (defense in depth)", async () => {
+    const project1WithBothAZs = [
+      {
+        name: "AZ1",
+        commitmentSum: 10,
+        usage: 5,
+      },
+      {
+        name: "AZ2",
+        commitmentSum: 0,
+        usage: 0,
+      },
+    ];
+
+    // Project2 only has AZ2 data, no AZ1
+    const project2WithOnlyAZ2 = [
+      {
+        name: "AZ2",
+        commitmentSum: 0,
+        usage: 0,
+      },
+    ];
+
+    const projectsWithMismatchedAZs = [
+      {
+        metadata: { id: "1", name: "Project1", fullName: "domain1/Project1" },
+        categories: {
+          [mockProps.currentCategory]: {
+            resources: [
+              {
+                name: mockProps.currentResource.name,
+                per_az: project1WithBothAZs,
+              },
+            ],
+          },
+        },
+      },
+      {
+        metadata: { id: "2", name: "Project2", fullName: "domain2/Project2" },
+        categories: {
+          [mockProps.currentCategory]: {
+            resources: [
+              {
+                name: mockProps.currentResource.name,
+                per_az: project2WithOnlyAZ2,
+              },
+            ],
+          },
+        },
+      },
+    ];
+
+    const props = {
+      ...mockProps,
+      projects: projectsWithMismatchedAZs,
+      currentTab: "AZ1", // Project2 doesn't have AZ1 data
+    };
+
+    render(
+      <PortalProvider>
+        <StoreProvider>
+          <QueryClientProvider client={queryClient}>
+            <ProjectTable {...props} />
+          </QueryClientProvider>
+        </StoreProvider>
+      </PortalProvider>
+    );
+
+    // Only Project1 should be visible since Project2 doesn't have AZ1 data
+    await waitFor(() => {
+      expect(screen.getByText("domain1/Project1")).toBeInTheDocument();
+      expect(screen.queryByText("domain2/Project2")).not.toBeInTheDocument();
+    });
+    expect(screen.getByText("Filter (1)")).toBeInTheDocument();
   });
 });

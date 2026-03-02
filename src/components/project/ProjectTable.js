@@ -72,7 +72,8 @@ const quotaTableHeadCells = [
   },
 ];
 
-const DEFAULT_PAGE_SIZE = 30;
+const DEFAULT_PAGE_SIZE = 50;
+export const PAGE_SIZES = [DEFAULT_PAGE_SIZE, 100, 150, 200];
 
 // Display the project details in DomainView
 const ProjectTable = (props) => {
@@ -132,6 +133,11 @@ const ProjectTable = (props) => {
 
     projects.forEach((project) => {
       const { az } = projectResourceAZMap.get(project.metadata.id);
+      // Defense in depth: If a project with a non-matching AZ exists, don't consider it for further processing.
+      if (!az) {
+        projects.pop(project);
+        return;
+      }
       const matchingLabels = az ? Object.values(labelTypes).filter((type) => matchAZLabel(az, type)) : [];
       if (matchingLabels.length > 0) {
         matchingLabels.forEach((label) => {
@@ -214,9 +220,10 @@ const ProjectTable = (props) => {
 
   // Calculate available page size options based on filtered project count
   const pageSizeOptions = React.useMemo(() => {
-    const allSizes = [DEFAULT_PAGE_SIZE, 50, 100, 150, 200];
     const projectCount = filteredProjects.length;
-    return allSizes.filter((size) => size === DEFAULT_PAGE_SIZE || projectCount > allSizes[allSizes.indexOf(size) - 1]);
+    return PAGE_SIZES.filter(
+      (size) => size === DEFAULT_PAGE_SIZE || projectCount > PAGE_SIZES[PAGE_SIZES.indexOf(size) - 1]
+    );
   }, [filteredProjects.length]);
 
   // Sync filter state when it becomes invalid for the current tab.
@@ -260,7 +267,7 @@ const ProjectTable = (props) => {
               <Select
                 data-testid="Filter"
                 className="w-40"
-                label="Filter"
+                label={`Filter (${filteredProjects.length})`}
                 value={selectedLabelFilter}
                 onChange={(label) => {
                   setSelectedLabelFilter(label);
@@ -331,13 +338,15 @@ const ProjectTable = (props) => {
                     User actions may alter the sort order.
                     <br />
                     When this occurs, the <b>Sort</b> button becomes active to restore the default order.
+                    <br />
+                    Default sorting considers project totals across all AZs, not the currently selected AZ.
                   </span>
                 }
               />
             </Stack>
           </Stack>
           <Stack gap="2">
-            <Stack alignment="center">
+            <Stack>
               <Select
                 data-testid="PerPageSelect"
                 className="w-26"
