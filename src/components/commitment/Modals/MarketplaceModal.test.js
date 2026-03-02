@@ -71,7 +71,7 @@ describe("MarketplaceModal", () => {
     );
 
     const confirmInput = screen.getByTestId(/confirmInput/i);
-    fireEvent.change(confirmInput, { target: { value: "Receive" } });
+    fireEvent.change(confirmInput, { target: { value: "receive" } });
     fireEvent.click(screen.getByText("Confirm"));
     expect(mockProps.action).toHaveBeenCalled();
   });
@@ -125,7 +125,7 @@ describe("MarketplaceModal", () => {
 
     let confirmButton = screen.getByTestId(/modalConfirm/i);
     let confirmInput = screen.getByTestId(/confirmInput/i);
-    fireEvent.change(confirmInput, { target: { value: "Receive" } });
+    fireEvent.change(confirmInput, { target: { value: "receive" } });
     fireEvent.click(confirmButton);
     expect(mockProps.action).toHaveBeenCalled();
   });
@@ -166,7 +166,7 @@ describe("MarketplaceModal", () => {
 
     let confirmButton = screen.getByTestId(/modalConfirm/i);
     let confirmInput = screen.getByTestId(/confirmInput/i);
-    fireEvent.change(confirmInput, { target: { value: "Receive" } });
+    fireEvent.change(confirmInput, { target: { value: "receive" } });
     fireEvent.click(confirmButton);
     expect(mockProps.action).toHaveBeenCalled();
   });
