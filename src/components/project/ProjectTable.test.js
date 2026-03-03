@@ -8,7 +8,7 @@ import { PortalProvider } from "@cloudoperators/juno-ui-components/index";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import StoreProvider from "../StoreProvider";
 import { labelTypes } from "../shared/LimesBadges";
-import { PAGE_SIZES } from "./ProjectTable";
+import { PAGE_SIZES, DEFAULT_PAGE_SIZE, getPageSizeOptions } from "./ProjectTable";
 
 const mockProps = {
   serviceType: "Service1",
@@ -139,8 +139,8 @@ describe("ProjectTable", () => {
       </PortalProvider>
     );
 
-    const filter = screen.getByTestId("Filter");
-    expect(screen.getByText("Filter (2)")).toBeInTheDocument();
+    const filter = screen.getByTestId("projectFilter");
+    expect(screen.getByText("Filter: 2 projects")).toBeInTheDocument();
 
     // Show projects with commitments only
     fireEvent.click(filter);
@@ -149,7 +149,7 @@ describe("ProjectTable", () => {
     await waitFor(() => {
       expect(screen.getByText("domain1/Project1")).toBeInTheDocument();
       expect(screen.queryByText("domain2/Project2")).not.toBeInTheDocument();
-      expect(screen.getByText("Filter (1)")).toBeInTheDocument();
+      expect(screen.getByText("Filter: 1 project")).toBeInTheDocument();
     });
 
     // Show projects with pending commitments only
@@ -166,7 +166,7 @@ describe("ProjectTable", () => {
     await waitFor(() => {
       expect(screen.getByText("domain1/Project1")).toBeInTheDocument();
       expect(screen.queryByText("domain2/Project2")).not.toBeInTheDocument();
-      expect(screen.getByText("Filter (1)")).toBeInTheDocument();
+      expect(screen.getByText("Filter: 1 project")).toBeInTheDocument();
     });
 
     // Search with leading and trailing whitespace should still find the project (trimmed)
@@ -262,7 +262,7 @@ describe("ProjectTable", () => {
       </PortalProvider>
     );
 
-    const filter = screen.getByTestId("Filter");
+    const filter = screen.getByTestId("projectFilter");
     expect(screen.queryByTestId("durationFilter")).not.toBeInTheDocument();
 
     // Select "committed" filter
@@ -345,7 +345,7 @@ describe("ProjectTable", () => {
       </PortalProvider>
     );
 
-    const filter = screen.getByTestId("Filter");
+    const filter = screen.getByTestId("projectFilter");
     fireEvent.click(filter);
     const committedOpt = screen.getByTestId(`filter-${labelTypes.COMMITTED}`);
     fireEvent.click(committedOpt);
@@ -395,7 +395,7 @@ describe("ProjectTable", () => {
     );
 
     // Select "committed" filter on AZ1
-    const filter = screen.getByTestId("Filter");
+    const filter = screen.getByTestId("projectFilter");
     fireEvent.click(filter);
     const committedOpt = screen.getByTestId(`filter-${labelTypes.COMMITTED}`);
     fireEvent.click(committedOpt);
@@ -484,7 +484,7 @@ describe("ProjectTable", () => {
       </PortalProvider>
     );
 
-    const filter = screen.getByTestId("Filter");
+    const filter = screen.getByTestId("projectFilter");
 
     // Select "committed" filter
     fireEvent.click(filter);
@@ -518,7 +518,7 @@ describe("ProjectTable", () => {
       </PortalProvider>
     );
 
-    const filter = screen.getByTestId("Filter");
+    const filter = screen.getByTestId("projectFilter");
     expect(screen.queryByTestId("durationFilter")).not.toBeInTheDocument();
 
     // Select "committed" filter on AZ1
@@ -550,7 +550,7 @@ describe("ProjectTable", () => {
     await waitFor(() => {
       expect(screen.getByText("domain1/Project1")).toBeInTheDocument();
       expect(durationFilter).not.toBeInTheDocument();
-      expect(screen.queryByTestId("Filter")).toBeInTheDocument();
+      expect(screen.queryByTestId("projectFilter")).toBeInTheDocument();
       expect(filter).toHaveTextContent("any");
     });
   });
@@ -606,7 +606,7 @@ describe("ProjectTable", () => {
   });
 
   test("excludes projects without matching AZ data from display (defense in depth)", async () => {
-    const project1WithBothAZs = [
+    const projectWithBothAZs = [
       {
         name: "AZ1",
         commitmentSum: 10,
@@ -619,8 +619,7 @@ describe("ProjectTable", () => {
       },
     ];
 
-    // Project2 only has AZ2 data, no AZ1
-    const project2WithOnlyAZ2 = [
+    const projectWithOnlyAZ2 = [
       {
         name: "AZ2",
         commitmentSum: 0,
@@ -636,7 +635,7 @@ describe("ProjectTable", () => {
             resources: [
               {
                 name: mockProps.currentResource.name,
-                per_az: project1WithBothAZs,
+                per_az: projectWithBothAZs,
               },
             ],
           },
@@ -649,7 +648,33 @@ describe("ProjectTable", () => {
             resources: [
               {
                 name: mockProps.currentResource.name,
-                per_az: project2WithOnlyAZ2,
+                per_az: projectWithOnlyAZ2,
+              },
+            ],
+          },
+        },
+      },
+      {
+        metadata: { id: "3", name: "Project3", fullName: "domain3/Project3" },
+        categories: {
+          [mockProps.currentCategory]: {
+            resources: [
+              {
+                name: "resourceProject3",
+                per_az: projectWithBothAZs,
+              },
+            ],
+          },
+        },
+      },
+      {
+        metadata: { id: "4", name: "Project4", fullName: "domain4/Project4" },
+        categories: {
+          [mockProps.currentCategory]: {
+            resources: [
+              {
+                name: mockProps.currentResource.name,
+                per_az: projectWithBothAZs,
               },
             ],
           },
@@ -673,11 +698,30 @@ describe("ProjectTable", () => {
       </PortalProvider>
     );
 
-    // Only Project1 should be visible since Project2 doesn't have AZ1 data
+    // Only Project1 and Project3 should be visible since Project2 doesn't have AZ1 data
     await waitFor(() => {
       expect(screen.getByText("domain1/Project1")).toBeInTheDocument();
       expect(screen.queryByText("domain2/Project2")).not.toBeInTheDocument();
+      expect(screen.queryByText("domain3/Project3")).not.toBeInTheDocument();
+      expect(screen.getByText("domain4/Project4")).toBeInTheDocument();
     });
-    expect(screen.getByText("Filter (1)")).toBeInTheDocument();
+    expect(screen.getByText("Filter: 2 projects")).toBeInTheDocument();
+  });
+  test.each([
+    { projectCount: 20, expected: [DEFAULT_PAGE_SIZE] },
+    { projectCount: 21, expected: [20, DEFAULT_PAGE_SIZE] },
+    { projectCount: 30, expected: [20, DEFAULT_PAGE_SIZE] },
+    { projectCount: 31, expected: [20, 30, DEFAULT_PAGE_SIZE] },
+    { projectCount: DEFAULT_PAGE_SIZE, expected: [20, 30, DEFAULT_PAGE_SIZE] },
+    { projectCount: DEFAULT_PAGE_SIZE + 1, expected: [20, 30, DEFAULT_PAGE_SIZE, 80] },
+    { projectCount: 80, expected: [20, 30, DEFAULT_PAGE_SIZE, 80] },
+    { projectCount: 81, expected: [20, 30, DEFAULT_PAGE_SIZE, 80, 100] },
+    { projectCount: 100, expected: [20, 30, DEFAULT_PAGE_SIZE, 80, 100] },
+    { projectCount: 101, expected: [20, 30, DEFAULT_PAGE_SIZE, 80, 100, 150] },
+    { projectCount: 200, expected: [20, 30, DEFAULT_PAGE_SIZE, 80, 100, 150, 200] },
+    { projectCount: 201, expected: [20, 30, DEFAULT_PAGE_SIZE, 80, 100, 150, 200] },
+  ])("returns $expected for $projectCount projects", ({ projectCount, expected }) => {
+    const pageSizes = [20, 30, DEFAULT_PAGE_SIZE, 80, 100, 150, 200];
+    expect(getPageSizeOptions(projectCount, pageSizes, DEFAULT_PAGE_SIZE)).toEqual(expected);
   });
 });

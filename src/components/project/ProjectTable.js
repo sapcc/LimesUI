@@ -72,8 +72,20 @@ const quotaTableHeadCells = [
   },
 ];
 
-const DEFAULT_PAGE_SIZE = 50;
+export const DEFAULT_PAGE_SIZE = 50;
 export const PAGE_SIZES = [DEFAULT_PAGE_SIZE, 100, 150, 200];
+export function getPageSizeOptions(projectCount, pageSizes = PAGE_SIZES) {
+  let includeNextSize = true;
+  return pageSizes.filter((size) => {
+    if (size === DEFAULT_PAGE_SIZE) return true;
+    if (projectCount > size) return true;
+    if (includeNextSize && projectCount > DEFAULT_PAGE_SIZE) {
+      includeNextSize = false;
+      return true;
+    }
+    return false;
+  });
+}
 
 // Display the project details in DomainView
 const ProjectTable = (props) => {
@@ -133,11 +145,6 @@ const ProjectTable = (props) => {
 
     projects.forEach((project) => {
       const { az } = projectResourceAZMap.get(project.metadata.id);
-      // Defense in depth: If a project with a non-matching AZ exists, don't consider it for further processing.
-      if (!az) {
-        projects.pop(project);
-        return;
-      }
       const matchingLabels = az ? Object.values(labelTypes).filter((type) => matchAZLabel(az, type)) : [];
       if (matchingLabels.length > 0) {
         matchingLabels.forEach((label) => {
@@ -183,6 +190,12 @@ const ProjectTable = (props) => {
 
     let result = effectiveLabelFilter === labelTypes.ANY ? projects : projectsPerLabel.get(effectiveLabelFilter) || [];
 
+    // Defense in depth: If a project with a non-matching resource or AZ exists, don't consider it for further processing.
+    result = result.filter((project) => {
+      const { resource, az } = projectResourceAZMap.get(project.metadata.id);
+      return resource && az;
+    });
+
     if (effectiveDurationFilter !== labelTypes.ANY) {
       result = result.filter((project) => {
         const { az } = projectResourceAZMap.get(project.metadata.id);
@@ -202,16 +215,7 @@ const ProjectTable = (props) => {
     }
 
     return result;
-  }, [
-    scope,
-    projects,
-    currentCategory,
-    currentTab,
-    nameFilter,
-    projectsPerLabel,
-    effectiveLabelFilter,
-    effectiveDurationFilter,
-  ]);
+  }, [scope, projects, nameFilter, projectsPerLabel, effectiveLabelFilter, effectiveDurationFilter]);
 
   const { items: sortedProjectData, TableSortHeader, sortConfig, resetSort } = useSortTableData(filteredProjects);
   const paginatedProjects = React.useMemo(() => {
@@ -220,10 +224,7 @@ const ProjectTable = (props) => {
 
   // Calculate available page size options based on filtered project count
   const pageSizeOptions = React.useMemo(() => {
-    const projectCount = filteredProjects.length;
-    return PAGE_SIZES.filter(
-      (size) => size === DEFAULT_PAGE_SIZE || projectCount > PAGE_SIZES[PAGE_SIZES.indexOf(size) - 1]
-    );
+    return getPageSizeOptions(filteredProjects.length);
   }, [filteredProjects.length]);
 
   // Sync filter state when it becomes invalid for the current tab.
@@ -265,9 +266,9 @@ const ProjectTable = (props) => {
           <Stack gap="1" className="flex-wrap">
             <Stack gap="1">
               <Select
-                data-testid="Filter"
-                className="w-40"
-                label={`Filter (${filteredProjects.length})`}
+                data-testid="projectFilter"
+                className="w-42"
+                label={`Filter: ${filteredProjects.length} ${filteredProjects.length === 1 ? "project" : "projects"}`}
                 value={selectedLabelFilter}
                 onChange={(label) => {
                   setSelectedLabelFilter(label);
@@ -402,7 +403,7 @@ const ProjectTable = (props) => {
             const { resource, az } = projectResourceAZMap.get(project.metadata.id);
             const showCommitments = project.metadata.id === selectedProject.id && selectedProject.showCommitments;
 
-            return !subRoute && resource ? (
+            return !subRoute && resource && az ? (
               <ProjectTableDetails
                 key={project.metadata.id}
                 index={index}

@@ -191,14 +191,14 @@ const ProjectTableDetails = (props) => {
   );
 };
 
-// Memoize component to prevent unnecessary re-renders when parent updates
+// Memorize component to prevent unnecessary re-renders when parent updates
 export default React.memo(ProjectTableDetails, (prevProps, nextProps) => {
   return (
     prevProps.project.metadata.id === nextProps.project.metadata.id &&
     prevProps.showCommitments === nextProps.showCommitments &&
     prevProps.currentTab === nextProps.currentTab &&
     // It is important to check the object.
-    // This way the memo listens to create or transfer commitment and reacts to them properly
+    // This way the memo listens to commitment creation or transfer and reacts to them properly.
     prevProps.resource === nextProps.resource
   );
 });

@@ -7,15 +7,19 @@ import EditPanel from "./EditPanel";
 import { tracksQuota } from "../../lib/utils";
 import { useParams, useNavigate } from "react-router";
 import { t, getCurrentResource } from "../../lib/utils";
-import { initialCommitmentObject } from "../../lib/constants";
+import { initialCommitmentObject, PanelType } from "../../lib/constants";
 import { createCommitmentStoreActions, useCreateCommitmentStore } from "../StoreProvider";
 import { ErrorBoundary } from "../../lib/ErrorBoundary";
+
+const validSubRoutes = Object.values(PanelType).map((type) => type.name);
 
 // Panel needs to be rendered first to enable the fading UI animation.
 const PanelManager = (props) => {
   const params = useParams();
   const navigate = useNavigate();
-  const { currentArea, categoryName, resourceName, subRoute } = { ...params };
+  const { currentArea, categoryName, resourceName, subRoute: rawSubRoute } = { ...params };
+  // Validate subRoute - only allow valid panel types, treat invalid values as undefined
+  const subRoute = rawSubRoute && validSubRoutes.includes(rawSubRoute) ? rawSubRoute : undefined;
   // currentResource has to be provided from the props. The location state is static and does not refresh on rerender once the project data gets requeried.
   const { resources, serviceType } = props.categories[categoryName];
   const currentResource = getCurrentResource(resources, resourceName);

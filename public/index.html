@@ -32,8 +32,9 @@
       }
     </style>
     <script>
-      const urlParam = new URLSearchParams(window.location.search).get('location');
-      if (!urlParam) {
+      const locParam = new URLSearchParams(window.location.search).get('location');
+      const projectCountParamRaw = new URLSearchParams(window.location.search).get('projectCount');
+      if (!locParam) {
         // automatically reload on build changes
         new EventSource("/esbuild").addEventListener("change", () => location.reload());
       }
@@ -42,16 +43,28 @@
   <body>
     <script type="module">
       let ghProps = null;
-      if (urlParam === 'project' || urlParam === 'domain' || urlParam === 'cluster') {
+      if (locParam === 'project' || locParam === 'domain' || locParam === 'cluster') {
         const allowedPaths = {
           project: 'config/project-appProps.json',
           domain: 'config/domain-appProps.json',
           cluster: 'config/cluster-appProps.json'
         };
-        ghProps = allowedPaths[urlParam];
+        ghProps = allowedPaths[locParam];
       }
       const defaultProps = "./build/appProps.json";
       let appProps = ghProps || defaultProps;
+
+      function parseProjectCount() {
+        if (projectCountParamRaw === null || projectCountParamRaw === undefined || projectCountParamRaw.trim() === '') {
+          return 0;
+        }
+        const parsed = parseInt(projectCountParamRaw, 10);
+        if (isNaN(parsed)) {
+          return 0;
+        }
+        // Clamp the value between 0 and 10000
+        return Math.max(0, Math.min(10000, parsed));
+      }
     
       fetch(appProps)
         .then((res) => res.json())
@@ -65,6 +78,7 @@
             return { authToken: props.token };
           };
           import("./build/index.js").then((app) => {
+            props.projectCount = parseProjectCount();
             app.mount(document.getElementById("root"), { props: props });
           });
           import("./build/quotaPlugin.js").then((app) => {

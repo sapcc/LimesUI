@@ -12,7 +12,7 @@ export const labelTypes = Object.freeze({
   PLANNED: "planned",
   COMMITTED: "committed",
   UNDERUTILIZED: "underutilized",
-  UNCOMMITTED: "uncommitted",
+  UNCOMMITTED: "PAYG",
   EMPTY: "empty",
   NONEMPTY: "non-empty",
 });
