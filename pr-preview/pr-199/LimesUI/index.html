@@ -55,7 +55,7 @@
       let appProps = ghProps || defaultProps;
 
       function parseProjectCount() {
-        if (projectCountParamRaw.trim() === '') {
+        if (projectCountParamRaw === null || projectCountParamRaw === undefined || projectCountParamRaw.trim() === '') {
           return 0;
         }
         const parsed = parseInt(projectCountParamRaw, 10);
