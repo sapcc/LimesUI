@@ -42,8 +42,8 @@ jobs:
         if: github.event.action != 'closed'
         run: |
           echo "<ul><li><a href='./LimesUI/index.html?location=project' target="_blank" rel="noopener noreferrer"> LimesUI Project </a></li>" >> ${{ env.DEPLOY_PATH }}/index.html
-          echo "<li><a href='./LimesUI/index.html?location=domain' target="_blank" rel="noopener noreferrer"> LimesUI Domain </a></li>" >> ${{ env.DEPLOY_PATH }}/index.html
-          echo "<li><a href='./LimesUI/index.html?location=cluster' target="_blank" rel="noopener noreferrer"> LimesUI Cluster </a></li>" >> ${{ env.DEPLOY_PATH }}/index.html
+          echo "<li><a href='./LimesUI/index.html?location=domain&projectCount=0' target="_blank" rel="noopener noreferrer"> LimesUI Domain </a></li>" >> ${{ env.DEPLOY_PATH }}/index.html
+          echo "<li><a href='./LimesUI/index.html?location=cluster&projectCount=0' target="_blank" rel="noopener noreferrer"> LimesUI Cluster </a></li>" >> ${{ env.DEPLOY_PATH }}/index.html
           echo "</ul></body></html>" >> ${{ env.DEPLOY_PATH }}/index.html
 
       - uses: rossjrw/pr-preview-action@v1

@@ -37,7 +37,6 @@ describe("DebouncedSearchInput", () => {
     fireEvent.change(input, { target: { value: "test" } });
     expect(input.value).toBe("test");
 
-    // OnChange should be called immediately
     expect(onChange).not.toHaveBeenCalled();
     act(() => {
       jest.advanceTimersByTime(300);
