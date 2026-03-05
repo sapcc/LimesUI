@@ -24,15 +24,24 @@
   ],
   "packageRules": [
     {
+      "groupName": "miscellaneous packages",
+      "description": "Group dependencies, specific groups can override",
+      "schedule": [
+        "before 8am on Friday"
+      ],
+      "separateMajorMinor": false,
+      "matchPackagePatterns": [
+        ".*"
+      ]
+    },
+    {
       "groupName": "react packages",
       "description": "Updates for React and related packages separately",
       "schedule": [
         "before 8am on Friday"
       ],
-      "matchPackageNames": [
-        "/^react$/",
-        "/^react-dom$/",
-        "/^react-test-renderer$/"
+      "matchPackagePatterns": [
+        "^react(-dom|-test-renderer)?$"
       ]
     },
     {
@@ -41,34 +50,28 @@
       "schedule": [
         "before 8am on Friday"
       ],
-      "matchPackageNames": [
-        "/^@cloudoperators/.*/"
+      "matchPackagePatterns": [
+        "^@?cloudoperators"
       ]
     },
     {
       "groupName": "tailwind packages",
       "description": "Updates for Tailwind and related packages separately",
-      "matchPackageNames": [
-        "/^tailwindcss.*/"
+      "matchPackagePatterns": [
+        "^@?tailwindcss"
       ],
       "schedule": [
         "before 8am on Friday"
       ]
     },
     {
-      "groupName": "miscellaneous packages",
-      "description": "Group all other dependencies",
+      "groupName": "eslint packages",
+      "description": "Updates for eslint and related packages separately",
+      "matchPackagePatterns": [
+        "^@?eslint"
+      ],
       "schedule": [
         "before 8am on Friday"
-      ],
-      "separateMajorMinor": false,
-      "matchPackageNames": [
-        "!/^react$/",
-        "!/^react-dom$/",
-        "!/^react-test-renderer$/",
-        "!/^@cloudoperators/.*/",
-        "!/^tailwindcss.*/",
-        "/.*/"
       ]
     }
   ],
