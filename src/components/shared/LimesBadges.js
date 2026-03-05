@@ -3,27 +3,31 @@
 
 import React from "react";
 import { Badge } from "@cloudoperators/juno-ui-components";
-import { Unit, valueWithUnit } from "../../lib/unit";
-import { uncommittedUsage, unusedCommitments } from "../../lib/utils";
+import { Unit } from "../../lib/unit";
+import { uncommittedUsage, unusedCommitments, getUnusedCommitmentRatio } from "../../lib/utils";
 
 export const labelTypes = Object.freeze({
-  PLANNED: "planned",
+  ANY: "any",
   PENDING: "pending",
-  UNUSED: "unused",
+  PLANNED: "planned",
   COMMITTED: "committed",
-  UNCOMMITTED: "uncommitted",
+  UNDERUTILIZED: "underutilized",
+  UNCOMMITTED: "PAYG",
+  EMPTY: "empty",
+  NONEMPTY: "non-empty",
 });
 
 const DomainBadges = (props) => {
   const { resource, az } = props;
   const { quota } = resource;
-  if (quota == 0) return;
+  if (quota === 0) return;
+  const underutilizedRatio = getUnusedCommitmentRatio(az.commitmentSum, az.usage);
   return (
-    <span>
-      {matchAZLabel(az, labelTypes.UNUSED) && (
+    <span className="truncate">
+      {underutilizedRatio > 0 && (
         <Badge variant="info">
           {" "}
-          <b>{labelTypes.UNUSED}</b>
+          <b className="whitespace-nowrap">{`${underutilizedRatio}% ${labelTypes.UNDERUTILIZED}`}</b>
         </Badge>
       )}
       {matchAZLabel(az, labelTypes.UNCOMMITTED) && (
@@ -57,21 +61,17 @@ const ProjectBadges = (props) => {
   }
 
   return (
-    <span>
+    <span className="truncate">
       {pending && (
         <Badge variant="info">
           {" "}
-          <b>
-            + {props.displayValues && valueWithUnit(pendingAmount, unit)} {labelTypes.PENDING}
-          </b>
+          <b>{`+ ${props.displayValues ? unit.format(pendingAmount, { ascii: true }) : ""} ${labelTypes.PENDING}`}</b>
         </Badge>
       )}
       {planned && (
         <Badge variant="info" className={`${pending && "ml-1"}`}>
           {" "}
-          <b>
-            + {props.displayValues && valueWithUnit(plannedAmount, unit)} {labelTypes.PLANNED}
-          </b>
+          <b>{`+ ${props.displayValues ? unit.format(plannedAmount, { ascii: true }) : ""} ${labelTypes.PLANNED}`}</b>
         </Badge>
       )}
     </span>
@@ -84,12 +84,16 @@ export function matchAZLabel(az, label) {
       return az.hasOwnProperty("planned_commitments");
     case labelTypes.PENDING:
       return az.hasOwnProperty("pending_commitments");
-    case labelTypes.UNUSED:
+    case labelTypes.UNDERUTILIZED:
       return unusedCommitments(az.commitmentSum, az.usage);
     case labelTypes.COMMITTED:
       return az.commitmentSum > 0;
     case labelTypes.UNCOMMITTED:
       return uncommittedUsage(az.commitmentSum, az.usage);
+    case labelTypes.EMPTY:
+      return az.commitmentSum === 0 && az.usage === 0;
+    case labelTypes.NONEMPTY:
+      return az.commitmentSum > 0 || az.usage > 0;
     default:
       return false;
   }

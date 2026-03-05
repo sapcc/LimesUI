@@ -2,11 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import React from "react";
-import { DataGrid, DataGridRow, IntroBox, LoadingIndicator } from "@cloudoperators/juno-ui-components";
+import { DataGrid, DataGridRow, IntroBox } from "@cloudoperators/juno-ui-components";
 import CommitmentTableDetails from "./CommitmentTableDetails";
 import useSortTableData from "../../hooks/useSortTable";
 import useCommitmentFilter from "../../hooks/useCommitmentFilter";
-import { createCommitmentStore } from "../StoreProvider";
+import { useCreateCommitmentStore } from "../StoreProvider";
 import { CustomZones } from "../../lib/constants";
 import { COMMITMENTID } from "../../lib/constants";
 import { getResourceDurations } from "../../lib/utils";
@@ -14,10 +14,9 @@ import { getResourceDurations } from "../../lib/utils";
 const CommitmentTable = (props) => {
   const unit = props.resource.unit;
   const { filterCommitments } = useCommitmentFilter();
-  const { commitment: newCommitment } = createCommitmentStore();
-  const { commitmentIsFetching } = createCommitmentStore();
+  const newCommitment = useCreateCommitmentStore((state) => state.commitment);
   const commitmentTransferID = React.useRef(null);
-  const { isCommitting } = createCommitmentStore();
+  const isCommitting = useCreateCommitmentStore((state) => state.isCommitting);
   const { serviceType, currentCategory, currentResource, currentTab, commitmentData, mergeOps } = {
     ...props,
   };
@@ -98,9 +97,7 @@ const CommitmentTable = (props) => {
     filteredCommitments.length >= 2 ? setMergeIsActive(true) : setMergeIsActive(false);
   }, [filteredCommitments]);
 
-  return commitmentIsFetching ? (
-    <LoadingIndicator className="m-auto" />
-  ) : parsedItems.length > 0 ? (
+  return parsedItems.length > 0 ? (
     <DataGrid columns={commitmentHeadCells.length} gridColumnTemplate={gridColumnTemplate}>
       <DataGridRow>
         {commitmentHeadCells.map((headCell) => (

@@ -3,7 +3,7 @@
 
 import React from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { apiStore, apiStoreActions } from "../components/StoreProvider";
+import { useApiStore, apiStoreActions } from "../components/StoreProvider";
 import { getCerebroBaseURL } from "./scope";
 
 // Requeues are caused by window focus refetching.
@@ -11,7 +11,7 @@ import { getCerebroBaseURL } from "./scope";
 
 const useQueryClientFn = () => {
   const queryClient = useQueryClient();
-  const globalAPI = apiStore();
+  const globalAPI = useApiStore((state) => state.globalAPI);
   const { setApiReady } = apiStoreActions();
   const { endpoint, token, projectID, domainID } = { ...globalAPI };
 

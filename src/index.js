@@ -9,14 +9,15 @@ const enableMocking = async (options) => {
     return;
   }
   const { startWorker } = await import("./lib/mocks/browser");
-  return startWorker(options);
+  return await startWorker(options);
 };
 
 export const mount = async (container, options = {}) => {
   const isMockApi = options?.props?.mockAPI || false;
   const defaultEndpoint = "https://" + window.location.host;
   const endpoint = options?.props?.endpoint || defaultEndpoint;
-  await enableMocking({ endpoint, defaultEndpoint, isMockApi });
+  const projectCount = options?.props?.projectCount;
+  await enableMocking({ endpoint, defaultEndpoint, isMockApi, projectCount });
   const App = await import("./App");
   mount.root = createRoot(container);
   mount.root.render(React.createElement(App.default, { ...options?.props, endpoint }));

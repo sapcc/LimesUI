@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import React from "react";
-import { globalStore, createCommitmentStore } from "../StoreProvider";
+import { useGlobalStore, useCreateCommitmentStore } from "../StoreProvider";
 import { t } from "../../lib/utils";
 import { CustomZones, PanelType } from "../../lib/constants";
 import { Button, Stack } from "@cloudoperators/juno-ui-components";
@@ -81,9 +81,9 @@ const Resource = (props) => {
   } = props;
   const { unit: unitName, editableResource } = resource;
   const isCommittable = getResourceDurations(resource).length > 0 ? true : false;
-  const { scope } = globalStore();
+  const scope = useGlobalStore((state) => state.scope);
   const displayName = t(resource.name);
-  const { isEditing } = createCommitmentStore();
+  const isEditing = useCreateCommitmentStore((state) => state.isEditing);
   const { resetCommitment } = useResetCommitment();
   const [displayResourceInfo, setDisplayResourceInfo] = React.useState(false);
 

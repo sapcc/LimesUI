@@ -4,14 +4,14 @@
 import React from "react";
 import { Button } from "@cloudoperators/juno-ui-components";
 import { initialCommitmentObject } from "../../lib/constants";
-import { globalStore, createCommitmentStore, createCommitmentStoreActions } from "../StoreProvider";
+import { useGlobalStore, createCommitmentStoreActions, useCreateCommitmentStore } from "../StoreProvider";
 import { getResourceDurations } from "../../lib/utils";
 
 const AddCommitments = (props) => {
   const { label, size, disabled, resource } = props;
-  const { scope } = globalStore();
+  const scope = useGlobalStore((state) => state.scope);
   const { setCommitment } = createCommitmentStoreActions();
-  const { isCommitting } = createCommitmentStore();
+  const isCommitting = useCreateCommitmentStore((state) => state.isCommitting);
   const { setIsCommitting } = createCommitmentStoreActions();
   const active = disabled || isCommitting;
   const hasResourceDurations = getResourceDurations(resource).length > 0;

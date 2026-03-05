@@ -4,7 +4,7 @@
 import React from "react";
 
 import { AppShell, AppShellProvider, Message, LoadingIndicator } from "@cloudoperators/juno-ui-components";
-import StoreProvider, { apiStore, apiStoreActions, globalStoreActions } from "./components/StoreProvider";
+import StoreProvider, { useApiStore, apiStoreActions, globalStoreActions } from "./components/StoreProvider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import styles from "./styles.css";
 import dayPickerStyle from "react-day-picker/dist/style.css?inline";
@@ -17,10 +17,10 @@ const App = (props = {}) => {
   const queryClient = props.queryClient;
   const { setGlobalAPI } = apiStoreActions();
   const { setToken } = apiStoreActions();
-  const { token } = apiStore();
+  const token = useApiStore((state) => state.globalAPI.token);
   const { setScope } = globalStoreActions();
-  const { projectID } = apiStore();
-  const { apiReady } = apiStore();
+  const projectID = useApiStore((state) => state.globalAPI.projectID);
+  const apiReady = useApiStore((state) => state.globalAPI.apiReady);
   const [tokenError, setTokenError] = React.useState(false);
   const scope = new Scope(props);
   const Resource = scope.appComponent();

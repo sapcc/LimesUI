@@ -4,11 +4,11 @@
 import React from "react";
 import { AppShell, AppShellProvider, Icon, Stack, Spinner } from "@cloudoperators/juno-ui-components";
 import StoreProvider, {
-  apiStore,
+  useApiStore,
   apiStoreActions,
-  projectStore,
   projectStoreActions,
   globalStoreActions,
+  useProjectStore,
 } from "../components/StoreProvider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useQuery } from "@tanstack/react-query";
@@ -25,7 +25,7 @@ import getQuotaFromResources from "./quota";
 
 const QuotaUsage = (props) => {
   const { quotaProject } = props;
-  const { projectData } = projectStore();
+  const projectData = useProjectStore((state) => state.projectData);
   const { setProjectData } = projectStoreActions();
   const { restructureReport } = globalStoreActions();
   const projectQueryResult = useQuery({
@@ -136,8 +136,8 @@ const QuotaUsage = (props) => {
 
 const App = (props) => {
   const { queryClient } = props;
-  const { apiReady } = apiStore();
-  const { token } = apiStore();
+  const apiReady = useApiStore((state) => state.globalAPI.apiReady);
+  const token = useApiStore((state) => state.globalAPI.token);
   const { setToken } = apiStoreActions();
   const { setGlobalAPI } = apiStoreActions();
   const [tokenError, setTokenError] = React.useState(false);

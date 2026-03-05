@@ -13,8 +13,9 @@ import {
 } from "@cloudoperators/juno-ui-components";
 import BaseFooter from "./BaseComponents/BaseFooter";
 import useConfirmInput from "./BaseComponents/useConfirmInput";
-import { domainStore, globalStore } from "../../StoreProvider";
+import { useGlobalStore, useDomainStore } from "../../StoreProvider";
 import { formatTimeISO8160 } from "../../../lib/utils";
+import { Scope } from "../../../lib/scope";
 import { valueWithUnit } from "../../../lib/unit";
 import { Unit } from "../../../lib/unit";
 
@@ -27,9 +28,9 @@ const MarketplaceModal = (props) => {
   const { ConfirmInput, inputProps, checkInput } = useConfirmInput({
     confirmationText: subText,
   });
-  const { scope } = globalStore();
+  const scope = new Scope(useGlobalStore((state) => state.scope));
   const isProjectView = scope.isProject();
-  const { projects } = domainStore();
+  const projects = useDomainStore((state) => state.projects);
   const sortedProjects = React.useMemo(() => {
     return (
       projects?.sort((a, b) => {
@@ -40,7 +41,7 @@ const MarketplaceModal = (props) => {
         }
       }) || []
     );
-  }, [projects]);
+  }, [projects, scope]);
   const [targetProject, setTargetProject] = React.useState(isProjectView ? project : null);
   const disabled = !isProjectView && !targetProject;
 

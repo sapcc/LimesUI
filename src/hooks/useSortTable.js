@@ -6,7 +6,7 @@ import { useState } from "react";
 import { DataGridHeadCell, Icon, Stack } from "@cloudoperators/juno-ui-components/index";
 
 const sorters = {
-  text: (a, b) => a.localeCompare(b),
+  text: (a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: "base" }),
   numeric: (a, b) => a - b,
 };
 
@@ -37,6 +37,10 @@ const useSortTableData = (items, config = null) => {
       const newConfig = { [key]: { direction, sortValueFn, sortStrategy } };
       return newConfig;
     });
+  };
+
+  const resetSort = () => {
+    setSortConfig({});
   };
 
   const TableSortHeader = (headerProps) => {
@@ -70,7 +74,7 @@ const useSortTableData = (items, config = null) => {
       </DataGridHeadCell>
     );
   };
-  return { items: sortedItems, requestSort, sortConfig, TableSortHeader };
+  return { items: sortedItems, requestSort, resetSort, sortConfig, TableSortHeader };
 };
 
 export default useSortTableData;

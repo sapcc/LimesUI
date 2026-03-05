@@ -92,9 +92,8 @@ export function getResourceDurations(resource) {
 }
 
 // project chunks for table pagination in the EditPanel.
-export const chunkProjects = (projects) => {
+export const chunkProjects = (projects, chunkSize = 30) => {
   const projectChunks = [];
-  const chunkSize = 30;
   for (let i = 0; i < projects.length; i += chunkSize) {
     const chunk = projects.slice(i, i + chunkSize);
     projectChunks.push(chunk);
@@ -104,6 +103,13 @@ export const chunkProjects = (projects) => {
 
 export function unusedCommitments(committed, usage) {
   return committed > usage;
+}
+
+export function getUnusedCommitmentRatio(committed, usage) {
+  if (committed === 0 || usage > committed) {
+    return 0;
+  }
+  return Math.round((1 - usage / committed) * 100);
 }
 
 export function uncommittedUsage(committed, usage) {

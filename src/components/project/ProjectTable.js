@@ -2,23 +2,26 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import React from "react";
-import { chunkProjects, getCurrentResource, tracksQuota } from "../../lib/utils";
 import { PanelType } from "../../lib/constants";
-import { globalStore, domainStoreActions, createCommitmentStoreActions } from "../StoreProvider";
+import { chunkProjects, getCurrentResource, tracksQuota } from "../../lib/utils";
+import { useGlobalStore, domainStoreActions, createCommitmentStoreActions } from "../StoreProvider";
+import DebouncedSearchInput from "../shared/DebouncedSearchInput";
+import useSortTableData from "../../hooks/useSortTable";
 import ProjectTableDetails from "./ProjectTableDetails";
 import {
-  Stack,
-  SearchInput,
-  Pagination,
+  Button,
   ContentAreaToolbar,
   DataGrid,
-  DataGridHeadCell,
   DataGridRow,
   LoadingIndicator,
-  Button,
+  Pagination,
   Select,
   SelectOption,
+  Stack,
+  Icon,
+  IntroBox,
 } from "@cloudoperators/juno-ui-components";
+import ToolTipWrapper from "../shared/ToolTipWrapper";
 import ProjectQuotaDetails from "./ProjectQuotaDetails";
 import { TransferStatus } from "../../lib/constants";
 import { labelTypes, matchAZLabel } from "../shared/LimesBadges";
@@ -27,6 +30,8 @@ const projectTableHeadCells = [
   {
     key: "projectName",
     label: "ProjectName",
+    sortValueFn: (project) => project.metadata?.fullName ?? project.metadata?.name,
+    sortStrategy: "text",
   },
   {
     key: "resourceBar",
@@ -46,6 +51,8 @@ const quotaTableHeadCells = [
   {
     key: "projectName",
     label: "ProjectName",
+    sortValueFn: (project) => project.metadata?.fullName ?? project.metadata?.name,
+    sortStrategy: "text",
   },
   {
     key: "projectUsage",
@@ -64,28 +71,47 @@ const quotaTableHeadCells = [
     label: "Actions",
   },
 ];
-const filterOpts = Object.freeze({
-  Any: "any",
-});
+
+export const DEFAULT_PAGE_SIZE = 50;
+export const PAGE_SIZES = [DEFAULT_PAGE_SIZE, 100, 150, 200];
+export function getPageSizeOptions(projectCount, pageSizes = PAGE_SIZES) {
+  let includeNextSize = true;
+  return pageSizes.filter((size) => {
+    if (size === DEFAULT_PAGE_SIZE) return true;
+    if (projectCount > size) return true;
+    if (includeNextSize && projectCount > DEFAULT_PAGE_SIZE) {
+      includeNextSize = false;
+      return true;
+    }
+    return false;
+  });
+}
 
 // Display the project details in DomainView
 const ProjectTable = (props) => {
   const { serviceType, currentResource, currentCategory, currentTab, projects, subRoute, sortProjectProps, mergeOps } =
     props;
   const resourceTracksQuota = tracksQuota(currentResource);
-  const { scope } = globalStore();
-  const [selectedProject, setSelectedProject] = React.useState({ id: "", showCommitments: false });
+  const durations = currentResource?.commitment_config?.durations ?? {};
+  const scope = useGlobalStore((state) => state.scope);
   const { setSortedProjects } = domainStoreActions();
-  const { setTransferFromAndToProject } = createCommitmentStoreActions();
-  const { setTransferProject } = createCommitmentStoreActions();
-  const { setCurrentProject } = createCommitmentStoreActions();
-  const { setToast } = createCommitmentStoreActions();
-  const [filteredProjects, setFilteredProjects] = React.useState(chunkProjects(projects));
-  const labelFilter = React.useRef(filterOpts.Any);
-  const nameFilter = React.useRef("");
+  const { setTransferFromAndToProject, setTransferProject, setCurrentProject, setToast } =
+    createCommitmentStoreActions();
+  const [selectedProject, setSelectedProject] = React.useState({ id: "", showCommitments: false });
   const [currentPage, setCurrentPage] = React.useState(0);
+  const [pageSize, setPageSize] = React.useState(DEFAULT_PAGE_SIZE);
+  const [selectedLabelFilter, setSelectedLabelFilter] = React.useState(labelTypes.ANY);
+  const [selectedDurationFilter, setSelectedDurationFilter] = React.useState(labelTypes.ANY);
+  const durationFilterValues = React.useMemo(() => {
+    return [labelTypes.ANY, ...Object.values(durations)];
+  }, [durations]);
+  const [nameFilter, setNameFilter] = React.useState("");
+  const handleNameFilterChange = React.useCallback((value) => {
+    setNameFilter(value);
+    setCurrentPage(0);
+  }, []);
 
-  if (!resourceTracksQuota && subRoute) return;
+  if (!resourceTracksQuota && subRoute) return null;
 
   let headCells;
   let gridColumSize;
@@ -99,173 +125,285 @@ const ProjectTable = (props) => {
       headCells = projectTableHeadCells;
   }
 
-  // Tailwind only accepts complete class names as string, otherwise it won't create the corresponding CSS.
-  const colSpan = "col-span-4";
+  // Pre-compute resource and az data for all projects once to avoid redundant lookups
+  const projectResourceAZMap = React.useMemo(() => {
+    if (!projects) return new Map();
+    const map = new Map();
+    projects.forEach((project) => {
+      const { resources } = project.categories[currentCategory] ?? { resources: [] };
+      const resource = getCurrentResource(resources, currentResource.name);
+      const az = resource?.per_az?.find((az) => az.name === currentTab);
+      map.set(project.metadata.id, { resource, az });
+    });
+    return map;
+  }, [projects, currentCategory, currentResource.name, currentTab]);
 
+  const { projectsPerLabel, validLabels, validDurations } = React.useMemo(() => {
+    const projectsPerLabel = new Map();
+    const validDurations = new Set();
+    const validLabels = new Set();
+
+    projects.forEach((project) => {
+      const { az } = projectResourceAZMap.get(project.metadata.id);
+      const matchingLabels = az ? Object.values(labelTypes).filter((type) => matchAZLabel(az, type)) : [];
+      if (matchingLabels.length > 0) {
+        matchingLabels.forEach((label) => {
+          if (!projectsPerLabel.has(label)) {
+            projectsPerLabel.set(label, []);
+          }
+          projectsPerLabel.get(label).push(project);
+        });
+      }
+
+      const commitments = az?.committed || {};
+      Object.values(durations).forEach((duration) => {
+        if (commitments[duration]) {
+          validDurations.add(duration);
+        }
+      });
+    });
+
+    Object.values(labelTypes).forEach((label) => {
+      if (projectsPerLabel.has(label)) {
+        validLabels.add(label);
+      }
+    });
+
+    return { projectsPerLabel, validLabels, validDurations };
+  }, [subRoute, projects, projectResourceAZMap, durations]);
+
+  // The helper variables are a tradeoff to avoid multiple calculations of the project filter logic while still ensuring that the filters reset when they become invalid.
+  // 1. The Tab changes; validLabels/validDurations change; project filter would run
+  // 2. The useEffect resets selectedLabelFilter/selectedDurationFilter; project filter would run again
+  //    However, since the effective filter was already "any", the value doesn't change; project filter doesn't run again
+  const effectiveLabelFilter = React.useMemo(
+    () => (validLabels.has(selectedLabelFilter) ? selectedLabelFilter : labelTypes.ANY),
+    [validLabels, selectedLabelFilter]
+  );
+  const effectiveDurationFilter = React.useMemo(
+    () => (validDurations.has(selectedDurationFilter) ? selectedDurationFilter : labelTypes.ANY),
+    [validDurations, selectedDurationFilter]
+  );
+
+  const filteredProjects = React.useMemo(() => {
+    if (!projects) return [];
+
+    let result = effectiveLabelFilter === labelTypes.ANY ? projects : projectsPerLabel.get(effectiveLabelFilter) || [];
+
+    // Defense in depth: If a project with a non-matching resource or AZ exists, don't consider it for further processing.
+    result = result.filter((project) => {
+      const { resource, az } = projectResourceAZMap.get(project.metadata.id);
+      return resource && az;
+    });
+
+    if (effectiveDurationFilter !== labelTypes.ANY) {
+      result = result.filter((project) => {
+        const { az } = projectResourceAZMap.get(project.metadata.id);
+        const commitments = az?.committed || {};
+        return commitments[effectiveDurationFilter] > 0;
+      });
+    }
+
+    const searchTerm = nameFilter.toLowerCase().trim();
+    if (searchTerm !== "") {
+      const isCluster = scope.isCluster();
+      result = result.filter((project) => {
+        const filterName = isCluster ? project.metadata.fullName : project.metadata.name;
+        const projectID = project.metadata.id;
+        return filterName.toLowerCase().includes(searchTerm) || projectID.toLowerCase().includes(searchTerm);
+      });
+    }
+
+    return result;
+  }, [scope, projects, nameFilter, projectsPerLabel, effectiveLabelFilter, effectiveDurationFilter]);
+
+  const { items: sortedProjectData, TableSortHeader, sortConfig, resetSort } = useSortTableData(filteredProjects);
+  const paginatedProjects = React.useMemo(() => {
+    return chunkProjects(sortedProjectData, pageSize);
+  }, [sortedProjectData, pageSize]);
+
+  // Calculate available page size options based on filtered project count
+  const pageSizeOptions = React.useMemo(() => {
+    return getPageSizeOptions(filteredProjects.length);
+  }, [filteredProjects.length]);
+
+  // Sync filter state when it becomes invalid for the current tab.
+  // Only reset filters when validLabels/validDurations change (tab change), not on every render
+  React.useEffect(() => {
+    if (selectedLabelFilter !== labelTypes.ANY && !validLabels.has(selectedLabelFilter)) {
+      setSelectedLabelFilter(labelTypes.ANY);
+    }
+    if (selectedDurationFilter !== labelTypes.ANY && !validDurations.has(selectedDurationFilter)) {
+      setSelectedDurationFilter(labelTypes.ANY);
+    }
+  }, [validLabels, validDurations]);
+
+  // Subcomponent handlers
   function updateShowCommitments(index) {
-    const project = filteredProjects[currentPage][index];
-    const projectID = filteredProjects[currentPage][index].metadata.id;
+    const project = paginatedProjects[currentPage][index];
+    const projectID = paginatedProjects[currentPage][index].metadata.id;
     setCurrentProject(project);
 
-    if (projectID == selectedProject.id) {
-      // A click on the same (active) project disables it. Otherwise it enables it.
+    // A click on the same (active) project disables it. Otherwise it enables it.
+    if (projectID === selectedProject.id) {
       setSelectedProject({ id: projectID, showCommitments: !selectedProject.showCommitments });
     } else {
       setSelectedProject({ id: projectID, showCommitments: true });
     }
   }
 
-  const { availableLabels, projectsPerLabel } = React.useMemo(() => {
-    if (subRoute) {
-      return { availableLabels: [], projectsPerLabel: new Map() };
-    }
-    const uniqueLabels = new Set([filterOpts.Any]);
-    const matchingProjects = new Map();
-
-    projects.forEach((project) => {
-      project.categories[currentCategory]?.resources[0]?.per_az.forEach((az) => {
-        if (az.name !== currentTab) return;
-        const matchingLabels = Object.values(labelTypes).filter((type) => matchAZLabel(az, type));
-        if (matchingLabels.length > 0) {
-          matchingLabels.forEach((label) => {
-            uniqueLabels.add(label);
-            if (!matchingProjects.has(label)) {
-              matchingProjects.set(label, []);
-            }
-            matchingProjects.get(label).push(project);
-          });
-        }
-      });
-    });
-
-    return { availableLabels: Array.from(uniqueLabels).sort(), projectsPerLabel: matchingProjects };
-  }, [currentTab]);
-
-  function getProjectsToFilter() {
-    const projectsToFilter =
-      labelFilter.current == filterOpts.Any ? projects : projectsPerLabel.get(labelFilter.current) || [];
-    return projectsToFilter;
-  }
-
-  // Change the displayed projects corresponding to its filtered string
-  // The show commitment state will be transferred to filtered projects.
-  function filterProjectsByName(projects) {
-    const regex = new RegExp(nameFilter.current.trim(), "i");
-    const filteredProjects = projects.filter((project) => {
-      const filterName = scope.isCluster() ? project.metadata.fullName : project.metadata.name;
-      const projectID = project.metadata.id;
-      const matchesNameOrID = regex.exec(filterName) || regex.exec(projectID);
-      return matchesNameOrID;
-    });
-    setFilteredProjects(chunkProjects(filteredProjects));
-  }
-
-  function filterProjectsPerNameOrLabel() {
-    const projectsToFilter = getProjectsToFilter();
-    if (nameFilter.current === "") {
-      setFilteredProjects(chunkProjects(projectsToFilter));
-    } else {
-      filterProjectsByName(projectsToFilter);
-    }
-    setCurrentPage(0);
-  }
-  React.useEffect(() => {
-    filterProjectsPerNameOrLabel();
-  }, [projects, currentTab]);
-
   function handleCommitmentTransfer(project) {
     setTransferProject(project);
     setTransferFromAndToProject(TransferStatus.START);
   }
 
-  return projects ? (
+  return !projects ? (
+    <LoadingIndicator className={"m-auto"} />
+  ) : (
     <>
       <ContentAreaToolbar className={`p-0 sticky ${subRoute ? "top-8" : "top-24"} z-[100]`}>
-        <Stack className="w-full mb-7" direction="horizontal" distribution="between">
-          <Stack gap="1">
-            {!subRoute && (
+        <Stack className="w-full mb-7 flex-wrap" direction="horizontal" distribution="between">
+          <Stack gap="1" className="flex-wrap">
+            <Stack gap="1">
               <Select
-                data-testid="Filter"
-                className="w-40"
-                width="auto"
-                label="Filter"
-                placeholder={labelFilter.current}
+                data-testid="projectFilter"
+                className="w-42"
+                label={`Filter: ${filteredProjects.length} ${filteredProjects.length === 1 ? "project" : "projects"}`}
+                value={selectedLabelFilter}
                 onChange={(label) => {
-                  labelFilter.current = label;
-                  filterProjectsPerNameOrLabel();
+                  setSelectedLabelFilter(label);
+                  setSelectedDurationFilter(labelTypes.ANY);
                 }}
               >
-                {Object.values(availableLabels).map((label) => (
-                  <SelectOption data-testid={`filter-${label}`} key={label}>
-                    {label}
-                  </SelectOption>
-                ))}
+                {Object.values(labelTypes).map((label) => {
+                  return (
+                    <SelectOption
+                      data-testid={`filter-${label}`}
+                      key={label}
+                      disabled={!validLabels.has(label) && label !== labelTypes.ANY}
+                      value={label}
+                    />
+                  );
+                })}
               </Select>
-            )}
-            <SearchInput
-              data-testid="Search"
-              value={nameFilter.current}
-              onChange={(e) => {
-                nameFilter.current = e.target.value;
-                filterProjectsPerNameOrLabel();
-              }}
-              onClear={() => {
-                nameFilter.current = "";
-                filterProjectsPerNameOrLabel();
-              }}
-            />
-            {!subRoute && (
+              {selectedLabelFilter === labelTypes.COMMITTED && (
+                <Select
+                  data-testid="durationFilter"
+                  className="w-30"
+                  label="Duration"
+                  value={selectedDurationFilter}
+                  onChange={(value) => {
+                    setSelectedDurationFilter(value);
+                  }}
+                >
+                  {durationFilterValues.map((duration) => {
+                    return (
+                      <SelectOption
+                        data-testid={`filter-[${duration}]`}
+                        key={duration}
+                        disabled={!validDurations.has(duration) && duration !== labelTypes.ANY}
+                        value={duration}
+                      />
+                    );
+                  })}
+                </Select>
+              )}
+            </Stack>
+            <Stack gap="1">
+              <DebouncedSearchInput onChange={handleNameFilterChange} delay={300} />
               <Button
-                disabled={!sortProjectProps.projectsAreSortable}
+                disabled={Object.keys(sortConfig).length === 0 && !sortProjectProps.projectsAreSortable}
                 onClick={() => {
                   setToast(null);
-                  setSortedProjects();
+                  resetSort();
                   sortProjectProps.setProjectsAreSortable(false);
+                  setSortedProjects();
                 }}
                 className={"m-auto mt-0"}
               >
                 Sort
               </Button>
-            )}
+              <ToolTipWrapper
+                trigger={<Icon color="text-theme-info" icon="info" size="24" title="Sort functionality" />}
+                content={
+                  <span>
+                    <b>Default sort priority for projects:</b>
+                    <br />
+                    1. Highest underutilized commitments or uncommitted usage
+                    <br />
+                    2. Quota assigned but no commitments or usage
+                    <br />
+                    3. No quota (sorted alphabetically)
+                    <br />
+                    <br />
+                    User actions may alter the sort order.
+                    <br />
+                    When this occurs, the <b>Sort</b> button becomes active to restore the default order.
+                    <br />
+                    Default sorting considers project totals across all AZs, not the currently selected AZ.
+                  </span>
+                }
+              />
+            </Stack>
           </Stack>
-          <Pagination
-            currentPage={currentPage + 1}
-            onPressPrevious={(page) => {
-              setCurrentPage(page - 1);
-            }}
-            onPressNext={(page) => {
-              setCurrentPage(page - 1);
-            }}
-            pages={filteredProjects.length}
-            onKeyPress={(page) => {
-              if (isNaN(page)) return;
-              setCurrentPage(page - 1);
-            }}
-            variant="input"
-          />
+          <Stack gap="2">
+            <Stack>
+              <Select
+                data-testid="PerPageSelect"
+                className="w-26"
+                label="Per Page"
+                value={pageSize}
+                onChange={(newPageSize) => {
+                  setCurrentPage(0);
+                  setPageSize(Number(newPageSize));
+                }}
+              >
+                {pageSizeOptions.map((size) => (
+                  <SelectOption key={size} value={size} label={size} />
+                ))}
+              </Select>
+            </Stack>
+            <Pagination
+              data-testid="Pagination"
+              currentPage={currentPage + 1}
+              onPressPrevious={(page) => {
+                setCurrentPage(page - 1);
+              }}
+              onPressNext={(page) => {
+                setCurrentPage(page - 1);
+              }}
+              pages={paginatedProjects.length}
+              onKeyPress={(page) => {
+                if (isNaN(page)) return;
+                setCurrentPage(page - 1);
+              }}
+              variant="input"
+            />
+          </Stack>
         </Stack>
       </ContentAreaToolbar>
-      <DataGrid columns={headCells.length} gridColumnTemplate={gridColumSize}>
-        <DataGridRow>
-          {headCells.map((headCell) => (
-            <DataGridHeadCell
-              key={headCell.key}
-              className={`p-0 sticky ${subRoute ? "top-[6.5rem]" : "top-40"} z-[100]`}
-            >
-              {headCell.label}
-            </DataGridHeadCell>
-          ))}
-        </DataGridRow>
-        {filteredProjects.length > 0 &&
-          filteredProjects[currentPage].map((project, index) => {
-            const { categories } = project;
-            const { resources } = categories[currentCategory] ?? { resources: [] };
-            const resource = getCurrentResource(resources, currentResource.name);
+      {paginatedProjects.length === 0 && <IntroBox text="No projects found" />}
+      {paginatedProjects.length > 0 && (
+        <DataGrid columns={headCells.length} gridColumnTemplate={gridColumSize}>
+          <DataGridRow>
+            {headCells.map((headCell) => (
+              <TableSortHeader
+                key={headCell.key}
+                identifier={headCell.key}
+                value={headCell.label}
+                sortValueFn={headCell.sortValueFn}
+                sortStrategy={headCell.sortStrategy}
+                className={`p-0 sticky ${subRoute ? "top-[6.5rem]" : "top-40"} z-[100]`}
+              >
+                {headCell.label}
+              </TableSortHeader>
+            ))}
+          </DataGridRow>
+          {paginatedProjects[currentPage]?.map((project, index) => {
+            const { resource, az } = projectResourceAZMap.get(project.metadata.id);
             const showCommitments = project.metadata.id === selectedProject.id && selectedProject.showCommitments;
-            const az = resource?.per_az.find((az) => {
-              return az.name === currentTab;
-            });
-            return !subRoute && resource ? (
+
+            return !subRoute && resource && az ? (
               <ProjectTableDetails
                 key={project.metadata.id}
                 index={index}
@@ -279,7 +417,6 @@ const ProjectTable = (props) => {
                 tracksQuota={resourceTracksQuota}
                 az={az}
                 currentTab={currentTab}
-                colSpan={colSpan}
                 mergeOps={mergeOps}
               />
             ) : (
@@ -293,10 +430,9 @@ const ProjectTable = (props) => {
               )
             );
           })}
-      </DataGrid>
+        </DataGrid>
+      )}
     </>
-  ) : (
-    <LoadingIndicator className={"m-auto"} />
   );
 };
 

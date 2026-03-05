@@ -7,11 +7,11 @@ import CommitmentTable from "../commitment/CommitmentTable";
 import AddCommitments from "../shared/AddCommitments";
 import ToolTipWrapper from "../shared/ToolTipWrapper";
 import {
-  globalStore,
-  projectStore,
+  useGlobalStore,
   projectStoreActions,
-  createCommitmentStore,
   createCommitmentStoreActions,
+  useProjectStore,
+  useCreateCommitmentStore,
 } from "../StoreProvider";
 import { useQuery } from "@tanstack/react-query";
 import { DataGridRow, DataGridCell, Stack, Icon, LoadingIndicator, Button } from "@cloudoperators/juno-ui-components";
@@ -30,34 +30,39 @@ const ProjectTableDetails = (props) => {
     resource,
     az,
     currentTab,
-    colSpan,
     mergeOps,
   } = props;
   const { metadata } = project;
   const { name: projectName, id: projectID } = metadata;
   const { unit } = resource;
   const isEditableResource = resource.editableResource;
-  const { commitments } = projectStore();
-  const { currentProject } = createCommitmentStore();
-  const { refetchCommitmentAPI } = createCommitmentStore();
+  const commitments = useProjectStore((state) => state.commitments);
+  const currentProject = useCreateCommitmentStore((state) => state.currentProject);
+  const refetchCommitmentAPI = useCreateCommitmentStore((state) => state.refetchCommitmentAPI);
   const { setCommitments } = projectStoreActions();
   const { setRefetchCommitmentAPI } = createCommitmentStoreActions();
-  const { isCommitting } = createCommitmentStore();
-  const { transferCommitment } = createCommitmentStore();
-  const { isTransferring } = createCommitmentStore();
-  const { setCommitmentIsFetching } = createCommitmentStoreActions();
+  const isCommitting = useCreateCommitmentStore((state) => state.isCommitting);
+  const transferCommitment = useCreateCommitmentStore((state) => state.transferCommitment);
+  const isTransferring = useCreateCommitmentStore((state) => state.isTransferring);
   const { setIsCommitting } = createCommitmentStoreActions();
   const { setTransferCommitment } = createCommitmentStoreActions();
   const { setCommitmentsToMerge, setMergeIsActive } = mergeOps;
   const { resetCommitmentTransfer } = useResetCommitment();
   // commitment query requires a domain ID that differs on cluster level.
-  const { scope } = globalStore();
+  const scope = useGlobalStore((state) => state.scope);
   const domainID = scope.isCluster() ? metadata.domainID : null;
+  // only display the move commitment button on projects with a commitment on them.
+  const moveCommitment = React.useMemo(() => {
+    return showCommitments && az.hasCommitments;
+  }, [showCommitments, az.hasCommitments]);
+  // Only display transfer button on other projects except the origin project which a commitments transfers from.
+  const originProject = React.useMemo(() => {
+    if (!currentProject) return false;
+    return project.metadata.id === currentProject.metadata.id;
+  }, [currentProject, project.metadata.id]);
   // Be careful here! If enabled state is passed in as undefined, the useQuery hook spams the limes API for all projects!
   const commitQueryResult = useQuery({ queryKey: ["commitmentData", projectID, domainID], enabled: showCommitments });
-  const { data: commitmentData, isLoading, isFetching } = commitQueryResult;
-  const [moveCommitment, setMoveCommitment] = React.useState(false);
-  const [originProject, setOriginProject] = React.useState(false);
+  const { data: commitmentData, isLoading } = commitQueryResult;
 
   React.useEffect(() => {
     if (!showCommitments || !commitmentData) return;
@@ -65,28 +70,10 @@ const ProjectTableDetails = (props) => {
   }, [showCommitments, commitmentData]);
 
   React.useEffect(() => {
-    setCommitmentIsFetching(isFetching);
-  }, [isFetching]);
-
-  React.useEffect(() => {
     if (!refetchCommitmentAPI || !showCommitments) return;
     setRefetchCommitmentAPI(false);
     commitQueryResult.refetch();
   }, [refetchCommitmentAPI, showCommitments]);
-
-  // only display the move commitment button on projects with a commitment on them.
-  React.useEffect(() => {
-    az.hasCommitments ? setMoveCommitment(true) : setMoveCommitment(false);
-  }, [showCommitments, az]);
-
-  // Only display transfer button on other projects except the origin project which a commitments transfers from.
-  React.useEffect(() => {
-    if (!currentProject) {
-      setOriginProject(false);
-    } else {
-      setOriginProject(project.metadata.id == currentProject.metadata.id);
-    }
-  }, [currentProject]);
 
   const displayedName = scope.isCluster() ? metadata.fullName : projectName;
   return (
@@ -101,7 +88,6 @@ const ProjectTableDetails = (props) => {
                 onClick={() => {
                   if (isTransferring) return;
                   resetCommitmentTransfer();
-                  setMoveCommitment(false);
                   setIsCommitting(false);
                   setCommitmentsToMerge([]);
                   setMergeIsActive(false);
@@ -146,7 +132,7 @@ const ProjectTableDetails = (props) => {
           {isEditableResource && (
             <>
               {!isTransferring || originProject ? (
-                <div>
+                <Stack gap="1">
                   <AddCommitments
                     label="Add"
                     resource={resource}
@@ -165,7 +151,7 @@ const ProjectTableDetails = (props) => {
                   >
                     Move
                   </Button>
-                </div>
+                </Stack>
               ) : (
                 <Button
                   variant="primary"
@@ -182,7 +168,7 @@ const ProjectTableDetails = (props) => {
         </DataGridCell>
       </DataGridRow>
       {showCommitments && (
-        <div className={`${colSpan} mt-2 mb-5`}>
+        <div className={`col-span-4 mt-2 mb-5`}>
           {commitments && !isLoading ? (
             <>
               {az.hasCommitments && <p className="font-semibold mb-5">Commitments:</p>}
@@ -205,4 +191,14 @@ const ProjectTableDetails = (props) => {
   );
 };
 
-export default ProjectTableDetails;
+// Memorize component to prevent unnecessary re-renders when parent updates
+export default React.memo(ProjectTableDetails, (prevProps, nextProps) => {
+  return (
+    prevProps.project.metadata.id === nextProps.project.metadata.id &&
+    prevProps.showCommitments === nextProps.showCommitments &&
+    prevProps.currentTab === nextProps.currentTab &&
+    // It is important to check the object.
+    // This way the memo listens to commitment creation or transfer and reacts to them properly.
+    prevProps.resource === nextProps.resource
+  );
+});

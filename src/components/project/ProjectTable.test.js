@@ -2,23 +2,22 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import React from "react";
-import { screen, fireEvent, renderHook, waitFor } from "@testing-library/react";
+import { screen, fireEvent, render, waitFor, cleanup } from "@testing-library/react";
 import ProjectTable from "./ProjectTable";
 import { PortalProvider } from "@cloudoperators/juno-ui-components/index";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import StoreProvider from "../StoreProvider";
-import {
-  globalStoreActions,
-  createCommitmentStore,
-  createCommitmentStoreActions,
-  clusterStoreActions,
-  domainStoreActions,
-  projectStoreActions,
-} from "../StoreProvider";
+import { labelTypes } from "../shared/LimesBadges";
+import { PAGE_SIZES, DEFAULT_PAGE_SIZE, getPageSizeOptions } from "./ProjectTable";
 
 const mockProps = {
   serviceType: "Service1",
-  currentResource: { name: "Resource1" },
+  currentResource: {
+    name: "Resource1",
+    commitment_config: {
+      durations: { "1 year": "1 year", "2 years": "2 years" },
+    },
+  },
   currentCategory: "Category1",
   currentTab: "AZ1",
   projects: [],
@@ -26,48 +25,57 @@ const mockProps = {
   mergeOps: {},
 };
 
-const queryClient = new QueryClient({ defaultOptions: { queries: { retry: 0 } } });
-queryClient.setQueryDefaults(["commitmentData"], {
-  queryFn: () => {
-    return;
+const defaultProject1Config = [
+  {
+    name: "AZ1",
+    pending_commitments: { "1 year": 10 },
+    committed: { "1 year": 10 },
+    commitmentSum: 10,
   },
-});
+  {
+    name: "AZ2",
+    commitmentSum: 0,
+    usage: 0,
+  },
+];
+
+const defaultProject2Config = [
+  {
+    name: "AZ1",
+    commitmentSum: 0,
+    usage: 0,
+  },
+  {
+    name: "AZ2",
+    commitmentSum: 0,
+    usage: 0,
+  },
+];
 
 describe("ProjectTable", () => {
-  test("renders DataGrid with correct table headers", async () => {
-    const expectedHeaders = ["ProjectName", "Status", "Labels", "Actions"];
+  let queryClient;
 
-    const wrapper = ({ children }) => (
-      <PortalProvider>
-        <StoreProvider>
-          <QueryClientProvider client={queryClient}>
-            <ProjectTable {...mockProps} />
-            {children}
-          </QueryClientProvider>
-        </StoreProvider>
-      </PortalProvider>
-    );
-    await waitFor(() => {
-      return renderHook(
-        () => ({
-          globalStoreActions: globalStoreActions(),
-          clusterStoreActions: clusterStoreActions(),
-          domainStoreActions: domainStoreActions(),
-          projectStoreActions: projectStoreActions(),
-          commitmentStore: createCommitmentStore(),
-          commitmentStoreActions: createCommitmentStoreActions(),
-        }),
-        { wrapper }
-      );
+  beforeEach(() => {
+    // Create a fresh QueryClient for each test to prevent memory leaks
+    queryClient = new QueryClient({
+      defaultOptions: {
+        queries: { retry: 0 },
+      },
     });
-
-    expectedHeaders.forEach((header) => {
-      expect(screen.getByText(header)).toBeInTheDocument();
+    queryClient.setQueryDefaults(["commitmentData"], {
+      queryFn: () => {
+        return;
+      },
     });
   });
 
-  test("handles filtering projects by name and label", async () => {
-    const mockProjects = [
+  afterEach(() => {
+    cleanup();
+    queryClient.clear();
+  });
+
+  function getMockProjects(project1Config = defaultProject1Config, project2Config = defaultProject2Config) {
+    return [
       {
         metadata: { id: "1", name: "Project1", fullName: "domain1/Project1" },
         categories: {
@@ -75,7 +83,7 @@ describe("ProjectTable", () => {
             resources: [
               {
                 name: mockProps.currentResource.name,
-                per_az: [{ name: mockProps.currentTab, pending_commitments: { "1 year": 10 }, commitmentSum: 10 }],
+                per_az: project1Config,
               },
             ],
           },
@@ -85,52 +93,68 @@ describe("ProjectTable", () => {
         metadata: { id: "2", name: "Project2", fullName: "domain2/Project2" },
         categories: {
           [mockProps.currentCategory]: {
-            resources: [{ name: mockProps.currentResource.name, per_az: [{ name: mockProps.currentTab }] }],
+            resources: [
+              {
+                name: mockProps.currentResource.name,
+                per_az: project2Config,
+              },
+            ],
           },
         },
       },
     ];
-    mockProps.projects = mockProjects;
+  }
 
-    const wrapper = ({ children }) => (
+  test("renders DataGrid with correct table headers", async () => {
+    const props = { ...mockProps, projects: getMockProjects() };
+    const expectedHeaders = ["ProjectName", "Status", "Labels", "Actions"];
+
+    render(
       <PortalProvider>
         <StoreProvider>
           <QueryClientProvider client={queryClient}>
-            <ProjectTable {...mockProps} />
-            {children}
+            <ProjectTable {...props} />
           </QueryClientProvider>
         </StoreProvider>
       </PortalProvider>
     );
 
     await waitFor(() => {
-      return renderHook(
-        () => ({
-          globalStoreActions: globalStoreActions(),
-          clusterStoreActions: clusterStoreActions(),
-          domainStoreActions: domainStoreActions(),
-          projectStoreActions: projectStoreActions(),
-          commitmentStore: createCommitmentStore(),
-          commitmentStoreActions: createCommitmentStoreActions(),
-        }),
-        { wrapper }
-      );
+      expectedHeaders.forEach((header) => {
+        expect(screen.getByText(header)).toBeInTheDocument();
+      });
     });
+  });
 
-    const filter = screen.getByTestId("Filter");
+  test("handles filtering projects by name and label", async () => {
+    const props = { ...mockProps, projects: getMockProjects() };
+
+    render(
+      <PortalProvider>
+        <StoreProvider>
+          <QueryClientProvider client={queryClient}>
+            <ProjectTable {...props} />
+          </QueryClientProvider>
+        </StoreProvider>
+      </PortalProvider>
+    );
+
+    const filter = screen.getByTestId("projectFilter");
+    expect(screen.getByText("Filter: 2 projects")).toBeInTheDocument();
 
     // Show projects with commitments only
     fireEvent.click(filter);
-    const committedOpt = screen.getByTestId("filter-committed");
+    const committedOpt = screen.getByTestId(`filter-${labelTypes.COMMITTED}`);
     fireEvent.click(committedOpt);
     await waitFor(() => {
       expect(screen.getByText("domain1/Project1")).toBeInTheDocument();
       expect(screen.queryByText("domain2/Project2")).not.toBeInTheDocument();
+      expect(screen.getByText("Filter: 1 project")).toBeInTheDocument();
     });
 
     // Show projects with pending commitments only
     fireEvent.click(filter);
-    const option = screen.getByTestId("filter-pending");
+    const option = screen.getByTestId(`filter-${labelTypes.PENDING}`);
     fireEvent.click(option);
     await waitFor(() => {
       expect(screen.getByText("domain1/Project1")).toBeInTheDocument();
@@ -139,8 +163,42 @@ describe("ProjectTable", () => {
 
     // Simulate project search by name
     fireEvent.change(screen.getByTestId("Search"), { target: { value: "project1" } });
-    expect(screen.getByText("domain1/Project1")).toBeInTheDocument();
-    expect(screen.queryByText("domain2/Project2")).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText("domain1/Project1")).toBeInTheDocument();
+      expect(screen.queryByText("domain2/Project2")).not.toBeInTheDocument();
+      expect(screen.getByText("Filter: 1 project")).toBeInTheDocument();
+    });
+
+    // Search with leading and trailing whitespace should still find the project (trimmed)
+    fireEvent.change(screen.getByTestId("Search"), { target: { value: "  project1  " } });
+    await waitFor(() => {
+      expect(screen.getByText("domain1/Project1")).toBeInTheDocument();
+      expect(screen.queryByText("domain2/Project2")).not.toBeInTheDocument();
+    });
+
+    // Clear the select filter
+    fireEvent.click(filter);
+    const anyOpt = screen.getByText("any");
+    fireEvent.click(anyOpt);
+
+    // Search with only whitespace should show all projects (treated as empty search)
+    fireEvent.change(screen.getByTestId("Search"), { target: { value: "   " } });
+    await waitFor(() => {
+      expect(screen.getByText("domain1/Project1")).toBeInTheDocument();
+      expect(screen.getByText("domain2/Project2")).toBeInTheDocument();
+    });
+
+    // Reset to normal search for remaining tests
+    fireEvent.change(screen.getByTestId("Search"), { target: { value: "project1" } });
+    await waitFor(() => {
+      expect(screen.getByText("domain1/Project1")).toBeInTheDocument();
+      expect(screen.queryByText("domain2/Project2")).not.toBeInTheDocument();
+    });
+
+    // Re-apply pending filter for remaining tests
+    fireEvent.click(filter);
+    const pendingOpt2 = screen.getByTestId(`filter-${labelTypes.PENDING}`);
+    fireEvent.click(pendingOpt2);
 
     // Clear the select filter
     fireEvent.click(filter);
@@ -153,12 +211,517 @@ describe("ProjectTable", () => {
 
     // Clear the name filter
     fireEvent.change(screen.getByTestId("Search"), { target: { value: "" } });
-    expect(screen.getByText("domain1/Project1")).toBeInTheDocument();
-    expect(screen.queryByText("domain2/Project2")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText("domain1/Project1")).toBeInTheDocument();
+      expect(screen.queryByText("domain2/Project2")).toBeInTheDocument();
+    });
 
     // enforce an empty list
     fireEvent.change(screen.getByTestId("Search"), { target: { value: "invalidSearchName" } });
-    expect(screen.queryByText("domain1/Project1")).not.toBeInTheDocument();
-    expect(screen.queryByText("domain2/Project2")).not.toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.queryByText("domain1/Project1")).not.toBeInTheDocument();
+      expect(screen.queryByText("domain2/Project2")).not.toBeInTheDocument();
+    });
+    fireEvent.change(screen.getByTestId("Search"), { target: { value: "" } });
+
+    // Filter with "empty" filter option
+    fireEvent.click(filter);
+    const emptyOpt = screen.getByTestId(`filter-${labelTypes.EMPTY}`);
+    fireEvent.click(emptyOpt);
+    await waitFor(() => {
+      expect(filter).toHaveTextContent("empty");
+      expect(screen.queryByText("domain1/Project1")).not.toBeInTheDocument();
+      expect(screen.getByText("domain2/Project2")).toBeInTheDocument();
+    });
+
+    // Filter with "non-empty" filter option
+    fireEvent.click(filter);
+    const nonEmptyOpt = screen.getByTestId(`filter-${labelTypes.NONEMPTY}`);
+    fireEvent.click(nonEmptyOpt);
+    await waitFor(() => {
+      expect(filter).toHaveTextContent("non-empty");
+      expect(screen.getByText("domain1/Project1")).toBeInTheDocument();
+      expect(screen.queryByText("domain2/Project2")).not.toBeInTheDocument();
+    });
+  });
+
+  test("duration filter shows correct duration set", async () => {
+    const props = {
+      ...mockProps,
+      projects: getMockProjects(),
+      currentTab: "AZ1",
+    };
+
+    const { rerender } = render(
+      <PortalProvider>
+        <StoreProvider>
+          <QueryClientProvider client={queryClient}>
+            <ProjectTable {...props} />
+          </QueryClientProvider>
+        </StoreProvider>
+      </PortalProvider>
+    );
+
+    const filter = screen.getByTestId("projectFilter");
+    expect(screen.queryByTestId("durationFilter")).not.toBeInTheDocument();
+
+    // Select "committed" filter
+    fireEvent.click(filter);
+    const committedOpt = screen.getByTestId(`filter-${labelTypes.COMMITTED}`);
+    fireEvent.click(committedOpt);
+
+    // Duration filter should be visible after the committed filter is applied
+    const durationFilter = await screen.findByTestId("durationFilter");
+    expect(durationFilter).toBeInTheDocument();
+
+    // Check the duration values - AZ1 has a 1 year commitment but no 2 year commitment
+    expect(screen.getByTestId("filter-[any]")).toBeInTheDocument();
+    expect(screen.getByTestId("filter-[1 year]")).toBeInTheDocument();
+    expect(screen.getByTestId("filter-[2 years]")).toBeInTheDocument();
+
+    // A click on the 2 year duration would not apply the filter.
+    fireEvent.click(screen.getByTestId("filter-[2 years]"));
+    await waitFor(() => {
+      expect(durationFilter).toHaveTextContent("any");
+    });
+
+    // Switch to AZ2 which has no commitments
+    const newProps = { ...props, currentTab: "AZ2" };
+    rerender(
+      <PortalProvider>
+        <StoreProvider>
+          <QueryClientProvider client={queryClient}>
+            <ProjectTable {...newProps} />
+          </QueryClientProvider>
+        </StoreProvider>
+      </PortalProvider>
+    );
+
+    // Duration filter should be hidden after filter resets to "any"
+    await waitFor(() => {
+      expect(screen.queryByTestId("durationFilter")).not.toBeInTheDocument();
+    });
+  });
+
+  test("duration filter shows the correct projects when a duration is selected", async () => {
+    // Update the projects with a config that includes a 2 year commitment and verify that the 2 year duration becomes selectable and can be applied.
+    const project1Config = [
+      {
+        name: "AZ1",
+        pending_commitments: { "1 year": 10 },
+        committed: { "1 year": 10, "2 years": 5 },
+        commitmentSum: 15,
+      },
+      {
+        name: "AZ2",
+      },
+    ];
+
+    const project2Config = [
+      {
+        name: "AZ1",
+        pending_commitments: { "1 year": 10 },
+        committed: { "1 year": 10 },
+        commitmentSum: 15,
+      },
+      {
+        name: "AZ2",
+      },
+    ];
+
+    const props = {
+      ...mockProps,
+      projects: getMockProjects(project1Config, project2Config),
+      currentAZ: "AZ1",
+    };
+
+    render(
+      <PortalProvider>
+        <StoreProvider>
+          <QueryClientProvider client={queryClient}>
+            <ProjectTable {...props} />
+          </QueryClientProvider>
+        </StoreProvider>
+      </PortalProvider>
+    );
+
+    const filter = screen.getByTestId("projectFilter");
+    fireEvent.click(filter);
+    const committedOpt = screen.getByTestId(`filter-${labelTypes.COMMITTED}`);
+    fireEvent.click(committedOpt);
+    const durationFilter = await screen.findByTestId("durationFilter");
+    expect(durationFilter).toBeInTheDocument();
+    fireEvent.click(durationFilter);
+    fireEvent.click(screen.getByTestId("filter-[2 years]"));
+
+    await waitFor(() => {
+      expect(screen.getByText("domain1/Project1")).toBeInTheDocument();
+      expect(screen.queryByText("domain2/Project2")).not.toBeInTheDocument();
+    });
+
+    fireEvent.click(durationFilter);
+    fireEvent.click(screen.getByTestId("filter-[1 year]"));
+
+    await waitFor(() => {
+      expect(screen.getByText("domain1/Project1")).toBeInTheDocument();
+      expect(screen.getByText("domain2/Project2")).toBeInTheDocument();
+    });
+  });
+
+  test("maintains filter selection when switching between tabs with same valid filters", async () => {
+    const project1Config = [
+      {
+        name: "AZ1",
+        committed: { "1 year": 10 },
+        commitmentSum: 10,
+      },
+      {
+        name: "AZ2",
+        committed: { "1 year": 10 },
+        commitmentSum: 10,
+      },
+    ];
+
+    const props = { ...mockProps, projects: getMockProjects(project1Config, project1Config), currentTab: "AZ1" };
+
+    const { rerender } = render(
+      <PortalProvider>
+        <StoreProvider>
+          <QueryClientProvider client={queryClient}>
+            <ProjectTable {...props} />
+          </QueryClientProvider>
+        </StoreProvider>
+      </PortalProvider>
+    );
+
+    // Select "committed" filter on AZ1
+    const filter = screen.getByTestId("projectFilter");
+    fireEvent.click(filter);
+    const committedOpt = screen.getByTestId(`filter-${labelTypes.COMMITTED}`);
+    fireEvent.click(committedOpt);
+
+    // Wait for the filter to be applied - verify project is shown
+    await waitFor(() => {
+      expect(screen.getByText("domain1/Project1")).toBeInTheDocument();
+      expect(filter).toHaveTextContent("committed");
+    });
+
+    // Switch to AZ2 which also has committed projects
+    const newProps = { ...props, currentTab: "AZ2" };
+    rerender(
+      <PortalProvider>
+        <StoreProvider>
+          <QueryClientProvider client={queryClient}>
+            <ProjectTable {...newProps} />
+          </QueryClientProvider>
+        </StoreProvider>
+      </PortalProvider>
+    );
+
+    // Filter should remain "committed" since it's valid in AZ2
+    await waitFor(() => {
+      expect(screen.getByText("domain1/Project1")).toBeInTheDocument();
+      expect(filter).toHaveTextContent("committed");
+    });
+  });
+
+  test("duration filter correctly finds resource by name instead of using first resource", async () => {
+    // This test verifies the bug fix where the duration filter was incorrectly using resources[0]
+    // instead of finding the correct resource by name using getCurrentResource.
+    // The project has two resources: Resource0 (first, no commitments) and Resource1 (second, has commitments)
+    // When filtering for Resource1's commitments, the project should be found.
+    const projectWithMultipleResources = [
+      {
+        metadata: { id: "1", name: "Project1", fullName: "domain1/Project1" },
+        categories: {
+          Category1: {
+            resources: [
+              {
+                name: "Resource0",
+                per_az: [
+                  {
+                    name: "AZ1",
+                    commitmentSum: 0,
+                    usage: 0,
+                  },
+                ],
+              },
+              {
+                name: "Resource1",
+                per_az: [
+                  {
+                    name: "AZ1",
+                    committed: { "1 year": 10 },
+                    commitmentSum: 10,
+                  },
+                ],
+              },
+            ],
+          },
+        },
+      },
+    ];
+
+    const props = {
+      ...mockProps,
+      currentResource: {
+        name: "Resource1",
+        commitment_config: {
+          durations: { "1 year": "1 year" },
+        },
+      },
+      projects: projectWithMultipleResources,
+      currentTab: "AZ1",
+    };
+
+    render(
+      <PortalProvider>
+        <StoreProvider>
+          <QueryClientProvider client={queryClient}>
+            <ProjectTable {...props} />
+          </QueryClientProvider>
+        </StoreProvider>
+      </PortalProvider>
+    );
+
+    const filter = screen.getByTestId("projectFilter");
+
+    // Select "committed" filter
+    fireEvent.click(filter);
+    const committedOpt = screen.getByTestId(`filter-${labelTypes.COMMITTED}`);
+    fireEvent.click(committedOpt);
+
+    // Duration filter should be visible
+    const durationFilter = await screen.findByTestId("durationFilter");
+    expect(durationFilter).toBeInTheDocument();
+
+    // Select "1 year" duration filter
+    fireEvent.click(durationFilter);
+    fireEvent.click(screen.getByTestId("filter-[1 year]"));
+
+    // The project should still be visible because Resource1 (the correct resource) has the commitment
+    await waitFor(() => {
+      expect(screen.getByText("domain1/Project1")).toBeInTheDocument();
+    });
+  });
+
+  test("resets filter to 'any' and hides duration filter when switching to tab without committed projects", async () => {
+    const props = { ...mockProps, projects: getMockProjects(), currentTab: "AZ1" };
+
+    const { rerender } = render(
+      <PortalProvider>
+        <StoreProvider>
+          <QueryClientProvider client={queryClient}>
+            <ProjectTable {...props} />
+          </QueryClientProvider>
+        </StoreProvider>
+      </PortalProvider>
+    );
+
+    const filter = screen.getByTestId("projectFilter");
+    expect(screen.queryByTestId("durationFilter")).not.toBeInTheDocument();
+
+    // Select "committed" filter on AZ1
+    fireEvent.click(filter);
+    const committedOpt = screen.getByTestId(`filter-${labelTypes.COMMITTED}`);
+    fireEvent.click(committedOpt);
+    const durationFilter = screen.getByTestId("durationFilter");
+
+    // Wait for the filter to be applied - verify project is shown
+    await waitFor(() => {
+      expect(durationFilter).toBeInTheDocument();
+      expect(screen.getByText("domain1/Project1")).toBeInTheDocument();
+      expect(filter).toHaveTextContent("committed");
+    });
+
+    // Switch to AZ2 which has no committed projects
+    const newProps = { ...props, currentTab: "AZ2" };
+    rerender(
+      <PortalProvider>
+        <StoreProvider>
+          <QueryClientProvider client={queryClient}>
+            <ProjectTable {...newProps} />
+          </QueryClientProvider>
+        </StoreProvider>
+      </PortalProvider>
+    );
+
+    // Filter should reset to "any" and show all projects
+    await waitFor(() => {
+      expect(screen.getByText("domain1/Project1")).toBeInTheDocument();
+      expect(durationFilter).not.toBeInTheDocument();
+      expect(screen.queryByTestId("projectFilter")).toBeInTheDocument();
+      expect(filter).toHaveTextContent("any");
+    });
+  });
+
+  test("per page select changes page size and resets page when out of bounds", async () => {
+    // Create enough projects to test pagination
+    const manyProjects = Array.from({ length: 51 }, (_, i) => ({
+      metadata: { id: `${i}`, name: `Project${i}`, fullName: `domain/Project${i}` },
+      categories: {
+        [mockProps.currentCategory]: {
+          resources: [
+            {
+              name: mockProps.currentResource.name,
+              per_az: [{ name: "AZ1", commitmentSum: 0, usage: 0 }],
+            },
+          ],
+        },
+      },
+    }));
+
+    const props = { ...mockProps, projects: manyProjects, currentTab: "AZ1" };
+
+    render(
+      <PortalProvider>
+        <StoreProvider>
+          <QueryClientProvider client={queryClient}>
+            <ProjectTable {...props} />
+          </QueryClientProvider>
+        </StoreProvider>
+      </PortalProvider>
+    );
+
+    const pagination = screen.getByTestId("Pagination");
+    const paginationInput = pagination.querySelector("input");
+    expect(paginationInput).toHaveValue("1");
+
+    const nextButton = screen.getByRole("button", { name: /next/i });
+    fireEvent.click(nextButton);
+    await waitFor(() => {
+      expect(paginationInput).toHaveValue("2");
+    });
+
+    const perPageSelect = screen.getByTestId("PerPageSelect");
+    expect(perPageSelect).toHaveTextContent(PAGE_SIZES[0]);
+    fireEvent.click(perPageSelect);
+
+    const nextOption = screen.getByText(PAGE_SIZES[1]);
+    fireEvent.click(nextOption);
+
+    await waitFor(() => {
+      expect(paginationInput).toHaveValue("1");
+    });
+  });
+
+  test("excludes projects without matching AZ data from display (defense in depth)", async () => {
+    const projectWithBothAZs = [
+      {
+        name: "AZ1",
+        commitmentSum: 10,
+        usage: 5,
+      },
+      {
+        name: "AZ2",
+        commitmentSum: 0,
+        usage: 0,
+      },
+    ];
+
+    const projectWithOnlyAZ2 = [
+      {
+        name: "AZ2",
+        commitmentSum: 0,
+        usage: 0,
+      },
+    ];
+
+    const projectsWithMismatchedAZs = [
+      {
+        metadata: { id: "1", name: "Project1", fullName: "domain1/Project1" },
+        categories: {
+          [mockProps.currentCategory]: {
+            resources: [
+              {
+                name: mockProps.currentResource.name,
+                per_az: projectWithBothAZs,
+              },
+            ],
+          },
+        },
+      },
+      {
+        metadata: { id: "2", name: "Project2", fullName: "domain2/Project2" },
+        categories: {
+          [mockProps.currentCategory]: {
+            resources: [
+              {
+                name: mockProps.currentResource.name,
+                per_az: projectWithOnlyAZ2,
+              },
+            ],
+          },
+        },
+      },
+      {
+        metadata: { id: "3", name: "Project3", fullName: "domain3/Project3" },
+        categories: {
+          [mockProps.currentCategory]: {
+            resources: [
+              {
+                name: "resourceProject3",
+                per_az: projectWithBothAZs,
+              },
+            ],
+          },
+        },
+      },
+      {
+        metadata: { id: "4", name: "Project4", fullName: "domain4/Project4" },
+        categories: {
+          [mockProps.currentCategory]: {
+            resources: [
+              {
+                name: mockProps.currentResource.name,
+                per_az: projectWithBothAZs,
+              },
+            ],
+          },
+        },
+      },
+    ];
+
+    const props = {
+      ...mockProps,
+      projects: projectsWithMismatchedAZs,
+      currentTab: "AZ1", // Project2 doesn't have AZ1 data
+    };
+
+    render(
+      <PortalProvider>
+        <StoreProvider>
+          <QueryClientProvider client={queryClient}>
+            <ProjectTable {...props} />
+          </QueryClientProvider>
+        </StoreProvider>
+      </PortalProvider>
+    );
+
+    // Only Project1 and Project3 should be visible since Project2 doesn't have AZ1 data
+    await waitFor(() => {
+      expect(screen.getByText("domain1/Project1")).toBeInTheDocument();
+      expect(screen.queryByText("domain2/Project2")).not.toBeInTheDocument();
+      expect(screen.queryByText("domain3/Project3")).not.toBeInTheDocument();
+      expect(screen.getByText("domain4/Project4")).toBeInTheDocument();
+    });
+    expect(screen.getByText("Filter: 2 projects")).toBeInTheDocument();
+  });
+  test.each([
+    { projectCount: 20, expected: [DEFAULT_PAGE_SIZE] },
+    { projectCount: 21, expected: [20, DEFAULT_PAGE_SIZE] },
+    { projectCount: 30, expected: [20, DEFAULT_PAGE_SIZE] },
+    { projectCount: 31, expected: [20, 30, DEFAULT_PAGE_SIZE] },
+    { projectCount: DEFAULT_PAGE_SIZE, expected: [20, 30, DEFAULT_PAGE_SIZE] },
+    { projectCount: DEFAULT_PAGE_SIZE + 1, expected: [20, 30, DEFAULT_PAGE_SIZE, 80] },
+    { projectCount: 80, expected: [20, 30, DEFAULT_PAGE_SIZE, 80] },
+    { projectCount: 81, expected: [20, 30, DEFAULT_PAGE_SIZE, 80, 100] },
+    { projectCount: 100, expected: [20, 30, DEFAULT_PAGE_SIZE, 80, 100] },
+    { projectCount: 101, expected: [20, 30, DEFAULT_PAGE_SIZE, 80, 100, 150] },
+    { projectCount: 200, expected: [20, 30, DEFAULT_PAGE_SIZE, 80, 100, 150, 200] },
+    { projectCount: 201, expected: [20, 30, DEFAULT_PAGE_SIZE, 80, 100, 150, 200] },
+  ])("returns $expected for $projectCount projects", ({ projectCount, expected }) => {
+    const pageSizes = [20, 30, DEFAULT_PAGE_SIZE, 80, 100, 150, 200];
+    expect(getPageSizeOptions(projectCount, pageSizes, DEFAULT_PAGE_SIZE)).toEqual(expected);
   });
 });

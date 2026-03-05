@@ -176,12 +176,16 @@ const createCommitmentStore = (set) => ({
           },
         })),
       addValidDuration: (durationSet) =>
-        set((state) => ({
-          createCommitment: {
-            ...state.createCommitment,
-            validDurations: state.createCommitment.validDurations.set(durationSet?.id, durationSet?.durations),
-          },
-        })),
+        set((state) => {
+          const newMap = new Map(state.createCommitment.validDurations);
+          newMap.set(durationSet?.id, durationSet?.durations);
+          return {
+            createCommitment: {
+              ...state.createCommitment,
+              validDurations: newMap,
+            },
+          };
+        }),
       resetValidDurations: () => {
         set((state) => ({
           createCommitment: {

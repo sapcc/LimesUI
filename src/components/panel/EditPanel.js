@@ -6,13 +6,13 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { PanelBody, Toast } from "@cloudoperators/juno-ui-components";
 import Resource from "../mainView/Resource";
 import {
-  globalStore,
+  useGlobalStore,
   clusterStoreActions,
   domainStoreActions,
-  projectStore,
   projectStoreActions,
-  createCommitmentStore,
   createCommitmentStoreActions,
+  useProjectStore,
+  useCreateCommitmentStore,
 } from "../StoreProvider";
 import AvailabilityZoneNav from "./AvailabilityZoneNav";
 import CommitmentTable from "../commitment/CommitmentTable";
@@ -33,12 +33,12 @@ import Marketplace from "../commitment/Marketplace";
 import TransferCancelModal from "../commitment/Modals/TransferCancelModal";
 
 const EditPanel = (props) => {
-  const { scope } = globalStore();
+  const scope = useGlobalStore((state) => state.scope);
   const { serviceType, currentResource, currentCategory, subRoute, tracksQuota } = { ...props };
   const resourceName = currentResource.name;
   const minConfirmDate = currentResource?.commitment_config?.min_confirm_by;
   const [canConfirm, setCanConfirm] = React.useState(null);
-  const { commitments } = projectStore();
+  const commitments = useProjectStore((state) => state.commitments);
   const { setRefetchProjectAPI } = projectStoreActions();
   const commit = useMutation({ mutationKey: ["newCommitment"] });
   const confirm = useMutation({ mutationKey: ["canConfirm"] });
@@ -51,20 +51,20 @@ const EditPanel = (props) => {
   const updateDuration = useMutation({ mutationKey: ["updateCommitmentDuration"] });
   const merge = useMutation({ mutationKey: ["mergeCommitments"] });
   const { resetCommitmentTransfer } = useResetCommitment();
-  const { commitment: newCommitment } = createCommitmentStore();
-  const { toast } = createCommitmentStore();
-  const { conversionCommitment } = createCommitmentStore();
-  const { currentProject } = createCommitmentStore();
-  const { deleteCommitment } = createCommitmentStore();
-  const { transferredCommitment } = createCommitmentStore();
-  const { transferProject } = createCommitmentStore();
-  const { transferFromAndToProject } = createCommitmentStore();
-  const { updateDurationCommitment } = createCommitmentStore();
+  const newCommitment = useCreateCommitmentStore((state) => state.commitment);
+  const toast = useCreateCommitmentStore((state) => state.toast);
+  const conversionCommitment = useCreateCommitmentStore((state) => state.conversionCommitment);
+  const currentProject = useCreateCommitmentStore((state) => state.currentProject);
+  const deleteCommitment = useCreateCommitmentStore((state) => state.deleteCommitment);
+  const transferredCommitment = useCreateCommitmentStore((state) => state.transferredCommitment);
+  const transferProject = useCreateCommitmentStore((state) => state.transferProject);
+  const transferFromAndToProject = useCreateCommitmentStore((state) => state.transferFromAndToProject);
+  const updateDurationCommitment = useCreateCommitmentStore((state) => state.updateDurationCommitment);
   const { setCommitment } = createCommitmentStoreActions();
   const { setConversionCommitment } = createCommitmentStoreActions();
   const { setDeleteCommitment } = createCommitmentStoreActions();
   const { setIsCommitting } = createCommitmentStoreActions();
-  const { isSubmitting } = createCommitmentStore();
+  const isSubmitting = useCreateCommitmentStore((state) => state.isSubmitting);
   const { setIsSubmitting } = createCommitmentStoreActions();
   const { setToast } = createCommitmentStoreActions();
   const { setTransferredCommitment } = createCommitmentStoreActions();
@@ -129,7 +129,7 @@ const EditPanel = (props) => {
   }, [isSubmitting]);
 
   function enableSortActivities() {
-    if (!scope.isProject()) {
+    if (!scope.isProject() && !subRoute) {
       setToast("Order of projects might have updated. Please sort the table.", "info");
       setProjectsAreSortable(true);
     }

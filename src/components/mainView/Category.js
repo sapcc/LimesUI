@@ -4,7 +4,6 @@
 import React from "react";
 import { t, sortByLogicalOrderAndName, tracksQuota } from "../../lib/utils";
 import Resource from "./Resource";
-import { createCommitmentStore } from "../StoreProvider";
 import { ErrorBoundary } from "../../lib/ErrorBoundary";
 
 const categoryTitle = `
@@ -25,16 +24,16 @@ const categoryContent = `
 const Category = (props) => {
   const { advancedView, canEdit, categoryName, serviceType } = props;
   const { area, resources } = props.category;
-  const { currentProject } = createCommitmentStore();
   const forwardProps = {
     area,
     canEdit,
     categoryName,
-    project: currentProject,
     serviceType,
   };
 
-  const editableResources = resources.filter((res) => res.editableResource === true);
+  const editableResources = React.useMemo(() => {
+    return resources.filter((res) => res.editableResource === true);
+  }, [resources]);
 
   return (
     (editableResources.length > 0 || advancedView) && (

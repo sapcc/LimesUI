@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import React from "react";
-import StoreProvider, { createCommitmentStore, createCommitmentStoreActions } from "../../StoreProvider";
+import StoreProvider, { useCreateCommitmentStore, createCommitmentStoreActions } from "../../StoreProvider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import useGetConversions from "./useGetConversions";
 import { renderHook, waitFor } from "@testing-library/react";
@@ -41,7 +41,7 @@ describe("test useGetConversions", () => {
     const { result } = await waitFor(() => {
       return renderHook(
         () => ({
-          commitmentStore: createCommitmentStore(),
+          commitmentStore: useCreateCommitmentStore(),
           commitmentStoreActions: createCommitmentStoreActions(),
           conversions: useGetConversions({
             serviceType: "serviceA",
@@ -60,7 +60,7 @@ describe("test useGetConversions", () => {
     const { result } = await waitFor(() => {
       return renderHook(
         () => ({
-          commitmentStore: createCommitmentStore(),
+          commitmentStore: useCreateCommitmentStore(),
           commitmentStoreActions: createCommitmentStoreActions(),
           conversions: useGetConversions({
             serviceType: "serviceA",
@@ -80,7 +80,7 @@ describe("test useGetConversions", () => {
     const { result } = await waitFor(() => {
       return renderHook(
         () => ({
-          commitmentStore: createCommitmentStore(),
+          commitmentStore: useCreateCommitmentStore(),
           commitmentStoreActions: createCommitmentStoreActions(),
           conversions: useGetConversions({
             serviceType: "serviceA",
