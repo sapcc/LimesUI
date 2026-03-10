@@ -196,6 +196,7 @@ export default React.memo(ProjectTableDetails, (prevProps, nextProps) => {
   return (
     prevProps.project.metadata.id === nextProps.project.metadata.id &&
     prevProps.showCommitments === nextProps.showCommitments &&
+    prevProps.mergeOps === nextProps.mergeOps &&
     prevProps.currentTab === nextProps.currentTab &&
     prevProps.mergeOps === nextProps.mergeOps &&
     // It is important to check the object.
