@@ -69,6 +69,7 @@ const azContentHover = `
 const Resource = (props) => {
   const {
     canEdit,
+    navigationDisabled,
     categoryName,
     project,
     resource,
@@ -182,11 +183,11 @@ const Resource = (props) => {
                 key={`${azName}`}
                 className={`az-bar ${
                   props.isPanelView
-                    ? `az-bar ${barGroupContainer} ${!subRoute && azName !== "unknown" && azContentHover}`
+                    ? `az-bar ${barGroupContainer} ${!subRoute && !navigationDisabled && azName !== "unknown" && azContentHover}`
                     : `az-bar ${azOverviewBar}`
                 }`}
                 onClick={() => {
-                  if (!props.isPanelView || subRoute || azName == "unknown") return;
+                  if (!props.isPanelView || navigationDisabled || subRoute || azName == "unknown") return;
                   setCurrentTab(azName);
                   setIsMerging(false);
                   resetCommitment();
