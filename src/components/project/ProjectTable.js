@@ -329,7 +329,7 @@ const ProjectTable = (props) => {
                   <span>
                     <b>Default sort priority for projects:</b>
                     <br />
-                    1. Highest underutilized commitments or uncommitted usage
+                    1. Highest underutilized commitments or Pay-As-You-Go usage
                     <br />
                     2. Quota assigned but no commitments or usage
                     <br />
