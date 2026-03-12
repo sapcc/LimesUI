@@ -21,6 +21,7 @@ import {
   Icon,
   IntroBox,
 } from "@cloudoperators/juno-ui-components";
+import TableExport from "./TableExport";
 import ToolTipWrapper from "../shared/ToolTipWrapper";
 import ProjectQuotaDetails from "./ProjectQuotaDetails";
 import { TransferStatus } from "../../lib/constants";
@@ -346,7 +347,15 @@ const ProjectTable = (props) => {
               />
             </Stack>
           </Stack>
-          <Stack gap="2">
+          <Stack gap="1">
+            <TableExport
+              scope={scope}
+              service={serviceType}
+              currentResource={currentResource}
+              projects={projects}
+              filteredProjects={filteredProjects}
+              projectResourceAZMap={projectResourceAZMap}
+            />
             <Stack>
               <Select
                 data-testid="PerPageSelect"
