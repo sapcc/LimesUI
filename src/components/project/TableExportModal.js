@@ -9,6 +9,7 @@ import {
   DataGridRow,
   DataGridCell,
   Icon,
+  Message,
   Modal,
   Stack,
 } from "@cloudoperators/juno-ui-components";
@@ -27,6 +28,8 @@ const TableExportModal = (props) => {
     isLoadingCommitments,
     isExporting,
     hasUnit,
+    hasCommitmentErrors = false,
+    hasExportError = false,
   } = props;
   const { withAllCommitments, withCommitments, withCurrentFilter, withUnitFormat } = exportSettings;
 
@@ -37,6 +40,13 @@ const TableExportModal = (props) => {
       onCancel={() => setModalIsOpen(false)}
       closeable={!isExporting && !isLoadingCommitments}
     >
+      {(hasCommitmentErrors || hasExportError) && (
+        <Message variant="danger" className="mt-4">
+          {hasCommitmentErrors && "Failed to load commitments for some projects"}
+          {hasExportError && "Failed to perform the export."} <br />
+          Check the browsers log to retrieve details.
+        </Message>
+      )}
       <DataGrid columns={2}>
         {scope.isCluster() && (
           <DataGridRow>
@@ -71,7 +81,7 @@ const TableExportModal = (props) => {
         )}
         <DataGridRow>
           <DataGridCell>
-            <span className={withAllCommitments && "text-theme-disabled"}>Export with commitments:</span>
+            <span className={withAllCommitments ? "text-theme-disabled" : ""}>Export with commitments:</span>
           </DataGridCell>
           <DataGridCell>
             <Checkbox
@@ -84,7 +94,7 @@ const TableExportModal = (props) => {
         <DataGridRow>
           <DataGridCell>
             <Stack gap="1">
-              <span className={disableExportWithFilterDialog && "text-theme-disabled"}>
+              <span className={disableExportWithFilterDialog ? "text-theme-disabled" : ""}>
                 Export with current filter settings:
               </span>
               {disableExportWithFilterDialog && (
@@ -124,7 +134,7 @@ const TableExportModal = (props) => {
         <Button
           icon={"download"}
           variant="primary"
-          label={isExporting || isLoadingCommitments ? "Exporting..." : "Export"}
+          label={isExporting || isLoadingCommitments ? "Exporting..." : hasCommitmentErrors ? "Retry" : "Export"}
           onClick={() => onConfirm()}
           disabled={isExporting || isLoadingCommitments}
         />
