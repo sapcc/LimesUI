@@ -51,7 +51,7 @@ const TableExportModal = (props) => {
         {scope.isCluster() && (
           <DataGridRow>
             <DataGridCell>
-              <Stack gap="1">
+              <Stack data-testid={"exportClusterAdminOption"} gap="1">
                 Cluster admin exclusive export:
                 <ToolTipWrapper
                   trigger={<Icon icon="info" size="18" className="cursor-pointer" />}
@@ -67,6 +67,7 @@ const TableExportModal = (props) => {
             </DataGridCell>
             <DataGridCell>
               <Checkbox
+                id="exportClusterAdminOptionCheckBox"
                 checked={withAllCommitments}
                 onClick={() =>
                   setExportSettings({
@@ -82,10 +83,16 @@ const TableExportModal = (props) => {
         )}
         <DataGridRow>
           <DataGridCell>
-            <span className={withAllCommitments ? "text-theme-disabled" : ""}>Export with commitments:</span>
+            <span
+              data-testid={"exportWithCommitmentsOption"}
+              className={withAllCommitments ? "text-theme-disabled" : ""}
+            >
+              Export with commitments:
+            </span>
           </DataGridCell>
           <DataGridCell>
             <Checkbox
+              id="exportWithCommitmentsOptionCheckBox"
               disabled={withAllCommitments}
               checked={withCommitments}
               onClick={() => setExportSettings({ ...exportSettings, withCommitments: !withCommitments })}
@@ -95,7 +102,10 @@ const TableExportModal = (props) => {
         <DataGridRow>
           <DataGridCell>
             <Stack gap="1">
-              <span className={disableExportWithFilterDialog ? "text-theme-disabled" : ""}>
+              <span
+                data-testid={"exportWithCurrentFilterOption"}
+                className={disableExportWithFilterDialog ? "text-theme-disabled" : ""}
+              >
                 Export with current filter settings:
               </span>
               {disableExportWithFilterDialog && (
@@ -121,9 +131,12 @@ const TableExportModal = (props) => {
         </DataGridRow>
         {(hasUnit || withAllCommitments) && (
           <DataGridRow>
-            <DataGridCell>Export with unit formatted values</DataGridCell>
+            <DataGridCell data-testid={"exportWithFormattedValuesOption"}>
+              Export with unit formatted values:
+            </DataGridCell>
             <DataGridCell>
               <Checkbox
+                id="exportWithFormattedValuesOptionCheckBox"
                 checked={withUnitFormat}
                 onClick={() => setExportSettings({ ...exportSettings, withUnitFormat: !withUnitFormat })}
               />
@@ -133,6 +146,7 @@ const TableExportModal = (props) => {
       </DataGrid>
       <Stack className="mt-4 justify-center" alignment="center">
         <Button
+          data-testid={"tableExportModalExportButton"}
           icon={"download"}
           variant="primary"
           label={isExporting || isLoadingCommitments ? "Exporting..." : hasCommitmentErrors ? "Retry" : "Export"}
