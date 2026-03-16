@@ -73,6 +73,7 @@ const TableExportModal = (props) => {
                     ...exportSettings,
                     withAllCommitments: !withAllCommitments,
                     withCommitments: false,
+                    withUnitFormat: withAllCommitments ? false : withUnitFormat,
                   })
                 }
               />

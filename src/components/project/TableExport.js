@@ -11,6 +11,7 @@ import { CustomZones } from "../../lib/constants";
 import { useDomainStore } from "../StoreProvider";
 import { formatTimeISO8160 } from "../../lib/utils";
 import { labelTypes } from "../shared/LimesBadges";
+import tableStylings from "./TableExportStylings";
 
 const TableExport = (props) => {
   const {
@@ -206,7 +207,7 @@ const TableExport = (props) => {
               metadata.name,
               commitment.service_type || service,
               commitment.resource_name || resource.name,
-              commitment.id,
+              commitment.uuid,
               commitment.availability_zone || "",
               valueFormat(commitment.amount, unit),
               commitment?.unit || "",
@@ -215,11 +216,17 @@ const TableExport = (props) => {
               formatTimeISO8160(commitment.confirm_by) || "",
               formatTimeISO8160(commitment.confirmed_at) || "",
               formatTimeISO8160(commitment.expires_at) || "",
-              commitment.state || "",
+              commitment.status || "",
             ]);
           });
         }
       }
+
+      tableStylings.applyAllStylings(sheet);
+      if (commitmentSheet) {
+        tableStylings.applyAllStylings(commitmentSheet);
+      }
+
       return workbook;
     },
     onSuccess: async (workbook) => {
