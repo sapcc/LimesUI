@@ -350,6 +350,7 @@ const ProjectTable = (props) => {
           <Stack gap="1">
             <TableExport
               scope={scope}
+              labelFilter={effectiveLabelFilter}
               service={serviceType}
               currentResource={currentResource}
               projects={projects}
