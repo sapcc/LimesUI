@@ -267,7 +267,13 @@ const TableExport = (props) => {
 
   return (
     <>
-      <Button label="Export" icon="contentCopy" size="small" onClick={() => setModalIsOpen(true)} />
+      <Button
+        data-testid={"tableExportButton"}
+        label="Export"
+        icon="contentCopy"
+        size="small"
+        onClick={() => setModalIsOpen(true)}
+      />
       {modalIsOpen && (
         <TableExportModal
           title="Export project view"
