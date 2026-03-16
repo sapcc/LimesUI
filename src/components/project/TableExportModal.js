@@ -17,6 +17,7 @@ import ToolTipWrapper from "../shared/ToolTipWrapper";
 const TableExportModal = (props) => {
   const {
     title,
+    scope,
     onConfirm,
     modalIsOpen,
     setModalIsOpen,
@@ -27,6 +28,7 @@ const TableExportModal = (props) => {
     isExporting,
     hasUnit,
   } = props;
+  const { withAllCommitments, withCommitments, withCurrentFilter, withUnitFormat } = exportSettings;
 
   return (
     <Modal
@@ -36,12 +38,46 @@ const TableExportModal = (props) => {
       closeable={!isExporting && !isLoadingCommitments}
     >
       <DataGrid columns={2}>
+        {scope.isCluster() && (
+          <DataGridRow>
+            <DataGridCell>
+              <Stack gap="1">
+                Cluster admin exclusive export:
+                <ToolTipWrapper
+                  trigger={<Icon icon="info" size="18" className="cursor-pointer" />}
+                  content={
+                    <span>
+                      <b>This option exports all active commitments in this region.</b>
+                      <br />
+                      Resource specific details are omitted. <br />
+                    </span>
+                  }
+                />
+              </Stack>
+            </DataGridCell>
+            <DataGridCell>
+              <Checkbox
+                checked={withAllCommitments}
+                onClick={() =>
+                  setExportSettings({
+                    ...exportSettings,
+                    withAllCommitments: !withAllCommitments,
+                    withCommitments: false,
+                  })
+                }
+              />
+            </DataGridCell>
+          </DataGridRow>
+        )}
         <DataGridRow>
-          <DataGridCell>Export with commitments:</DataGridCell>
+          <DataGridCell>
+            <span className={withAllCommitments && "text-theme-disabled"}>Export with commitments:</span>
+          </DataGridCell>
           <DataGridCell>
             <Checkbox
-              checked={exportSettings.withCommitments}
-              onClick={() => setExportSettings({ ...exportSettings, withCommitments: !exportSettings.withCommitments })}
+              disabled={withAllCommitments}
+              checked={withCommitments}
+              onClick={() => setExportSettings({ ...exportSettings, withCommitments: !withCommitments })}
             />
           </DataGridCell>
         </DataGridRow>
@@ -67,18 +103,18 @@ const TableExportModal = (props) => {
           <DataGridCell>
             <Checkbox
               disabled={disableExportWithFilterDialog}
-              onClick={() =>
-                setExportSettings({ ...exportSettings, withCurrentFilter: !exportSettings.withCurrentFilter })
-              }
+              checked={withCurrentFilter}
+              onClick={() => setExportSettings({ ...exportSettings, withCurrentFilter: !withCurrentFilter })}
             />
           </DataGridCell>
         </DataGridRow>
-        {hasUnit && (
+        {(hasUnit || withAllCommitments) && (
           <DataGridRow>
             <DataGridCell>Export with unit formatted values</DataGridCell>
             <DataGridCell>
               <Checkbox
-                onClick={() => setExportSettings({ ...exportSettings, withUnitFormat: !exportSettings.withUnitFormat })}
+                checked={withUnitFormat}
+                onClick={() => setExportSettings({ ...exportSettings, withUnitFormat: !withUnitFormat })}
               />
             </DataGridCell>
           </DataGridRow>

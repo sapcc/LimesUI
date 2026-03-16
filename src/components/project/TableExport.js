@@ -10,9 +10,19 @@ import { Unit } from "../../lib/unit";
 import { CustomZones } from "../../lib/constants";
 import { useDomainStore } from "../StoreProvider";
 import { formatTimeISO8160 } from "../../lib/utils";
+import { labelTypes } from "../shared/LimesBadges";
 
 const TableExport = (props) => {
-  const { scope, service, currentResource, projects, filteredProjects, projectResourceAZMap, isCustomSort } = props;
+  const {
+    scope,
+    labelFilter,
+    service,
+    currentResource,
+    projects,
+    filteredProjects,
+    projectResourceAZMap,
+    isCustomSort,
+  } = props;
   const { unit: unitName } = currentResource;
   const unit = React.useMemo(() => new Unit(unitName || ""), [unitName]);
   const hasActiveFilterOrSort = projects.length !== filteredProjects.length || isCustomSort;
@@ -20,11 +30,16 @@ const TableExport = (props) => {
   const { metadata: domainMeta } = domainData ?? {};
   const [modalIsOpen, setModalIsOpen] = React.useState(false);
   const [exportSettings, setExportSettings] = React.useState({
+    withAllCommitments: false, // cluster admin exclusive
     withCommitments: false,
     withCurrentFilter: false,
     withUnitFormat: false,
   });
-  const { withCommitments, withCurrentFilter, withUnitFormat } = exportSettings;
+  const { withAllCommitments, withCommitments, withCurrentFilter, withUnitFormat } = exportSettings;
+  const commitmentsIncluded = React.useMemo(
+    () => withAllCommitments || withCommitments,
+    [withAllCommitments, withCommitments]
+  );
   const [commitmentExportTriggered, setCommitmentExportTriggered] = React.useState(false);
   const [isPending, startTransition] = React.useTransition();
 
@@ -33,9 +48,9 @@ const TableExport = (props) => {
   }, [withCurrentFilter, filteredProjects, projects]);
 
   const valueFormat = React.useCallback(
-    (value) => {
+    (value, u = unit) => {
       if (!withUnitFormat) return value;
-      return unit.format(value);
+      return u.format(value);
     },
     [withUnitFormat, unit]
   );
@@ -58,7 +73,7 @@ const TableExport = (props) => {
       const projectDomainId = domainDataByScope(project.metadata, domainMeta).id;
       return {
         queryKey: ["commitmentData", project.metadata.id, projectDomainId],
-        enabled: commitmentExportTriggered && withCommitments,
+        enabled: commitmentExportTriggered && commitmentsIncluded && labelFilter !== labelTypes.EMPTY,
         refetchOnMount: false,
         staleTime: Infinity,
         retry: 3,
@@ -75,10 +90,12 @@ const TableExport = (props) => {
     };
   }, [projectCommitmentQueries]);
 
-  // Process commitment query results into a Map
   const commitmentsMap = React.useMemo(() => {
     const map = new Map();
-    if (!withCommitments) return map;
+    if (!commitmentsIncluded) return map;
+
+    const hasAnyData = projectCommitmentQueries.some((query) => query.data !== undefined);
+    if (!hasAnyData) return map;
 
     projectsToReport.forEach((project, index) => {
       const queryResult = projectCommitmentQueries[index];
@@ -92,7 +109,7 @@ const TableExport = (props) => {
     });
 
     return map;
-  }, [withCommitments, projectsToReport, projectCommitmentQueries]);
+  }, [commitmentsIncluded, projectsToReport, projectCommitmentQueries]);
 
   React.useEffect(() => {
     if (commitmentExportTriggered && allCommitmentQueriesReady && !isLoadingCommitments) {
@@ -102,14 +119,18 @@ const TableExport = (props) => {
 
   const tableExportMutation = useMutation({
     mutationFn: async () => {
-      return commitmentsMap;
-    },
-    onSuccess: async (commitmentsMap) => {
       const workbook = new Workbook();
       const sheet = workbook.addWorksheet("Projects");
 
+      const projectRowContent = ["DomainID", "DomainName", "ProjectID", "ProjectName"];
+      if (!withAllCommitments) {
+        const resourceSpecifics = ["Service", "Resource", "Usage", "ErrorUsage", "Quota", "CommitmentSum", "Unit"];
+        projectRowContent.push(...resourceSpecifics);
+      }
+      sheet.addRow(projectRowContent);
+
       let commitmentSheet = null;
-      if (withCommitments) {
+      if (commitmentsIncluded) {
         commitmentSheet = workbook.addWorksheet("Commitments");
         commitmentSheet.addRow([
           "DomainID",
@@ -131,42 +152,42 @@ const TableExport = (props) => {
         ]);
       }
 
-      sheet.addRow([
-        "DomainID",
-        "DomainName",
-        "ProjectID",
-        "ProjectName",
-        "Service",
-        "Resource",
-        "Usage",
-        "ErrorUsage",
-        "Quota",
-        "CommitmentSum",
-        "Unit",
-      ]);
+      // Yield immediately to allow React to render isPending state
+      await new Promise((resolve) => setTimeout(resolve, 0));
 
-      projectsToReport.forEach((project) => {
-        const { metadata } = project;
+      for (let idx = 0; idx < projectsToReport.length; idx++) {
+        // For large reports: Yield to the event loop periodically to prevent UI blocking
+        if (idx > 0 && idx % 500 === 0) {
+          await new Promise((resolve) => setTimeout(resolve, 0));
+        }
+        const { metadata } = projectsToReport[idx];
         const { resource } = projectResourceAZMap.get(metadata.id);
         const errorUsage = resource?.per_az.find((az) => az?.name === CustomZones.UNKNOWN)?.usage ?? 0;
-        sheet.addRow([
+        const projectSheetContent = [
           domainDataByScope(metadata, domainMeta).id,
           domainDataByScope(metadata, domainData).name,
           metadata.id,
           metadata.name,
-          service,
-          resource.name,
-          valueFormat(resource.usage),
-          valueFormat(errorUsage),
-          valueFormat(resource.quota),
-          valueFormat(resource.commitmentSum),
-          unitName,
-        ]);
+        ];
+        if (!withAllCommitments) {
+          const resourceSpecifics = [
+            service,
+            resource.name,
+            valueFormat(resource.usage),
+            valueFormat(errorUsage),
+            valueFormat(resource.quota),
+            valueFormat(resource.commitmentSum),
+            unitName,
+          ];
+          projectSheetContent.push(...resourceSpecifics);
+        }
+        sheet.addRow(projectSheetContent);
 
-        // Add commitment details to the second sheet if withCommitments is enabled
-        if (commitmentSheet) {
+        if (commitmentSheet && commitmentsIncluded) {
           const projectCommitments = commitmentsMap.get(metadata.id) || [];
           projectCommitments.forEach((commitment) => {
+            const unit = new Unit(commitment?.unit || "");
+            if (commitment.resource_name !== currentResource.name && !withAllCommitments) return;
             commitmentSheet.addRow([
               domainDataByScope(metadata, domainMeta).id,
               domainDataByScope(metadata, domainData).name,
@@ -176,19 +197,21 @@ const TableExport = (props) => {
               commitment.resource_name || resource.name,
               commitment.id,
               commitment.availability_zone || "",
-              valueFormat(commitment.amount),
-              unitName,
+              valueFormat(commitment.amount, unit),
+              commitment?.unit || "",
               commitment.duration || "",
-              formatTimeISO8160(commitment.created_at),
-              formatTimeISO8160(commitment.confirm_by),
-              formatTimeISO8160(commitment.confirmed_at),
-              formatTimeISO8160(commitment.expires_at),
+              formatTimeISO8160(commitment.created_at) || "",
+              formatTimeISO8160(commitment.confirm_by) || "",
+              formatTimeISO8160(commitment.confirmed_at) || "",
+              formatTimeISO8160(commitment.expires_at) || "",
               commitment.state || "",
             ]);
           });
         }
-      });
-
+      }
+      return workbook;
+    },
+    onSuccess: async (workbook) => {
       const buffer = await workbook.xlsx.writeBuffer();
       const blob = new Blob([buffer], {
         type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -212,7 +235,7 @@ const TableExport = (props) => {
   });
 
   const onConfirm = () => {
-    if (withCommitments) {
+    if (commitmentsIncluded && commitmentsMap.size === 0) {
       startTransition(() => setCommitmentExportTriggered(true));
     } else {
       tableExportMutation.mutate();
@@ -225,6 +248,7 @@ const TableExport = (props) => {
       {modalIsOpen && (
         <TableExportModal
           title="Export project view"
+          scope={scope}
           onConfirm={onConfirm}
           modalIsOpen={modalIsOpen}
           setModalIsOpen={setModalIsOpen}
