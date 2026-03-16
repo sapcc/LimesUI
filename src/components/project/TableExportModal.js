@@ -8,27 +8,65 @@ import {
   DataGrid,
   DataGridRow,
   DataGridCell,
+  Icon,
   Modal,
   Stack,
 } from "@cloudoperators/juno-ui-components";
+import ToolTipWrapper from "../shared/ToolTipWrapper";
 
 const TableExportModal = (props) => {
-  const { title, onConfirm, modalIsOpen, setModalIsOpen, exportSettings, setExportSettings, isExporting, hasUnit } =
-    props;
+  const {
+    title,
+    onConfirm,
+    modalIsOpen,
+    setModalIsOpen,
+    exportSettings,
+    setExportSettings,
+    disableExportWithFilterDialog,
+    isLoadingCommitments,
+    isExporting,
+    hasUnit,
+  } = props;
 
   return (
-    <Modal title={title} open={modalIsOpen} onCancel={() => setModalIsOpen(false)} closeable={!isExporting}>
+    <Modal
+      title={title}
+      open={modalIsOpen}
+      onCancel={() => setModalIsOpen(false)}
+      closeable={!isExporting && !isLoadingCommitments}
+    >
       <DataGrid columns={2}>
         <DataGridRow>
           <DataGridCell>Export with commitments:</DataGridCell>
           <DataGridCell>
-            <Checkbox />
+            <Checkbox
+              checked={exportSettings.withCommitments}
+              onClick={() => setExportSettings({ ...exportSettings, withCommitments: !exportSettings.withCommitments })}
+            />
           </DataGridCell>
         </DataGridRow>
         <DataGridRow>
-          <DataGridCell>Export with current filter settings:</DataGridCell>
+          <DataGridCell>
+            <Stack gap="1">
+              <span className={disableExportWithFilterDialog && "text-theme-disabled"}>
+                Export with current filter settings:
+              </span>
+              {disableExportWithFilterDialog && (
+                <ToolTipWrapper
+                  trigger={<Icon icon="info" size="18" className="cursor-pointer" />}
+                  content={
+                    <span>
+                      <b>This option is enabled when:</b> <br />
+                      • project filters are applied or <br />• custom sorting is applied.
+                    </span>
+                  }
+                />
+              )}
+            </Stack>
+          </DataGridCell>
           <DataGridCell>
             <Checkbox
+              disabled={disableExportWithFilterDialog}
               onClick={() =>
                 setExportSettings({ ...exportSettings, withCurrentFilter: !exportSettings.withCurrentFilter })
               }
@@ -49,11 +87,10 @@ const TableExportModal = (props) => {
       <Stack className="mt-4 justify-center" alignment="center">
         <Button
           icon={"download"}
-          label={isExporting ? "Exporting..." : "Export"}
           variant="primary"
+          label={isExporting || isLoadingCommitments ? "Exporting..." : "Export"}
           onClick={() => onConfirm()}
-          disabled={isExporting}
-          progress={isExporting}
+          disabled={isExporting || isLoadingCommitments}
         />
       </Stack>
     </Modal>
