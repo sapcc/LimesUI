@@ -42,6 +42,7 @@ const TableExport = (props) => {
   );
   const [commitmentExportTriggered, setCommitmentExportTriggered] = React.useState(false);
   const [isPending, startTransition] = React.useTransition();
+  const [exportError, setExportError] = React.useState(null);
 
   const projectsToReport = React.useMemo(() => {
     return withCurrentFilter ? filteredProjects : projects;
@@ -82,11 +83,11 @@ const TableExport = (props) => {
     }),
   });
 
-  const { allCommitmentQueriesReady, isLoadingCommitments, _commitmentQueryErrors } = React.useMemo(() => {
+  const { allCommitmentQueriesReady, isLoadingCommitments, commitmentQueryErrors } = React.useMemo(() => {
     return {
       allCommitmentQueriesReady: projectCommitmentQueries.every((query) => !query.isLoading && !query.isFetching),
       isLoadingCommitments: projectCommitmentQueries.some((query) => query.isLoading || query.isFetching),
-      _commitmentQueryErrors: projectCommitmentQueries.filter((query) => query.isError),
+      commitmentQueryErrors: projectCommitmentQueries.filter((query) => query.isError),
     };
   }, [projectCommitmentQueries]);
 
@@ -111,11 +112,21 @@ const TableExport = (props) => {
     return map;
   }, [commitmentsIncluded, projectsToReport, projectCommitmentQueries]);
 
+  const hasCommitmentErrors = commitmentQueryErrors.length > 0;
+
   React.useEffect(() => {
-    if (commitmentExportTriggered && allCommitmentQueriesReady && !isLoadingCommitments) {
+    if (commitmentExportTriggered && allCommitmentQueriesReady && !isLoadingCommitments && !hasCommitmentErrors) {
       tableExportMutation.mutate();
     }
-  }, [commitmentExportTriggered, allCommitmentQueriesReady, isLoadingCommitments]);
+  }, [commitmentExportTriggered, allCommitmentQueriesReady, isLoadingCommitments, hasCommitmentErrors]);
+
+  React.useEffect(() => {
+    if (allCommitmentQueriesReady && hasCommitmentErrors) {
+      commitmentQueryErrors.forEach((query) => {
+        console.error("Commitment query failed:", query.error.toString());
+      });
+    }
+  }, [allCommitmentQueriesReady, hasCommitmentErrors, commitmentQueryErrors]);
 
   const tableExportMutation = useMutation({
     mutationFn: async () => {
@@ -227,7 +238,8 @@ const TableExport = (props) => {
       setTimeout(() => URL.revokeObjectURL(url), 0);
     },
     onError: (error) => {
-      console.error("Export failed:", error);
+      console.error("Export failed:", error.toString());
+      setExportError("Export failed:", error);
     },
     onSettled: () => {
       setCommitmentExportTriggered(false);
@@ -235,6 +247,10 @@ const TableExport = (props) => {
   });
 
   const onConfirm = () => {
+    if (hasCommitmentErrors) {
+      commitmentQueryErrors.forEach((query) => query.refetch());
+      return;
+    }
     if (commitmentsIncluded && commitmentsMap.size === 0) {
       startTransition(() => setCommitmentExportTriggered(true));
     } else {
@@ -258,6 +274,8 @@ const TableExport = (props) => {
           isLoadingCommitments={isLoadingCommitments || isPending}
           isExporting={tableExportMutation.isPending}
           hasUnit={unit.name !== ""}
+          hasCommitmentErrors={allCommitmentQueriesReady && hasCommitmentErrors}
+          hasExportError={exportError}
         />
       )}
     </>
