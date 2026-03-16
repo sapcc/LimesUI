@@ -355,6 +355,7 @@ const ProjectTable = (props) => {
               projects={projects}
               filteredProjects={filteredProjects}
               projectResourceAZMap={projectResourceAZMap}
+              isCustomSort={Object.keys(sortConfig).length > 0}
             />
             <Stack>
               <Select
