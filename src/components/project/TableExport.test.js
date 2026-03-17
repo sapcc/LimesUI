@@ -171,7 +171,6 @@ describe("TableExport", () => {
 
     await waitFor(() => {
       expect(screen.getByTestId("exportWithCommitmentsOption")).toBeInTheDocument();
-      expect(screen.getByTestId("exportWithCurrentFilterOption")).toHaveClass("text-theme-disabled");
       expect(screen.queryByTestId("exportWithFormattedValuesOption")).not.toBeInTheDocument();
     });
   });
@@ -187,26 +186,6 @@ describe("TableExport", () => {
 
     await waitFor(() => {
       expect(screen.getByTestId("exportWithFormattedValuesOption")).toBeInTheDocument();
-    });
-  });
-
-  test("filter option is disabled when no filter/sort, enabled when filter or sort is active", async () => {
-    const allProjects = createMockProjects();
-    const { rerender } = renderTableExport();
-    fireEvent.click(screen.getByTestId("tableExportButton"));
-
-    await waitFor(() => {
-      expect(screen.getByTestId("exportWithCurrentFilterOption")).toHaveClass("text-theme-disabled");
-    });
-
-    rerender({ isCustomSort: true });
-    await waitFor(() => {
-      expect(screen.getByTestId("exportWithCurrentFilterOption")).not.toHaveClass("text-theme-disabled");
-    });
-
-    rerender({ projects: allProjects, filteredProjects: [allProjects[0]], isCustomSort: false });
-    await waitFor(() => {
-      expect(screen.getByTestId("exportWithCurrentFilterOption")).not.toHaveClass("text-theme-disabled");
     });
   });
 
@@ -244,43 +223,102 @@ describe("TableExport", () => {
     expect(capturedBlob.type).toBe("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
   });
 
-  test("cluster admin checkbox automatic checkbox unselects", async () => {
+  test("export with formatted values is available for cluster export", async () => {
     renderTableExport({ scope: createMockScope("cluster") });
     fireEvent.click(screen.getByTestId("tableExportButton"));
 
+    // unit format option not visible initially
     expect(document.getElementById("exportWithFormattedValuesOptionCheckBox")).not.toBeInTheDocument();
 
-    // Select export with commitments
-    const checkBox = document.getElementById("exportWithCommitmentsOptionCheckBox");
-    fireEvent.click(checkBox);
-    await waitFor(() => {
-      expect(checkBox).toBeChecked();
-    });
-
-    // Select export all commitments - should unselect commitments
+    // enable cluster admin export, unit format option should appear
     fireEvent.click(document.getElementById("exportClusterAdminOptionCheckBox"));
     await waitFor(() => {
       expect(document.getElementById("exportClusterAdminOptionCheckBox")).toBeChecked();
-      expect(document.getElementById("exportWithCommitmentsOptionCheckBox")).not.toBeChecked();
+      expect(document.getElementById("exportWithFormattedValuesOptionCheckBox")).toBeInTheDocument();
     });
 
-    // Unit format option should now be visible, select it
+    // activate unit format option
     fireEvent.click(document.getElementById("exportWithFormattedValuesOptionCheckBox"));
     await waitFor(() => {
       expect(document.getElementById("exportWithFormattedValuesOptionCheckBox")).toBeChecked();
     });
 
-    // Unselect all commitments export
+    // disable cluster admin export, unit format option should disappear
+    fireEvent.click(document.getElementById("exportClusterAdminOptionCheckBox"));
+    await waitFor(() => {
+      expect(document.getElementById("exportClusterAdminOptionCheckBox")).not.toBeChecked();
+      expect(document.getElementById("exportWithFormattedValuesOptionCheckBox")).not.toBeInTheDocument();
+    });
+
+    // re-enable cluster admin export, unit format should be reset to unchecked
+    fireEvent.click(document.getElementById("exportClusterAdminOptionCheckBox"));
+    await waitFor(() => {
+      expect(document.getElementById("exportClusterAdminOptionCheckBox")).toBeChecked();
+      expect(document.getElementById("exportWithFormattedValuesOptionCheckBox")).not.toBeChecked();
+    });
+  });
+
+  test("export with current filter and export with commitments are disabled for cluster export", async () => {
+    renderTableExport({ scope: createMockScope("cluster") });
+
+    fireEvent.click(screen.getByTestId("tableExportButton"));
+
+    await waitFor(() => {
+      expect(screen.getByText("Export project view")).toBeInTheDocument();
+    });
+
+    const currentFilterCheckbox = document.getElementById("exportWithCurrentFilterOptionCheckBox");
+    const commitmentsCheckbox = document.getElementById("exportWithCommitmentsOptionCheckBox");
+
+    // initially both options are enabled
+    expect(screen.getByTestId("exportWithCurrentFilterOption")).not.toHaveClass("text-theme-disabled");
+    expect(screen.getByTestId("exportWithCommitmentsOption")).not.toHaveClass("text-theme-disabled");
+
+    // check both options
+    fireEvent.click(currentFilterCheckbox);
+    await waitFor(() => {
+      expect(currentFilterCheckbox).toBeChecked();
+    });
+
+    fireEvent.click(commitmentsCheckbox);
+    await waitFor(() => {
+      expect(commitmentsCheckbox).toBeChecked();
+    });
+
+    // enable cluster admin export, both should be disabled and unchecked
+    fireEvent.click(document.getElementById("exportClusterAdminOptionCheckBox"));
+    await waitFor(() => {
+      expect(document.getElementById("exportClusterAdminOptionCheckBox")).toBeChecked();
+    });
+
+    await waitFor(() => {
+      // current filter option disabled and unchecked
+      expect(screen.getByTestId("exportWithCurrentFilterOption")).toHaveClass("text-theme-disabled");
+      expect(currentFilterCheckbox).not.toBeChecked();
+      expect(currentFilterCheckbox).toBeDisabled();
+
+      // commitments option disabled and unchecked
+      expect(screen.getByTestId("exportWithCommitmentsOption")).toHaveClass("text-theme-disabled");
+      expect(commitmentsCheckbox).not.toBeChecked();
+      expect(commitmentsCheckbox).toBeDisabled();
+    });
+
+    // disable cluster admin export, both should be re-enabled but remain unchecked (state was reset)
     fireEvent.click(document.getElementById("exportClusterAdminOptionCheckBox"));
     await waitFor(() => {
       expect(document.getElementById("exportClusterAdminOptionCheckBox")).not.toBeChecked();
     });
 
-    // Select all commitments again - unit format should be reset to unchecked
-    fireEvent.click(document.getElementById("exportClusterAdminOptionCheckBox"));
     await waitFor(() => {
-      expect(document.getElementById("exportClusterAdminOptionCheckBox")).toBeChecked();
-      expect(document.getElementById("exportWithFormattedValuesOptionCheckBox")).not.toBeChecked();
+      // current filter option re-enabled but unchecked
+      expect(screen.getByTestId("exportWithCurrentFilterOption")).not.toHaveClass("text-theme-disabled");
+      expect(currentFilterCheckbox).not.toBeChecked();
+      expect(currentFilterCheckbox).not.toBeDisabled();
+
+      // commitments option re-enabled but unchecked
+      expect(screen.getByTestId("exportWithCommitmentsOption")).not.toHaveClass("text-theme-disabled");
+      expect(commitmentsCheckbox).not.toBeChecked();
+      expect(commitmentsCheckbox).not.toBeDisabled();
     });
   });
 
@@ -315,7 +353,6 @@ describe("TableExport", () => {
     jest.useFakeTimers();
     const consoleErrorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
 
-    // Override the queryClient's default queryFn to fail
     queryClient.setQueryDefaults(["commitmentData"], {
       queryFn: () => Promise.reject(new Error("Network error")),
     });
