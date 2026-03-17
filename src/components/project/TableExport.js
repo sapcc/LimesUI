@@ -44,6 +44,10 @@ const TableExport = (props) => {
   const [commitmentExportTriggered, setCommitmentExportTriggered] = React.useState(false);
   const [isPending, startTransition] = React.useTransition();
   const [exportError, setExportError] = React.useState(null);
+  const isEmptyLabelFilterQuery = React.useMemo(
+    () => labelFilter === labelTypes.EMPTY && withCurrentFilter,
+    [labelFilter, withCurrentFilter]
+  );
 
   const projectsToReport = React.useMemo(() => {
     return withCurrentFilter ? filteredProjects : projects;
@@ -75,7 +79,7 @@ const TableExport = (props) => {
       const projectDomainId = domainDataByScope(project.metadata, domainMeta).id;
       return {
         queryKey: ["commitmentData", project.metadata.id, projectDomainId],
-        enabled: commitmentExportTriggered && commitmentsIncluded && labelFilter !== labelTypes.EMPTY,
+        enabled: commitmentExportTriggered && commitmentsIncluded && !isEmptyLabelFilterQuery,
         refetchOnMount: false,
         staleTime: Infinity,
         retry: 3,
@@ -136,13 +140,17 @@ const TableExport = (props) => {
 
       const projectRowContent = ["DomainID", "DomainName", "ProjectID", "ProjectName"];
       if (!withAllCommitments) {
-        const resourceSpecifics = ["Service", "Resource", "Usage", "ErrorUsage", "Quota", "CommitmentSum", "Unit"];
+        const resourceSpecifics = ["Service", "Resource"];
+        if (withCurrentFilter) {
+          resourceSpecifics.push("AvailabilityZone");
+        }
+        resourceSpecifics.push("Usage", "ErrorUsage", "Quota", "CommitmentSum", "Unit");
         projectRowContent.push(...resourceSpecifics);
       }
       sheet.addRow(projectRowContent);
 
       let commitmentSheet = null;
-      if (commitmentsIncluded) {
+      if (commitmentsIncluded || isEmptyLabelFilterQuery) {
         commitmentSheet = workbook.addWorksheet("Commitments");
         commitmentSheet.addRow([
           "DomainID",
@@ -173,7 +181,7 @@ const TableExport = (props) => {
           await new Promise((resolve) => setTimeout(resolve, 0));
         }
         const { metadata } = projectsToReport[idx];
-        const { resource } = projectResourceAZMap.get(metadata.id);
+        const { resource, az } = projectResourceAZMap.get(metadata.id);
         const errorUsage = resource?.per_az.find((az) => az?.name === CustomZones.UNKNOWN)?.usage ?? 0;
         const projectSheetContent = [
           domainDataByScope(metadata, domainMeta).id,
@@ -182,15 +190,17 @@ const TableExport = (props) => {
           metadata.name,
         ];
         if (!withAllCommitments) {
-          const resourceSpecifics = [
-            service,
-            resource.name,
+          const resourceSpecifics = [service, resource.name];
+          if (withCurrentFilter) {
+            resourceSpecifics.push(az.name);
+          }
+          resourceSpecifics.push(
             valueFormat(resource.usage),
             valueFormat(errorUsage),
             valueFormat(resource.quota),
             valueFormat(resource.commitmentSum),
-            unitName,
-          ];
+            unitName
+          );
           projectSheetContent.push(...resourceSpecifics);
         }
         sheet.addRow(projectSheetContent);
@@ -199,7 +209,14 @@ const TableExport = (props) => {
           const projectCommitments = commitmentsMap.get(metadata.id) || [];
           projectCommitments.forEach((commitment) => {
             const unit = new Unit(commitment?.unit || "");
-            if (commitment.resource_name !== currentResource.name && !withAllCommitments) return;
+            if (!withAllCommitments) {
+              if (commitment.resource_name !== currentResource.name) {
+                return;
+              }
+              if (withCurrentFilter && commitment.availability_zone !== az.name) {
+                return;
+              }
+            }
             commitmentSheet.addRow([
               domainDataByScope(metadata, domainMeta).id,
               domainDataByScope(metadata, domainData).name,
@@ -245,8 +262,7 @@ const TableExport = (props) => {
       setTimeout(() => URL.revokeObjectURL(url), 0);
     },
     onError: (error) => {
-      console.error("Export failed:", error.toString());
-      setExportError("Export failed:", error);
+      setExportError(error.toString());
     },
     onSettled: () => {
       setCommitmentExportTriggered(false);
@@ -254,6 +270,9 @@ const TableExport = (props) => {
   });
 
   const onConfirm = () => {
+    if (exportError) {
+      setExportError(null);
+    }
     if (hasCommitmentErrors) {
       commitmentQueryErrors.forEach((query) => query.refetch());
       return;
@@ -288,7 +307,7 @@ const TableExport = (props) => {
           isExporting={tableExportMutation.isPending}
           hasUnit={unit.name !== ""}
           hasCommitmentErrors={allCommitmentQueriesReady && hasCommitmentErrors}
-          hasExportError={exportError}
+          exportError={exportError}
         />
       )}
     </>

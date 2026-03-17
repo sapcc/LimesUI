@@ -29,7 +29,7 @@ const TableExportModal = (props) => {
     isExporting,
     hasUnit,
     hasCommitmentErrors = false,
-    hasExportError = false,
+    exportError = null,
   } = props;
   const { withAllCommitments, withCommitments, withCurrentFilter, withUnitFormat } = exportSettings;
 
@@ -40,11 +40,22 @@ const TableExportModal = (props) => {
       onCancel={() => setModalIsOpen(false)}
       closeable={!isExporting && !isLoadingCommitments}
     >
-      {(hasCommitmentErrors || hasExportError) && (
+      {(hasCommitmentErrors || exportError) && (
         <Message variant="danger" className="mt-4">
-          {hasCommitmentErrors && "Failed to load commitments for some projects"}
-          {hasExportError && "Failed to perform the export."} <br />
-          Check the browsers log to retrieve details.
+          {hasCommitmentErrors && (
+            <>
+              Failed to load commitments for some projects.
+              <br />
+              Check the browser&apos;s log to retrieve details.
+            </>
+          )}
+          {exportError && (
+            <>
+              Failed to perform the export.
+              <br />
+              {exportError}
+            </>
+          )}
         </Message>
       )}
       <DataGrid columns={2}>
@@ -108,17 +119,16 @@ const TableExportModal = (props) => {
               >
                 Export with current filter settings:
               </span>
-              {disableExportWithFilterDialog && (
-                <ToolTipWrapper
-                  trigger={<Icon icon="info" size="18" className="cursor-pointer" />}
-                  content={
-                    <span>
-                      <b>This option is enabled when:</b> <br />
-                      • project filters are applied or <br />• custom sorting is applied.
-                    </span>
-                  }
-                />
-              )}
+              <ToolTipWrapper
+                trigger={<Icon icon="info" size="18" className="cursor-pointer" />}
+                content={
+                  <span>
+                    <b>This option is enabled when:</b> <br />
+                    • project filters are applied or <br />• custom sorting is applied. <br />
+                    Limits results to the current availability zone.
+                  </span>
+                }
+              />
             </Stack>
           </DataGridCell>
           <DataGridCell>

@@ -1,13 +1,20 @@
 // SPDX-FileCopyrightText: 2026 SAP SE or an SAP affiliate company
 // SPDX-License-Identifier: Apache-2.0
 
+/** @typedef {import("@cj-tech-master/excelts").Worksheet} Worksheet */
+
 const tableStylings = {
+  startRow: 2,
+
+  /** @param {Worksheet} sheet */
   applyAllStylings(sheet) {
     this.autoSizeColumns(sheet);
     this.applyAlternatingRowColors(sheet);
     this.styleHeaderRow(sheet);
+    this.applyAutoFilter(sheet);
   },
 
+  /** @param {Worksheet} sheet */
   autoSizeColumns(sheet) {
     const columnWidths = [];
     sheet.eachRow((row) => {
@@ -29,6 +36,7 @@ const tableStylings = {
     });
   },
 
+  /** @param {Worksheet} sheet */
   styleHeaderRow(sheet) {
     const headerRow = sheet.getRow(1);
     headerRow.font = { bold: true, color: { argb: "FFFFFFFF" } };
@@ -42,24 +50,44 @@ const tableStylings = {
     });
   },
 
+  /** @param {Worksheet} sheet */
+  _isApplicableToFormatting(sheet) {
+    if (sheet.columnCount === 0 || sheet.rowCount < this.startRow) return false;
+    return true;
+  },
+
+  /** @param {Worksheet} sheet */
   applyAlternatingRowColors(sheet) {
-    const blueFill = {
-      type: "pattern",
-      pattern: "solid",
-      fgColor: { argb: "D6EAF8" },
-    };
+    if (!this._isApplicableToFormatting(sheet)) return;
+    const topLeft = sheet.getCell(this.startRow, 1).address;
+    const bottomRight = sheet.getCell(sheet.rowCount, sheet.columnCount).address;
+    const ref = `${topLeft}:${bottomRight}`;
 
-    const headerRow = sheet.getRow(1);
-    const totalColumns = headerRow.cellCount;
-
-    sheet.eachRow((row, rowNumber) => {
-      if (rowNumber > 1 && rowNumber % 2 === 0) {
-        for (let colNumber = 1; colNumber <= totalColumns; colNumber++) {
-          const cell = row.getCell(colNumber);
-          cell.fill = blueFill;
-        }
-      }
+    sheet.addConditionalFormatting({
+      ref,
+      rules: [
+        {
+          type: "expression",
+          formulae: ["MOD(ROW(),2)=0"],
+          style: {
+            fill: {
+              type: "pattern",
+              pattern: "solid",
+              bgColor: { argb: "D6EAF8" },
+            },
+          },
+        },
+      ],
     });
+  },
+
+  /** @param {Worksheet} sheet */
+  applyAutoFilter(sheet) {
+    if (!this._isApplicableToFormatting(sheet)) return;
+    sheet.autoFilter = {
+      from: { row: 1, column: 1 },
+      to: { row: sheet.rowCount, column: sheet.columnCount },
+    };
   },
 };
 
