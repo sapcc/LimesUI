@@ -52,14 +52,14 @@ const TableExportModal = (props) => {
           <DataGridRow>
             <DataGridCell>
               <Stack data-testid={"exportClusterAdminOption"} gap="1">
-                Cluster admin exclusive export:
+                Region-wide commitment export:
                 <ToolTipWrapper
                   trigger={<Icon icon="info" size="18" className="cursor-pointer" />}
                   content={
                     <span>
-                      <b>This option exports all active commitments in this region.</b>
+                      Exports all active commitments across the entire region.
                       <br />
-                      Resource specific details are omitted. <br />
+                      Resource-specific details are omitted. <br />
                     </span>
                   }
                 />

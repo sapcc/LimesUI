@@ -186,7 +186,7 @@ describe("TableExport", () => {
     fireEvent.click(screen.getByTestId("tableExportButton"));
 
     await waitFor(() => {
-      expect(screen.getByText("Export with unit formatted values")).toBeInTheDocument();
+      expect(screen.getByTestId("exportWithFormattedValuesOption")).toBeInTheDocument();
     });
   });
 
