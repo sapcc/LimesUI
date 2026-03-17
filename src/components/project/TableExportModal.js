@@ -24,7 +24,6 @@ const TableExportModal = (props) => {
     setModalIsOpen,
     exportSettings,
     setExportSettings,
-    disableExportWithFilterDialog,
     isLoadingCommitments,
     isExporting,
     hasUnit,
@@ -86,6 +85,7 @@ const TableExportModal = (props) => {
                     withAllCommitments: !withAllCommitments,
                     withCommitments: false,
                     withUnitFormat: withAllCommitments ? false : withUnitFormat,
+                    withCurrentFilter: false,
                   })
                 }
               />
@@ -115,7 +115,7 @@ const TableExportModal = (props) => {
             <Stack gap="1">
               <span
                 data-testid={"exportWithCurrentFilterOption"}
-                className={disableExportWithFilterDialog ? "text-theme-disabled" : ""}
+                className={withAllCommitments ? "text-theme-disabled" : ""}
               >
                 Export with current filter settings:
               </span>
@@ -133,7 +133,8 @@ const TableExportModal = (props) => {
           </DataGridCell>
           <DataGridCell>
             <Checkbox
-              disabled={disableExportWithFilterDialog}
+              id="exportWithCurrentFilterOptionCheckBox"
+              disabled={withAllCommitments}
               checked={withCurrentFilter}
               onClick={() => setExportSettings({ ...exportSettings, withCurrentFilter: !withCurrentFilter })}
             />

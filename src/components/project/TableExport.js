@@ -5,13 +5,10 @@ import React from "react";
 import { Button } from "@cloudoperators/juno-ui-components/index";
 import TableExportModal from "./TableExportModal";
 import { useMutation, useQueries } from "@tanstack/react-query";
-import { Workbook } from "@cj-tech-master/excelts";
 import { Unit } from "../../lib/unit";
-import { CustomZones } from "../../lib/constants";
 import { useDomainStore } from "../StoreProvider";
-import { formatTimeISO8160 } from "../../lib/utils";
 import { labelTypes } from "../shared/LimesBadges";
-import tableStylings from "./TableExportStylings";
+import { createProjectExportWorkbook } from "./TableExportContents";
 
 const TableExport = (props) => {
   const {
@@ -22,11 +19,9 @@ const TableExport = (props) => {
     projects,
     filteredProjects,
     projectResourceAZMap,
-    isCustomSort,
   } = props;
   const { unit: unitName } = currentResource;
   const unit = React.useMemo(() => new Unit(unitName || ""), [unitName]);
-  const hasActiveFilterOrSort = projects.length !== filteredProjects.length || isCustomSort;
   const domainData = useDomainStore((state) => state.domainData);
   const { metadata: domainMeta } = domainData ?? {};
   const [modalIsOpen, setModalIsOpen] = React.useState(false);
@@ -41,13 +36,13 @@ const TableExport = (props) => {
     () => withAllCommitments || withCommitments,
     [withAllCommitments, withCommitments]
   );
-  const [commitmentExportTriggered, setCommitmentExportTriggered] = React.useState(false);
-  const [isPending, startTransition] = React.useTransition();
-  const [exportError, setExportError] = React.useState(null);
   const isEmptyLabelFilterQuery = React.useMemo(
     () => labelFilter === labelTypes.EMPTY && withCurrentFilter,
     [labelFilter, withCurrentFilter]
   );
+  const [commitmentExportTriggered, setCommitmentExportTriggered] = React.useState(false);
+  const [isPending, startTransition] = React.useTransition();
+  const [exportError, setExportError] = React.useState(null);
 
   const projectsToReport = React.useMemo(() => {
     return withCurrentFilter ? filteredProjects : projects;
@@ -98,8 +93,9 @@ const TableExport = (props) => {
 
   const commitmentsMap = React.useMemo(() => {
     const map = new Map();
-    if (!commitmentsIncluded) return map;
+    if (!commitmentsIncluded || !allCommitmentQueriesReady) return map;
 
+    // Ensure queries have actually fetched data (and don't just idle)
     const hasAnyData = projectCommitmentQueries.some((query) => query.data !== undefined);
     if (!hasAnyData) return map;
 
@@ -115,7 +111,7 @@ const TableExport = (props) => {
     });
 
     return map;
-  }, [commitmentsIncluded, projectsToReport, projectCommitmentQueries]);
+  }, [commitmentsIncluded, allCommitmentQueriesReady, projectsToReport, projectCommitmentQueries]);
 
   const hasCommitmentErrors = commitmentQueryErrors.length > 0;
 
@@ -135,116 +131,12 @@ const TableExport = (props) => {
 
   const tableExportMutation = useMutation({
     mutationFn: async () => {
-      const workbook = new Workbook();
-      const sheet = workbook.addWorksheet("Projects");
-
-      const projectRowContent = ["DomainID", "DomainName", "ProjectID", "ProjectName"];
-      if (!withAllCommitments) {
-        const resourceSpecifics = ["Service", "Resource"];
-        if (withCurrentFilter) {
-          resourceSpecifics.push("AvailabilityZone");
-        }
-        resourceSpecifics.push("Usage", "ErrorUsage", "Quota", "CommitmentSum", "Unit");
-        projectRowContent.push(...resourceSpecifics);
-      }
-      sheet.addRow(projectRowContent);
-
-      let commitmentSheet = null;
-      if (commitmentsIncluded || isEmptyLabelFilterQuery) {
-        commitmentSheet = workbook.addWorksheet("Commitments");
-        commitmentSheet.addRow([
-          "DomainID",
-          "DomainName",
-          "ProjectID",
-          "ProjectName",
-          "Service",
-          "Resource",
-          "CommitmentID",
-          "AvailabilityZone",
-          "Amount",
-          "Unit",
-          "Duration",
-          "CreatedAt",
-          "ConfirmBy",
-          "ConfirmedAt",
-          "ExpiresAt",
-          "State",
-        ]);
-      }
-
-      // Yield immediately to allow React to render isPending state
-      await new Promise((resolve) => setTimeout(resolve, 0));
-
-      for (let idx = 0; idx < projectsToReport.length; idx++) {
-        // For large reports: Yield to the event loop periodically to prevent UI blocking
-        if (idx > 0 && idx % 500 === 0) {
-          await new Promise((resolve) => setTimeout(resolve, 0));
-        }
-        const { metadata } = projectsToReport[idx];
-        const { resource, az } = projectResourceAZMap.get(metadata.id);
-        const errorUsage = resource?.per_az.find((az) => az?.name === CustomZones.UNKNOWN)?.usage ?? 0;
-        const projectSheetContent = [
-          domainDataByScope(metadata, domainMeta).id,
-          domainDataByScope(metadata, domainData).name,
-          metadata.id,
-          metadata.name,
-        ];
-        if (!withAllCommitments) {
-          const resourceSpecifics = [service, resource.name];
-          if (withCurrentFilter) {
-            resourceSpecifics.push(az.name);
-          }
-          resourceSpecifics.push(
-            valueFormat(resource.usage),
-            valueFormat(errorUsage),
-            valueFormat(resource.quota),
-            valueFormat(resource.commitmentSum),
-            unitName
-          );
-          projectSheetContent.push(...resourceSpecifics);
-        }
-        sheet.addRow(projectSheetContent);
-
-        if (commitmentSheet && commitmentsIncluded) {
-          const projectCommitments = commitmentsMap.get(metadata.id) || [];
-          projectCommitments.forEach((commitment) => {
-            const unit = new Unit(commitment?.unit || "");
-            if (!withAllCommitments) {
-              if (commitment.resource_name !== currentResource.name) {
-                return;
-              }
-              if (withCurrentFilter && commitment.availability_zone !== az.name) {
-                return;
-              }
-            }
-            commitmentSheet.addRow([
-              domainDataByScope(metadata, domainMeta).id,
-              domainDataByScope(metadata, domainData).name,
-              metadata.id,
-              metadata.name,
-              commitment.service_type || service,
-              commitment.resource_name || resource.name,
-              commitment.uuid,
-              commitment.availability_zone || "",
-              valueFormat(commitment.amount, unit),
-              commitment?.unit || "",
-              commitment.duration || "",
-              formatTimeISO8160(commitment.created_at) || "",
-              formatTimeISO8160(commitment.confirm_by) || "",
-              formatTimeISO8160(commitment.confirmed_at) || "",
-              formatTimeISO8160(commitment.expires_at) || "",
-              commitment.status || "",
-            ]);
-          });
-        }
-      }
-
-      tableStylings.applyAllStylings(sheet);
-      if (commitmentSheet) {
-        tableStylings.applyAllStylings(commitmentSheet);
-      }
-
-      return workbook;
+      return createProjectExportWorkbook({
+        projectData: { projectsToReport, projectResourceAZMap, commitmentsMap },
+        resourceInfo: { service, currentResource, unitName, valueFormat },
+        domainInfo: { domainMeta, domainDataByScope },
+        exportOptions: { withAllCommitments, withCurrentFilter, commitmentsIncluded, isEmptyLabelFilterQuery },
+      });
     },
     onSuccess: async (workbook) => {
       const buffer = await workbook.xlsx.writeBuffer();
@@ -302,7 +194,6 @@ const TableExport = (props) => {
           setModalIsOpen={setModalIsOpen}
           exportSettings={exportSettings}
           setExportSettings={setExportSettings}
-          disableExportWithFilterDialog={!hasActiveFilterOrSort}
           isLoadingCommitments={isLoadingCommitments || isPending}
           isExporting={tableExportMutation.isPending}
           hasUnit={unit.name !== ""}
