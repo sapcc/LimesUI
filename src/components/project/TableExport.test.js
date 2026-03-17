@@ -283,4 +283,65 @@ describe("TableExport", () => {
       expect(document.getElementById("exportWithFormattedValuesOptionCheckBox")).not.toBeChecked();
     });
   });
+
+  test("displays error message when export fails", async () => {
+    // Create a map that will cause an error when accessed
+    // This will cause an error when trying to access resource.name
+    const brokenMap = new Map();
+    brokenMap.set("project-1", {
+      resource: null,
+    });
+    brokenMap.set("project-2", {
+      resource: null,
+    });
+
+    renderTableExport({ projectResourceAZMap: brokenMap });
+    fireEvent.click(screen.getByTestId("tableExportButton"));
+
+    await waitFor(() => {
+      expect(screen.getByText("Export project view")).toBeInTheDocument();
+    });
+
+    const modalExportButton = screen.getByTestId("tableExportModalExportButton");
+    fireEvent.click(modalExportButton);
+
+    await waitFor(() => {
+      expect(screen.getByText(/Failed to perform the export/)).toBeInTheDocument();
+    });
+    expect(screen.getByText(/TypeError: Cannot read properties of null \(reading 'name'\)/)).toBeInTheDocument();
+  });
+
+  test("displays error message when commitment queries fail", async () => {
+    jest.useFakeTimers();
+    const consoleErrorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+
+    // Override the queryClient's default queryFn to fail
+    queryClient.setQueryDefaults(["commitmentData"], {
+      queryFn: () => Promise.reject(new Error("Network error")),
+    });
+
+    renderTableExport();
+    fireEvent.click(screen.getByTestId("tableExportButton"));
+    await waitFor(() => {
+      expect(screen.getByText("Export project view")).toBeInTheDocument();
+    });
+
+    fireEvent.click(document.getElementById("exportWithCommitmentsOptionCheckBox"));
+    await waitFor(() => {
+      expect(document.getElementById("exportWithCommitmentsOptionCheckBox")).toBeChecked();
+    });
+
+    const modalExportButton = screen.getByTestId("tableExportModalExportButton");
+    fireEvent.click(modalExportButton);
+
+    // Advance timers to skip through retry delays
+    await jest.runAllTimersAsync();
+
+    await waitFor(() => {
+      expect(screen.getByText(/Failed to load commitments for some projects/)).toBeInTheDocument();
+    });
+
+    consoleErrorSpy.mockRestore();
+    jest.useRealTimers();
+  });
 });
