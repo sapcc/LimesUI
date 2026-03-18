@@ -87,9 +87,9 @@ const TableExport = (props) => {
     const map = new Map();
     if (!commitmentsIncluded || !allCommitmentQueriesReady) return map;
 
-    // Ensure queries have actually fetched data (and don't just idle)
-    const hasAnyData = projectCommitmentQueries.some((query) => query.data !== undefined);
-    if (!hasAnyData) return map;
+    // Ensure all queries have actually fetched data (and don't just idle)
+    const queriesHaveData = projectCommitmentQueries.every((query) => query.data !== undefined);
+    if (!queriesHaveData) return map;
 
     projectsToReport.forEach((project, index) => {
       const queryResult = projectCommitmentQueries[index];
@@ -121,6 +121,29 @@ const TableExport = (props) => {
     }
   }, [allCommitmentQueriesReady, hasCommitmentErrors, commitmentQueryErrors]);
 
+  const generateExportFilename = React.useCallback(() => {
+    const parts = ["limes-export"];
+
+    if (!withAllCommitments) {
+      // Include service and resource name for resource-specific exports
+      if (service) parts.push(service);
+      if (currentResource?.name) parts.push(currentResource.name);
+
+      // Include AZ name when filtering by current AZ
+      if (withCurrentFilter && projectsToReport.length > 0) {
+        const firstProject = projectsToReport[0];
+        const projectData = projectResourceAZMap.get(firstProject.metadata.id);
+        if (projectData?.az?.name) {
+          parts.push(projectData.az.name);
+        }
+      }
+    } else {
+      parts.push("all-commitments");
+    }
+
+    return `${parts.join("-")}.xlsx`;
+  }, [withAllCommitments, withCurrentFilter, service, currentResource, projectsToReport, projectResourceAZMap]);
+
   const tableExportMutation = useMutation({
     mutationFn: async () => {
       return createProjectExportWorkbook({
@@ -138,7 +161,7 @@ const TableExport = (props) => {
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = "limes-export.xlsx";
+      link.download = generateExportFilename();
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
