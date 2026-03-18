@@ -319,11 +319,13 @@ describe("TableExport", () => {
 
   test("displays error message when export fails", async () => {
     const consoleErrorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
-    // Create an empty map - when the export tries to get project data,
-    // it will return undefined and destructuring undefined throws a TypeError
-    const emptyMap = new Map();
+    // Create a Map with a custom get method that throws an error during export
+    const errorMap = new Map();
+    errorMap.get = () => {
+      throw new Error("Export data retrieval failed");
+    };
 
-    renderTableExport({ projectResourceAZMap: emptyMap });
+    renderTableExport({ projectResourceAZMap: errorMap });
     fireEvent.click(screen.getByTestId("tableExportButton"));
 
     await waitFor(() => {
@@ -336,7 +338,7 @@ describe("TableExport", () => {
     await waitFor(() => {
       expect(screen.getByText(/Failed to perform the export/)).toBeInTheDocument();
     });
-    expect(screen.getByText(/TypeError: Cannot read properties of undefined/)).toBeInTheDocument();
+    expect(screen.getByText(/Export data retrieval failed/)).toBeInTheDocument();
     consoleErrorSpy.mockRestore();
   });
 

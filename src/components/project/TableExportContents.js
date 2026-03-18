@@ -61,8 +61,11 @@ export async function createProjectExportWorkbook({ projectData, resourceInfo, d
       await new Promise((resolve) => setTimeout(resolve, 0));
     }
     const { metadata } = projectsToReport[idx];
-    const { resource, az } = projectResourceAZMap.get(metadata.id);
-    const errorUsage = resource?.per_az.find((az) => az?.name === CustomZones.UNKNOWN)?.usage ?? 0;
+    const projectMapData = projectResourceAZMap.get(metadata.id) ?? {};
+    const resource = projectMapData.resource ?? {};
+    const az = projectMapData.az ?? {};
+    const perAz = resource.per_az ?? [];
+    const errorUsage = perAz.find((zone) => zone?.name === CustomZones.UNKNOWN)?.usage ?? 0;
     const projectSheetContent = [
       domainDataByScope(metadata, domainMeta).id,
       domainDataByScope(metadata, domainMeta).name,
@@ -70,15 +73,15 @@ export async function createProjectExportWorkbook({ projectData, resourceInfo, d
       metadata.name,
     ];
     if (!withAllCommitments) {
-      const resourceSpecifics = [service, resource?.name];
+      const resourceSpecifics = [service, resource.name];
       if (withCurrentFilter) {
         resourceSpecifics.push(az.name);
       }
       resourceSpecifics.push(
-        valueFormat(resource?.usage),
+        valueFormat(resource.usage),
         valueFormat(errorUsage),
-        valueFormat(resource?.quota),
-        valueFormat(resource?.commitmentSum),
+        valueFormat(resource.quota),
+        valueFormat(resource.commitmentSum),
         unitName
       );
       projectSheetContent.push(...resourceSpecifics);
@@ -104,7 +107,7 @@ export async function createProjectExportWorkbook({ projectData, resourceInfo, d
           metadata.name,
           commitment.service_type || service,
           commitment.resource_name || resource.name,
-          commitment.uuid,
+          commitment.uuid || "",
           commitment.availability_zone || "",
           valueFormat(commitment.amount, unit),
           commitment?.unit || "",
