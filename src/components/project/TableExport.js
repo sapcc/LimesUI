@@ -11,24 +11,16 @@ import { labelTypes } from "../shared/LimesBadges";
 import { createProjectExportWorkbook } from "./TableExportContents";
 
 const TableExport = (props) => {
-  const {
-    scope,
-    labelFilter,
-    service,
-    currentResource,
-    projects,
-    filteredProjects,
-    projectResourceAZMap,
-  } = props;
+  const { scope, labelFilter, service, currentResource, projects, filteredProjects, projectResourceAZMap } = props;
   const { unit: unitName } = currentResource;
   const unit = React.useMemo(() => new Unit(unitName || ""), [unitName]);
   const domainData = useDomainStore((state) => state.domainData);
   const { metadata: domainMeta } = domainData ?? {};
   const [modalIsOpen, setModalIsOpen] = React.useState(false);
   const [exportSettings, setExportSettings] = React.useState({
-    withAllCommitments: false, // cluster admin exclusive
-    withCommitments: false,
-    withCurrentFilter: false,
+    withAllCommitments: false, // exports commitments of all committable resources
+    withCommitments: false, // includes commitments to the default, resource based export
+    withCurrentFilter: false, // limits exports to AZ level
     withUnitFormat: false,
   });
   const { withAllCommitments, withCommitments, withCurrentFilter, withUnitFormat } = exportSettings;
@@ -154,6 +146,7 @@ const TableExport = (props) => {
       setTimeout(() => URL.revokeObjectURL(url), 0);
     },
     onError: (error) => {
+      console.error(error);
       setExportError(error.toString());
     },
     onSettled: () => {
@@ -188,7 +181,6 @@ const TableExport = (props) => {
       {modalIsOpen && (
         <TableExportModal
           title="Export project view"
-          scope={scope}
           onConfirm={onConfirm}
           modalIsOpen={modalIsOpen}
           setModalIsOpen={setModalIsOpen}

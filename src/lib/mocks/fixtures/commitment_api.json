@@ -4,6 +4,7 @@
     "commitments": [
       {
         "id": 101,
+        "uuid": "uuid101",
         "service_type": "compute",
         "resource_name": "instances",
         "availability_zone": "az-1a",
@@ -17,10 +18,12 @@
         "confirmed_at": 0,
         "expires_at": 31536000,
         "transfer_status": "public",
-        "transfer_token": "mock token"
+        "transfer_token": "mock token",
+        "status": "confirmed"
       },
       {
         "id": 102,
+        "uuid": "uuid102",
         "service_type": "compute",
         "resource_name": "instances",
         "availability_zone": "az-1a",
@@ -30,10 +33,12 @@
         "creator_name": "anonymous",
         "created_at": 0,
         "confirm_by": 0,
-        "expires_at": 31536000
+        "expires_at": 31536000,
+        "status": "pending"
       },
       {
         "id": 103,
+        "uuid": "uuid103",
         "service_type": "compute",
         "resource_name": "instances",
         "availability_zone": "az-1a",
@@ -44,10 +49,12 @@
         "created_at": 0,
         "confirm_by": 0,
         "confirmed_at": 0,
-        "expires_at": 94694400
+        "expires_at": 94694400,
+        "status": "confirmed"
       },
       {
         "id": 104,
+        "uuid": "uuid104",
         "service_type": "compute",
         "resource_name": "instances",
         "availability_zone": "az-1b",
@@ -58,38 +65,44 @@
         "created_at": 0,
         "confirm_by": 0,
         "confirmed_at": 0,
-        "expires_at": 31536000
+        "expires_at": 31536000,
+        "status": "confirmed"
       },
       {
         "id": 105,
+        "uuid": "uuid105",
         "service_type": "compute",
         "resource_name": "instances",
         "availability_zone": "az-1b",
         "amount": 10,
         "unit": "",
-        "duration": "3 years",
+        "duration": "1 year",
         "creator_name": "anonymous",
         "created_at": 0,
         "confirm_by": 0,
-        "expires_at": 94694400
+        "expires_at": 31536000,
+        "status": "pending"
       },
       {
         "id": 106,
+        "uuid": "uuid106",
         "service_type": "compute",
         "resource_name": "ram",
         "availability_zone": "az-1a",
         "amount": 100,
         "unit": "GiB",
-        "duration": "1 year",
+        "duration": "2 years",
         "creator_name": "anonymous",
         "created_at": 0,
         "confirmed_at": 0,
-        "expires_at": 31536000,
+        "expires_at": 63072000,
         "transfer_status": "public",
-        "transfer_token": "mock token"
+        "transfer_token": "mock token",
+        "status": "confirmed"
       },
       {
         "id": 107,
+        "uuid": "uuid107",
         "service_type": "object-store",
         "resource_name": "capacity",
         "availability_zone": "any",
@@ -99,10 +112,12 @@
         "creator_name": "anonymous",
         "created_at": 0,
         "confirm_by": 0,
-        "expires_at": 31536000
+        "expires_at": 31536000,
+        "status": "confirmed"
       },
       {
         "id": 108,
+        "uuid": "uuid108",
         "service_type": "object-store",
         "resource_name": "capacity",
         "availability_zone": "any",
@@ -112,10 +127,12 @@
         "creator_name": "anonymous",
         "created_at": 0,
         "confirm_by": 0,
-        "expires_at": 31536000
+        "expires_at": 31536000,
+        "status": "planned"
       },
       {
         "id": 109,
+        "uuid": "uuid109",
         "service_type": "object-store",
         "resource_name": "capacity",
         "availability_zone": "any",
@@ -125,8 +142,8 @@
         "creator_name": "anonymous",
         "created_at": 0,
         "confirm_by": 0,
-        "confirmed_at": 0,
-        "expires_at": 31536000
+        "expires_at": 31536000,
+        "status": "pending"
       }
     ]
   }

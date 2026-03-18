@@ -70,15 +70,15 @@ export async function createProjectExportWorkbook({ projectData, resourceInfo, d
       metadata.name,
     ];
     if (!withAllCommitments) {
-      const resourceSpecifics = [service, resource.name];
+      const resourceSpecifics = [service, resource?.name];
       if (withCurrentFilter) {
         resourceSpecifics.push(az.name);
       }
       resourceSpecifics.push(
-        valueFormat(resource.usage),
+        valueFormat(resource?.usage),
         valueFormat(errorUsage),
-        valueFormat(resource.quota),
-        valueFormat(resource.commitmentSum),
+        valueFormat(resource?.quota),
+        valueFormat(resource?.commitmentSum),
         unitName
       );
       projectSheetContent.push(...resourceSpecifics);

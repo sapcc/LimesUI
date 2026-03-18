@@ -18,7 +18,6 @@ import ToolTipWrapper from "../shared/ToolTipWrapper";
 const TableExportModal = (props) => {
   const {
     title,
-    scope,
     onConfirm,
     modalIsOpen,
     setModalIsOpen,
@@ -58,48 +57,52 @@ const TableExportModal = (props) => {
         </Message>
       )}
       <DataGrid columns={2}>
-        {scope.isCluster() && (
-          <DataGridRow>
-            <DataGridCell>
-              <Stack data-testid={"exportClusterAdminOption"} gap="1">
-                Region-wide commitment export:
-                <ToolTipWrapper
-                  trigger={<Icon icon="info" size="18" className="cursor-pointer" />}
-                  content={
-                    <span>
-                      Exports all active commitments across the entire region.
-                      <br />
-                      Resource-specific details are omitted. <br />
-                    </span>
-                  }
-                />
-              </Stack>
-            </DataGridCell>
-            <DataGridCell>
-              <Checkbox
-                id="exportClusterAdminOptionCheckBox"
-                checked={withAllCommitments}
-                onClick={() =>
-                  setExportSettings({
-                    ...exportSettings,
-                    withAllCommitments: !withAllCommitments,
-                    withCommitments: false,
-                    withUnitFormat: withAllCommitments ? false : withUnitFormat,
-                    withCurrentFilter: false,
-                  })
-                }
-              />
-            </DataGridCell>
-          </DataGridRow>
-        )}
         <DataGridRow>
           <DataGridCell>
-            <span
-              data-testid={"exportWithCommitmentsOption"}
-              className={withAllCommitments ? "text-theme-disabled" : ""}
-            >
-              Export with commitments:
-            </span>
+            <Stack data-testid={"exportAllCommitmentsOption"} gap="1">
+              <ToolTipWrapper
+                trigger={<Icon icon="info" size="18" className="cursor-pointer" />}
+                content={
+                  <span>
+                    Exports commitments for all available resources.
+                    <br />
+                    Resource-specific details are omitted.
+                  </span>
+                }
+              />
+              Include commitments (all resources):
+            </Stack>
+          </DataGridCell>
+          <DataGridCell>
+            <Checkbox
+              id="exportAllCommitmentsOptionCheckBox"
+              checked={withAllCommitments}
+              onClick={() =>
+                setExportSettings({
+                  ...exportSettings,
+                  withAllCommitments: !withAllCommitments,
+                  withCommitments: false,
+                  withUnitFormat: withAllCommitments ? false : withUnitFormat,
+                  withCurrentFilter: false,
+                })
+              }
+            />
+          </DataGridCell>
+        </DataGridRow>
+        <DataGridRow>
+          <DataGridCell>
+            <Stack gap="1">
+              <ToolTipWrapper
+                trigger={<Icon icon="info" size="18" className="cursor-pointer" />}
+                content={<span>Includes commitments for the current resource in the export.</span>}
+              />
+              <span
+                data-testid={"exportWithCommitmentsOption"}
+                className={withAllCommitments ? "text-theme-disabled" : ""}
+              >
+                Include commitments:
+              </span>
+            </Stack>
           </DataGridCell>
           <DataGridCell>
             <Checkbox
@@ -113,27 +116,27 @@ const TableExportModal = (props) => {
         <DataGridRow>
           <DataGridCell>
             <Stack gap="1">
-              <span
-                data-testid={"exportWithCurrentFilterOption"}
-                className={withAllCommitments ? "text-theme-disabled" : ""}
-              >
-                Export with current filter settings:
-              </span>
               <ToolTipWrapper
                 trigger={<Icon icon="info" size="18" className="cursor-pointer" />}
                 content={
                   <span>
-                    <b>This option is enabled when:</b> <br />
-                    • project filters are applied or <br />• custom sorting is applied. <br />
-                    Limits results to the current availability zone.
+                    Filters the export to the currently selected AZ.
+                    <br />
+                    Applies any active project filters and custom sorting.
                   </span>
                 }
               />
+              <span
+                data-testid={"exportWithCurrentAZOption"}
+                className={withAllCommitments ? "text-theme-disabled" : ""}
+              >
+                Limit to current availability zone:
+              </span>
             </Stack>
           </DataGridCell>
           <DataGridCell>
             <Checkbox
-              id="exportWithCurrentFilterOptionCheckBox"
+              id="exportWithCurrentAZOptionCheckBox"
               disabled={withAllCommitments}
               checked={withCurrentFilter}
               onClick={() => setExportSettings({ ...exportSettings, withCurrentFilter: !withCurrentFilter })}
@@ -142,9 +145,7 @@ const TableExportModal = (props) => {
         </DataGridRow>
         {(hasUnit || withAllCommitments) && (
           <DataGridRow>
-            <DataGridCell data-testid={"exportWithFormattedValuesOption"}>
-              Export with unit formatted values:
-            </DataGridCell>
+            <DataGridCell data-testid={"exportWithFormattedValuesOption"}>Format values with units:</DataGridCell>
             <DataGridCell>
               <Checkbox
                 id="exportWithFormattedValuesOptionCheckBox"
