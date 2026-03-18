@@ -189,17 +189,12 @@ describe("TableExport", () => {
     });
   });
 
-  test("cluster admin option shown only for cluster scope, hidden for domain scope", async () => {
-    const { rerender } = renderTableExport({ scope: createMockScope("cluster") });
+  test("all commitments option is always shown in modal", async () => {
+    renderTableExport();
     fireEvent.click(screen.getByTestId("tableExportButton"));
 
     await waitFor(() => {
-      expect(screen.getByTestId("exportClusterAdminOption")).toBeInTheDocument();
-    });
-
-    rerender({ scope: createMockScope("domain") });
-    await waitFor(() => {
-      expect(screen.queryByTestId("exportClusterAdminOption")).not.toBeInTheDocument();
+      expect(screen.getByTestId("exportAllCommitmentsOption")).toBeInTheDocument();
     });
   });
 
@@ -223,17 +218,17 @@ describe("TableExport", () => {
     expect(capturedBlob.type).toBe("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
   });
 
-  test("export with formatted values is available for cluster export", async () => {
-    renderTableExport({ scope: createMockScope("cluster") });
+  test("export with formatted values is available when all commitments export is enabled", async () => {
+    renderTableExport();
     fireEvent.click(screen.getByTestId("tableExportButton"));
 
-    // unit format option not visible initially
+    // unit format option not visible initially (resource with no unit)
     expect(document.getElementById("exportWithFormattedValuesOptionCheckBox")).not.toBeInTheDocument();
 
-    // enable cluster admin export, unit format option should appear
-    fireEvent.click(document.getElementById("exportClusterAdminOptionCheckBox"));
+    // enable all commitments export, unit format option should appear
+    fireEvent.click(document.getElementById("exportAllCommitmentsOptionCheckBox"));
     await waitFor(() => {
-      expect(document.getElementById("exportClusterAdminOptionCheckBox")).toBeChecked();
+      expect(document.getElementById("exportAllCommitmentsOptionCheckBox")).toBeChecked();
       expect(document.getElementById("exportWithFormattedValuesOptionCheckBox")).toBeInTheDocument();
     });
 
@@ -243,23 +238,23 @@ describe("TableExport", () => {
       expect(document.getElementById("exportWithFormattedValuesOptionCheckBox")).toBeChecked();
     });
 
-    // disable cluster admin export, unit format option should disappear
-    fireEvent.click(document.getElementById("exportClusterAdminOptionCheckBox"));
+    // disable all commitments export, unit format option should disappear
+    fireEvent.click(document.getElementById("exportAllCommitmentsOptionCheckBox"));
     await waitFor(() => {
-      expect(document.getElementById("exportClusterAdminOptionCheckBox")).not.toBeChecked();
+      expect(document.getElementById("exportAllCommitmentsOptionCheckBox")).not.toBeChecked();
       expect(document.getElementById("exportWithFormattedValuesOptionCheckBox")).not.toBeInTheDocument();
     });
 
-    // re-enable cluster admin export, unit format should be reset to unchecked
-    fireEvent.click(document.getElementById("exportClusterAdminOptionCheckBox"));
+    // re-enable all commitments export, unit format should be reset to unchecked
+    fireEvent.click(document.getElementById("exportAllCommitmentsOptionCheckBox"));
     await waitFor(() => {
-      expect(document.getElementById("exportClusterAdminOptionCheckBox")).toBeChecked();
+      expect(document.getElementById("exportAllCommitmentsOptionCheckBox")).toBeChecked();
       expect(document.getElementById("exportWithFormattedValuesOptionCheckBox")).not.toBeChecked();
     });
   });
 
-  test("export with current filter and export with commitments are disabled for cluster export", async () => {
-    renderTableExport({ scope: createMockScope("cluster") });
+  test("current AZ and include commitments options are disabled when all commitments export is enabled", async () => {
+    renderTableExport();
 
     fireEvent.click(screen.getByTestId("tableExportButton"));
 
@@ -267,17 +262,17 @@ describe("TableExport", () => {
       expect(screen.getByText("Export project view")).toBeInTheDocument();
     });
 
-    const currentFilterCheckbox = document.getElementById("exportWithCurrentFilterOptionCheckBox");
+    const currentAZCheckbox = document.getElementById("exportWithCurrentAZOptionCheckBox");
     const commitmentsCheckbox = document.getElementById("exportWithCommitmentsOptionCheckBox");
 
     // initially both options are enabled
-    expect(screen.getByTestId("exportWithCurrentFilterOption")).not.toHaveClass("text-theme-disabled");
+    expect(screen.getByTestId("exportWithCurrentAZOption")).not.toHaveClass("text-theme-disabled");
     expect(screen.getByTestId("exportWithCommitmentsOption")).not.toHaveClass("text-theme-disabled");
 
     // check both options
-    fireEvent.click(currentFilterCheckbox);
+    fireEvent.click(currentAZCheckbox);
     await waitFor(() => {
-      expect(currentFilterCheckbox).toBeChecked();
+      expect(currentAZCheckbox).toBeChecked();
     });
 
     fireEvent.click(commitmentsCheckbox);
@@ -285,17 +280,17 @@ describe("TableExport", () => {
       expect(commitmentsCheckbox).toBeChecked();
     });
 
-    // enable cluster admin export, both should be disabled and unchecked
-    fireEvent.click(document.getElementById("exportClusterAdminOptionCheckBox"));
+    // enable all commitments export, both should be disabled and unchecked
+    fireEvent.click(document.getElementById("exportAllCommitmentsOptionCheckBox"));
     await waitFor(() => {
-      expect(document.getElementById("exportClusterAdminOptionCheckBox")).toBeChecked();
+      expect(document.getElementById("exportAllCommitmentsOptionCheckBox")).toBeChecked();
     });
 
     await waitFor(() => {
-      // current filter option disabled and unchecked
-      expect(screen.getByTestId("exportWithCurrentFilterOption")).toHaveClass("text-theme-disabled");
-      expect(currentFilterCheckbox).not.toBeChecked();
-      expect(currentFilterCheckbox).toBeDisabled();
+      // current AZ option disabled and unchecked
+      expect(screen.getByTestId("exportWithCurrentAZOption")).toHaveClass("text-theme-disabled");
+      expect(currentAZCheckbox).not.toBeChecked();
+      expect(currentAZCheckbox).toBeDisabled();
 
       // commitments option disabled and unchecked
       expect(screen.getByTestId("exportWithCommitmentsOption")).toHaveClass("text-theme-disabled");
@@ -303,17 +298,17 @@ describe("TableExport", () => {
       expect(commitmentsCheckbox).toBeDisabled();
     });
 
-    // disable cluster admin export, both should be re-enabled but remain unchecked (state was reset)
-    fireEvent.click(document.getElementById("exportClusterAdminOptionCheckBox"));
+    // disable all commitments export, both should be re-enabled but remain unchecked (state was reset)
+    fireEvent.click(document.getElementById("exportAllCommitmentsOptionCheckBox"));
     await waitFor(() => {
-      expect(document.getElementById("exportClusterAdminOptionCheckBox")).not.toBeChecked();
+      expect(document.getElementById("exportAllCommitmentsOptionCheckBox")).not.toBeChecked();
     });
 
     await waitFor(() => {
-      // current filter option re-enabled but unchecked
-      expect(screen.getByTestId("exportWithCurrentFilterOption")).not.toHaveClass("text-theme-disabled");
-      expect(currentFilterCheckbox).not.toBeChecked();
-      expect(currentFilterCheckbox).not.toBeDisabled();
+      // current AZ option re-enabled but unchecked
+      expect(screen.getByTestId("exportWithCurrentAZOption")).not.toHaveClass("text-theme-disabled");
+      expect(currentAZCheckbox).not.toBeChecked();
+      expect(currentAZCheckbox).not.toBeDisabled();
 
       // commitments option re-enabled but unchecked
       expect(screen.getByTestId("exportWithCommitmentsOption")).not.toHaveClass("text-theme-disabled");
@@ -323,17 +318,12 @@ describe("TableExport", () => {
   });
 
   test("displays error message when export fails", async () => {
-    // Create a map that will cause an error when accessed
-    // This will cause an error when trying to access resource.name
-    const brokenMap = new Map();
-    brokenMap.set("project-1", {
-      resource: null,
-    });
-    brokenMap.set("project-2", {
-      resource: null,
-    });
+    const consoleErrorSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+    // Create an empty map - when the export tries to get project data,
+    // it will return undefined and destructuring undefined throws a TypeError
+    const emptyMap = new Map();
 
-    renderTableExport({ projectResourceAZMap: brokenMap });
+    renderTableExport({ projectResourceAZMap: emptyMap });
     fireEvent.click(screen.getByTestId("tableExportButton"));
 
     await waitFor(() => {
@@ -346,7 +336,8 @@ describe("TableExport", () => {
     await waitFor(() => {
       expect(screen.getByText(/Failed to perform the export/)).toBeInTheDocument();
     });
-    expect(screen.getByText(/TypeError: Cannot read properties of null \(reading 'name'\)/)).toBeInTheDocument();
+    expect(screen.getByText(/TypeError: Cannot read properties of undefined/)).toBeInTheDocument();
+    consoleErrorSpy.mockRestore();
   });
 
   test("displays error message when commitment queries fail", async () => {
