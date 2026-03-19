@@ -170,4 +170,46 @@ describe("MarketplaceModal", () => {
     fireEvent.click(confirmButton);
     expect(mockProps.action).toHaveBeenCalled();
   });
+
+  test("should filter projects based on search input", async () => {
+    const projects = [
+      { metadata: { id: 1, name: "alphaProject" } },
+      { metadata: { id: 2, name: "betaProject" } },
+      { metadata: { id: 3, name: "gammaProject" } },
+      { metadata: { id: 4, name: "alphaTest" } },
+    ];
+    jest.spyOn(store, "useGlobalStore").mockImplementation(mockGlobalStore(true, false));
+    jest.spyOn(store, "useDomainStore").mockImplementation(mockDomainStore(projects));
+
+    render(
+      <PortalProvider>
+        <MarketplaceModal {...mockProps} />
+      </PortalProvider>
+    );
+
+    const selectElement = screen.getByTestId("targetProjectSelect");
+    fireEvent.click(selectElement);
+
+    // Initially all 4 projects should be visible
+    let options = screen.getAllByTestId("selectOption");
+    expect(options).toHaveLength(4);
+
+    const searchInput = screen.getByTestId("Search");
+    fireEvent.change(searchInput, { target: { value: "alpha" } });
+
+    // After filtering, only projects containing "alpha" should be visible
+    await waitFor(() => {
+      const filteredOptions = screen.getAllByTestId("selectOption");
+      expect(filteredOptions).toHaveLength(2);
+      expect(filteredOptions[0]).toHaveTextContent("alphaProject");
+      expect(filteredOptions[1]).toHaveTextContent("alphaTest");
+    });
+
+    fireEvent.change(searchInput, { target: { value: "" } });
+
+    await waitFor(() => {
+      const allOptions = screen.getAllByTestId("selectOption");
+      expect(allOptions).toHaveLength(4);
+    });
+  });
 });
