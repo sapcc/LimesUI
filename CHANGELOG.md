@@ -1,5 +1,11 @@
 # @sapcc/limes-ui
 
+## 1.14.1
+
+### Patch Changes
+
+- 298f6a2: kvm resource name support, special units workaround
+
 ## 1.14.0
 
 ### Minor Changes
