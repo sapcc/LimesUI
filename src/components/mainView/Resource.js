@@ -161,6 +161,7 @@ const Resource = (props) => {
           {scope.isProject() && isCommittable && <ForbidAutogrowth {...forbidAutogrowthForwardProps} />}
         </Stack>
       )}
+      {<div className="text-xs text-sap-grey-4">Resource name: {resource.name}</div>}
       <ResourceBarBuilder
         scope={scope}
         resource={resource}

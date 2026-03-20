@@ -197,6 +197,7 @@ export default React.memo(ProjectTableDetails, (prevProps, nextProps) => {
     prevProps.project.metadata.id === nextProps.project.metadata.id &&
     prevProps.showCommitments === nextProps.showCommitments &&
     prevProps.currentTab === nextProps.currentTab &&
+    prevProps.mergeOps === nextProps.mergeOps &&
     // It is important to check the object.
     // This way the memo listens to commitment creation or transfer and reacts to them properly.
     prevProps.resource === nextProps.resource

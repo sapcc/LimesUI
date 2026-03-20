@@ -165,5 +165,16 @@ describe("Unit", () => {
         expect(u.parse("42")).toEqual(errSyntax);
       }
     });
+
+    // TODO: this is a temporary KVM workaround
+    // It ignores the actual unit and formats/parses into non-unit values.
+    it("treats special unit cases as regular values", () => {
+      const u = new Unit("128 GiB");
+      expect(u.parse(`1024 ${u.unitData.base}`)).toEqual(1024);
+      expect(u.format(1024)).toEqual("1024");
+      const u2 = new Unit("128GiB");
+      expect(u2.parse(`1024 ${u2.unitData.base}`)).toEqual(1024);
+      expect(u2.format(1024)).toEqual("1024");
+    });
   });
 });

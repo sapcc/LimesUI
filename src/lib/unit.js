@@ -47,8 +47,16 @@ const resolveSynonym = (str) => {
 
 export class Unit {
   constructor(name) {
-    this.name = name || "";
-    this.unitData = units[this.name] || { base: name, steps: 0 };
+    // Special unit case: unit names starting with a digit (e.g., "128 GiB", "128GiB")
+    // are treated as regular values. This is a KVM workaround
+    this.isSpecialUnit = /^\d/.test(name);
+    if (this.isSpecialUnit) {
+      this.name = "";
+      this.unitData = { base: "", steps: 0 };
+    } else {
+      this.name = name || "";
+      this.unitData = units[this.name] || { base: name, steps: 0 };
+    }
     const baseData = bases[this.unitData.base] || { scale: "none" };
     this.scaleData = scales[baseData.scale];
   }

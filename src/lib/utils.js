@@ -5,6 +5,7 @@ import { CustomZones, STRINGS } from "./constants";
 import moment from "moment";
 
 const perFlavorRx = /^instances_(.+)$/;
+const hwVersionRx = /^hw_version_(\d+)_(.+)$/;
 
 // Translates API-level strings into user-readable UI strings,
 // e.g. "volumev2" -> "Block Storage".
@@ -14,10 +15,22 @@ export const t = (str) => {
     return translated;
   }
 
-  //for baremetal flavor resources like "instances_zh2vic1.medium",
-  //return the flavor name, e.g. "zh2vic1.medium"
-  const match = perFlavorRx.exec(str);
-  return match ? match[1] : str;
+  // resources like "instances_<resource>",
+  const perFlavorMatch = perFlavorRx.exec(str);
+  if (perFlavorMatch) {
+    return perFlavorMatch[1];
+  }
+
+  // hardware version resources like "hw_version_<version>_<resource>",
+  const hwVersionMatch = hwVersionRx.exec(str);
+  if (hwVersionMatch) {
+    const version = hwVersionMatch[1];
+    const resourceName = hwVersionMatch[2];
+    const translatedResource = STRINGS[resourceName] || resourceName;
+    return `${translatedResource} (${version})`;
+  }
+
+  return str;
 };
 
 // wrapper for formatTime
