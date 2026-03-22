@@ -371,6 +371,10 @@ describe("TableExport", () => {
       expect(screen.getByText(/Failed to load commitments for some projects/)).toBeInTheDocument();
     });
 
+    // Verify that the export button is active and displays the "Retry" text.
+    expect(modalExportButton).toHaveTextContent("Retry");
+    expect(modalExportButton).not.toBeDisabled();
+
     consoleErrorSpy.mockRestore();
     jest.useRealTimers();
   });
