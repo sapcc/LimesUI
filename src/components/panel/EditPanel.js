@@ -7,6 +7,7 @@ import { PanelBody, Toast } from "@cloudoperators/juno-ui-components";
 import Resource from "../mainView/Resource";
 import {
   useGlobalStore,
+  useDomainStore,
   clusterStoreActions,
   domainStoreActions,
   projectStoreActions,
@@ -94,6 +95,9 @@ const EditPanel = (props) => {
     mergeIsActive,
     setMergeIsActive,
   };
+  const projects = useDomainStore((state) => state.projects);
+  const panelNavDisabled = !scope.isProject() && !projects;
+
   const publicCommitmentQuery = useQuery({
     queryKey: ["publicCommitments", { service: serviceType, resource: currentResource.name }],
   });
@@ -374,6 +378,7 @@ const EditPanel = (props) => {
   return (
     <PanelBody>
       <Resource
+        navigationDisabled={panelNavDisabled}
         project={currentProject}
         resource={currentResource}
         serviceType={serviceType}
@@ -390,6 +395,7 @@ const EditPanel = (props) => {
       </div>
       {!subRoute && (
         <AvailabilityZoneNav
+          navigationDisabled={panelNavDisabled}
           resource={currentResource}
           currentTab={currentTab}
           setCurrentTab={setCurrentTab}

@@ -340,6 +340,84 @@ describe("EditPanel tests", () => {
     expect(screen.getByText("3 MiB")).toBeInTheDocument();
   });
 
+  test("panelNavDisabled: tabs enabled at project level, disabled at domain level until projects load", async () => {
+    const resource = {
+      name: "testResource",
+      quota: 500,
+      capacity: 0,
+      commitmentSum: 10,
+      per_az: [
+        { name: "az1", projects_usage: 10 },
+        { name: "az2", projects_usage: 20 },
+      ],
+    };
+
+    const wrapper = ({ children }) => (
+      <PortalProvider>
+        <StoreProvider>
+          <QueryClientProvider client={queryClient}>
+            <EditPanel serviceType="testService" currentResource={resource} tracksQuota={true} />
+            {children}
+          </QueryClientProvider>
+        </StoreProvider>
+      </PortalProvider>
+    );
+
+    const { result, rerender } = renderHook(
+      () => ({
+        globalStoreActions: globalStoreActions(),
+        domainStoreActions: domainStoreActions(),
+      }),
+      { wrapper }
+    );
+
+    // At domain level without projects (initial state), tabs should be disabled
+    const domainScope = new Scope({ domainID: "456" });
+    act(() => {
+      result.current.globalStoreActions.setScope(domainScope);
+    });
+
+    const az1TabDomainNoProjects = screen.getByTestId("tab/az1");
+    const az2TabDomainNoProjects = screen.getByTestId("tab/az2");
+    expect(az1TabDomainNoProjects).toHaveAttribute("aria-disabled", "true");
+    expect(az2TabDomainNoProjects).toHaveAttribute("aria-disabled", "true");
+
+    // At domain level with projects loaded, tabs should be enabled
+    const mockProjects = [
+      {
+        metadata: { id: "proj1", name: "Project 1" },
+        categories: {
+          testCategory: {
+            resources: [{ name: "testResource", quota: 10, usage: 5, commitmentSum: 0 }],
+          },
+        },
+      },
+    ];
+    act(() => {
+      result.current.domainStoreActions.setProjects(mockProjects);
+    });
+
+    await waitFor(() => {
+      const az1TabDomainWithProjects = screen.getByTestId("tab/az1");
+      const az2TabDomainWithProjects = screen.getByTestId("tab/az2");
+      expect(az1TabDomainWithProjects).toHaveAttribute("aria-disabled", "false");
+      expect(az2TabDomainWithProjects).toHaveAttribute("aria-disabled", "false");
+    });
+
+    // At project level, tabs should always be enabled.
+    // That's because the project level panel has a commitment view and the data is initially fetched.
+    const projectScope = new Scope({ projectID: "123", domainID: "456" });
+    rerender();
+    act(() => {
+      result.current.globalStoreActions.setScope(projectScope);
+    });
+
+    const az1TabProject = screen.getByTestId("tab/az1");
+    const az2TabProject = screen.getByTestId("tab/az2");
+    expect(az1TabProject).toHaveAttribute("aria-disabled", "false");
+    expect(az2TabProject).toHaveAttribute("aria-disabled", "false");
+  });
+
   test("cluster: disable commit action on uncommittable domain resource", async () => {
     const scope = new Scope({});
     let domains = [

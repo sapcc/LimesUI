@@ -4,7 +4,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { SearchInput } from "@cloudoperators/juno-ui-components";
 
-const DebouncedSearchInput = ({ onChange, initialValue = "", delay = 300 }) => {
+const DebouncedSearchInput = ({ onChange, initialValue = "", delay = 300, styling = "" }) => {
   const [inputValue, setInputValue] = useState(initialValue);
   const isFirstRender = useRef(true);
 
@@ -25,6 +25,7 @@ const DebouncedSearchInput = ({ onChange, initialValue = "", delay = 300 }) => {
 
   return (
     <SearchInput
+      className={styling}
       data-testid="Search"
       value={inputValue}
       onChange={(e) => {

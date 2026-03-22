@@ -18,6 +18,7 @@ import { formatTimeISO8160 } from "../../../lib/utils";
 import { Scope } from "../../../lib/scope";
 import { valueWithUnit } from "../../../lib/unit";
 import { Unit } from "../../../lib/unit";
+import DebouncedSearchInput from "../../shared/DebouncedSearchInput";
 
 const label = "font-semibold";
 
@@ -31,19 +32,24 @@ const MarketplaceModal = (props) => {
   const scope = new Scope(useGlobalStore((state) => state.scope));
   const isProjectView = scope.isProject();
   const projects = useDomainStore((state) => state.projects);
-  const sortedProjects = React.useMemo(() => {
-    return (
-      projects?.sort((a, b) => {
-        if (scope.isCluster()) {
-          return a["metadata"]["fullName"].toLowerCase().localeCompare(b["metadata"]["fullName"].toLowerCase());
-        } else {
-          return a["metadata"]["name"].toLowerCase().localeCompare(b["metadata"]["name"].toLowerCase());
-        }
-      }) || []
-    );
-  }, [projects, scope]);
+  const [nameFilter, setNameFilter] = React.useState("");
   const [targetProject, setTargetProject] = React.useState(isProjectView ? project : null);
   const disabled = !isProjectView && !targetProject;
+
+  const sortedProjects = React.useMemo(() => {
+    if (!projects) return [];
+    const nameKey = scope.isCluster() ? "fullName" : "name";
+    return projects
+      .filter((project) => {
+        const filter = nameFilter.toLocaleLowerCase().trim();
+        if (!filter) return true;
+        const projectName = project["metadata"][nameKey]?.toLowerCase() || "";
+        return projectName.includes(filter);
+      })
+      .sort((a, b) => {
+        return a["metadata"][nameKey].toLowerCase().localeCompare(b["metadata"][nameKey].toLowerCase());
+      });
+  }, [projects, scope, nameFilter]);
 
   function onConfirm() {
     if (disabled) return;
@@ -75,6 +81,42 @@ const MarketplaceModal = (props) => {
         </Message>
       )}
       <DataGrid columns={2} columnMaxSize="1fr">
+        {!isProjectView && (
+          <DataGridRow>
+            <DataGridCell className={label}>Target project:</DataGridCell>
+            <DataGridCell>
+              <Select
+                data-testid={"targetProjectSelect"}
+                disabled={sortedProjects.length == 0}
+                onChange={(project) => {
+                  setTargetProject(project);
+                }}
+              >
+                <div
+                  className="px-2 py-1"
+                  onKeyDown={(e) => {
+                    e.stopPropagation();
+                  }}
+                >
+                  <DebouncedSearchInput styling="w-full" onChange={setNameFilter} delay={300} />
+                </div>
+                {sortedProjects.map((project) => {
+                  const projectName = scope.isDomain() ? project["metadata"]["name"] : project["metadata"]["fullName"];
+                  return (
+                    <SelectOption
+                      className="block wrap-break-word w-56"
+                      data-testid={`selectOption`}
+                      key={project["metadata"]["id"]}
+                      value={project}
+                    >
+                      {projectName}
+                    </SelectOption>
+                  );
+                })}
+              </Select>
+            </DataGridCell>
+          </DataGridRow>
+        )}
         <DataGridRow>
           <DataGridCell className={label}>Availability Zone:</DataGridCell>
           <DataGridCell>{availability_zone}</DataGridCell>
@@ -91,27 +133,6 @@ const MarketplaceModal = (props) => {
           <DataGridCell className={label}>Expires at:</DataGridCell>
           <DataGridCell>{formatTimeISO8160(expires_at)}</DataGridCell>
         </DataGridRow>
-        {!isProjectView && (
-          <DataGridRow>
-            <DataGridCell className={label}>Target project:</DataGridCell>
-            <DataGridCell>
-              <Select
-                data-testid={"targetProjectSelect"}
-                disabled={sortedProjects.length == 0}
-                onChange={(project) => {
-                  setTargetProject(project);
-                }}
-              >
-                {sortedProjects.map((project) => (
-                  <SelectOption data-testid={`selectOption`} key={project["metadata"]["id"]} value={project}>
-                    {scope.isDomain() && project["metadata"]["name"]}
-                    {scope.isCluster() && project["metadata"]["fullName"]}
-                  </SelectOption>
-                ))}
-              </Select>
-            </DataGridCell>
-          </DataGridRow>
-        )}
       </DataGrid>
       <ConfirmInput disabled={disabled} subText={subText} {...inputProps} />
     </Modal>
