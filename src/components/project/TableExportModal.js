@@ -23,17 +23,15 @@ const TableExportModal = (props) => {
     setModalIsOpen,
     exportSettings,
     setExportSettings,
-    isLoadingCommitments,
     isExporting,
     hasUnit,
     hasCommitmentErrors = false,
     exportError = null,
   } = props;
   const { withAllCommitments, withCommitments, withCurrentFilter, withUnitFormat } = exportSettings;
-  const isDisabled = !hasCommitmentErrors && (isLoadingCommitments || isExporting);
 
   return (
-    <Modal title={title} open={modalIsOpen} onCancel={() => setModalIsOpen(false)} closeable={!isDisabled}>
+    <Modal title={title} open={modalIsOpen} onCancel={() => setModalIsOpen(false)} closeable={!isExporting}>
       {(hasCommitmentErrors || exportError) && (
         <Message variant="danger" className="mt-4">
           {hasCommitmentErrors && (
@@ -73,7 +71,7 @@ const TableExportModal = (props) => {
             <Checkbox
               id="exportAllCommitmentsOptionCheckBox"
               checked={withAllCommitments}
-              disabled={isDisabled}
+              disabled={isExporting}
               onClick={() =>
                 setExportSettings({
                   ...exportSettings,
@@ -104,7 +102,7 @@ const TableExportModal = (props) => {
           <DataGridCell>
             <Checkbox
               id="exportWithCommitmentsOptionCheckBox"
-              disabled={withAllCommitments || isDisabled}
+              disabled={withAllCommitments || isExporting}
               checked={withCommitments}
               onClick={() => setExportSettings({ ...exportSettings, withCommitments: !withCommitments })}
             />
@@ -134,7 +132,7 @@ const TableExportModal = (props) => {
           <DataGridCell>
             <Checkbox
               id="exportWithCurrentAZOptionCheckBox"
-              disabled={withAllCommitments || isDisabled}
+              disabled={withAllCommitments || isExporting}
               checked={withCurrentFilter}
               onClick={() => setExportSettings({ ...exportSettings, withCurrentFilter: !withCurrentFilter })}
             />
@@ -148,7 +146,7 @@ const TableExportModal = (props) => {
                 id="exportWithFormattedValuesOptionCheckBox"
                 checked={withUnitFormat}
                 onClick={() => setExportSettings({ ...exportSettings, withUnitFormat: !withUnitFormat })}
-                disabled={isDisabled}
+                disabled={isExporting}
               />
             </DataGridCell>
           </DataGridRow>
@@ -159,9 +157,9 @@ const TableExportModal = (props) => {
           data-testid={"tableExportModalExportButton"}
           icon={"download"}
           variant="primary"
-          label={isDisabled ? "Exporting..." : hasCommitmentErrors ? "Retry" : "Export"}
+          label={isExporting ? "Exporting..." : hasCommitmentErrors ? "Retry" : "Export"}
           onClick={() => onConfirm()}
-          disabled={isDisabled}
+          disabled={isExporting}
         />
       </Stack>
     </Modal>
