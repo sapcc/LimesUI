@@ -61,40 +61,42 @@ const TableExport = (props) => {
     [scope]
   );
 
-  const queryInjector = React.useMemo(() => {
-    if (!commitmentExportTriggered) return { queries: [] };
-    return {
-      queries: projectsToReport.map((project) => {
-        console.log(commitmentExportTriggered, isEmptyLabelFilterQuery);
-        const projectDomainId = domainDataByScope(project.metadata, domainMeta).id;
-        return {
-          queryKey: ["commitmentData", project.metadata.id, projectDomainId],
-          enabled: commitmentExportTriggered && !isEmptyLabelFilterQuery,
-          refetchOnMount: false,
-          staleTime: Infinity,
-          retry: 3,
-          retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 10000),
-        };
-      }),
-    };
-  }, [projectsToReport, commitmentExportTriggered, isEmptyLabelFilterQuery]);
-  const projectCommitmentQueries = useQueries(queryInjector);
-
-  const { allCommitmentQueriesReady, isLoadingCommitments, commitmentQueryErrors, queriesHaveData } =
-    React.useMemo(() => {
+  // Create the queries after the user explicitly selects commitment exports.
+  // Otherwise the queries will be created when the Panel mounts, which is a performance concern at high project counts.
+  const commitmentQueries = React.useMemo(() => {
+    if (!commitmentExportTriggered || isEmptyLabelFilterQuery) return [];
+    return projectsToReport.map((project) => {
+      const domainID = domainDataByScope(project.metadata, domainMeta).id;
       return {
-        allCommitmentQueriesReady: projectCommitmentQueries.every((query) => !query.isLoading && !query.isFetching),
-        isLoadingCommitments: projectCommitmentQueries.some((query) => query.isLoading || query.isFetching),
-        commitmentQueryErrors: projectCommitmentQueries.filter((query) => query.isError),
-        queriesHaveData: projectCommitmentQueries.some((query) => query.data), // TODO: this as .every returns true and is wrong 
+        queryKey: ["commitmentData", project.metadata.id, domainID],
+        enabled: commitmentExportTriggered && !isEmptyLabelFilterQuery,
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
+        staleTime: Infinity,
+        gcTime: Infinity,
+        retry: 3,
+        retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 10000),
       };
-    }, [projectCommitmentQueries]);
-  const hasCommitmentErrors = commitmentQueryErrors.length > 0;
+    });
+  }, [domainMeta, projectsToReport, commitmentExportTriggered, isEmptyLabelFilterQuery]);
+
+  const projectCommitmentQueries = useQueries({ queries: commitmentQueries });
+
+  const { allCommitmentQueriesReady, commitmentQueryErrors, hasCommitmentErrors } = React.useMemo(() => {
+    return {
+      allCommitmentQueriesReady:
+        projectCommitmentQueries.length > 0 &&
+        projectCommitmentQueries.every(
+          (query) => !query.isLoading && !query.isFetching && (query.data !== undefined || query.isError)
+        ),
+      commitmentQueryErrors: projectCommitmentQueries.filter((query) => query.isError),
+      hasCommitmentErrors: projectCommitmentQueries.some((query) => query.isError),
+    };
+  }, [projectCommitmentQueries]);
 
   const commitmentsMap = React.useMemo(() => {
     const map = new Map();
     if (!commitmentsIncluded || !allCommitmentQueriesReady) return map;
-    if (!queriesHaveData) return map;
 
     projectsToReport.forEach((project, index) => {
       const queryResult = projectCommitmentQueries[index];
@@ -110,31 +112,12 @@ const TableExport = (props) => {
     return map;
   }, [commitmentsIncluded, allCommitmentQueriesReady, projectsToReport, projectCommitmentQueries]);
 
+  // Triggers the export after the commitment fetch prerequisites are fulfilled.
   React.useEffect(() => {
-    if (
-      commitmentExportTriggered &&
-      allCommitmentQueriesReady &
-      queriesHaveData &&
-      !isLoadingCommitments &&
-      !hasCommitmentErrors
-    ) {
+    if (commitmentExportTriggered && allCommitmentQueriesReady && commitmentsMap.size > 0 && !hasCommitmentErrors) {
       tableExportMutation.mutate();
     }
-  }, [
-    commitmentExportTriggered,
-    allCommitmentQueriesReady,
-    isLoadingCommitments,
-    hasCommitmentErrors,
-    queriesHaveData,
-  ]);
-
-  React.useEffect(() => {
-    if (allCommitmentQueriesReady && hasCommitmentErrors) {
-      commitmentQueryErrors.forEach((query) => {
-        console.error("Commitment query failed:", query.error.toString());
-      });
-    }
-  }, [allCommitmentQueriesReady, hasCommitmentErrors, commitmentQueryErrors]);
+  }, [commitmentExportTriggered, allCommitmentQueriesReady, commitmentsMap.size, hasCommitmentErrors]);
 
   const generateExportFilename = React.useCallback(() => {
     const parts = ["limes-export"];
@@ -224,7 +207,7 @@ const TableExport = (props) => {
           setModalIsOpen={setModalIsOpen}
           exportSettings={exportSettings}
           setExportSettings={setExportSettings}
-          isLoadingCommitments={isLoadingCommitments || isPending}
+          isLoadingCommitments={commitmentExportTriggered || isPending}
           isExporting={tableExportMutation.isPending}
           hasUnit={unit.name !== ""}
           hasCommitmentErrors={allCommitmentQueriesReady && hasCommitmentErrors}
