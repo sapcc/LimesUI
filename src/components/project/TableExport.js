@@ -83,14 +83,15 @@ const TableExport = (props) => {
   const projectCommitmentQueries = useQueries({ queries: commitmentQueries });
 
   const { allCommitmentQueriesReady, commitmentQueryErrors, hasCommitmentErrors } = React.useMemo(() => {
+    const queriesReady =
+      projectCommitmentQueries.length > 0 &&
+      projectCommitmentQueries.every(
+        (query) => !query.isLoading && !query.isFetching && (query.data !== undefined || query.isError)
+      );
     return {
-      allCommitmentQueriesReady:
-        projectCommitmentQueries.length > 0 &&
-        projectCommitmentQueries.every(
-          (query) => !query.isLoading && !query.isFetching && (query.data !== undefined || query.isError)
-        ),
+      allCommitmentQueriesReady: queriesReady,
       commitmentQueryErrors: projectCommitmentQueries.filter((query) => query.isError),
-      hasCommitmentErrors: projectCommitmentQueries.some((query) => query.isError),
+      hasCommitmentErrors: queriesReady && projectCommitmentQueries.some((query) => query.isError),
     };
   }, [projectCommitmentQueries]);
 
@@ -190,6 +191,8 @@ const TableExport = (props) => {
     }
   };
 
+  const isExporting = !hasCommitmentErrors && (commitmentExportTriggered || tableExportMutation.isPending || isPending);
+
   return (
     <>
       <Button
@@ -207,10 +210,9 @@ const TableExport = (props) => {
           setModalIsOpen={setModalIsOpen}
           exportSettings={exportSettings}
           setExportSettings={setExportSettings}
-          isLoadingCommitments={commitmentExportTriggered || isPending}
-          isExporting={tableExportMutation.isPending}
+          isExporting={isExporting}
           hasUnit={unit.name !== ""}
-          hasCommitmentErrors={allCommitmentQueriesReady && hasCommitmentErrors}
+          hasCommitmentErrors={hasCommitmentErrors}
           exportError={exportError}
         />
       )}
