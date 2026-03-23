@@ -159,7 +159,7 @@ const Resource = (props) => {
           {isAZUnaware(props.resource.per_az) && (
             <ProjectBadges az={props.resource.per_az[0]} unit={unitName} displayValues={true} />
           )}
-          <Stack className="w-full" distribution="between" >
+          <Stack className="w-full" distribution="between">
             {<div className="text-xs text-sap-grey-4">Resource name: {resource.name}</div>}
             {scope.isProject() && isCommittable && <ForbidAutogrowth {...forbidAutogrowthForwardProps} />}
           </Stack>
