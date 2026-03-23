@@ -62,7 +62,7 @@ export async function createProjectExportWorkbook({ projectData, resourceInfo, d
     }
     const { metadata } = projectsToReport[idx];
     const projectMapData = projectResourceAZMap.get(metadata.id) ?? {};
-    const resource = projectMapData.resource ?? {};
+    const resource = projectMapData.resource ?? { usage: 0, quota: 0, commitmentSum: 0 };
     const az = projectMapData.az ?? {};
     const perAz = resource.per_az ?? [];
     const errorUsage = perAz.find((zone) => zone?.name === CustomZones.UNKNOWN)?.usage ?? 0;

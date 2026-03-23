@@ -51,14 +51,13 @@ const tableStylings = {
   },
 
   /** @param {Worksheet} sheet */
-  _isApplicableToFormatting(sheet) {
-    if (sheet.columnCount === 0 || sheet.rowCount < this.startRow) return false;
-    return true;
+  _skipFormatting(sheet) {
+    return sheet.columnCount === 0 || sheet.rowCount < this.startRow;
   },
 
   /** @param {Worksheet} sheet */
   applyAlternatingRowColors(sheet) {
-    if (!this._isApplicableToFormatting(sheet)) return;
+    if (this._skipFormatting(sheet)) return;
     const topLeft = sheet.getCell(this.startRow, 1).address;
     const bottomRight = sheet.getCell(sheet.rowCount, sheet.columnCount).address;
     const ref = `${topLeft}:${bottomRight}`;
@@ -83,7 +82,7 @@ const tableStylings = {
 
   /** @param {Worksheet} sheet */
   applyAutoFilter(sheet) {
-    if (!this._isApplicableToFormatting(sheet)) return;
+    if (this._skipFormatting(sheet)) return;
     sheet.autoFilter = {
       from: { row: 1, column: 1 },
       to: { row: sheet.rowCount, column: sheet.columnCount },

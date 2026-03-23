@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { createProjectExportWorkbook } from "./TableExportContents";
+import { Unit } from "../../lib/unit";
 
 // Mock the tableStylings module
 jest.mock("./TableExportStylings", () => ({
@@ -207,6 +208,57 @@ describe("createProjectExportWorkbook", () => {
 
     const dataRow1 = commitmentsSheet.getRow(2);
     expect(dataRow1.values).toContain("commitment-1");
+  });
+
+  test("project without a matching resource will contain 0 values instead of NAN", async () => {
+    // Create project data where the project has no matching resource
+    const projectsToReport = [
+      {
+        metadata: {
+          id: "project-3",
+          name: "Project3",
+          domainID: "domain-1",
+          domainName: "Domain1",
+        },
+      },
+    ];
+    const projectResourceAZMap = new Map();
+    const commitmentsMap = new Map();
+
+    const projectData = { projectsToReport, projectResourceAZMap, commitmentsMap };
+    const unit = new Unit("MiB");
+    const resourceInfo = {
+      currentResource: { name: "resource-1", unit: "MiB" },
+      service: "service-1",
+      unitName: "MiB",
+      valueFormat: (value) => unit.format(value),
+    };
+    const domainInfo = createMockDomainInfo();
+    const exportOptions = createDefaultExportOptions();
+
+    const workbook = await createProjectExportWorkbook({
+      projectData,
+      resourceInfo,
+      domainInfo,
+      exportOptions,
+    });
+
+    const projectsSheet = workbook.getWorksheet("Projects");
+    const dataRow = projectsSheet.getRow(2);
+    const rowValues = dataRow.values;
+
+    const headerRow = projectsSheet.getRow(1);
+    const headerValues = headerRow.values;
+    const usageIndex = headerValues.indexOf("Usage");
+    const commitmentSumIndex = headerValues.indexOf("CommitmentSum");
+
+    // Verify usage and commitmentSum are 0 values
+    const usageValue = rowValues[usageIndex];
+    const commitmentSumValue = rowValues[commitmentSumIndex];
+    expect(usageValue).not.toContain("NaN");
+    expect(commitmentSumValue).not.toContain("NaN");
+    expect(usageValue).toMatch(/0\u202fMiB/);
+    expect(commitmentSumValue).toMatch(/0\u202fMiB/);
   });
 
   test("filters commitments by resource name", async () => {

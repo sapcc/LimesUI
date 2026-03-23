@@ -24,21 +24,12 @@ const TableExport = (props) => {
     withUnitFormat: false,
   });
   const { withAllCommitments, withCommitments, withCurrentFilter, withUnitFormat } = exportSettings;
-  const commitmentsIncluded = React.useMemo(
-    () => withAllCommitments || withCommitments,
-    [withAllCommitments, withCommitments]
-  );
-  const isEmptyLabelFilterQuery = React.useMemo(
-    () => labelFilter === labelTypes.EMPTY && withCurrentFilter,
-    [labelFilter, withCurrentFilter]
-  );
+  const commitmentsIncluded = withAllCommitments || withCommitments;
+  const isEmptyLabelFilterQuery = labelFilter === labelTypes.EMPTY && withCurrentFilter;
+  const projectsToReport = withCurrentFilter ? filteredProjects : projects;
   const [commitmentExportTriggered, setCommitmentExportTriggered] = React.useState(false);
   const [isPending, startTransition] = React.useTransition();
   const [exportError, setExportError] = React.useState(null);
-
-  const projectsToReport = React.useMemo(() => {
-    return withCurrentFilter ? filteredProjects : projects;
-  }, [withCurrentFilter, filteredProjects, projects]);
 
   const valueFormat = React.useCallback(
     (value, u = unit) => {
