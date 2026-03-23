@@ -8,8 +8,10 @@ import {
   DataGrid,
   DataGridRow,
   DataGridCell,
+  Pagination,
   Select,
   SelectOption,
+  Stack,
 } from "@cloudoperators/juno-ui-components";
 import BaseFooter from "./BaseComponents/BaseFooter";
 import useConfirmInput from "./BaseComponents/useConfirmInput";
@@ -19,6 +21,7 @@ import { Scope } from "../../../lib/scope";
 import { valueWithUnit } from "../../../lib/unit";
 import { Unit } from "../../../lib/unit";
 import DebouncedSearchInput from "../../shared/DebouncedSearchInput";
+import { chunkProjects } from "../../../lib/utils";
 
 const label = "font-semibold";
 
@@ -34,6 +37,7 @@ const MarketplaceModal = (props) => {
   const projects = useDomainStore((state) => state.projects);
   const [nameFilter, setNameFilter] = React.useState("");
   const [targetProject, setTargetProject] = React.useState(isProjectView ? project : null);
+  const [currentPage, setCurrentPage] = React.useState(0);
   const disabled = !isProjectView && !targetProject;
 
   const sortedProjects = React.useMemo(() => {
@@ -47,9 +51,15 @@ const MarketplaceModal = (props) => {
         return projectName.includes(filter);
       })
       .sort((a, b) => {
-        return a["metadata"][nameKey].toLowerCase().localeCompare(b["metadata"][nameKey].toLowerCase());
+        return a["metadata"][nameKey]
+          .toLowerCase()
+          .localeCompare(b["metadata"][nameKey].toLowerCase(), undefined, { numeric: true, sensivity: "base" });
       });
   }, [projects, scope, nameFilter]);
+
+  const paginatedProjects = React.useMemo(() => {
+    return chunkProjects(sortedProjects, 50);
+  }, [sortedProjects]);
 
   function onConfirm() {
     if (disabled) return;
@@ -92,19 +102,36 @@ const MarketplaceModal = (props) => {
                   setTargetProject(project);
                 }}
               >
-                <div
+                <Stack
                   className="px-2 py-1"
+                  gap="2"
                   onKeyDown={(e) => {
                     e.stopPropagation();
                   }}
                 >
                   <DebouncedSearchInput styling="w-full" onChange={setNameFilter} delay={300} />
-                </div>
-                {sortedProjects.map((project) => {
+                  <Pagination
+                    data-testid="Pagination"
+                    currentPage={currentPage + 1}
+                    onPressPrevious={(page) => {
+                      setCurrentPage(page - 1);
+                    }}
+                    onPressNext={(page) => {
+                      setCurrentPage(page - 1);
+                    }}
+                    pages={paginatedProjects.length}
+                    onKeyPress={(page) => {
+                      if (isNaN(page)) return;
+                      setCurrentPage(page - 1);
+                    }}
+                    variant="number"
+                  />
+                </Stack>
+                {paginatedProjects[currentPage].map((project) => {
                   const projectName = scope.isDomain() ? project["metadata"]["name"] : project["metadata"]["fullName"];
                   return (
                     <SelectOption
-                      className="block wrap-break-word w-56"
+                      className="block wrap-break-word w-96"
                       data-testid={`selectOption`}
                       key={project["metadata"]["id"]}
                       value={project}

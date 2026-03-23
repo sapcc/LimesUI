@@ -212,4 +212,31 @@ describe("MarketplaceModal", () => {
       expect(allOptions).toHaveLength(4);
     });
   });
+
+  test("should paginate projects correctly", async () => {
+    const projects = Array.from({ length: 75 }, (_, i) => ({
+      metadata: { id: i + 1, name: `project${String(i + 1).padStart(3, "0")}` },
+    }));
+    jest.spyOn(store, "useGlobalStore").mockImplementation(mockGlobalStore(true, false));
+    jest.spyOn(store, "useDomainStore").mockImplementation(mockDomainStore(projects));
+
+    render(
+      <PortalProvider>
+        <MarketplaceModal {...mockProps} />
+      </PortalProvider>
+    );
+
+    fireEvent.click(screen.getByTestId("targetProjectSelect"));
+
+    // Page 1: 50 projects
+    expect(screen.getAllByTestId("selectOption")).toHaveLength(50);
+    expect(screen.getByTestId("Pagination")).toBeInTheDocument();
+
+    // Page 2: 25 projects
+    fireEvent.click(screen.getByRole("button", { name: /next/i }));
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId("selectOption")).toHaveLength(25);
+    });
+  });
 });
