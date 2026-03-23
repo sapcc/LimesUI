@@ -348,16 +348,18 @@ const ProjectTable = (props) => {
             </Stack>
           </Stack>
           <Stack gap="1">
-            <TableExport
-              scope={scope}
-              labelFilter={effectiveLabelFilter}
-              service={serviceType}
-              currentResource={currentResource}
-              projects={projects}
-              filteredProjects={filteredProjects}
-              projectResourceAZMap={projectResourceAZMap}
-              isCustomSort={Object.keys(sortConfig).length > 0}
-            />
+            {!subRoute && (
+              <TableExport
+                scope={scope}
+                labelFilter={effectiveLabelFilter}
+                service={serviceType}
+                currentResource={currentResource}
+                projects={projects}
+                filteredProjects={filteredProjects}
+                projectResourceAZMap={projectResourceAZMap}
+                isCustomSort={Object.keys(sortConfig).length > 0}
+              />
+            )}
             <Stack>
               <Select
                 data-testid="PerPageSelect"
