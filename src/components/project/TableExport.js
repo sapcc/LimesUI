@@ -61,15 +61,28 @@ const TableExport = (props) => {
     [scope]
   );
 
+  const getHasCommitments = React.useCallback(
+    (resource, az) => {
+      // withAllCommitments assumes commitments, hence the projects are fetched with a filter for the current resource.
+      if (withAllCommitments) return true;
+      if (withCurrentFilter) return az?.commitmentSum > 0;
+      if (withCommitments) return resource?.commitmentSum > 0;
+      return false;
+    },
+    [withAllCommitments, withCurrentFilter, withCommitments]
+  );
+
   // Create the queries after the user explicitly selects commitment exports.
   // Otherwise the queries will be created when the Panel mounts, which is a performance concern at high project counts.
   const commitmentQueries = React.useMemo(() => {
     if (!commitmentExportTriggered || isEmptyLabelFilterQuery) return [];
     return projectsToReport.map((project) => {
+      const { resource, az } = projectResourceAZMap.get(project.metadata.id);
+      const hasCommitments = getHasCommitments(resource, az);
       const domainID = domainDataByScope(project.metadata, domainMeta).id;
       return {
         queryKey: ["commitmentData", project.metadata.id, domainID],
-        enabled: commitmentExportTriggered && !isEmptyLabelFilterQuery,
+        enabled: commitmentExportTriggered && hasCommitments,
         refetchOnMount: false,
         refetchOnWindowFocus: false,
         staleTime: Infinity,
@@ -78,7 +91,7 @@ const TableExport = (props) => {
         retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 10000),
       };
     });
-  }, [domainMeta, projectsToReport, commitmentExportTriggered, isEmptyLabelFilterQuery]);
+  }, [domainMeta, projectsToReport, commitmentExportTriggered, isEmptyLabelFilterQuery, getHasCommitments]);
 
   const projectCommitmentQueries = useQueries({ queries: commitmentQueries });
 
@@ -86,7 +99,8 @@ const TableExport = (props) => {
     const queriesReady =
       projectCommitmentQueries.length > 0 &&
       projectCommitmentQueries.every(
-        (query) => !query.isLoading && !query.isFetching && (query.data !== undefined || query.isError)
+        (query) =>
+          !query.isLoading && !query.isFetching && (query.data !== undefined || query.isError || !query.isEnabled)
       );
     return {
       allCommitmentQueriesReady: queriesReady,

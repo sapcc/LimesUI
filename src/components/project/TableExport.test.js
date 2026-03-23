@@ -378,4 +378,187 @@ describe("TableExport", () => {
     consoleErrorSpy.mockRestore();
     jest.useRealTimers();
   });
+
+  test("excludes projects with zero resource commitmentSum from commitment queries", async () => {
+    const queriedProjectIds = [];
+
+    queryClient.setQueryDefaults(["commitmentData"], {
+      queryFn: ({ queryKey }) => {
+        const projectId = queryKey[1];
+        queriedProjectIds.push(projectId);
+        return Promise.resolve({ commitments: [] });
+      },
+    });
+
+    const mixedResourceMap = new Map();
+    // Resource with no commitments
+    mixedResourceMap.set("project-1", {
+      resource: {
+        name: "resource-1",
+        usage: 10,
+        quota: 100,
+        commitmentSum: 0,
+        per_az: [{ name: "az-1", usage: 10, commitmentSum: 0, quota: 50 }],
+      },
+      az: { name: "az-1", usage: 10, commitmentSum: 0, quota: 50 },
+    });
+    mixedResourceMap.set("project-2", {
+      resource: {
+        name: "resource-1",
+        usage: 20,
+        quota: 200,
+        commitmentSum: 10,
+        per_az: [{ name: "az-1", usage: 10, commitmentSum: 10, committed: { "1 year": 10 }, quota: 100 }],
+      },
+      az: { name: "az-1", usage: 10, commitmentSum: 10, committed: { "1 year": 10 }, quota: 100 },
+    });
+
+    renderTableExport({ projectResourceAZMap: mixedResourceMap });
+    fireEvent.click(screen.getByTestId("tableExportButton"));
+
+    await waitFor(() => {
+      expect(screen.getByText("Export project view")).toBeInTheDocument();
+    });
+
+    fireEvent.click(document.getElementById("exportWithCommitmentsOptionCheckBox"));
+    await waitFor(() => {
+      expect(document.getElementById("exportWithCommitmentsOptionCheckBox")).toBeChecked();
+    });
+
+    // Trigger export
+    const modalExportButton = screen.getByTestId("tableExportModalExportButton");
+    fireEvent.click(modalExportButton);
+
+    await waitFor(() => {
+      expect(capturedBlob).not.toBeNull();
+    });
+
+    // Verify only the project with commitments was queried
+    expect(queriedProjectIds).toContain("project-2");
+    expect(queriedProjectIds).not.toContain("project-1");
+  });
+
+  test("excludes projects with zero AZ commitmentSum for AZ exports", async () => {
+    const queriedProjectIds = [];
+
+    queryClient.setQueryDefaults(["commitmentData"], {
+      queryFn: ({ queryKey }) => {
+        const projectId = queryKey[1];
+        queriedProjectIds.push(projectId);
+        return Promise.resolve({ commitments: [] });
+      },
+    });
+
+    const mixedResourceMap = new Map();
+    mixedResourceMap.set("project-1", {
+      resource: {
+        name: "resource-1",
+        usage: 10,
+        quota: 100,
+        commitmentSum: 5,
+        per_az: [
+          { name: "az-1", usage: 5, commitmentSum: 0, quota: 50 }, // current AZ has no commitments
+          { name: "az-2", usage: 5, commitmentSum: 5, committed: { "1 year": 5 }, quota: 50 },
+        ],
+      },
+      az: { name: "az-1", usage: 5, commitmentSum: 0, quota: 50 }, // current AZ
+    });
+    mixedResourceMap.set("project-2", {
+      resource: {
+        name: "resource-1",
+        usage: 20,
+        quota: 200,
+        commitmentSum: 10,
+        per_az: [{ name: "az-1", usage: 10, commitmentSum: 10, committed: { "1 year": 10 }, quota: 100 }],
+      },
+      az: { name: "az-1", usage: 10, commitmentSum: 10, committed: { "1 year": 10 }, quota: 100 },
+    });
+
+    renderTableExport({ projectResourceAZMap: mixedResourceMap });
+    fireEvent.click(screen.getByTestId("tableExportButton"));
+
+    await waitFor(() => {
+      expect(screen.getByText("Export project view")).toBeInTheDocument();
+    });
+
+    fireEvent.click(document.getElementById("exportWithCurrentAZOptionCheckBox"));
+    await waitFor(() => {
+      expect(document.getElementById("exportWithCurrentAZOptionCheckBox")).toBeChecked();
+    });
+
+    fireEvent.click(document.getElementById("exportWithCommitmentsOptionCheckBox"));
+    await waitFor(() => {
+      expect(document.getElementById("exportWithCommitmentsOptionCheckBox")).toBeChecked();
+    });
+
+    // Trigger export
+    const modalExportButton = screen.getByTestId("tableExportModalExportButton");
+    fireEvent.click(modalExportButton);
+
+    await waitFor(() => {
+      expect(capturedBlob).not.toBeNull();
+    });
+
+    // Verify only the project with AZ-level commitments was queried
+    expect(queriedProjectIds).toContain("project-2");
+    expect(queriedProjectIds).not.toContain("project-1");
+  });
+
+  test("includes all projects in commitment queries for exports with all commitments", async () => {
+    const queriedProjectIds = [];
+
+    queryClient.setQueryDefaults(["commitmentData"], {
+      queryFn: ({ queryKey }) => {
+        const projectId = queryKey[1];
+        queriedProjectIds.push(projectId);
+        return Promise.resolve({ commitments: [] });
+      },
+    });
+
+    const mixedResourceMap = new Map();
+    mixedResourceMap.set("project-1", {
+      resource: {
+        name: "resource-1",
+        usage: 10,
+        quota: 100,
+        commitmentSum: 0,
+        per_az: [{ name: "az-1", usage: 10, commitmentSum: 0, quota: 50 }],
+      },
+      az: { name: "az-1", usage: 0, commitmentSum: 0, quota: 50 },
+    });
+    mixedResourceMap.set("project-2", {
+      resource: {
+        name: "resource-1",
+        usage: 20,
+        quota: 200,
+        commitmentSum: 10,
+        per_az: [{ name: "az-1", usage: 10, commitmentSum: 10, committed: { "1 year": 10 }, quota: 100 }],
+      },
+      az: { name: "az-1", usage: 10, commitmentSum: 10, committed: { "1 year": 10 }, quota: 100 },
+    });
+
+    renderTableExport({ projectResourceAZMap: mixedResourceMap });
+    fireEvent.click(screen.getByTestId("tableExportButton"));
+
+    await waitFor(() => {
+      expect(screen.getByText("Export project view")).toBeInTheDocument();
+    });
+
+    fireEvent.click(document.getElementById("exportAllCommitmentsOptionCheckBox"));
+    await waitFor(() => {
+      expect(document.getElementById("exportAllCommitmentsOptionCheckBox")).toBeChecked();
+    });
+
+    // Trigger export
+    const modalExportButton = screen.getByTestId("tableExportModalExportButton");
+    fireEvent.click(modalExportButton);
+
+    await waitFor(() => {
+      expect(capturedBlob).not.toBeNull();
+    });
+
+    // Verify both projects were queried
+    expect(queriedProjectIds).toContain("project-1");
+    expect(queriedProjectIds).toContain("project-2");
+  });
 });
