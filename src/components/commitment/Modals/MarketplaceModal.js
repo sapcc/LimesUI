@@ -57,8 +57,9 @@ const MarketplaceModal = (props) => {
       });
   }, [projects, scope, nameFilter]);
 
+  const chunkSize = 50;
   const paginatedProjects = React.useMemo(() => {
-    return chunkProjects(sortedProjects, 50);
+    return chunkProjects(sortedProjects, chunkSize);
   }, [sortedProjects]);
 
   function onConfirm() {
@@ -110,22 +111,24 @@ const MarketplaceModal = (props) => {
                   }}
                 >
                   <DebouncedSearchInput styling="w-full" onChange={setNameFilter} delay={300} />
-                  <Pagination
-                    data-testid="Pagination"
-                    currentPage={currentPage + 1}
-                    onPressPrevious={(page) => {
-                      setCurrentPage(page - 1);
-                    }}
-                    onPressNext={(page) => {
-                      setCurrentPage(page - 1);
-                    }}
-                    pages={paginatedProjects.length}
-                    onKeyPress={(page) => {
-                      if (isNaN(page)) return;
-                      setCurrentPage(page - 1);
-                    }}
-                    variant="number"
-                  />
+                  {projects.length > chunkSize && (
+                    <Pagination
+                      data-testid="Pagination"
+                      currentPage={currentPage + 1}
+                      onPressPrevious={(page) => {
+                        setCurrentPage(page - 1);
+                      }}
+                      onPressNext={(page) => {
+                        setCurrentPage(page - 1);
+                      }}
+                      pages={paginatedProjects.length}
+                      onKeyPress={(page) => {
+                        if (isNaN(page)) return;
+                        setCurrentPage(page - 1);
+                      }}
+                      variant="number"
+                    />
+                  )}
                 </Stack>
                 {paginatedProjects[currentPage].map((project) => {
                   const projectName = scope.isDomain() ? project["metadata"]["name"] : project["metadata"]["fullName"];
