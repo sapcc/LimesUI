@@ -33,7 +33,7 @@ const TableExportModal = (props) => {
   return (
     <Modal title={title} open={modalIsOpen} onCancel={() => setModalIsOpen(false)} closeable={!isExporting}>
       {(hasCommitmentErrors || exportError) && (
-        <Message variant="danger" className="mt-4">
+        <Message variant={hasCommitmentErrors ? "warning" : "danger"} className="mt-4">
           {hasCommitmentErrors && (
             <>
               Failed to load commitments for some projects.

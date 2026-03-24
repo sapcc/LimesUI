@@ -73,8 +73,9 @@ const TableExport = (props) => {
         refetchOnWindowFocus: false,
         staleTime: Infinity,
         gcTime: Infinity,
-        retry: 3,
-        retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 10000),
+        // Use a generous retry configuration to handle the largest cluster reports
+        retry: 5,
+        retryDelay: (attempt) => 2 ** attempt * 4000,
       };
     });
   }, [
