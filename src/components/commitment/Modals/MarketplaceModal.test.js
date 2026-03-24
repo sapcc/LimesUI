@@ -173,10 +173,10 @@ describe("MarketplaceModal", () => {
 
   test("should filter projects based on search input", async () => {
     const projects = [
-      { metadata: { id: 1, name: "alphaProject" } },
-      { metadata: { id: 2, name: "betaProject" } },
-      { metadata: { id: 3, name: "gammaProject" } },
-      { metadata: { id: 4, name: "alphaTest" } },
+      { metadata: { id: "pid1", name: "alphaProject" } },
+      { metadata: { id: "pid2", name: "betaProject" } },
+      { metadata: { id: "pid3", name: "gammaProject" } },
+      { metadata: { name: "alphaTest" } },
     ];
     jest.spyOn(store, "useGlobalStore").mockImplementation(mockGlobalStore(true, false));
     jest.spyOn(store, "useDomainStore").mockImplementation(mockDomainStore(projects));
@@ -210,6 +210,14 @@ describe("MarketplaceModal", () => {
     await waitFor(() => {
       const allOptions = screen.getAllByTestId("selectOption");
       expect(allOptions).toHaveLength(4);
+    });
+
+    // Filter with projectID yields the expected option
+    fireEvent.change(searchInput, { target: { value: "pid1" } });
+    await waitFor(() => {
+      const filteredOptions = screen.getAllByTestId("selectOption");
+      expect(filteredOptions).toHaveLength(1);
+      expect(filteredOptions[0]).toHaveTextContent("alphaProject");
     });
   });
 
