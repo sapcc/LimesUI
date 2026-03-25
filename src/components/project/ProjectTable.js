@@ -21,6 +21,7 @@ import {
   Icon,
   IntroBox,
 } from "@cloudoperators/juno-ui-components";
+import TableExport from "./TableExport";
 import ToolTipWrapper from "../shared/ToolTipWrapper";
 import ProjectQuotaDetails from "./ProjectQuotaDetails";
 import { TransferStatus } from "../../lib/constants";
@@ -329,7 +330,7 @@ const ProjectTable = (props) => {
                   <span>
                     <b>Default sort priority for projects:</b>
                     <br />
-                    1. Highest underutilized commitments or uncommitted usage
+                    1. Highest underutilized commitments or Pay-As-You-Go usage
                     <br />
                     2. Quota assigned but no commitments or usage
                     <br />
@@ -346,7 +347,19 @@ const ProjectTable = (props) => {
               />
             </Stack>
           </Stack>
-          <Stack gap="2">
+          <Stack gap="1">
+            {!subRoute && (
+              <TableExport
+                scope={scope}
+                labelFilter={effectiveLabelFilter}
+                service={serviceType}
+                currentResource={currentResource}
+                projects={projects}
+                filteredProjects={filteredProjects}
+                projectResourceAZMap={projectResourceAZMap}
+                isCustomSort={Object.keys(sortConfig).length > 0}
+              />
+            )}
             <Stack>
               <Select
                 data-testid="PerPageSelect"

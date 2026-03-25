@@ -47,9 +47,27 @@ describe("test commitment creation modal", () => {
     fireEvent.change(confirmInput, { target: { value: "commit" } });
     fireEvent.click(confirmButton);
     expect(onConfirm).toHaveBeenCalled();
+
     // Rerender with marketplace commitments
-    rerender(renderModal({ data: { commitments: [{ id: "commitment-1" }] } }));
+
+    // Marketplace commitments with a matching AZ should display the marketplace info
+    rerender(
+      renderModal({
+        data: {
+          commitments: [
+            { id: "commitment-1", availability_zone: "az1" },
+            { id: "commitment-2", availability_zone: "az2" },
+          ],
+        },
+      })
+    );
     expect(screen.getByTestId("marketplaceInfo")).toBeInTheDocument();
+
+    // Marketplace commitments without a matching AZ should not display the marketplace info
+    rerender(
+      renderModal({ data: { commitments: [{ id: "commitment-1", availability_zone: "az+" }, { id: "commitment-2" }] } })
+    );
+    expect(screen.queryByTestId("marketplaceInfo")).not.toBeInTheDocument();
   });
   test("same day commit", () => {
     Date.now = jest.fn(() => new Date("2024-01-01T00:00:00.000Z"));

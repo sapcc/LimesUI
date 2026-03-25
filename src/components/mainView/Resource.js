@@ -69,6 +69,7 @@ const azContentHover = `
 const Resource = (props) => {
   const {
     canEdit,
+    navigationDisabled,
     categoryName,
     project,
     resource,
@@ -158,10 +159,12 @@ const Resource = (props) => {
           {isAZUnaware(props.resource.per_az) && (
             <ProjectBadges az={props.resource.per_az[0]} unit={unitName} displayValues={true} />
           )}
-          {scope.isProject() && isCommittable && <ForbidAutogrowth {...forbidAutogrowthForwardProps} />}
+          <Stack className="w-full" distribution="between">
+            {<div className="text-xs text-sap-grey-4">Resource name: {resource.name}</div>}
+            {scope.isProject() && isCommittable && <ForbidAutogrowth {...forbidAutogrowthForwardProps} />}
+          </Stack>
         </Stack>
       )}
-      {<div className="text-xs text-sap-grey-4">Resource name: {resource.name}</div>}
       <ResourceBarBuilder
         scope={scope}
         resource={resource}
@@ -182,11 +185,11 @@ const Resource = (props) => {
                 key={`${azName}`}
                 className={`az-bar ${
                   props.isPanelView
-                    ? `az-bar ${barGroupContainer} ${!subRoute && azName !== "unknown" && azContentHover}`
+                    ? `az-bar ${barGroupContainer} ${!subRoute && !navigationDisabled && azName !== "unknown" && azContentHover}`
                     : `az-bar ${azOverviewBar}`
                 }`}
                 onClick={() => {
-                  if (!props.isPanelView || subRoute || azName == "unknown") return;
+                  if (!props.isPanelView || navigationDisabled || subRoute || azName == "unknown") return;
                   setCurrentTab(azName);
                   setIsMerging(false);
                   resetCommitment();

@@ -35,6 +35,7 @@ const CommitmentModal = (props) => {
   const unit = new Unit(commitment.unit);
   const { data: publicCommitmentData } = publicCommitmentQuery;
   const publicCommitments = publicCommitmentData?.commitments || [];
+  const hasApplicablePublicCommitments = publicCommitments.some((c) => c?.availability_zone === currentTab);
   const { ConfirmInput, inputProps, checkInput } = useConfirmInput({ confirmationText: subText });
   const hasMinConfirmDate = minConfirmDate ? true : false;
   // Show Calendar if: 1.) min_confirm_by field is set 2.) Not enough capacity is available on limes.
@@ -88,7 +89,7 @@ const CommitmentModal = (props) => {
       onCancel={() => onModalClose()}
     >
       <Stack direction="vertical" gap="1">
-        {publicCommitments.length > 0 && (
+        {hasApplicablePublicCommitments && (
           <Message
             data-testid="marketplaceInfo"
             variant="info"
