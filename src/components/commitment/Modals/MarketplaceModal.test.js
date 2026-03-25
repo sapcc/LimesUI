@@ -219,6 +219,12 @@ describe("MarketplaceModal", () => {
       expect(filteredOptions).toHaveLength(1);
       expect(filteredOptions[0]).toHaveTextContent("alphaProject");
     });
+
+    // A search input that leads to an empty result list should display the expected result.
+    fireEvent.change(searchInput, { target: { value: "emptyResultSet" } });
+    await waitFor(() => {
+      expect(screen.queryByTestId("selectOption")).not.toBeInTheDocument();
+    });
   });
 
   test("should paginate projects correctly", async () => {

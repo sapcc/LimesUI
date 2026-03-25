@@ -146,7 +146,7 @@ const MarketplaceModal = (props) => {
                       />
                     )}
                   </Stack>
-                  {paginatedProjects[currentPage].map((project) => {
+                  {paginatedProjects[currentPage]?.map((project) => {
                     const projectName = getProjectNameByScope(project);
                     const projectID = project.metadata.id || "";
                     return (
