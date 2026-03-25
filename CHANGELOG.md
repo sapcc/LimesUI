@@ -1,5 +1,11 @@
 # @sapcc/limes-ui
 
+## 1.15.0
+
+### Minor Changes
+
+- ab4d945: Include Excel export functionality, inlcude marketplace project selection improvements
+
 ## 1.14.1
 
 ### Patch Changes
