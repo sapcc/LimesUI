@@ -73,7 +73,8 @@ const MarketplaceModal = (props) => {
 
   const chunkSize = 50;
   const paginatedProjects = React.useMemo(() => {
-    return chunkProjects(sortedProjects, chunkSize);
+    const chunks = chunkProjects(sortedProjects, chunkSize);
+    return chunks.length > 0 ? chunks : [[]];
   }, [sortedProjects]);
 
   function onConfirm() {
@@ -146,7 +147,7 @@ const MarketplaceModal = (props) => {
                       />
                     )}
                   </Stack>
-                  {paginatedProjects[currentPage]?.map((project) => {
+                  {paginatedProjects[currentPage].map((project) => {
                     const projectName = getProjectNameByScope(project);
                     const projectID = project.metadata.id || "";
                     return (

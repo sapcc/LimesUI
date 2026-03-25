@@ -223,7 +223,8 @@ describe("MarketplaceModal", () => {
     // A search input that leads to an empty result list should display the expected result.
     fireEvent.change(searchInput, { target: { value: "emptyResultSet" } });
     await waitFor(() => {
-      expect(screen.queryByTestId("selectOption")).not.toBeInTheDocument();
+      const filteredOptions = screen.queryAllByTestId("selectOption");
+      expect(filteredOptions).toHaveLength(0);
     });
   });
 
