@@ -1,5 +1,11 @@
 # @sapcc/limes-ui
 
+## 1.15.1
+
+### Patch Changes
+
+- 7c9a97c: hotfix: marketplace modal - project selection handles empty search results properly
+
 ## 1.15.0
 
 ### Minor Changes
