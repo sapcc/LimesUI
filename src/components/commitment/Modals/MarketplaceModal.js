@@ -73,7 +73,8 @@ const MarketplaceModal = (props) => {
 
   const chunkSize = 50;
   const paginatedProjects = React.useMemo(() => {
-    return chunkProjects(sortedProjects, chunkSize);
+    const chunks = chunkProjects(sortedProjects, chunkSize);
+    return chunks.length > 0 ? chunks : [[]];
   }, [sortedProjects]);
 
   function onConfirm() {
