@@ -61,7 +61,7 @@
     "zustand/middleware": "4.3.7"
   },
   "dependencies": {
-    "@cloudoperators/juno-ui-components": "6.1.3",
+    "@cloudoperators/juno-ui-components": "6.2.0",
     "@cloudoperators/juno-url-state-provider": "*",
     "@cj-tech-master/excelts": "^5.1.17",
     "@tailwindcss/postcss": "^4.1.11",
