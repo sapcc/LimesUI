@@ -1,5 +1,12 @@
 # @sapcc/limes-ui
 
+## 1.15.2
+
+### Patch Changes
+
+- f8e3591: update excelts to 8.1.1
+- 7cf72f0: migrate from npm to pnpm
+
 ## 1.15.1
 
 ### Patch Changes
