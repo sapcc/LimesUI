@@ -15,8 +15,8 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: "24.x"
-      - run: npm install
-      - run: npm run check-format
+      - run: pnpm install
+      - run: pnpm run check-format
   lint:
     runs-on: ubuntu-latest
     steps:
@@ -25,8 +25,8 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: "24.x"
-      - run: npm install
-      - run: npm run lint
+      - run: pnpm install
+      - run: pnpm run lint
   jest:
     runs-on: ubuntu-latest
     steps:
@@ -35,6 +35,6 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: "24.x"
-      - run: npm install
-      - run: npm run build
-      - run: npm test
+      - run: pnpm install
+      - run: pnpm run build
+      - run: pnpm test

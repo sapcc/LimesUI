@@ -10,7 +10,7 @@ A more detailed description about the architecture can be found here:
 1. Install dependencies
 
 ```sh
-npm install
+pnpm install
 ```
 
 2. Create an `appProps.json` file in the root directory with the following contents:
@@ -53,7 +53,7 @@ If you would like to use the additional quota plugin application, add the follow
 3. Run the app:
 
 ```sh
-APP_PORT=8000 npm run start
+APP_PORT=8000 pnpm run start
 ```
 
 Then navigate to <http://localhost:8000/>.
