@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@cj-tech-master/excelts':
-        specifier: ^5.1.17
-        version: 5.1.18
+        specifier: ^8.1.1
+        version: 8.1.1
       '@cloudoperators/juno-ui-components':
         specifier: 6.2.0
         version: 6.2.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -822,9 +822,9 @@ packages:
   '@changesets/write@0.4.0':
     resolution: {integrity: sha512-CdTLvIOPiCNuH71pyDu3rA+Q0n65cmAbXnwWH84rKGiFumFzkmHNT8KHTMEchcxN+Kl8I54xGUhJ7l3E7X396Q==}
 
-  '@cj-tech-master/excelts@5.1.18':
-    resolution: {integrity: sha512-/xXzgtIzbvSHyWjp6Q41N+CA8MLgGhTWJMq86YXiFB9tnWeEGixa85Az8v32DS7AValAZPU5VI4+L4Ou+E5Djg==}
-    engines: {node: '>=20.0.0'}
+  '@cj-tech-master/excelts@8.1.1':
+    resolution: {integrity: sha512-GRshKhSD38eKOB3E5GiOvKDnBI9pNfcKeRlShB9nPY55+tYqyB53QJKn3sv0kXcUwDLN1CgMsLxxvEQYQfKxaQ==}
+    engines: {node: '>=22.0.0'}
 
   '@cloudoperators/juno-ui-components@6.2.0':
     resolution: {integrity: sha512-zY9y1Q/9cwcxwro/cOkVSwAaXx4TLSAjtYBQCGKX1gDOSX2nwZpC4Mu/rpPDkxTS4v8fAxHHldyy+4lwkcpLQQ==}
@@ -5349,7 +5349,7 @@ snapshots:
       human-id: 4.1.1
       prettier: 2.8.8
 
-  '@cj-tech-master/excelts@5.1.18': {}
+  '@cj-tech-master/excelts@8.1.1': {}
 
   '@cloudoperators/juno-ui-components@6.2.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)':
     dependencies:
