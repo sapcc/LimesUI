@@ -63,7 +63,7 @@
   "dependencies": {
     "@cloudoperators/juno-ui-components": "6.2.0",
     "@cloudoperators/juno-url-state-provider": "*",
-    "@cj-tech-master/excelts": "^8.1.1",
+    "@cj-tech-master/excelts": "^5.1.17",
     "@tailwindcss/postcss": "^4.1.11",
     "cypress": "^15.0.0",
     "esbuild": "^0.27.0",

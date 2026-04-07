@@ -84,8 +84,8 @@ const tableStylings = {
   applyAutoFilter(sheet) {
     if (this._skipFormatting(sheet)) return;
     sheet.autoFilter = {
-      from: { row: 1, col: 1 },
-      to: { row: sheet.rowCount, col: sheet.columnCount },
+      from: { row: 1, column: 1 },
+      to: { row: sheet.rowCount, column: sheet.columnCount },
     };
   },
 };
