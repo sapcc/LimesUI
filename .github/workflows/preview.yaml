@@ -26,10 +26,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24.x"
+
       - uses: pnpm/action-setup@v5
         name: Install pnpm
         with:
-          version: latest
           cache: true
 
       - name: Create a folder with all compiled apps and pkgs
