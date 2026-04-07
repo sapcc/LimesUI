@@ -2,8 +2,8 @@
 set -e
 
 # Run build
-npm install
-npm run build
+pnpm install
+pnpm run build
 
 # Define appProps for each UI view
 mkdir -p ./public/config

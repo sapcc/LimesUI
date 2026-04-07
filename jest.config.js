@@ -6,7 +6,7 @@ module.exports = {
   testEnvironment: "jsdom",
   setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],
   transformIgnorePatterns: [
-    "node_modules/(?!(@cloudoperators/juno-ui-components|@cloudoperators/juno-communicator|@cloudoperators/juno-messages-provider|@cloudoperators/juno-url-state-provider-v1|@cj-tech-master/excelts)/)",
+    "node_modules/(?!(\\.pnpm|@cloudoperators/juno-ui-components|@cloudoperators/juno-communicator|@cloudoperators/juno-messages-provider|@cloudoperators/juno-url-state-provider-v1|@cj-tech-master/excelts)/)",
   ],
   moduleNameMapper: {
     // Jest currently doesn't support resources with query parameters.

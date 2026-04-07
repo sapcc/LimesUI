@@ -2,7 +2,7 @@
   "name": "@sapcc/limes-ui",
   "version": "1.15.1",
   "author": "VoigtS",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "source": "src/index.js",
   "module": "build/index.js",
   "private": false,
@@ -74,7 +74,6 @@
     "react-router": "^7.5.1"
   },
   "appPreview": true,
-  "packageManager": "^npm@10.0.0",
   "msw": {
     "workerDirectory": [
       "public"

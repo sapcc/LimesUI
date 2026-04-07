@@ -16,7 +16,7 @@
   "dependencyDashboardOSVVulnerabilitySummary": "all",
   "osvVulnerabilityAlerts": true,
   "postUpdateOptions": [
-    "npmDedupe"
+    "pnpmDedupe"
   ],
   "prHourlyLimit": 0,
   "schedule": [

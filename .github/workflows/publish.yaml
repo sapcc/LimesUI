@@ -27,21 +27,21 @@ jobs:
           scope: "@${{ github.repository_owner }}"
 
       - name: Install dependencies
-        run: npm install
+        run: pnpm install
 
       - name: Test
-        run: npm run test
+        run: pnpm run test
 
       - name: Build
         run: |
-          npm run build
+          pnpm run build
           ls -la
 
       - name: Publish to github packages
         run: |
           set +e
           # publish to https://github.com/${{ github.repository_owner }}/packages
-          npm publish --access=public #--dry-run
+          pnpm publish --access=public #--dry-run
 
           if [ $? != 0 ] ; then
             echo "::warning title=PUBLISH::Could not publish to github. Maybe you forgot to increment the version?"
