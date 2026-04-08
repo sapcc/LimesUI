@@ -79,6 +79,7 @@ export const STRINGS = {
   kvm_v2_generic: "KVM v2 Generic",
   kvm_v2_hana_m: "KVM v2 HANA Medium",
   kvm_v2_hana_l: "KVM v2 HANA Large",
+  kvm_v2_hana_xl: "KVM v2 HANA Extra Large",
   l7policies: "L7 Policies",
   l7policies_single: "L7 Policy",
   listeners: "Listeners",
