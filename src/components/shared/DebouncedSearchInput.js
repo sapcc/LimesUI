@@ -4,9 +4,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import { SearchInput } from "@cloudoperators/juno-ui-components";
 
-const DebouncedSearchInput = ({ onChange, initialValue = "", delay = 300, styling = "" }) => {
+const DebouncedSearchInput = ({ onChange, initialValue = "", delay = 300, styling = "", opts = {} }) => {
   const [inputValue, setInputValue] = useState(initialValue);
   const isFirstRender = useRef(true);
+  const { placeholder = "Search..." } = opts;
 
   useEffect(() => {
     if (isFirstRender.current) {
@@ -27,6 +28,7 @@ const DebouncedSearchInput = ({ onChange, initialValue = "", delay = 300, stylin
     <SearchInput
       className={styling}
       data-testid="Search"
+      placeholder={placeholder}
       value={inputValue}
       onChange={(e) => {
         setInputValue(e.target.value);
