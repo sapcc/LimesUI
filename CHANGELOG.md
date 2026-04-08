@@ -1,5 +1,11 @@
 # @sapcc/limes-ui
 
+## 1.15.4
+
+### Patch Changes
+
+- 5fbd713: add kvm category names
+
 ## 1.15.3
 
 ### Patch Changes
