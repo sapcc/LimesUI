@@ -10,8 +10,9 @@ import { t, byUIString } from "../../lib/utils";
 import { ADVANCEDVIEW, CEREBROKEY, COMMITMENTRENEWALKEY } from "../../lib/constants";
 import PAYGOverview from "../paygAvailability/bigVM/PAYGOverview";
 import RenewalManager from "../commitmentRenewal/RenewalManager";
-import { Tabs, Tab, TabList, TabPanel, Container, Button, Box } from "@cloudoperators/juno-ui-components";
+import { Stack, Tabs, Tab, TabList, TabPanel, Container, Button, Box } from "@cloudoperators/juno-ui-components";
 import { getScrapeTime } from "../../lib/getScrapeTime";
+import DebouncedSearchInput from "../shared/DebouncedSearchInput";
 
 const Overview = (props) => {
   const { overview, canEdit } = props;
@@ -129,17 +130,20 @@ const Overview = (props) => {
             )
           )}
           <div className="m-auto mr-0">
-            <Button
-              size="small"
-              variant="primary"
-              onClick={() => {
-                localStorage.setItem(ADVANCEDVIEW, JSON.stringify(!advancedView));
-                setAdvancedView(!advancedView);
-              }}
-              className={"w-24 self-center"}
-            >
-              {advancedView ? "Show less" : "Show more"}
-            </Button>
+            <Stack gap="2">
+              <DebouncedSearchInput opts={{ placeholder: "Search resources..." }}/>
+              <Button
+                size="small"
+                variant="primary"
+                onClick={() => {
+                  localStorage.setItem(ADVANCEDVIEW, JSON.stringify(!advancedView));
+                  setAdvancedView(!advancedView);
+                }}
+                className={"w-24 self-center"}
+              >
+                {advancedView ? "Show less" : "Show more"}
+              </Button>
+            </Stack>
           </div>
         </TabList>
 
