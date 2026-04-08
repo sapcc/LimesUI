@@ -1,5 +1,11 @@
 # @sapcc/limes-ui
 
+## 1.15.3
+
+### Patch Changes
+
+- 8feaacd: add pnpm setup for the package publish job
+
 ## 1.15.2
 
 ### Patch Changes
