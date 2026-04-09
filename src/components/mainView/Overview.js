@@ -5,21 +5,32 @@ import React from "react";
 import Category from "./Category";
 import { useGlobalStore, useCreateCommitmentStore } from "../StoreProvider";
 import useResetCommitment from "../../hooks/useResetCommitment";
-import { useParams, useNavigate, useLocation, Outlet } from "react-router";
+import { useParams, useNavigate, useLocation, useSearchParams, Outlet } from "react-router";
 import { t, byUIString } from "../../lib/utils";
 import { ADVANCEDVIEW, CEREBROKEY, COMMITMENTRENEWALKEY } from "../../lib/constants";
 import PAYGOverview from "../paygAvailability/bigVM/PAYGOverview";
 import RenewalManager from "../commitmentRenewal/RenewalManager";
-import { Stack, Tabs, Tab, TabList, TabPanel, Container, Button, Box } from "@cloudoperators/juno-ui-components";
+import {
+  Box,
+  Button,
+  Container,
+  Stack,
+  Tab,
+  Tabs,
+  TabList,
+  TabPanel,
+  Message,
+} from "@cloudoperators/juno-ui-components";
 import { getScrapeTime } from "../../lib/getScrapeTime";
 import DebouncedSearchInput from "../shared/DebouncedSearchInput";
 
 const Overview = (props) => {
-  const { overview, canEdit } = props;
+  const { overview, categories, canEdit } = props;
   const scope = useGlobalStore((state) => state.scope);
   const isEditing = useCreateCommitmentStore((state) => state.isEditing);
   const navigate = useNavigate();
   const location = useLocation();
+  const [searchParams, setSearchParams] = useSearchParams();
   const editableAreas = overview.editableAreas;
   const [advancedView, setAdvancedView] = React.useState(JSON.parse(localStorage.getItem(ADVANCEDVIEW)) || false);
   const { resetURLChangeState } = useResetCommitment();
@@ -31,6 +42,29 @@ const Overview = (props) => {
   const { currentArea: selectedArea } = useParams();
   const currentArea = allAreas.includes(selectedArea) ? selectedArea : allAreas[0];
   const currentTabIdx = allAreas.indexOf(currentArea);
+
+  const resourceFilterFromURL = searchParams.get("resourceFilter") || "";
+  const [resourceFilter, setResourceFilter] = React.useState(resourceFilterFromURL);
+  const filteredCategories = React.useMemo(() => {
+    if (!resourceFilter) return categories;
+    const filtered = {};
+    Object.keys(categories).forEach((categoryName) => {
+      const resources = categories[categoryName].resources.filter(
+        (resource) =>
+          resource.name.toLowerCase().includes(resourceFilter.trim().toLowerCase()) ||
+          t(resource.name).toLowerCase().includes(resourceFilter.trim().toLowerCase())
+      );
+      if (resources.length > 0) {
+        filtered[categoryName] = { ...categories[categoryName], resources };
+      }
+    });
+    return filtered;
+  }, [categories, resourceFilter]);
+
+  // sync resourceFilter when URL search param changes (e.g. user manually edits URL)
+  React.useEffect(() => {
+    setResourceFilter(resourceFilterFromURL);
+  }, [resourceFilterFromURL]);
 
   // EditPanel State should reset if the user changes the URL.
   React.useEffect(() => {
@@ -50,13 +84,26 @@ const Overview = (props) => {
     navigate(`/${currentArea}`);
   }, [location.pathname, currentArea, canEdit]);
 
-  // navigate to the selected area
+  // navigate to the selected area while also resetting the resource filter
   function onTabChange(selectedArea) {
+    if (resourceFilter) {
+      setResourceFilter("");
+    }
     navigate(`/${selectedArea}`);
   }
 
+  // update the URL search param when the filter changes
+  function handleFilterChange(value) {
+    setResourceFilter(value);
+    setSearchParams((prev) => {
+      const newParams = new URLSearchParams(prev);
+      value ? newParams.set("resourceFilter", value) : newParams.delete("resourceFilter");
+      return newParams;
+    });
+  }
+
   function renderArea() {
-    const { areas, categories } = props.overview;
+    const { areas } = overview;
     const currentServices = areas[currentArea];
 
     if (!currentServices) {
@@ -65,17 +112,36 @@ const Overview = (props) => {
 
     const ageDisplay = getScrapeTime(currentServices, props.overview);
 
+    // check if there are any filtered resources for the current area
+    const hasFilteredResources = currentServices.some((serviceType) =>
+      overview.categories[serviceType].some((categoryName) => {
+        const category = filteredCategories[categoryName];
+        return category?.resources?.length > 0;
+      })
+    );
+
+    if (resourceFilter && !hasFilteredResources) {
+      return (
+        <>
+          <Message data-testid="no-resources-found" className="my-4">
+            No resources found.
+          </Message>
+          <div>Usage last updated {ageDisplay} ago.</div>
+        </>
+      );
+    }
+
     return (
       <>
         {currentServices
           .sort(byUIString)
           .map((serviceType) =>
-            categories[serviceType].map((categoryName) => (
+            overview.categories[serviceType].map((categoryName) => (
               <Category
                 key={categoryName}
                 categoryName={categoryName}
                 serviceType={serviceType}
-                category={props.categories[categoryName]}
+                category={filteredCategories[categoryName]}
                 canEdit={props.canEdit}
                 advancedView={advancedView}
               />
@@ -131,7 +197,14 @@ const Overview = (props) => {
           )}
           <div className="m-auto mr-0">
             <Stack gap="2">
-              <DebouncedSearchInput opts={{ placeholder: "Search resources..." }}/>
+              <DebouncedSearchInput
+                key={currentArea}
+                opts={{ placeholder: "Filter resource..." }}
+                styling="w-56"
+                initialValue={resourceFilterFromURL}
+                onChange={handleFilterChange}
+                delay={300}
+              />
               <Button
                 size="small"
                 variant="primary"
