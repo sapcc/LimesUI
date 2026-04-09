@@ -22,8 +22,8 @@ const categoryContent = `
 // TODO: for domain/cluster level add tracksQuota which skips resource that do not track quota.
 
 const Category = (props) => {
-  const { advancedView, canEdit, categoryName, serviceType } = props;
-  const { area, resources } = props.category;
+  const { advancedView, canEdit, category = {}, categoryName, serviceType } = props;
+  const { area, resources = [] } = category;
   const forwardProps = {
     area,
     canEdit,
@@ -36,7 +36,7 @@ const Category = (props) => {
   }, [resources]);
 
   return (
-    (editableResources.length > 0 || advancedView) && (
+    (editableResources.length > 0 || (advancedView && resources.length > 0)) && (
       <div className="category-container mb-4">
         <h1 className={`category-title ${categoryTitle}`}>{t(props.categoryName)}</h1>
         <div className={`category-content ${categoryContent}`}>
