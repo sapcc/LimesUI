@@ -38,7 +38,16 @@ const mockCategories = {
   "category-z": { resources: [] },
 };
 
-const renderOverview = (initialLocation, canEdit = true) => {
+const mockCategoriesWithResources = {
+  "category-x": {
+    resources: [
+      { name: "cores", editableResource: true, quota: 10 },
+      { name: "ram", editableResource: true, quota: 1024 },
+    ],
+  },
+};
+
+const renderOverview = (initialLocation, canEdit = true, categories = mockCategories) => {
   window.location.hash = initialLocation;
   return render(
     <StoreProvider>
@@ -46,11 +55,11 @@ const renderOverview = (initialLocation, canEdit = true) => {
         <Routes>
           <Route
             path="/:currentArea?"
-            element={<Overview overview={mockOverview} categories={mockCategories} canEdit={canEdit} />}
+            element={<Overview overview={mockOverview} categories={categories} canEdit={canEdit} />}
           />
           <Route
             path="/:currentArea/*"
-            element={<Overview overview={mockOverview} categories={mockCategories} canEdit={canEdit} />}
+            element={<Overview overview={mockOverview} categories={categories} canEdit={canEdit} />}
           />
         </Routes>
       </HashRouter>
@@ -114,6 +123,55 @@ describe("Overview", () => {
     renderOverview("/area-1/edit/some/stuff", false);
     await waitFor(() => {
       expect(window.location.hash).toEqual("#/area-1");
+    });
+  });
+
+  test("resource search filter", async () => {
+    renderOverview("/area-1", true, mockCategoriesWithResources);
+
+    // all resources are initially visible
+    expect(screen.getByText("Cores")).toBeInTheDocument();
+    expect(screen.getByText("RAM")).toBeInTheDocument();
+
+    // fill input field, only matching resources show up
+    const searchInput = screen.getByTestId("Search");
+    fireEvent.change(searchInput, { target: { value: "cores" } });
+    expect(searchInput).toHaveValue("cores");
+
+    await waitFor(() => {
+      expect(screen.getByText("Cores")).toBeInTheDocument();
+      expect(screen.queryByText("RAM")).not.toBeInTheDocument();
+    });
+
+    // clear input field, all resources show again
+    fireEvent.change(searchInput, { target: { value: "" } });
+
+    await waitFor(() => {
+      expect(screen.getByText("Cores")).toBeInTheDocument();
+      expect(screen.getByText("RAM")).toBeInTheDocument();
+    });
+
+    // no resources match the filter
+    fireEvent.change(searchInput, { target: { value: "nonexistent" } });
+    await waitFor(() => {
+      expect(screen.queryByText("Cores")).not.toBeInTheDocument();
+      expect(screen.queryByText("RAM")).not.toBeInTheDocument();
+      expect(screen.getByTestId("no-resources-found")).toBeInTheDocument();
+    });
+
+    // tab change resets the input and removes query parameter
+    fireEvent.change(searchInput, { target: { value: "test-filter" } });
+    expect(searchInput).toHaveValue("test-filter");
+    await waitFor(() => {
+      expect(window.location.hash).toContain("resourceFilter=test-filter");
+    });
+
+    const area2Tab = screen.getByText("area-2");
+    fireEvent.click(area2Tab);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("Search")).toHaveValue("");
+      expect(window.location.hash).not.toContain("resourceFilter");
     });
   });
 });
