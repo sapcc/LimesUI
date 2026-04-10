@@ -46,25 +46,40 @@ const Overview = (props) => {
   const resourceFilterFromURL = searchParams.get("resourceFilter") || "";
   const [resourceFilter, setResourceFilter] = React.useState(resourceFilterFromURL);
   const filteredCategories = React.useMemo(() => {
-    if (!resourceFilter) return categories;
+    if (!resourceFilter || !categories) return categories ?? {};
+
+    const searchTerms = [...new Set(resourceFilter.trim().toLowerCase().split(/\s+/))];
+
+    if (searchTerms.length === 0) return categories;
+
+    function matchNameWithTerm(term, name) {
+      const nameLower = name.toLowerCase();
+      const nameTranslated = t(name).toLowerCase();
+
+      if (term.endsWith("$")) {
+        const exactTerm = term.slice(0, -1);
+        return nameLower === exactTerm || nameTranslated === exactTerm;
+      }
+      return nameLower.includes(term) || nameTranslated.includes(term);
+    }
+
     const filtered = {};
-    Object.keys(categories).forEach((categoryName) => {
-      const resources = categories[categoryName].resources.filter(
-        (resource) =>
-          resource.name.toLowerCase().includes(resourceFilter.trim().toLowerCase()) ||
-          t(resource.name).toLowerCase().includes(resourceFilter.trim().toLowerCase())
+    Object.entries(categories).forEach(([categoryName, category]) => {
+      const categoryNameMatches = searchTerms.some((term) => matchNameWithTerm(term, categoryName));
+      const matchingResources = (category.resources || []).filter((resource) =>
+        searchTerms.some((term) => matchNameWithTerm(term, resource.name))
       );
-      if (resources.length > 0) {
-        filtered[categoryName] = { ...categories[categoryName], resources };
+
+      // Include all resources if the category name matches, otherwise only include matching resources
+      if (matchingResources.length > 0) {
+        filtered[categoryName] = { ...category, resources: matchingResources };
+      } else if (categoryNameMatches) {
+        filtered[categoryName] = category;
       }
     });
+
     return filtered;
   }, [categories, resourceFilter]);
-
-  // sync resourceFilter when URL search param changes (e.g. user manually edits URL)
-  React.useEffect(() => {
-    setResourceFilter(resourceFilterFromURL);
-  }, [resourceFilterFromURL]);
 
   // EditPanel State should reset if the user changes the URL.
   React.useEffect(() => {
@@ -199,7 +214,7 @@ const Overview = (props) => {
             <Stack gap="2">
               <DebouncedSearchInput
                 key={currentArea}
-                opts={{ placeholder: "Filter resource..." }}
+                opts={{ placeholder: "Filter resources..." }}
                 styling="w-56"
                 initialValue={resourceFilterFromURL}
                 onChange={handleFilterChange}
