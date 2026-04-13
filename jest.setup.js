@@ -15,6 +15,11 @@ if (!globalThis.TextEncoder || !globalThis.TextDecoder) {
   globalThis.TextDecoder = TextDecoder;
 }
 
+// JSDOM doesn't expose structuredClone.
+if (!global.structuredClone) {
+  global.structuredClone = (val) => JSON.parse(JSON.stringify(val));
+}
+
 // Beginning with Juno v4, testcases require an ResizeOberver to be present
 class ResizeObserver {
   observe() {
