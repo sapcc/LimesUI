@@ -24,7 +24,7 @@ jobs:
           # this is the scope of the package to publish to the registry-url that is defined above
           scope: "@${{ github.repository_owner }}"
 
-      - uses: pnpm/action-setup@v5
+      - uses: pnpm/action-setup@v6
         name: Install pnpm
         with:
           cache: true
