@@ -12,11 +12,11 @@ importers:
         specifier: ^8.1.1
         version: 8.1.2
       '@cloudoperators/juno-ui-components':
-        specifier: 6.2.0
-        version: 6.2.0(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
+        specifier: 6.2.1
+        version: 6.2.1(react-dom@19.2.5(react@19.2.5))(react@19.2.5)
       '@cloudoperators/juno-url-state-provider':
         specifier: '*'
-        version: 3.0.7
+        version: 3.0.8
       '@tailwindcss/postcss':
         specifier: ^4.1.11
         version: 4.2.2
@@ -748,8 +748,8 @@ packages:
     peerDependencies:
       '@babel/core': ^7.0.0-0
 
-  '@babel/runtime@7.27.0':
-    resolution: {integrity: sha512-VtPOkrdPHZsKc/clNqyi9WUA8TINkZ4cGk63UUE3u4pmB2k+ZMQRDuIOagv8UVd6j7k0T3+RRIb7beKTebNbcw==}
+  '@babel/runtime@7.29.2':
+    resolution: {integrity: sha512-JiDShH45zKHWyGe4ZNVRrCjBz8Nh9TMmZG1kh4QTK8hCBTWBi8Da+i7s1fJw7/lYpM4ccepSNfqzZ/QvABBi5g==}
     engines: {node: '>=6.9.0'}
 
   '@babel/template@7.28.6':
@@ -826,15 +826,15 @@ packages:
     resolution: {integrity: sha512-v7/TYhcuYCU1tyMVSunaxfcJM8VB2E5ul7vnzgFBG/l9mHkVYyqwle1kPUcJK+7kuHvWmPG0M5/OdXQ0nNS1LA==}
     engines: {node: '>=22.0.0'}
 
-  '@cloudoperators/juno-ui-components@6.2.0':
-    resolution: {integrity: sha512-zY9y1Q/9cwcxwro/cOkVSwAaXx4TLSAjtYBQCGKX1gDOSX2nwZpC4Mu/rpPDkxTS4v8fAxHHldyy+4lwkcpLQQ==}
+  '@cloudoperators/juno-ui-components@6.2.1':
+    resolution: {integrity: sha512-wL3j/1UmF9JfhN0gV/VaQ1N+CK8sBq5oQbHkq95MMDz7/9Na/28vFee6Fy2sf8eUUCIoN86unb32AMxrcuQnoQ==}
     engines: {node: '>=20.0.0', pnpm: '>=8.0.0'}
     peerDependencies:
       react: ^19.1.0
       react-dom: ^19.1.0
 
-  '@cloudoperators/juno-url-state-provider@3.0.7':
-    resolution: {integrity: sha512-Xl8dKQmSClBqrrEywVclsgCizhP+8S5AWE/oFqdxMGoWsXqB/tULvoUWE0gC+MaLHWZIRj76VnoI75Yc08pptg==}
+  '@cloudoperators/juno-url-state-provider@3.0.8':
+    resolution: {integrity: sha512-CeC8YcuUT+7ubNQbeA4SguK/F4NZYOLbjkJCKOqExNw9UnY9JShgukR1/KJRGCHvxdTIKI5hZvLsVKlJQ1FA0w==}
     engines: {node: '>=20.0.0', pnpm: '>=8.0.0'}
 
   '@csstools/color-helpers@5.0.2':
@@ -3739,8 +3739,8 @@ packages:
   quansync@0.2.10:
     resolution: {integrity: sha512-t41VRkMYbkHyCYmOvx/6URnN80H7k4X0lLdBMGsz+maAwrJQYB1djpV6vHrQIBE0WBSGqhtEHrK9U3DWWH8v7A==}
 
-  query-string@9.1.1:
-    resolution: {integrity: sha512-MWkCOVIcJP9QSKU52Ngow6bsAWAPlPK2MludXvcrS2bGZSl+T1qX9MZvRIkqUIkGLJquMJHWfsT6eRqUpp4aWg==}
+  query-string@9.3.1:
+    resolution: {integrity: sha512-5fBfMOcDi5SA9qj5jZhWAcTtDfKF5WFdd2uD9nVNlbxVv1baq65aALy6qofpNEGELHvisjjasxQp7BlM9gvMzw==}
     engines: {node: '>=18'}
 
   queue-microtask@1.2.3:
@@ -3810,9 +3810,6 @@ packages:
 
   regenerate@1.4.2:
     resolution: {integrity: sha512-zrceR/XhGYU/d/opr2EKO7aRHUeiBI8qjtfHqADTwZd6Szfy16la6kqD0MIUs5z5hx6AaKa+PixpPrR289+I0A==}
-
-  regenerator-runtime@0.14.1:
-    resolution: {integrity: sha512-dYnhHh0nJoMfnkZs6GmmhFknAGRrLznOu5nc9ML+EJxGvrx6H7teuevqVqCuPcPK//3eDrrjQhehXVx9cnkGdw==}
 
   regexp.prototype.flags@1.5.4:
     resolution: {integrity: sha512-dYqgNSZbDwkaJ2ceRd9ojCGjBq+mOm9LmtXnAnEGyHhN/5R7iDW2TRw3h+o/jCFxus3P2LfWIIiwowAjANm7IA==}
@@ -5202,9 +5199,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@babel/runtime@7.27.0':
-    dependencies:
-      regenerator-runtime: 0.14.1
+  '@babel/runtime@7.29.2': {}
 
   '@babel/template@7.28.6':
     dependencies:
@@ -5376,15 +5371,15 @@ snapshots:
 
   '@cj-tech-master/excelts@8.1.2': {}
 
-  '@cloudoperators/juno-ui-components@6.2.0(react-dom@19.2.5(react@19.2.5))(react@19.2.5)':
+  '@cloudoperators/juno-ui-components@6.2.1(react-dom@19.2.5(react@19.2.5))(react@19.2.5)':
     dependencies:
       react: 19.2.5
       react-dom: 19.2.5(react@19.2.5)
 
-  '@cloudoperators/juno-url-state-provider@3.0.7':
+  '@cloudoperators/juno-url-state-provider@3.0.8':
     dependencies:
       history: 5.3.0
-      query-string: 9.1.1
+      query-string: 9.3.1
 
   '@csstools/color-helpers@5.0.2': {}
 
@@ -5842,14 +5837,14 @@ snapshots:
 
   '@manypkg/find-root@1.1.0':
     dependencies:
-      '@babel/runtime': 7.27.0
+      '@babel/runtime': 7.29.2
       '@types/node': 12.20.55
       find-up: 4.1.0
       fs-extra: 8.1.0
 
   '@manypkg/get-packages@1.1.3':
     dependencies:
-      '@babel/runtime': 7.27.0
+      '@babel/runtime': 7.29.2
       '@changesets/types': 4.1.0
       '@manypkg/find-root': 1.1.0
       fs-extra: 8.1.0
@@ -6120,7 +6115,7 @@ snapshots:
   '@testing-library/dom@10.4.1':
     dependencies:
       '@babel/code-frame': 7.29.0
-      '@babel/runtime': 7.27.0
+      '@babel/runtime': 7.29.2
       '@types/aria-query': 5.0.4
       aria-query: 5.3.0
       dom-accessibility-api: 0.5.16
@@ -6139,7 +6134,7 @@ snapshots:
 
   '@testing-library/react@16.3.2(@testing-library/dom@10.4.1)(react-dom@19.2.5(react@19.2.5))(react@19.2.5)':
     dependencies:
-      '@babel/runtime': 7.27.0
+      '@babel/runtime': 7.29.2
       '@testing-library/dom': 10.4.1
       react: 19.2.5
       react-dom: 19.2.5(react@19.2.5)
@@ -7475,7 +7470,7 @@ snapshots:
 
   history@5.3.0:
     dependencies:
-      '@babel/runtime': 7.27.0
+      '@babel/runtime': 7.29.2
 
   html-encoding-sniffer@4.0.0:
     dependencies:
@@ -8608,7 +8603,7 @@ snapshots:
 
   quansync@0.2.10: {}
 
-  query-string@9.1.1:
+  query-string@9.3.1:
     dependencies:
       decode-uri-component: 0.4.1
       filter-obj: 5.1.0
@@ -8683,8 +8678,6 @@ snapshots:
       regenerate: 1.4.2
 
   regenerate@1.4.2: {}
-
-  regenerator-runtime@0.14.1: {}
 
   regexp.prototype.flags@1.5.4:
     dependencies:
