@@ -41,7 +41,7 @@ const Overview = (props) => {
   const resourceFilters = searchParams.get(FILTER_TYPES.resource.key)?.split(",") || [];
   const filteredCategories = React.useMemo(() => {
     if (categoryFilters.length === 0 && resourceFilters.length === 0 && !searchTerm) return categories;
-    const term = searchTerm?.trim()?.toLocaleLowerCase()
+    const term = searchTerm?.trim()?.toLocaleLowerCase();
     const filtered = {};
     Object.entries(categories).forEach(([categoryName, category]) => {
       if (categoryFilters.length > 0 && !categoryFilters.includes(categoryName)) return;

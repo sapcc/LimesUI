@@ -48,31 +48,33 @@ const BaseFilter = (props) => {
       <Stack alignment="start" gap="1">
         <Stack gap="1">
           <Select
+            data-testid="filter-select"
             className="w-48"
             label="Filter"
             value={selectedFilterName}
             onChange={(value) => setSelectedFilterName(value)}
           >
             {Object.values(filterTypes).map(({ key, label }) => (
-              <SelectOption key={key} value={key}>
+              <SelectOption data-testid={`select-${label}`} key={key} value={key}>
                 {label}
               </SelectOption>
             ))}
           </Select>
           <ComboBox
+            data-testid="filter-box"
             disabled={!selectedFilterName}
             className="w-80"
             value={selectedFilterValue}
             onChange={(value) => handleValueChange(value)}
           >
             {boxOptions.map((value) => (
-              <ComboBoxOption key={value} value={value}>
+              <ComboBoxOption data-testid={`box-${value}`} key={value} value={value}>
                 {t(value)}
               </ComboBoxOption>
             ))}
           </ComboBox>
         </Stack>
-        <Button label="Clear all" onClick={onClearAll} />
+        <Button data-testid="filter-clear" label="Clear all" onClick={onClearAll} />
         <Stack className="ml-auto" gap="2">
           <DebouncedSearchInput
             styling="w-64"
@@ -85,6 +87,7 @@ const BaseFilter = (props) => {
       <Stack gap="2" wrap={true}>
         {selectedFilters?.map((filter) => (
           <Pill
+            data-testid={`${filter.name}:${filter.value}`}
             key={`${filter.name}:${filter.value}`}
             closeable
             pillKey={filter.name}
