@@ -6,13 +6,15 @@ import Category from "./Category";
 import { useGlobalStore, useCreateCommitmentStore } from "../StoreProvider";
 import useResetCommitment from "../../hooks/useResetCommitment";
 import { useParams, useNavigate, useLocation, Outlet } from "react-router";
+import { useSearchParams } from "react-router";
 import { t, byUIString } from "../../lib/utils";
 import { ADVANCEDVIEW, CEREBROKEY, COMMITMENTRENEWALKEY } from "../../lib/constants";
 import PAYGOverview from "../paygAvailability/bigVM/PAYGOverview";
 import RenewalManager from "../commitmentRenewal/RenewalManager";
 import { Box, Button, Container, Tab, Tabs, TabList, TabPanel, Message } from "@cloudoperators/juno-ui-components";
 import { getScrapeTime } from "../../lib/getScrapeTime";
-import OverviewFilter from "./OverviewFilter";
+import OverviewFilter, { FILTER_TYPES, matchName } from "./OverviewFilter";
+import { SEARCH_TERM } from "./BaseFilter";
 
 const Overview = (props) => {
   const { overview, categories, canEdit } = props;
@@ -32,7 +34,41 @@ const Overview = (props) => {
   const currentArea = allAreas.includes(selectedArea) ? selectedArea : allAreas[0];
   const currentTabIdx = allAreas.indexOf(currentArea);
 
-  const [filteredCategories, setFilteredCategories] = React.useState(categories);
+  // Filter
+  const [searchParams] = useSearchParams();
+  const searchTerm = searchParams.get(SEARCH_TERM) || "";
+  const categoryFilters = searchParams.get(FILTER_TYPES.category.key)?.split(",") || [];
+  const resourceFilters = searchParams.get(FILTER_TYPES.resource.key)?.split(",") || [];
+  const filteredCategories = React.useMemo(() => {
+    if (categoryFilters.length === 0 && resourceFilters.length === 0 && !searchTerm) return categories;
+    const term = searchTerm?.trim()?.toLocaleLowerCase()
+    const filtered = {};
+    Object.entries(categories).forEach(([categoryName, category]) => {
+      if (categoryFilters.length > 0 && !categoryFilters.includes(categoryName)) return;
+      let resources = category.resources;
+
+      if (resourceFilters.length > 0) {
+        resources = resources.filter((res) => resourceFilters.includes(res.name));
+      }
+
+      if (term) {
+        const categoryMatches = matchName(term, categoryName);
+        const matchingResources = resources.filter((r) => matchName(term, r.name));
+
+        if (matchingResources.length > 0) {
+          resources = matchingResources;
+        } else if (!categoryMatches) {
+          return;
+        }
+      }
+
+      if (resources.length > 0) {
+        filtered[categoryName] = { ...category, resources };
+      }
+    });
+
+    return filtered;
+  }, [categories, categoryFilters, resourceFilters, searchTerm]);
 
   // EditPanel State should reset if the user changes the URL.
   React.useEffect(() => {
@@ -170,7 +206,15 @@ const Overview = (props) => {
         )}
       </Tabs>
       {currentArea !== CEREBROKEY && currentArea !== COMMITMENTRENEWALKEY && (
-        <OverviewFilter categories={categories} setFilteredCategories={setFilteredCategories} />
+        <OverviewFilter
+          categories={categories}
+          categoryFilters={categoryFilters}
+          resourceFilters={resourceFilters}
+          searchTerm={searchTerm}
+          currentArea={currentArea}
+          overview={overview}
+          advancedView={advancedView}
+        />
       )}
       {currentTab}
       {canEdit && <Outlet />}

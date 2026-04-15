@@ -11,31 +11,36 @@ import {
   SelectOption,
   Stack,
 } from "@cloudoperators/juno-ui-components/index";
+import { t } from "../../lib/utils";
 import DebouncedSearchInput from "../shared/DebouncedSearchInput";
 
-const Filter = (props) => {
-  const { searchTerm, filterOptions, selectedFilters, onChange, onDelete, onClearAll } = props;
+export const SEARCH_TERM = "searchTerm";
+
+const BaseFilter = (props) => {
+  const { filterTypes, searchTerm, filterValues, selectedFilters, onFilterChange, onDelete, onClearAll } = props;
   const [selectedFilterName, setSelectedFilterName] = React.useState("");
   const [selectedFilterValue, setSelectedFilterValue] = React.useState("");
-  const comboBoxOptions = selectedFilterName ? filterOptions[selectedFilterName] || [] : [];
-  const selectedValuesForType = selectedFilters.filter((f) => f.name === selectedFilterName).map((f) => f.value);
-
-  const availableOptions = comboBoxOptions.filter((opt) => !selectedValuesForType.includes(opt));
+  const boxOptions = filterValues[selectedFilterName] || [];
 
   const handleValueChange = React.useCallback(
     (value) => {
       setSelectedFilterValue(value);
       if (selectedFilterName !== "" && value !== "") {
-        onChange({
-          name: selectedFilterName,
-          value: value,
-        });
+        const filterExists = selectedFilters.some(
+          (filter) => filter.name === selectedFilterName && filter.value === value
+        );
+        if (!filterExists) {
+          onFilterChange({
+            name: selectedFilterName,
+            value: value,
+          });
+        }
       }
       setTimeout(() => {
         setSelectedFilterValue("");
       }, 0);
     },
-    [selectedFilterName, setSelectedFilterName, onChange]
+    [selectedFilterName, selectedFilters, onFilterChange]
   );
 
   return (
@@ -48,8 +53,11 @@ const Filter = (props) => {
             value={selectedFilterName}
             onChange={(value) => setSelectedFilterName(value)}
           >
-            <SelectOption value="category">Category</SelectOption>
-            <SelectOption value="resource">Resource</SelectOption>
+            {Object.values(filterTypes).map(({ key, label }) => (
+              <SelectOption key={key} value={key}>
+                {label}
+              </SelectOption>
+            ))}
           </Select>
           <ComboBox
             disabled={!selectedFilterName}
@@ -57,8 +65,10 @@ const Filter = (props) => {
             value={selectedFilterValue}
             onChange={(value) => handleValueChange(value)}
           >
-            {availableOptions.map((value) => (
-              <ComboBoxOption key={value} value={value} />
+            {boxOptions.map((value) => (
+              <ComboBoxOption key={value} value={value}>
+                {t(value)}
+              </ComboBoxOption>
             ))}
           </ComboBox>
         </Stack>
@@ -67,7 +77,7 @@ const Filter = (props) => {
           <DebouncedSearchInput
             styling="w-64"
             initialValue={searchTerm}
-            onChange={(value) => onChange({ name: "searchTerm", value: value })}
+            onChange={(value) => onFilterChange({ name: SEARCH_TERM, value: value })}
             delay={300}
           />
         </Stack>
@@ -87,4 +97,4 @@ const Filter = (props) => {
   );
 };
 
-export default Filter;
+export default BaseFilter;

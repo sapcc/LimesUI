@@ -6,6 +6,7 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { HashRouter, Routes, Route } from "react-router";
 import Overview from "./Overview";
 import StoreProvider from "../StoreProvider";
+import { PortalProvider } from "@cloudoperators/juno-ui-components/index";
 
 const mockOverview = {
   editableAreas: ["area-1", "area-2"],
@@ -57,18 +58,20 @@ const renderOverview = (initialLocation, canEdit = true, categories = mockCatego
   window.location.hash = initialLocation;
   return render(
     <StoreProvider>
-      <HashRouter>
-        <Routes>
-          <Route
-            path="/:currentArea?"
-            element={<Overview overview={mockOverview} categories={categories} canEdit={canEdit} />}
-          />
-          <Route
-            path="/:currentArea/*"
-            element={<Overview overview={mockOverview} categories={categories} canEdit={canEdit} />}
-          />
-        </Routes>
-      </HashRouter>
+      <PortalProvider>
+        <HashRouter>
+          <Routes>
+            <Route
+              path="/:currentArea?"
+              element={<Overview overview={mockOverview} categories={categories} canEdit={canEdit} />}
+            />
+            <Route
+              path="/:currentArea/*"
+              element={<Overview overview={mockOverview} categories={categories} canEdit={canEdit} />}
+            />
+          </Routes>
+        </HashRouter>
+      </PortalProvider>
     </StoreProvider>
   );
 };
@@ -132,7 +135,7 @@ describe("Overview", () => {
     });
   });
 
-  test("resource search filter", async () => {
+  test("resource search term filter", async () => {
     renderOverview("/area-1", true, mockCategoriesWithResources);
 
     // all resources are initially visible
@@ -175,68 +178,11 @@ describe("Overview", () => {
       expect(screen.queryByText("category-z")).not.toBeInTheDocument();
     });
 
-    // filter: <category> <resource> should only show the resource if both match
-    // category-y matches because it contains cores
-    fireEvent.change(searchInput, { target: { value: "category-x cores" } });
-    await waitFor(() => {
-      expect(screen.getByText("category-x")).toBeInTheDocument();
-      expect(screen.getByText("Cores")).toBeInTheDocument();
-      expect(screen.getByText("category-y")).toBeInTheDocument();
-      expect(screen.getByText("cores2")).toBeInTheDocument();
-      expect(screen.queryByText("RAM")).not.toBeInTheDocument();
-      expect(screen.queryByText("category-z")).not.toBeInTheDocument();
-    });
-
-    // filter: <category> <resource>$ with exact match.
-    fireEvent.change(searchInput, { target: { value: "category-x cores$" } });
-    await waitFor(() => {
-      expect(screen.getByText("category-x")).toBeInTheDocument();
-      expect(screen.getByText("Cores")).toBeInTheDocument();
-      expect(screen.queryByText("category-y")).not.toBeInTheDocument();
-      expect(screen.queryByText("cores2")).not.toBeInTheDocument();
-      expect(screen.queryByText("RAM")).not.toBeInTheDocument();
-      expect(screen.queryByText("category-z")).not.toBeInTheDocument();
-    });
-
-    // filter: <category> <category> should show all resources of the matching categories
-    fireEvent.change(searchInput, { target: { value: "category-x category-y" } });
-
-    await waitFor(() => {
-      expect(screen.getByText("category-x")).toBeInTheDocument();
-      expect(screen.getByText("Cores")).toBeInTheDocument();
-      expect(screen.getByText("RAM")).toBeInTheDocument();
-      expect(screen.getByText("category-y")).toBeInTheDocument();
-      expect(screen.getByText("cores2")).toBeInTheDocument();
-      expect(screen.queryByText("category-z")).not.toBeInTheDocument();
-    });
-
-    // filter: <resource>$ <resource>$ <category>
-    fireEvent.change(searchInput, { target: { value: "cores$ ram$ category-x" } });
-    await waitFor(() => {
-      expect(screen.getByText("category-x")).toBeInTheDocument();
-      expect(screen.getByText("Cores")).toBeInTheDocument();
-      expect(screen.getByText("RAM")).toBeInTheDocument();
-      expect(screen.queryByText("category-y")).not.toBeInTheDocument();
-      expect(screen.queryByText("cores2")).not.toBeInTheDocument();
-      expect(screen.queryByText("category-z")).not.toBeInTheDocument();
-    });
-
-    // filter: <resource> <resource>
-    fireEvent.change(searchInput, { target: { value: "cores ram" } });
-    await waitFor(() => {
-      expect(screen.getByText("category-x")).toBeInTheDocument();
-      expect(screen.queryByText("Cores")).toBeInTheDocument();
-      expect(screen.getByText("RAM")).toBeInTheDocument();
-      expect(screen.getByText("category-y")).toBeInTheDocument();
-      expect(screen.getByText("cores2")).toBeInTheDocument();
-      expect(screen.queryByText("category-z")).not.toBeInTheDocument();
-    });
-
     // tab change resets the input and removes query parameter
     fireEvent.change(searchInput, { target: { value: "test-filter" } });
     expect(searchInput).toHaveValue("test-filter");
     await waitFor(() => {
-      expect(window.location.hash).toContain("resourceFilter=test-filter");
+      expect(window.location.hash).toContain("searchTerm=test-filter");
     });
 
     const area2Tab = screen.getByText("area-2");
@@ -244,7 +190,9 @@ describe("Overview", () => {
 
     await waitFor(() => {
       expect(screen.getByTestId("Search")).toHaveValue("");
-      expect(window.location.hash).not.toContain("resourceFilter");
+      expect(window.location.hash).not.toContain("searchTerm");
     });
   });
+
+  
 });

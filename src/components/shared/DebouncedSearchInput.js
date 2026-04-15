@@ -10,6 +10,10 @@ const DebouncedSearchInput = ({ onChange, initialValue = "", delay = 300, stylin
   const { placeholder = "Search..." } = opts;
 
   React.useEffect(() => {
+    setInputValue(initialValue);
+  }, [initialValue]);
+
+  React.useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false;
       return;
