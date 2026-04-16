@@ -4,7 +4,7 @@
 import React from "react";
 import ConversionModal from "./ConversionModal";
 import { PortalProvider } from "@cloudoperators/juno-ui-components";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { initialCommitmentObject } from "../../../lib/constants";
 
 const conversionResults = {
@@ -51,6 +51,7 @@ describe("test conversion modal", () => {
     const targetInput = screen.getByTestId("conversionSelect");
     const confirmInput = screen.getByTestId("confirmInput");
     const confirmButton = screen.getByTestId("modalConfirm");
+    expect(targetInput).not.toBeDisabled();
     await waitFor(() => {
       expect(confirmButton).toBeDisabled();
     });
@@ -69,6 +70,23 @@ describe("test conversion modal", () => {
     fireEvent.change(confirmInput, { target: { value: "convert" } });
     fireEvent.click(confirmButton);
     expect(onConvert).toHaveBeenCalled();
+
+    // an empty conversions provides a disabled input
+    const emptyConversionResult = {data: {conversions: []} }
+    cleanup();
+    render(
+      <PortalProvider>
+        <ConversionModal
+          title="Convert Commitment"
+          subText="Convert"
+          commitment={commitment}
+          conversionResults={emptyConversionResult}
+          onModalClose={() => {}}
+          onConvert={onConvert}
+        />
+      </PortalProvider>
+    );
+    expect(screen.getByTestId("conversionSelect")).toBeDisabled();
   });
   test("successful conversion of custom amount", async () => {
     const onConvert = jest.fn((commitment, payload) => {
