@@ -71,8 +71,8 @@ describe("test conversion modal", () => {
     fireEvent.click(confirmButton);
     expect(onConvert).toHaveBeenCalled();
 
-    // an empty conversions provides a disabled input
-    const emptyConversionResult = {data: {conversions: []} }
+    // an empty conversion list leads to a disabled input
+    const emptyConversionResult = { data: { conversions: [] } };
     cleanup();
     render(
       <PortalProvider>
