@@ -37,18 +37,18 @@ const Overview = (props) => {
   // Filter categories based of search parameters
   const [searchParams] = useSearchParams();
   const searchTerm = searchParams.get(SEARCH_TERM) || "";
-  const categoryFilters = searchParams.get(FILTER_TYPES.category.key)?.split(",") || [];
-  const resourceFilters = searchParams.get(FILTER_TYPES.resource.key)?.split(",") || [];
+  const categoryFilters = new Set(searchParams.get(FILTER_TYPES.category.key)?.split(",").filter(Boolean) || []);
+  const resourceFilters = new Set(searchParams.get(FILTER_TYPES.resource.key)?.split(",").filter(Boolean) || []);
   const filteredCategories = React.useMemo(() => {
-    if (categoryFilters.length === 0 && resourceFilters.length === 0 && !searchTerm) return categories;
+    if (categoryFilters.size === 0 && resourceFilters.size === 0 && !searchTerm) return categories;
     const term = searchTerm?.trim()?.toLocaleLowerCase();
     const filtered = {};
     Object.entries(categories).forEach(([categoryName, category]) => {
-      if (categoryFilters.length > 0 && !categoryFilters.includes(categoryName)) return;
+      if (categoryFilters.size > 0 && !categoryFilters.has(categoryName)) return;
       let resources = category.resources;
 
-      if (resourceFilters.length > 0) {
-        resources = resources.filter((res) => resourceFilters.includes(res.name));
+      if (resourceFilters.size > 0) {
+        resources = resources.filter((res) => resourceFilters.has(res.name));
       }
 
       if (term) {
