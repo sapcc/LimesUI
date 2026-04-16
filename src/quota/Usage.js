@@ -90,6 +90,12 @@ const QuotaUsage = (props) => {
           resources: ["capacity"],
         });
         break;
+      case "endpoint_services":
+        setService({
+          type: "endpoint-services",
+          resources: ["endpoints", "services"],
+        });
+        break;
       default:
         setDisplayLabel(null);
         break;
