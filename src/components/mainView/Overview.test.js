@@ -319,4 +319,14 @@ describe("Overview", () => {
       expect(window.location.hash).not.toContain("resource=");
     });
   });
+
+  test("empty filter parameters do not create pills", async () => {
+    renderOverview("/area-1?category=&resource=", true, mockCategoriesWithResources);
+    expect(screen.getByText("Cores")).toBeInTheDocument();
+    expect(screen.getByText("RAM")).toBeInTheDocument();
+
+    // no pills should be rendered for empty filter values
+    expect(screen.queryByTestId("category:")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("resource:")).not.toBeInTheDocument();
+  });
 });
