@@ -16,6 +16,7 @@ import {
   AllocationRatio,
   FullResourceName,
   Autogrowth,
+  QuotaInfo,
 } from "./resourceInfoLabels";
 import { Scope } from "../../lib/scope";
 
@@ -50,6 +51,9 @@ const ResourceInfo = (props) => {
     }
     if (az?.name === CustomZones.UNKNOWN) {
       infos.push(UnknownAZLabel);
+    }
+    if (hasLeftBar && hasRightBar) {
+      infos.push(getTotalQuotaInfo());
     }
     if (hasLeftBar) {
       infos.push(getCommittedUsageInfo());
@@ -97,6 +101,15 @@ const ResourceInfo = (props) => {
     }
 
     return AllocationRatio.LABEL(allocationRatio);
+  }
+
+  function getTotalQuotaInfo() {
+    if (scope.isCluster()) {
+      const capacity = az ? az.capacity : resource.capacity;
+      return QuotaInfo.LABEL(scope.isCluster(), unit.format(capacity));
+    }
+    const quota = az ? az.quota : resource.quota;
+    return QuotaInfo.LABEL(scope.isCluster(), unit.format(quota));
   }
 
   function getCommittedUsageInfo() {

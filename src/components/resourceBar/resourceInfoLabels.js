@@ -11,6 +11,14 @@ export const FullResourceName = {
   ),
 };
 
+export const QuotaInfo = {
+  LABEL: (isCluster, value) => (
+    <span data-testid="quotaInfo">
+      Available {isCluster ? "capacity" : "quota"}: <strong>{value}</strong>
+    </span>
+  ),
+};
+
 export const Autogrowth = {
   FORBIDDEN: (
     <span data-testid="autogrowthForbidden">

@@ -243,4 +243,50 @@ describe("Resource info tests", () => {
     rerender(<ResourceInfo {...props(leftBar, rightBar, true)} />);
     expect(screen.queryByTestId(/allocationRatio/i)).not.toBeInTheDocument();
   });
+
+  test("total quota label", () => {
+    // cluster level shows capacity
+    const capacityInfos = (value = 10) => {
+      return {
+        scope: new Scope({}),
+        resource: {
+          name: "resource",
+          capacity: 2048,
+          per_az: [{ name: "AZ1", capacity: 2048 }],
+        },
+        az: { name: "AZ1", capacity: 2048 },
+        unit: new Unit("MiB"),
+        leftBar: { utilized: 10, available: 40 },
+        rightBar: { utilized: value, available: value },
+      };
+    };
+
+    const { rerender } = render(<ResourceInfo {...capacityInfos()} />);
+    expect(screen.getByTestId("quotaInfo")).toBeInTheDocument();
+    expect(screen.getByText(/Available capacity:/i)).toBeInTheDocument();
+    expect(screen.getByText("2 GiB")).toBeInTheDocument();
+
+    // if a right bar is not available, the info is ommitted
+    rerender(<ResourceInfo {...capacityInfos(0)} />);
+    expect(screen.queryByTestId("quotaInfo")).not.toBeInTheDocument();
+
+    // project / domain level shows quota
+    const projectProps = {
+      scope: new Scope({ projectID: 1, domainID: 2 }),
+      resource: {
+        name: "resource",
+        quota: 4096,
+        per_az: [{ name: "AZ1", quota: 4096 }],
+      },
+      az: { name: "AZ1", quota: 4096 },
+      unit: new Unit("MiB"),
+      leftBar: { utilized: 10, available: 40 },
+      rightBar: { utilized: 10, available: 10 },
+    };
+
+    rerender(<ResourceInfo {...projectProps} />);
+    expect(screen.getByTestId("quotaInfo")).toBeInTheDocument();
+    expect(screen.getByText(/Available quota:/i)).toBeInTheDocument();
+    expect(screen.getByText("4 GiB")).toBeInTheDocument();
+  });
 });
