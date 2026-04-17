@@ -246,29 +246,34 @@ describe("Resource info tests", () => {
 
   test("total quota label", () => {
     // cluster level shows capacity
-    const capacityInfos = (value = 10) => {
+    const capacityInfos = (value, capacity) => {
       return {
         scope: new Scope({}),
         resource: {
           name: "resource",
-          capacity: 2048,
-          per_az: [{ name: "AZ1", capacity: 2048 }],
+          capacity,
+          per_az: [{ name: "AZ1", capacity }],
         },
-        az: { name: "AZ1", capacity: 2048 },
+        az: { name: "AZ1", capacity },
         unit: new Unit("MiB"),
         leftBar: { utilized: 10, available: 40 },
         rightBar: { utilized: value, available: value },
       };
     };
 
-    const { rerender } = render(<ResourceInfo {...capacityInfos()} />);
+    const { rerender } = render(<ResourceInfo {...capacityInfos(10, 2048)} />);
     expect(screen.getByTestId("quotaInfo")).toBeInTheDocument();
     expect(screen.getByText(/Available capacity:/i)).toBeInTheDocument();
     expect(screen.getByText("2 GiB")).toBeInTheDocument();
 
     // if a right bar is not available, the info is ommitted
-    rerender(<ResourceInfo {...capacityInfos(0)} />);
+    rerender(<ResourceInfo {...capacityInfos(0, 2048)} />);
     expect(screen.queryByTestId("quotaInfo")).not.toBeInTheDocument();
+
+    // capacity info is omitted
+    rerender(<ResourceInfo {...capacityInfos(10, undefined)} />);
+    expect(screen.getByTestId("quotaInfo")).toBeInTheDocument();
+    expect(screen.getByText("0 MiB")).toBeInTheDocument();
 
     // project / domain level shows quota
     const projectProps = {

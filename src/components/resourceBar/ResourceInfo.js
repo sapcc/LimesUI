@@ -105,10 +105,10 @@ const ResourceInfo = (props) => {
 
   function getTotalQuotaInfo() {
     if (scope.isCluster()) {
-      const capacity = az ? az.capacity : resource.capacity;
+      const capacity = (az ? az.capacity : resource.capacity) || 0;
       return QuotaInfo.LABEL(scope.isCluster(), unit.format(capacity));
     }
-    const quota = az ? az.quota : resource.quota;
+    const quota = (az ? az.quota : resource.quota) || 0;
     return QuotaInfo.LABEL(scope.isCluster(), unit.format(quota));
   }
 
