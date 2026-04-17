@@ -28,7 +28,7 @@ const ConversionModal = (props) => {
   });
   const { resource_name } = commitment;
   const { data, isLoading, isError, error } = conversionResults;
-  const { conversions } = data || { conversions: null };
+  const { conversions } = data || { conversions: [] };
   const [invalidConversion, setInvalidConversion] = React.useState(false);
   const [currentConversion, setCurrentConversion] = React.useState(null);
   const unit = new Unit(commitment.unit);
@@ -134,12 +134,12 @@ const ConversionModal = (props) => {
               <DataGridCell className={"px-0"}>
                 <Select
                   data-testid="conversionSelect"
-                  disabled={!conversions}
+                  disabled={conversions.length === 0}
                   onChange={(targetResource) => {
                     onSelectChange(conversions.find((conversion) => conversion.target_resource == targetResource));
                   }}
                 >
-                  {conversions?.map((conversion) => {
+                  {conversions.map((conversion) => {
                     const targetResource = t(conversion.target_resource);
                     return (
                       <SelectOption
