@@ -53,7 +53,7 @@ const CommitmentTableDetails = (props) => {
   const [invalidInput, setInvalidInput] = React.useState(false);
   const unit = new Unit(unitName);
   const initialParsedAmount = unit.format(amount, { ascii: true });
-  const inputRef = React.useRef(initialParsedAmount);
+  const [commitmentInput, setCommitmentInput] = React.useState(initialParsedAmount);
   const durationLabel = React.useRef("");
 
   function stopEditing() {
@@ -67,7 +67,7 @@ const CommitmentTableDetails = (props) => {
   function handleInput(e) {
     setInvalidInput(false);
     setToast(null);
-    inputRef.current = e.target.value;
+    setCommitmentInput(e.target.value);
   }
 
   function handleSelect(value) {
@@ -79,7 +79,7 @@ const CommitmentTableDetails = (props) => {
   }
 
   function handleSave() {
-    const parsedInput = unit.parse(inputRef.current);
+    const parsedInput = unit.parse(commitmentInput);
     if (parsedInput.error) {
       setInvalidInput(true);
       setToast(parsedInput.error);
@@ -128,20 +128,25 @@ const CommitmentTableDetails = (props) => {
 
   return (
     <DataGridRow>
-      <DataGridCell>
+      <DataGridCell className="justify-start">
         {isAddingCommitment ? (
-          <TextInput
-            data-cy="commitmentInput"
-            value={inputRef.current}
-            invalid={invalidInput}
-            autoFocus={true}
-            onChange={(e) => handleInput(e)}
-          />
+          <>
+            <TextInput
+              data-cy="commitmentInput"
+              value={commitmentInput}
+              invalid={invalidInput}
+              autoFocus={true}
+              onChange={(e) => handleInput(e)}
+            />
+            <div className="mt-1 whitespace-nowrap text-xs text-sap-grey-4">
+              {unit.isSpecialUnit && `commitment amount: ${unit.specialUnitConversion(commitmentInput) || 0}`}
+            </div>
+          </>
         ) : (
           valueWithUnit(amount, unit)
         )}
       </DataGridCell>
-      <DataGridCell>
+      <DataGridCell className="justify-start">
         {isAddingCommitment ? (
           <Select
             data-cy="commitmentSelect"
@@ -162,10 +167,10 @@ const CommitmentTableDetails = (props) => {
           duration
         )}
       </DataGridCell>
-      <DataGridCell className="items-start">
+      <DataGridCell className="justify-start">
         <ToolTipWrapper trigger={formatTimeISO8160(startDate)} content={formatTime(startDate, "YYYY-MM-DD HH:mm A")} />
       </DataGridCell>
-      <DataGridCell className="items-start">
+      <DataGridCell className="justify-start">
         <ToolTipWrapper
           trigger={formatTimeISO8160(confirmed_at) || (!isAddingCommitment ? "Unconfirmed" : "")}
           content={
@@ -182,16 +187,16 @@ const CommitmentTableDetails = (props) => {
           }
         />
       </DataGridCell>
-      <DataGridCell className="items-start">
+      <DataGridCell className="justify-start">
         <ToolTipWrapper
           trigger={formatTimeISO8160(expires_at)}
           content={formatTime(expires_at, "YYYY-MM-DD HH:mm A")}
         />
       </DataGridCell>
-      <DataGridCell className="items-start truncate">
+      <DataGridCell className="justify-start truncate">
         <ToolTipWrapper trigger={parseRequesterName(creator_name)} content={creator_name} />
       </DataGridCell>
-      <DataGridCell>
+      <DataGridCell className="justify-start">
         {isAddingCommitment ? (
           <Stack gap="2">
             <Button

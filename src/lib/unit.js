@@ -48,17 +48,36 @@ const resolveSynonym = (str) => {
 export class Unit {
   constructor(name) {
     // Special unit case: unit names starting with a digit (e.g., "128 GiB", "128GiB")
-    // are treated as regular values. This is a KVM workaround
-    this.isSpecialUnit = /^\d/.test(name);
+    const match = name?.match(/^(?<value>\d+)\s*(?<unit>[a-zA-Z]+)$/);
+    this.isSpecialUnit = !!match;
     if (this.isSpecialUnit) {
       this.name = "";
-      this.unitData = { base: "", steps: 0 };
+      const { value, unit } = match.groups;
+      const defaultUnitData = { base: "", steps: 0 };
+      this.specialUnitData = { value: parseInt(value, 10) || 0, ...(units[unit] || defaultUnitData) };
+      this.unitData = defaultUnitData;
+      const specialUnitBaseData = bases[this.specialUnitData.base] || { scale: "none" };
+      this.specialUnitScaleData = scales[specialUnitBaseData.scale];
     } else {
       this.name = name || "";
       this.unitData = units[this.name] || { base: name, steps: 0 };
     }
     const baseData = bases[this.unitData.base] || { scale: "none" };
     this.scaleData = scales[baseData.scale];
+  }
+
+  // specialUserConversion takes the user input amount: X for a special unit and converts the result to display form.
+  specialUnitConversion(amount) {
+    const parsed = this.parse(amount);
+    if (parsed?.error) {
+      return null;
+    }
+    return this.specialUnitFormat(parsed);
+  }
+
+  // specialUnitFormat formats the total amount of a special unit with its actual unit.
+  specialUnitFormat(amount) {
+    return this.format(amount * this.specialUnitData.value, { specialUnit: true });
   }
 
   //Formats a value in this unit. May use bigger units for big values. For
@@ -73,16 +92,26 @@ export class Unit {
   //
   format(value, options = {}) {
     //convert value into bigger units if available
-    let steps = this.unitData.steps;
+    let steps, base, scaleData;
+    if (options.specialUnit && this.specialUnitData) {
+      steps = this.specialUnitData.steps;
+      base = this.specialUnitData.base;
+      scaleData = this.specialUnitScaleData;
+    } else {
+      steps = this.unitData.steps;
+      base = this.unitData.base;
+      scaleData = this.scaleData;
+    }
 
     const prefix = value < 0 ? "-" : "";
     value = Math.abs(value);
 
-    while (value >= this.scaleData.step && steps + 1 < this.scaleData.prefixes.length) {
-      value /= this.scaleData.step;
+    while (value >= scaleData.step && steps + 1 < scaleData.prefixes.length) {
+      value /= scaleData.step;
       steps += 1;
     }
-    const displayUnit = this.scaleData.prefixes[steps] + this.unitData.base;
+
+    const displayUnit = scaleData.prefixes[steps] + base;
 
     //round value down like printf("%.2f")
     value = Math.round(value * 100) / 100;
@@ -177,7 +206,7 @@ export const valueWithUnit = (value, unit) => {
   const title = unit.name !== "" ? `${value} ${unit.name}` : undefined;
   return (
     <span className="value-with-unit" title={title}>
-      {unit.format(value)}
+      {unit.isSpecialUnit ? unit.specialUnitFormat(value) : unit.format(value)}
     </span>
   );
 };

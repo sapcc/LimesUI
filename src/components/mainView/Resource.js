@@ -5,7 +5,7 @@ import React from "react";
 import { useGlobalStore, useCreateCommitmentStore } from "../StoreProvider";
 import { t } from "../../lib/utils";
 import { CustomZones, PanelType } from "../../lib/constants";
-import { Button, Stack } from "@cloudoperators/juno-ui-components";
+import { Button, Pill, Stack } from "@cloudoperators/juno-ui-components";
 import { Link } from "react-router";
 import { ProjectBadges } from "../shared/LimesBadges";
 import { isAZUnaware, getResourceDurations } from "../../lib/utils";
@@ -14,6 +14,7 @@ import useResetCommitment from "../../hooks/useResetCommitment";
 import HistoricalUsage from "./subComponents/HistoricalUsage";
 import ForbidAutogrowth from "./subComponents/ForbidAutogrowth";
 import PhysicalUsage from "./subComponents/PhysicalUsage";
+import { Unit } from "../../lib/unit";
 
 const barGroupContainer = `
     self-stretch  
@@ -81,6 +82,7 @@ const Resource = (props) => {
     tracksQuota,
   } = props;
   const { unit: unitName, editableResource } = resource;
+  const unit = new Unit(unitName);
   const isCommittable = getResourceDurations(resource).length > 0 ? true : false;
   const scope = useGlobalStore((state) => state.scope);
   const displayName = t(resource.name);
@@ -112,6 +114,7 @@ const Resource = (props) => {
         >
           <Stack gap="2">
             <div className="m-auto">{displayName}</div>
+            {isPanelView && unit.isSpecialUnit && <Pill pillKeyLabel="Unit" pillValueLabel={unitName} />}
             {!isPanelView && (
               <Button
                 data-testid="detailedResourceInfo"
@@ -160,7 +163,10 @@ const Resource = (props) => {
             <ProjectBadges az={props.resource.per_az[0]} unit={unitName} displayValues={true} />
           )}
           <Stack className="w-full" distribution="between">
-            {<div className="text-xs text-sap-grey-4">Resource name: {resource.name}</div>}
+            <Stack gap="1">
+              {unit.isSpecialUnit && <Pill pillKeyLabel="Unit" pillValueLabel={unitName} />}
+              {<div className="text-xs text-sap-grey-4 self-center">Resource name: {resource.name}</div>}
+            </Stack>
             {scope.isProject() && isCommittable && <ForbidAutogrowth {...forbidAutogrowthForwardProps} />}
           </Stack>
         </Stack>
