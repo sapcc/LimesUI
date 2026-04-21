@@ -5,7 +5,7 @@ import React from "react";
 import { useGlobalStore, useCreateCommitmentStore } from "../StoreProvider";
 import { t } from "../../lib/utils";
 import { CustomZones, PanelType } from "../../lib/constants";
-import { Button, Pill, Stack } from "@cloudoperators/juno-ui-components";
+import { Button, Icon, Pill, Stack } from "@cloudoperators/juno-ui-components";
 import { Link } from "react-router";
 import { ProjectBadges } from "../shared/LimesBadges";
 import { isAZUnaware, getResourceDurations } from "../../lib/utils";
@@ -14,6 +14,7 @@ import useResetCommitment from "../../hooks/useResetCommitment";
 import HistoricalUsage from "./subComponents/HistoricalUsage";
 import ForbidAutogrowth from "./subComponents/ForbidAutogrowth";
 import PhysicalUsage from "./subComponents/PhysicalUsage";
+import ToolTipWrapper from "../shared/ToolTipWrapper";
 import { Unit } from "../../lib/unit";
 
 const barGroupContainer = `
@@ -80,6 +81,7 @@ const Resource = (props) => {
     serviceType,
     setIsMerging,
     tracksQuota,
+    withSpecialUnitInfo,
   } = props;
   const { unit: unitName, editableResource } = resource;
   const unit = new Unit(unitName);
@@ -116,7 +118,14 @@ const Resource = (props) => {
             <div className="truncate" title={displayName}>
               {displayName}
             </div>
-            {unit.isSpecialUnit && <Pill className="whitespace-nowrap" pillKeyLabel="Unit" pillValueLabel={unitName} />}
+            {unit.isSpecialUnit && (
+              <Pill
+                data-testid={`specialUnitPill/${resource.name}`}
+                className="whitespace-nowrap"
+                pillKeyLabel="Unit"
+                pillValueLabel={unitName}
+              />
+            )}
             {!isPanelView && (
               <Button
                 data-testid="detailedResourceInfo"
@@ -127,6 +136,20 @@ const Resource = (props) => {
                 }}
                 title={displayResourceInfo ? "hide info" : "display info for this resource"}
                 size="small"
+              />
+            )}
+            {withSpecialUnitInfo && (
+              <ToolTipWrapper
+                trigger={<Icon data-testid={`specialUnitInfo/${resource.name}`} icon="info" color="text-theme-info" />}
+                content={
+                  <span className="font-medium">
+                    <b>For this hardware version:</b>
+                    <br />
+                    Commitments for this resource are disabled.
+                    <br />
+                    Commitments should be created at the corresponding RAM resource.
+                  </span>
+                }
               />
             )}
           </Stack>
