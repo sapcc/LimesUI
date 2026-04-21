@@ -106,15 +106,17 @@ const Resource = (props) => {
       <div
         className={` ${props.isPanelView ? `az-panel-container ${azPanelContent}` : `az-main-container ${azContent}`}`}
       ></div>
-      <Stack distribution="between" className={`bar-header ${barHeader}`}>
+      <Stack distribution="between" gap="1" className={`bar-header ${barHeader}`}>
         <Stack
-          className={`bar-title ${barTitle} w-full`}
+          className={`bar-title ${barTitle} w-full min-w-0`}
           gap="1"
           distribution={canEdit && !editableResource && "between"}
         >
-          <Stack gap="2">
-            <div className="m-auto">{displayName}</div>
-            {isPanelView && unit.isSpecialUnit && <Pill pillKeyLabel="Unit" pillValueLabel={unitName} />}
+          <Stack className="w-full min-w-0" gap="2">
+            <div className="truncate" title={displayName}>
+              {displayName}
+            </div>
+            {unit.isSpecialUnit && <Pill className="whitespace-nowrap" pillKeyLabel="Unit" pillValueLabel={unitName} />}
             {!isPanelView && (
               <Button
                 data-testid="detailedResourceInfo"
@@ -129,15 +131,14 @@ const Resource = (props) => {
             )}
           </Stack>
         </Stack>
-        {canEdit && (
+        {canEdit && !isPanelView && (
           <Stack className="items-center" gap="1">
-            {canEdit && !isPanelView && editableResource && (
+            {editableResource && (
               <Link to={`/${props.area}/edit/${categoryName}/${props.resource.name}`} state={props}>
                 <Button
                   data-cy={`edit/${props.resource.name}`}
                   data-testid={`edit/${props.resource.name}`}
                   size="small"
-                  variant="subdued"
                   icon="edit"
                 >
                   {scope.isProject() ? "Manage" : "Commitments"}
@@ -149,7 +150,7 @@ const Resource = (props) => {
                 to={`/${props.area}/edit/${categoryName}/${props.resource.name}/${PanelType.quota.name}`}
                 state={props}
               >
-                <Button data-testid={"setMaxQuotaPanel"} className="ml-1" size="small" icon="edit">
+                <Button data-testid={"setMaxQuotaPanel"} size="small" icon="edit">
                   Quota
                 </Button>
               </Link>
@@ -164,7 +165,6 @@ const Resource = (props) => {
           )}
           <Stack className="w-full" distribution="between">
             <Stack gap="1">
-              {unit.isSpecialUnit && <Pill pillKeyLabel="Unit" pillValueLabel={unitName} />}
               {<div className="text-xs text-sap-grey-4 self-center">Resource name: {resource.name}</div>}
             </Stack>
             {scope.isProject() && isCommittable && <ForbidAutogrowth {...forbidAutogrowthForwardProps} />}
