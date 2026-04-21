@@ -167,15 +167,17 @@ describe("Unit", () => {
     });
 
     it("handles special units", () => {
+      // inputs can be handled as no-unit entities.
       const u = new Unit("128 GiB");
       expect(u.parse(`1024 ${u.unitData.base}`)).toEqual(1024);
       expect(u.parse("1024")).toEqual(1024);
       expect(u.format(1024)).toEqual("1024");
       const u2 = new Unit("128GiB");
       expect(u2.parse(`1024 ${u2.unitData.base}`)).toEqual(1024);
+      expect(u2.parse("1024")).toEqual(1024);
       expect(u2.format(1024)).toEqual("1024");
 
-      // convert special units correctly:
+      // convert special units to display form correctly:
       expect(u.specialUnitConversion("2")).toMatch(/256\sGiB/);
       expect(u.specialUnitConversion("invalidAmount")).toEqual(null);
       expect(u.specialUnitFormat(0)).toMatch(/0\sGiB/);
@@ -185,7 +187,7 @@ describe("Unit", () => {
       const u3 = new Unit("128 XYZ");
       expect(u3.isSpecialUnit).toBe(true);
       expect(u3.specialUnitData.base).toBe("");
-      expect(u.format(1024)).toEqual("1024");
+      expect(u3.format(1024)).toEqual("1024");
     });
   });
 });
