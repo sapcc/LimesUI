@@ -29,6 +29,8 @@ const conversionResults = {
 describe("test conversion modal", () => {
   test("successful conversion of maximum amount", async () => {
     const onConvert = jest.fn((commitment, payload) => {
+      expect(payload.commitment.target_service).toEqual("targetServiceA");
+      expect(payload.commitment.target_resource).toEqual("targetResourceA");
       expect(commitment.amount).toEqual(10);
       expect(payload.commitment.target_amount).toEqual(6);
     });
@@ -91,6 +93,7 @@ describe("test conversion modal", () => {
   test("successful conversion of custom amount", async () => {
     const onConvert = jest.fn((commitment, payload) => {
       expect(commitment.amount).toEqual(10);
+      expect(payload.commitment.source_amount).toEqual(3);
       expect(payload.commitment.target_amount).toEqual(2);
     });
     const commitment = { ...initialCommitmentObject };
@@ -126,6 +129,108 @@ describe("test conversion modal", () => {
     fireEvent.change(conversionInput, { target: { value: 3 } });
     await waitFor(() => {
       expect(screen.getByText(/target amount: 2/i)).toBeInTheDocument();
+    });
+    fireEvent.change(confirmInput, { target: { value: "convert" } });
+    fireEvent.click(confirmButton);
+    expect(onConvert).toHaveBeenCalled();
+  });
+
+  test("conversion with unit", async () => {
+    const onConvert = jest.fn((commitment, payload) => {
+      expect(commitment.amount).toEqual(4096);
+      expect(payload.commitment.target_service).toEqual("targetServiceA");
+      expect(payload.commitment.target_resource).toEqual("targetResourceA");
+      expect(payload.commitment.source_amount).toEqual(4095);
+      expect(payload.commitment.target_amount).toEqual(2730);
+    });
+    const commitment = { ...initialCommitmentObject };
+    commitment.amount = 4096;
+    commitment.unit = "MiB";
+    commitment.duration = "1 year";
+    commitment.resource_name = "resourceA";
+    render(
+      <PortalProvider>
+        <ConversionModal
+          title="Convert Commitment"
+          subText="Convert"
+          commitment={commitment}
+          conversionResults={conversionResults}
+          onModalClose={() => {}}
+          onConvert={onConvert}
+        />
+      </PortalProvider>
+    );
+    expect(screen.getByText("4 GiB")).toBeInTheDocument();
+    const targetInput = screen.getByTestId("conversionSelect");
+    const conversionInput = screen.getByTestId("conversionInput");
+    const confirmInput = screen.getByTestId("confirmInput");
+    const confirmButton = screen.getByTestId("modalConfirm");
+    fireEvent.click(targetInput);
+    const conversion1 = screen.getByTestId("targetResourceA");
+    fireEvent.click(conversion1);
+    await waitFor(() => {
+      expect(screen.getByText(/target amount: 2.67 GiB/i)).toBeInTheDocument(); // 4095 * 3 / 2
+    });
+    expect(conversionInput).toHaveValue("4095");
+    // invalid conversion amount
+    fireEvent.change(conversionInput, { target: { value: 4096 } });
+    await waitFor(() => {
+      expect(screen.getByText(/please enter a valid amount./i)).toBeInTheDocument();
+    });
+    fireEvent.change(conversionInput, { target: { value: 4095 } });
+    await waitFor(() => {
+      expect(screen.getByText(/target amount: 2.67 GiB/i)).toBeInTheDocument();
+    });
+    fireEvent.change(confirmInput, { target: { value: "convert" } });
+    fireEvent.click(confirmButton);
+    expect(onConvert).toHaveBeenCalled();
+  });
+
+  test("conversion with non standard unit", async () => {
+    const onConvert = jest.fn((commitment, payload) => {
+      expect(commitment.amount).toEqual(5);
+      expect(payload.commitment.target_service).toEqual("targetServiceA");
+      expect(payload.commitment.target_resource).toEqual("targetResourceA");
+      expect(payload.commitment.source_amount).toEqual(3);
+      expect(payload.commitment.target_amount).toEqual(2);
+    });
+    const commitment = { ...initialCommitmentObject };
+    commitment.amount = 5;
+    commitment.unit = "128 GiB";
+    commitment.duration = "1 year";
+    commitment.resource_name = "resourceA";
+    render(
+      <PortalProvider>
+        <ConversionModal
+          title="Convert Commitment"
+          subText="Convert"
+          commitment={commitment}
+          conversionResults={conversionResults}
+          onModalClose={() => {}}
+          onConvert={onConvert}
+        />
+      </PortalProvider>
+    );
+    expect(screen.getByText("640 GiB")).toBeInTheDocument();
+    const targetInput = screen.getByTestId("conversionSelect");
+    const conversionInput = screen.getByTestId("conversionInput");
+    const confirmInput = screen.getByTestId("confirmInput");
+    const confirmButton = screen.getByTestId("modalConfirm");
+    fireEvent.click(targetInput);
+    const conversion1 = screen.getByTestId("targetResourceA");
+    fireEvent.click(conversion1);
+    await waitFor(() => {
+      expect(screen.getByText(/target amount: 256 GiB \(2 \* 128 GiB\)/i)).toBeInTheDocument(); // 2 * 128 GiB will be converted
+    });
+    expect(conversionInput).toHaveValue("3");
+    // invalid conversion amount
+    fireEvent.change(conversionInput, { target: { value: 6 } });
+    await waitFor(() => {
+      expect(screen.getByText(/please enter a valid amount./i)).toBeInTheDocument();
+    });
+    fireEvent.change(conversionInput, { target: { value: 3 } });
+    await waitFor(() => {
+      expect(screen.getByText(/target amount: 256 GiB \(2 \* 128 GiB\)/i)).toBeInTheDocument();
     });
     fireEvent.change(confirmInput, { target: { value: "convert" } });
     fireEvent.click(confirmButton);

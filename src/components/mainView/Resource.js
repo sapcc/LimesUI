@@ -15,7 +15,7 @@ import HistoricalUsage from "./subComponents/HistoricalUsage";
 import ForbidAutogrowth from "./subComponents/ForbidAutogrowth";
 import PhysicalUsage from "./subComponents/PhysicalUsage";
 import ToolTipWrapper from "../shared/ToolTipWrapper";
-import { Unit } from "../../lib/unit";
+import { createUnit } from "../../lib/unit";
 
 const barGroupContainer = `
     self-stretch  
@@ -84,7 +84,7 @@ const Resource = (props) => {
     withSpecialUnitInfo,
   } = props;
   const { unit: unitName, editableResource } = resource;
-  const unit = new Unit(unitName);
+  const unit = createUnit(unitName);
   const isCommittable = getResourceDurations(resource).length > 0 ? true : false;
   const scope = useGlobalStore((state) => state.scope);
   const displayName = t(resource.name);
@@ -118,7 +118,7 @@ const Resource = (props) => {
             <div className="truncate" title={displayName}>
               {displayName}
             </div>
-            {unit.isSpecialUnit && (
+            {!unit.isStandardUnit && (
               <Pill
                 data-testid={`specialUnitPill/${resource.name}`}
                 className="whitespace-nowrap"

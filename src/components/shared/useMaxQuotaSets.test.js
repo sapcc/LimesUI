@@ -52,7 +52,7 @@ describe("test useMaxQuotaSets", () => {
     const editButton = screen.getByTestId("maxQuotaEdit");
     fireEvent.click(editButton);
     const saveButton = screen.getByTestId("maxQuotaSave");
-    const quotaInput = screen.getByTestId("maxQuotaInput");
+    const quotaInput = screen.getByTestId("inputWithUnit");
     fireEvent.change(quotaInput, { target: { value: 2 } });
     fireEvent.click(saveButton);
     await waitFor(() => {
@@ -72,21 +72,22 @@ describe("test useMaxQuotaSets", () => {
     const editButton = screen.getByTestId("maxQuotaEdit");
     fireEvent.click(editButton);
     const cancelButton = screen.getByTestId("maxQuotaCancel");
-    const quotaInput = screen.getByTestId("maxQuotaInput");
+    const quotaInput = screen.getByTestId("inputWithUnit");
     fireEvent.change(quotaInput, { target: { value: 2 } });
     fireEvent.click(cancelButton);
     const editButton2 = screen.getByTestId("maxQuotaEdit");
     fireEvent.click(editButton2);
-    const quotaInput2 = screen.getByTestId("maxQuotaInput");
+    const quotaInput2 = screen.getByTestId("inputWithUnit");
     expect(quotaInput2).toHaveValue("9");
   });
-  test("should display correct unit values", () => {
+  test("should display correct unit values", async () => {
     const project = { metadata: { name: "testProject", id: 12, domainID: 13 } };
     const resource = { usage: 512, quota: 1024, max_quota: 1024, unit: "MiB" };
+    const postMaxQuota = jest.fn(() => {});
     render(
       <PortalProvider>
         <StoreProvider>
-          <ExampleCMP project={project} resource={resource} serviceType={"serviceA"} />
+          <ExampleCMP project={project} resource={resource} serviceType={"serviceA"} postMaxQuota={postMaxQuota} />
         </StoreProvider>
       </PortalProvider>
     );
@@ -94,11 +95,36 @@ describe("test useMaxQuotaSets", () => {
     // false input (no unit)
     const editButton = screen.getByTestId("maxQuotaEdit");
     fireEvent.click(editButton);
-    const quotaInput = screen.getByTestId("maxQuotaInput");
+    const quotaInput = screen.getByTestId("inputWithUnit");
     fireEvent.change(quotaInput, { target: { value: 2 } });
     const saveButton = screen.getByTestId("maxQuotaSave");
     fireEvent.click(saveButton);
     expect(quotaInput.validity.tooShort).toBe(false);
+    await waitFor(() => {
+      expect(postMaxQuota).not.toHaveBeenCalled();
+    });
+  });
+  test("should display correct non standard unit values", async () => {
+    const project = { metadata: { name: "testProject", id: 12, domainID: 13 } };
+    const resource = { usage: 1, quota: 5, max_quota: 5, unit: "128 GiB" };
+    const postMaxQuota = jest.fn(() => {});
+    render(
+      <PortalProvider>
+        <StoreProvider>
+          <ExampleCMP project={project} resource={resource} serviceType={"serviceA"} postMaxQuota={postMaxQuota} />
+        </StoreProvider>
+      </PortalProvider>
+    );
+    expect(screen.queryByText(/640 GiB/i)).not.toBe(null);
+    const editButton = screen.getByTestId("maxQuotaEdit");
+    fireEvent.click(editButton);
+    const quotaInput = screen.getByTestId("inputWithUnit");
+    fireEvent.change(quotaInput, { target: { value: 2 } });
+    const saveButton = screen.getByTestId("maxQuotaSave");
+    fireEvent.click(saveButton);
+    await waitFor(() => {
+      expect(postMaxQuota).toHaveBeenCalled();
+    });
   });
   test("reject value that is already set on the backend", async () => {
     const project = { metadata: { name: "testProject", id: 12, domainID: 13 } };
@@ -113,7 +139,7 @@ describe("test useMaxQuotaSets", () => {
     );
     const editButton = screen.getByTestId("maxQuotaEdit");
     fireEvent.click(editButton);
-    const quotaInput = screen.getByTestId("maxQuotaInput");
+    const quotaInput = screen.getByTestId("inputWithUnit");
     fireEvent.change(quotaInput, { target: { value: 10 } });
     const saveButton = screen.getByTestId("maxQuotaSave");
     fireEvent.click(saveButton);

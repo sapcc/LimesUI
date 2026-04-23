@@ -33,11 +33,14 @@ const useTransferAction = (props) => {
     const menuItem = <MenuItemBuilder icon="upload" text={transferText} callBack={transferCommitment} />;
     updateActions("transfer", menuItem, toolTip);
 
-    if (!commitmentInTrasfer) return;
-    const cancelTransferMenuItem = (
-      <MenuItemBuilder icon="close" text={"Cancel transfer"} callBack={cancelTransferCommitment} />
-    );
-    updateActions("cancel_transfer", cancelTransferMenuItem, null);
+    if (commitmentInTrasfer) {
+      const cancelTransferMenuItem = (
+        <MenuItemBuilder icon="close" text={"Cancel transfer"} callBack={cancelTransferCommitment} />
+      );
+      updateActions("cancel_transfer", cancelTransferMenuItem, null);
+    } else {
+      updateActions("cancel_transfer", null, null);
+    }
   }, [commitment, scope]);
 };
 

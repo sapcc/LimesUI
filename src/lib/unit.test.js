@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2024 SAP SE or an SAP affiliate company
 // SPDX-License-Identifier: Apache-2.0
 
-import { Unit } from "./unit";
+import { createUnit, NonStandardUnit, Unit } from "./unit";
 
 describe("Unit", () => {
   describe(".render", () => {
@@ -26,6 +26,7 @@ describe("Unit", () => {
       const u = new Unit("B");
       for (const [input, output] of cases) {
         expect(u.format(input)).toMatch(output);
+        expect(u.formatForInput(input)).toMatch(output);
       }
     });
 
@@ -39,6 +40,7 @@ describe("Unit", () => {
       const u = new Unit("MiB");
       for (const [input, output] of cases) {
         expect(u.format(input)).toMatch(output);
+        expect(u.formatForInput(input)).toMatch(output);
       }
     });
   });
@@ -52,6 +54,7 @@ describe("Unit", () => {
     const u = new Unit("MiB");
     for (const [input, output] of cases) {
       expect(u.format(input)).toMatch(output);
+      expect(u.formatForInput(input)).toMatch(output);
     }
   });
 
@@ -165,29 +168,40 @@ describe("Unit", () => {
         expect(u.parse("42")).toEqual(errSyntax);
       }
     });
+  });
 
-    it("handles special units", () => {
-      // inputs can be handled as no-unit entities.
-      const u = new Unit("128 GiB");
-      expect(u.parse(`1024 ${u.unitData.base}`)).toEqual(1024);
+  describe("non standard units", () => {
+    it("tests unit factory", () => {
+      const u = createUnit("MiB");
+      expect(u instanceof Unit).toBe(true);
+      const u2 = createUnit("");
+      expect(u2 instanceof Unit).toBe(true);
+      const u3 = createUnit("128 GiB");
+      expect(u3 instanceof NonStandardUnit).toBe(true);
+      const u4 = createUnit("128GiB");
+      expect(u4 instanceof NonStandardUnit).toBe(true);
+    });
+    it("format and parse values correctly", () => {
+      const errSyntax = { error: "syntax" };
+      const errCommitment = { error: "cannot create empty commitments." };
+
+      const u = createUnit("128 GiB");
+      expect(u.format(1024)).toMatch(/128\sTiB/);
+      expect(u.formatForInput(1024)).toEqual("1024");
       expect(u.parse("1024")).toEqual(1024);
-      expect(u.format(1024)).toEqual("1024");
-      const u2 = new Unit("128GiB");
-      expect(u2.parse(`1024 ${u2.unitData.base}`)).toEqual(1024);
+      expect(u.parse("1024 GiB")).toEqual(errSyntax);
+      expect(u.parse("0")).toEqual(errCommitment);
+
+      const u2 = createUnit("128GiB");
+      expect(u2.format(1024)).toMatch(/128\sTiB/);
+      expect(u2.formatForInput(1024)).toEqual("1024");
       expect(u2.parse("1024")).toEqual(1024);
-      expect(u2.format(1024)).toEqual("1024");
+      expect(u2.parse("1024 GiB")).toEqual(errSyntax);
+      expect(u.parse("0")).toEqual(errCommitment);
 
-      // convert special units to display form correctly:
-      expect(u.specialUnitConversion("2")).toMatch(/256\sGiB/);
-      expect(u.specialUnitConversion("invalidAmount")).toEqual(null);
-      expect(u.specialUnitFormat(0)).toMatch(/0\sGiB/);
-      expect(u.specialUnitFormat(8)).toMatch(/1\sTiB/);
-
-      // handles unknown special units
-      const u3 = new Unit("128 XYZ");
-      expect(u3.isSpecialUnit).toBe(true);
-      expect(u3.specialUnitData.base).toBe("");
-      expect(u3.format(1024)).toEqual("1024");
+      const u3 = createUnit("128 XYZ");
+      expect(u3.format(5)).toMatch(/^5\s128\sXYZ$/);
+      expect(u3.parse(5)).toEqual(5);
     });
   });
 });

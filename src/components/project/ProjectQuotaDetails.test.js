@@ -52,7 +52,7 @@ describe("test project quota details", () => {
     const editButton2 = screen.getByTestId("maxQuotaEdit");
     fireEvent.click(editButton2);
     const saveButton = screen.getByTestId("maxQuotaSave");
-    const quotaInput = screen.getByTestId("maxQuotaInput");
+    const quotaInput = screen.getByTestId("inputWithUnit");
     fireEvent.change(quotaInput, { target: { value: 2 } });
     fireEvent.click(saveButton);
     await waitFor(() => {

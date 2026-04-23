@@ -14,7 +14,7 @@ import {
 } from "@cloudoperators/juno-ui-components/index";
 import RenewModal from "../commitment/Modals/RenewModal";
 import { t, formatTimeISO8160 } from "../../lib/utils";
-import { Unit, valueWithUnit } from "../../lib/unit";
+import { createUnit, valueWithUnit } from "../../lib/unit";
 import { categoryTitle } from "../paygAvailability/stylescss";
 import useSortTableData from "../../hooks/useSortTable";
 import { useMutation } from "@tanstack/react-query";
@@ -96,7 +96,7 @@ const CommitmentRenewal = (props) => {
   }
 
   function getTableData(c, showRenewable) {
-    const unit = new Unit(c.unit);
+    const unit = createUnit(c?.unit);
     return (
       <DataGridRow key={c.id}>
         <DataGridCell>{t(c.service_type)}</DataGridCell>

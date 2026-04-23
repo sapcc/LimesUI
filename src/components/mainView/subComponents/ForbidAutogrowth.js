@@ -6,7 +6,7 @@ import { Icon, Message, Modal, Spinner, Switch } from "@cloudoperators/juno-ui-c
 import ToolTipWrapper from "../../shared/ToolTipWrapper";
 import { useMutation } from "@tanstack/react-query";
 import { projectStoreActions } from "../../StoreProvider";
-import { Unit } from "../../../lib/unit";
+import { createUnit } from "../../../lib/unit";
 
 const ForbidAutogrowth = (props) => {
   const { editMode = false } = props;
@@ -16,7 +16,7 @@ const ForbidAutogrowth = (props) => {
   const [showModal, setShowModal] = React.useState(false);
   const mutatation = useMutation({ mutationKey: ["forbidAutogrowth"] });
   const maxQuotaValue = resource?.max_quota;
-  const unit = new Unit(resource?.unit);
+  const unit = createUnit(resource?.unit);
 
   function handleAction(autogrowthForbidden) {
     const parseTarget = {

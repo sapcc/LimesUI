@@ -17,7 +17,7 @@ import {
 import BaseFooter from "./BaseComponents/BaseFooter";
 import useConfirmInput from "./BaseComponents/useConfirmInput";
 import { t } from "../../../lib/utils";
-import { Unit } from "../../../lib/unit";
+import { createUnit } from "../../../lib/unit";
 
 const label = "font-semibold";
 
@@ -31,9 +31,9 @@ const ConversionModal = (props) => {
   const { conversions } = data || { conversions: [] };
   const [invalidConversion, setInvalidConversion] = React.useState(false);
   const [currentConversion, setCurrentConversion] = React.useState(null);
-  const unit = new Unit(commitment.unit);
+  const unit = createUnit(commitment?.unit);
   // Needs to be an object. The same suggested conversion value on select of a different conversion type would not trigger a rerender.
-  const [conversion, setConversion] = React.useState({ amount: "" });
+  const [conversion, setConversion] = React.useState({ amount: 0 });
   const [targetAmount, setTargetAmount] = React.useState();
   const [insufficientAmount, setInsufficientAmount] = React.useState(false);
 
@@ -41,14 +41,13 @@ const ConversionModal = (props) => {
   React.useEffect(() => {
     if (!currentConversion) return;
     const amount = Math.floor(commitment.amount / currentConversion.from) * currentConversion.from;
-    const formattedAmount = unit.format(amount, { ascii: true });
     if (amount == 0) {
-      setConversion({ amount: formattedAmount });
+      setConversion({ amount: amount });
       setTargetAmount(null);
       setInsufficientAmount(true);
       return;
     }
-    setConversion({ amount: formattedAmount });
+    setConversion({ amount: amount });
   }, [currentConversion]);
 
   // set target amount based on desired conversion.
@@ -56,14 +55,14 @@ const ConversionModal = (props) => {
     if (!currentConversion || insufficientAmount) {
       return;
     }
-    const parsedAmount = unit.parse(conversion.amount);
-    const invalidConversion = parsedAmount % currentConversion.from != 0;
-    if (parsedAmount.error || parsedAmount > commitment.amount || parsedAmount <= 0 || invalidConversion) {
+    const amount = conversion.amount;
+    const invalidConversion = amount % currentConversion.from != 0;
+    if (amount > commitment.amount || amount <= 0 || invalidConversion) {
       setInvalidConversion(true);
       return;
     }
-    const targetAmount = (parsedAmount / currentConversion.from) * currentConversion.to;
-    setTargetAmount(unit.format(targetAmount, { ascii: true }));
+    const targetAmount = (amount / currentConversion.from) * currentConversion.to;
+    setTargetAmount(targetAmount);
   }, [conversion]);
 
   function onConversionInput(e) {
@@ -79,10 +78,9 @@ const ConversionModal = (props) => {
 
   function onConfirm() {
     if (!currentConversion) return;
-    const parsedInput = unit.parse(conversion.amount);
-    const parsedAmount = unit.parse(targetAmount);
+    const sourceAmount = conversion.amount;
     // defense in depth.
-    if (parsedInput.error || parsedInput > commitment.amount || parsedInput <= 0 || invalidConversion) {
+    if (sourceAmount > commitment.amount || sourceAmount <= 0 || invalidConversion) {
       setInvalidConversion(true);
       return;
     }
@@ -90,8 +88,8 @@ const ConversionModal = (props) => {
       commitment: {
         target_service: currentConversion.target_service,
         target_resource: currentConversion.target_resource,
-        source_amount: parsedInput,
-        target_amount: parsedAmount,
+        source_amount: parseInt(sourceAmount),
+        target_amount: targetAmount,
       },
     };
     onConvert(commitment, payload);
@@ -127,7 +125,7 @@ const ConversionModal = (props) => {
             </DataGridRow>
             <DataGridRow>
               <DataGridCell className={label}>Amount:</DataGridCell>
-              <DataGridCell>{commitment.amount}</DataGridCell>
+              <DataGridCell>{unit.format(commitment.amount)}</DataGridCell>
             </DataGridRow>
             <DataGridRow>
               <DataGridCell className={label}>Target:</DataGridCell>
@@ -173,7 +171,11 @@ const ConversionModal = (props) => {
                   autoFocus
                   value={conversion.amount}
                   errortext={invalidConversion && "Please enter a valid amount."}
-                  successtext={!invalidConversion && targetAmount && `target amount: ${targetAmount}`}
+                  successtext={
+                    !invalidConversion &&
+                    targetAmount &&
+                    `target amount: ${unit.format(targetAmount)} ${!unit.isStandardUnit ? `(${targetAmount} * ${unit.name})` : ""} `
+                  }
                   onChange={(e) => {
                     onConversionInput(e);
                   }}

@@ -15,7 +15,7 @@ import BaseFooter from "./BaseComponents/BaseFooter";
 import CommitmentCalendar from "../CommitmentCalendar";
 import moment from "moment";
 import useConfirmInput from "./BaseComponents/useConfirmInput";
-import { Unit, valueWithUnit } from "../../../lib/unit";
+import { createUnit, valueWithUnit } from "../../../lib/unit";
 import { formatTimeISO8160 } from "../../../lib/utils";
 
 const label = "font-semibold";
@@ -32,7 +32,7 @@ const CommitmentModal = (props) => {
     subText,
     title,
   } = { ...props };
-  const unit = new Unit(commitment.unit);
+  const unit = createUnit(commitment?.unit);
   const { data: publicCommitmentData } = publicCommitmentQuery;
   const publicCommitments = publicCommitmentData?.commitments || [];
   const hasApplicablePublicCommitments = publicCommitments.some((c) => c?.availability_zone === currentTab);

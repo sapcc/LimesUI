@@ -4,9 +4,10 @@
 import React from "react";
 import { useMutation } from "@tanstack/react-query";
 import { projectStoreActions } from "../StoreProvider";
-import { Button, Stack, TextInput } from "@cloudoperators/juno-ui-components";
+import { Button, Stack } from "@cloudoperators/juno-ui-components";
 import { createCommitmentStoreActions } from "../StoreProvider";
-import { Unit, valueWithUnit } from "../../lib/unit";
+import { createUnit, valueWithUnit } from "../../lib/unit";
+import InputWithUnit from "./InputWithUnit";
 
 const useMaxQuotaSets = (props) => {
   const { project = {}, resource = {}, serviceType = "", postMaxQuota = getMaxQuotaQuery() } = props;
@@ -17,8 +18,8 @@ const useMaxQuotaSets = (props) => {
     isLoading: false,
   });
   const maxQuota = resource?.max_quota;
-  const unit = new Unit(resource.unit);
-  const maxQuotaDefaultInput = unit.format(maxQuota || 0, { ascii: true });
+  const unit = createUnit(resource?.unit);
+  const maxQuotaDefaultInput = unit.formatForInput(maxQuota || 0, { ascii: true });
   const inputRef = React.useRef(maxQuotaDefaultInput);
 
   React.useEffect(() => {
@@ -58,7 +59,7 @@ const useMaxQuotaSets = (props) => {
     const domainID = project?.metadata.domainID || null;
     const projectID = project?.metadata.id;
     setMaxQuotaState({ ...maxQuotaState, isLoading: true });
-    postMaxQuota(parseTarget, domainID, projectID);
+    postMaxQuota(parseTarget, domainID, projectID, setMaxQuotaState);
   }
 
   function serializeProject(maxQuota) {
@@ -118,21 +119,18 @@ const MaxQuotaInput = (props) => {
     maxQuota = undefined,
     maxQuotaState = () => {},
     unit = "",
-    // Custumizations set by the direct caller.
-    reducedView = false,
   } = props;
   const { styles = "", wrapperStyles = "" } = props;
   const { isEditing = false, invalidInput = false } = maxQuotaState;
 
   return isEditing ? (
-    <TextInput
-      data-testid="maxQuotaInput"
-      className={`${styles} ${reducedView && invalidInput && "border-theme-danger"}`}
+    <InputWithUnit
+      className={styles}
       wrapperClassName={wrapperStyles}
-      value={inputRef.current}
-      invalid={!reducedView && invalidInput}
-      autoFocus={true}
+      inputRef={inputRef}
+      invalid={invalidInput}
       onChange={(e) => handleInput(e)}
+      unit={unit}
     />
   ) : maxQuota >= 0 ? (
     valueWithUnit(maxQuota, unit)
@@ -201,8 +199,9 @@ const MaxQuotaEdit = (props) => {
 function getMaxQuotaQuery() {
   const maxQuota = useMutation({ mutationKey: ["setMaxQuota"] });
   const { setRefetchProjectAPI } = projectStoreActions();
+  const { setToast } = createCommitmentStoreActions();
   // maxQuota can be set for a project with n services and m resources.
-  return function postMaxQuota(project, domainID, projectID) {
+  return function postMaxQuota(project, domainID, projectID, setMaxQuotaState) {
     if (!project) return;
 
     maxQuota.mutate(
@@ -213,6 +212,7 @@ function getMaxQuotaQuery() {
         },
         onError: (error) => {
           setToast(error.toString());
+          setMaxQuotaState({ invalidInput: false, isEditing: true, isLoading: false });
         },
       }
     );

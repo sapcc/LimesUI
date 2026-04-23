@@ -2,13 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import React from "react";
-import { DataGridRow, DataGridCell, Button, Select, TextInput, Stack } from "@cloudoperators/juno-ui-components";
+import { DataGridRow, DataGridCell, Button, Select, Stack } from "@cloudoperators/juno-ui-components";
 import Actions from "./Operations/Actions";
-import { valueWithUnit, Unit } from "../../lib/unit";
+import { createUnit, valueWithUnit } from "../../lib/unit";
 import { formatTime, formatTimeISO8160 } from "../../lib/utils";
 import { createCommitmentStoreActions, useCreateCommitmentStore } from "../StoreProvider";
 import CommitmentDurationInputLabel from "./CommitmentDurationInputLabel";
 import ToolTipWrapper from "../shared/ToolTipWrapper";
+import InputWithUnit from "../shared/InputWithUnit";
 import { initialCommitmentObject } from "../../lib/constants";
 import { COMMITMENTID } from "../../lib/constants";
 import useResetCommitment from "../../hooks/useResetCommitment";
@@ -51,9 +52,9 @@ const CommitmentTableDetails = (props) => {
   const { setToast } = createCommitmentStoreActions();
   const [invalidDuration, setInValidDuration] = React.useState(false);
   const [invalidInput, setInvalidInput] = React.useState(false);
-  const unit = new Unit(unitName);
-  const initialParsedAmount = unit.format(amount, { ascii: true });
-  const [commitmentInput, setCommitmentInput] = React.useState(initialParsedAmount);
+  const unit = createUnit(unitName);
+  const initialParsedAmount = unit.formatForInput(amount, { ascii: true });
+  const commitmentInputRef = React.useRef(initialParsedAmount);
   const durationLabel = React.useRef("");
 
   function stopEditing() {
@@ -64,10 +65,9 @@ const CommitmentTableDetails = (props) => {
     setToast(null);
   }
 
-  function handleInput(e) {
+  function handleInput() {
     setInvalidInput(false);
     setToast(null);
-    setCommitmentInput(e.target.value);
   }
 
   function handleSelect(value) {
@@ -79,7 +79,7 @@ const CommitmentTableDetails = (props) => {
   }
 
   function handleSave() {
-    const parsedInput = unit.parse(commitmentInput);
+    const parsedInput = unit.parse(commitmentInputRef.current);
     if (parsedInput.error) {
       setInvalidInput(true);
       setToast(parsedInput.error);
@@ -130,18 +130,12 @@ const CommitmentTableDetails = (props) => {
     <DataGridRow>
       <DataGridCell className="justify-start">
         {isAddingCommitment ? (
-          <>
-            <TextInput
-              data-cy="commitmentInput"
-              value={commitmentInput}
-              invalid={invalidInput}
-              autoFocus={true}
-              onChange={(e) => handleInput(e)}
-            />
-            <div className="mt-1 whitespace-nowrap text-xs text-sap-grey-4">
-              {unit.isSpecialUnit && `commitment amount: ${unit.specialUnitConversion(commitmentInput) || 0}`}
-            </div>
-          </>
+          <InputWithUnit
+            inputRef={commitmentInputRef}
+            invalid={invalidInput}
+            onChange={() => handleInput()}
+            unit={unit}
+          />
         ) : (
           valueWithUnit(amount, unit)
         )}

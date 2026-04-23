@@ -45,7 +45,93 @@ describe("test transfer modal", () => {
     expect(onTransfer).toHaveBeenCalled();
   });
 
-  test("Cluster/Domain level: transfer part of a commitment", () => {
+  test("transfer split commitment with unit", async () => {
+    const onTransfer = jest.fn((transferProject, commitment) => {
+      expect(transferProject).toBeFalsy();
+      expect(commitment.amount).toEqual(1024);
+      expect(commitment.duration).toEqual("1 year");
+    });
+    const confirmedCommitment = { ...initialCommitmentObject };
+    confirmedCommitment.amount = 2048;
+    confirmedCommitment.duration = "1 year";
+    confirmedCommitment.unit = "MiB";
+    render(
+      <PortalProvider>
+        <TransferModal
+          title="Transfer Commitment"
+          subText="Transfer"
+          onModalClose={onCancel}
+          onTransfer={onTransfer}
+          commitment={confirmedCommitment}
+          isProjectView={true}
+        />
+      </PortalProvider>
+    );
+    const confirmButton = screen.getByTestId(/modalConfirm/i);
+    const confirmInput = screen.getByTestId(/confirmInput/i);
+    expect(screen.getByText(/amount/i)).toBeInTheDocument();
+    expect(screen.getByText("2 GiB")).toBeInTheDocument();
+    expect(screen.getByText("1 year")).toBeInTheDocument();
+    act(() => {
+      screen.getByRole("checkbox").click();
+    });
+    await waitFor(() => {
+      expect(screen.getByTestId("inputWithUnit")).toBeInTheDocument();
+    });
+    const splitInput = screen.getByTestId("inputWithUnit");
+    fireEvent.change(splitInput, { target: { value: "1024" } });
+    fireEvent.change(confirmInput, { target: { value: "transfer" } });
+    fireEvent.click(confirmButton);
+    expect(onTransfer).not.toHaveBeenCalled();
+    fireEvent.change(splitInput, { target: { value: "1 GiB" } });
+    fireEvent.click(confirmButton);
+    expect(onTransfer).toHaveBeenCalled();
+  });
+
+  test("transfer split commitment with non standard unit", async () => {
+    const onTransfer = jest.fn((transferProject, commitment) => {
+      expect(transferProject).toBeFalsy();
+      expect(commitment.amount).toEqual(1);
+      expect(commitment.duration).toEqual("1 year");
+    });
+    const confirmedCommitment = { ...initialCommitmentObject };
+    confirmedCommitment.amount = 2;
+    confirmedCommitment.duration = "1 year";
+    confirmedCommitment.unit = "128 GiB";
+    render(
+      <PortalProvider>
+        <TransferModal
+          title="Transfer Commitment"
+          subText="Transfer"
+          onModalClose={onCancel}
+          onTransfer={onTransfer}
+          commitment={confirmedCommitment}
+          isProjectView={true}
+        />
+      </PortalProvider>
+    );
+    const confirmButton = screen.getByTestId(/modalConfirm/i);
+    const confirmInput = screen.getByTestId(/confirmInput/i);
+    expect(screen.getByText(/amount/i)).toBeInTheDocument();
+    expect(screen.getByText("256 GiB")).toBeInTheDocument();
+    expect(screen.getByText("1 year")).toBeInTheDocument();
+    act(() => {
+      screen.getByRole("checkbox").click();
+    });
+    await waitFor(() => {
+      expect(screen.getByTestId("inputWithUnit")).toBeInTheDocument();
+    });
+    const splitInput = screen.getByTestId("inputWithUnit");
+    fireEvent.change(splitInput, { target: { value: "1024 MiB" } });
+    fireEvent.change(confirmInput, { target: { value: "transfer" } });
+    fireEvent.click(confirmButton);
+    expect(onTransfer).not.toHaveBeenCalled();
+    fireEvent.change(splitInput, { target: { value: "1" } });
+    fireEvent.click(confirmButton);
+    expect(onTransfer).toHaveBeenCalled();
+  });
+
+  test("Cluster/Domain level: transfer part of a commitment", async () => {
     const onTransfer = jest.fn((transferProject, commitment) => {
       expect(transferProject).toBeTruthy();
       expect(commitment.amount).toEqual(5);
@@ -78,7 +164,10 @@ describe("test transfer modal", () => {
     act(() => {
       screen.getByRole("checkbox").click();
     });
-    const splitInput = screen.getByTestId(/splitInput/i);
+    await waitFor(() => {
+      expect(screen.getByTestId("inputWithUnit")).toBeInTheDocument();
+    });
+    const splitInput = screen.getByTestId("inputWithUnit");
     fireEvent.change(splitInput, { target: { value: 5 } });
     fireEvent.change(confirmInput, { target: { value: "transfer" } });
     fireEvent.click(confirmButton);
