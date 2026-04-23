@@ -13,7 +13,7 @@ import { createProjectExportWorkbook } from "./TableExportContents";
 const TableExport = (props) => {
   const { scope, labelFilter, service, currentResource, projects, filteredProjects, projectResourceAZMap } = props;
   const { unit: unitName } = currentResource;
-  const unit = React.useMemo(() => createUnit(unitName || ""), [unitName]);
+  const unit = createUnit(unitName || "");
   const domainData = useDomainStore((state) => state.domainData);
   const { metadata: domainMeta } = domainData ?? {};
   const [modalIsOpen, setModalIsOpen] = React.useState(false);

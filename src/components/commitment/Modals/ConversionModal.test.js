@@ -169,7 +169,7 @@ describe("test conversion modal", () => {
     const conversion1 = screen.getByTestId("targetResourceA");
     fireEvent.click(conversion1);
     await waitFor(() => {
-      expect(screen.getByText(/target amount: 2.67 GiB/i)).toBeInTheDocument(); // 4095 * 3 / 2
+      expect(screen.getByText(/target amount: 2.67 GiB/i)).toBeInTheDocument(); // 4095 * (2 / 3)
     });
     expect(conversionInput).toHaveValue("4095");
     // invalid conversion amount

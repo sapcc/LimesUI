@@ -45,7 +45,7 @@ const resolveSynonym = (str) => {
   return str;
 };
 
-// Unit class - handles regular units like "MiB", "GiB", "B", ""
+// Unit class - handles regular units like "B" "MiB", "GiB", ""
 class Unit {
   constructor(name) {
     this.name = name || "";
@@ -182,13 +182,13 @@ class NonStandardUnit {
   }
 
   // For known units (like "GiB"), multiply and format with base unit
-  // For unknown units (like "XYZ"), show count + full unit name
-  format(count, options = {}) {
+  // For unknown units (like "XYZ"), show value + full unit name
+  format(value, options = {}) {
     if (this.isKnownBaseUnit) {
-      return this.baseUnit.format(count * this.multiplier, options);
+      return this.baseUnit.format(value * this.multiplier, options);
     }
     const space = options.ascii ? " " : "\u202F";
-    return count + space + this.name;
+    return value + space + this.name;
   }
 
   parse(input, isCommitment = true) {
