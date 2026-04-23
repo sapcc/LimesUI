@@ -36,6 +36,8 @@ const Category = (props) => {
     return resources.filter((res) => res.editableResource === true);
   }, [resources]);
 
+  // Identify cores resources that should display special unit info based on a corresponding editable ram resource and the absence of their own editability.
+  // Defense in depth: A category group normally contains only one pair of cores and ram resources, but the code accounts for multiple pairs.
   const specialUnitCoreNames = React.useMemo(() => {
     const hwVersionResources = resources.filter((res) => hwVersionScaleRx.test(res.name));
     const editableRamNames = hwVersionResources
