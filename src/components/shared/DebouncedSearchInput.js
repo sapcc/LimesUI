@@ -1,14 +1,19 @@
 // SPDX-FileCopyrightText: 2026 SAP SE or an SAP affiliate company
 // SPDX-License-Identifier: Apache-2.0
 
-import React, { useState, useEffect, useRef } from "react";
+import React from "react";
 import { SearchInput } from "@cloudoperators/juno-ui-components";
 
-const DebouncedSearchInput = ({ onChange, initialValue = "", delay = 300, styling = "" }) => {
-  const [inputValue, setInputValue] = useState(initialValue);
-  const isFirstRender = useRef(true);
+const DebouncedSearchInput = ({ onChange, initialValue = "", delay = 300, styling = "", opts = {} }) => {
+  const [inputValue, setInputValue] = React.useState(initialValue);
+  const isFirstRender = React.useRef(true);
+  const { placeholder = "Search..." } = opts;
 
-  useEffect(() => {
+  React.useEffect(() => {
+    setInputValue(initialValue);
+  }, [initialValue]);
+
+  React.useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false;
       return;
@@ -27,6 +32,7 @@ const DebouncedSearchInput = ({ onChange, initialValue = "", delay = 300, stylin
     <SearchInput
       className={styling}
       data-testid="Search"
+      placeholder={placeholder}
       value={inputValue}
       onChange={(e) => {
         setInputValue(e.target.value);
