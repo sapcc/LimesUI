@@ -94,6 +94,73 @@
               "usage": 71
             },
             {
+              "name": "hw_version_2150_cores",
+              "category": "kvm_v2_generic",
+              "quota_distribution_model": "autogrow",
+              "per_az": {
+                "az-1a": {
+                  "quota": 4000,
+                  "usage": 4000,
+                  "historical_usage": {
+                    "min_usage": 3636,
+                    "max_usage": 4000,
+                    "duration": "48h"
+                  }
+                },
+                "az-1b": {
+                  "usage": 50,
+                  "quota": 50
+                },
+                "az-1d": {
+                  "usage": 50,
+                  "quota": 50
+                }
+              },
+              "quota": 4100,
+              "usable_quota": 4100,
+              "usage": 4100
+            },
+            {
+              "name": "hw_version_2150_ram",
+              "category": "kvm_v2_generic",
+              "unit": "128 GiB",
+              "quota_distribution_model": "autogrow",
+              "commitment_config": {
+                "durations": [
+                  "1 year",
+                  "2 years",
+                  "3 years"
+                ]
+              },
+              "per_az": {
+                "any": {
+                  "usage": 0,
+                  "quota": 1,
+                  "historical_usage": {
+                    "duration": "48 hours"
+                  }
+                },
+                "az-1a": {
+                  "committed": {
+                    "2 years": 1
+                  },
+                  "usage": 2,
+                  "quota": 3
+                },
+                "az-1b": {
+                  "usage": 2,
+                  "quota": 3
+                },
+                "az-1d": {
+                  "usage": 0,
+                  "quota": 3
+                }
+              },
+              "quota": 10,
+              "usable_quota": 10,
+              "usage": 4
+            },
+            {
               "name": "instances_hana_c120",
               "category": "per_flavor",
               "quota_distribution_model": "autogrow",

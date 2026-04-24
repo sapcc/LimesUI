@@ -5,7 +5,7 @@ import React from "react";
 import { useGlobalStore, useCreateCommitmentStore } from "../StoreProvider";
 import { t } from "../../lib/utils";
 import { CustomZones, PanelType } from "../../lib/constants";
-import { Button, Stack } from "@cloudoperators/juno-ui-components";
+import { Button, Icon, Pill, Stack } from "@cloudoperators/juno-ui-components";
 import { Link } from "react-router";
 import { ProjectBadges } from "../shared/LimesBadges";
 import { isAZUnaware, getResourceDurations } from "../../lib/utils";
@@ -14,6 +14,8 @@ import useResetCommitment from "../../hooks/useResetCommitment";
 import HistoricalUsage from "./subComponents/HistoricalUsage";
 import ForbidAutogrowth from "./subComponents/ForbidAutogrowth";
 import PhysicalUsage from "./subComponents/PhysicalUsage";
+import ToolTipWrapper from "../shared/ToolTipWrapper";
+import { createUnit } from "../../lib/unit";
 
 const barGroupContainer = `
     self-stretch  
@@ -79,8 +81,10 @@ const Resource = (props) => {
     serviceType,
     setIsMerging,
     tracksQuota,
+    withSpecialUnitInfo,
   } = props;
   const { unit: unitName, editableResource } = resource;
+  const unit = createUnit(unitName);
   const isCommittable = getResourceDurations(resource).length > 0 ? true : false;
   const scope = useGlobalStore((state) => state.scope);
   const displayName = t(resource.name);
@@ -104,14 +108,24 @@ const Resource = (props) => {
       <div
         className={` ${props.isPanelView ? `az-panel-container ${azPanelContent}` : `az-main-container ${azContent}`}`}
       ></div>
-      <Stack distribution="between" className={`bar-header ${barHeader}`}>
+      <Stack distribution="between" gap="1" className={`bar-header ${barHeader}`}>
         <Stack
-          className={`bar-title ${barTitle} w-full`}
+          className={`bar-title ${barTitle} w-full min-w-0`}
           gap="1"
           distribution={canEdit && !editableResource && "between"}
         >
-          <Stack gap="2">
-            <div className="m-auto">{displayName}</div>
+          <Stack className="w-full min-w-0" gap="2">
+            <div className="truncate" title={displayName}>
+              {displayName}
+            </div>
+            {!unit.isStandardUnit && (
+              <Pill
+                data-testid={`specialUnitPill/${resource.name}`}
+                className="whitespace-nowrap"
+                pillKeyLabel="Unit"
+                pillValueLabel={unitName}
+              />
+            )}
             {!isPanelView && (
               <Button
                 data-testid="detailedResourceInfo"
@@ -124,17 +138,30 @@ const Resource = (props) => {
                 size="small"
               />
             )}
+            {withSpecialUnitInfo && (
+              <ToolTipWrapper
+                trigger={<Icon data-testid={`specialUnitInfo/${resource.name}`} icon="info" color="text-theme-info" />}
+                content={
+                  <span className="font-medium">
+                    <b>For this hardware version:</b>
+                    <br />
+                    Commitments for this resource are disabled.
+                    <br />
+                    Commitments should be created at the corresponding RAM resource.
+                  </span>
+                }
+              />
+            )}
           </Stack>
         </Stack>
-        {canEdit && (
+        {canEdit && !isPanelView && (
           <Stack className="items-center" gap="1">
-            {canEdit && !isPanelView && editableResource && (
+            {editableResource && (
               <Link to={`/${props.area}/edit/${categoryName}/${props.resource.name}`} state={props}>
                 <Button
                   data-cy={`edit/${props.resource.name}`}
                   data-testid={`edit/${props.resource.name}`}
                   size="small"
-                  variant="subdued"
                   icon="edit"
                 >
                   {scope.isProject() ? "Manage" : "Commitments"}
@@ -146,7 +173,7 @@ const Resource = (props) => {
                 to={`/${props.area}/edit/${categoryName}/${props.resource.name}/${PanelType.quota.name}`}
                 state={props}
               >
-                <Button data-testid={"setMaxQuotaPanel"} className="ml-1" size="small" icon="edit">
+                <Button data-testid={"setMaxQuotaPanel"} size="small" icon="edit">
                   Quota
                 </Button>
               </Link>
@@ -160,7 +187,9 @@ const Resource = (props) => {
             <ProjectBadges az={props.resource.per_az[0]} unit={unitName} displayValues={true} />
           )}
           <Stack className="w-full" distribution="between">
-            {<div className="text-xs text-sap-grey-4">Resource name: {resource.name}</div>}
+            <Stack gap="1">
+              {<div className="text-xs text-sap-grey-4 self-center">Resource name: {resource.name}</div>}
+            </Stack>
             {scope.isProject() && isCommittable && <ForbidAutogrowth {...forbidAutogrowthForwardProps} />}
           </Stack>
         </Stack>

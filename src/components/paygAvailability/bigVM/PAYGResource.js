@@ -4,7 +4,7 @@
 import React from "react";
 import { Stack, Icon, Tooltip, TooltipContent, TooltipTrigger } from "@cloudoperators/juno-ui-components";
 import { t } from "../../../lib/utils";
-import { Unit } from "../../../lib/unit";
+import { createUnit } from "../../../lib/unit";
 import { isAZUnaware } from "../../../lib/utils";
 import { getTotalUncommittedUsage } from "../../../lib/resourceBarValues";
 
@@ -26,7 +26,7 @@ function createTooltip(resource, tooltipContent) {
 const PAYGResource = (props) => {
   const { resource, cerebro, az, azIndex } = props;
   const azValues = az;
-  const unit = new Unit(resource.unit);
+  const unit = createUnit(resource?.unit);
   const azUnaware = isAZUnaware(resource.per_az);
 
   // Guard clause - Prevent AZ unaware resource from displaying under other AZ's!

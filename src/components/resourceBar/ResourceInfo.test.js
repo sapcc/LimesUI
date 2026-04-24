@@ -6,7 +6,7 @@ import ResourceInfo from "./ResourceInfo";
 import { screen } from "shadow-dom-testing-library";
 import { render } from "@testing-library/react";
 import { resourceBar } from "./ResourceBar";
-import { Unit } from "../../lib/unit";
+import { createUnit } from "../../lib/unit";
 import { CustomZones } from "../../lib/constants";
 import { Scope } from "../../lib/scope";
 
@@ -66,7 +66,7 @@ describe("Resource info tests", () => {
     const props = {
       resource: {},
       az: { name: "AZ1" },
-      unit: new Unit("MiB"),
+      unit: createUnit("MiB"),
       leftBar: { utilized: 1024, available: 1024 },
       rightBar: resourceBar,
     };
@@ -96,7 +96,7 @@ describe("Resource info tests", () => {
       resource: {},
       isEditableResource: true,
       az: { name: "AZ1" },
-      unit: new Unit("MiB"),
+      unit: createUnit("MiB"),
       leftBar: resourceBar,
       rightBar: { utilized: 1024, available: 1024 },
     };
@@ -146,7 +146,7 @@ describe("Resource info tests", () => {
         ],
       },
       az: null,
-      unit: new Unit("MiB"),
+      unit: createUnit("MiB"),
       leftBar: {},
       rightBar: {},
     };
@@ -196,7 +196,7 @@ describe("Resource info tests", () => {
         per_az: [{ name: CustomZones.ANY }, { name: "AZ1" }],
       },
       az: { name: "AZ1" },
-      unit: new Unit("MiB"),
+      unit: createUnit("MiB"),
       leftBar: {},
       rightBar: { available: -1024 },
     };
@@ -255,7 +255,7 @@ describe("Resource info tests", () => {
           per_az: [{ name: "AZ1", capacity }],
         },
         az: { name: "AZ1", capacity },
-        unit: new Unit("MiB"),
+        unit: createUnit("MiB"),
         leftBar: { utilized: 10, available: 40 },
         rightBar: { utilized: value, available: value },
       };
@@ -284,7 +284,7 @@ describe("Resource info tests", () => {
         per_az: [{ name: "AZ1", quota: 4096 }],
       },
       az: { name: "AZ1", quota: 4096 },
-      unit: new Unit("MiB"),
+      unit: createUnit("MiB"),
       leftBar: { utilized: 10, available: 40 },
       rightBar: { utilized: 10, available: 10 },
     };

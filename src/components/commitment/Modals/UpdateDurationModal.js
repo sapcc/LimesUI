@@ -5,14 +5,14 @@ import React from "react";
 import { DataGrid, DataGridRow, DataGridCell, Modal, Select, SelectOption } from "@cloudoperators/juno-ui-components";
 import BaseFooter from "./BaseComponents/BaseFooter";
 import { useCreateCommitmentStore } from "../../StoreProvider";
-import { Unit, valueWithUnit } from "../../../lib/unit";
+import { createUnit, valueWithUnit } from "../../../lib/unit";
 import useConfirmInput from "./BaseComponents/useConfirmInput";
 
 // This package is isolated in order to create a way to decouple the remaining modal components in the near future.
 const UpdateDurationModal = (props) => {
   const { title, onModalClose, commitment, subText, onUpdate } = props;
   const [selectedDuration, setSelectedDuration] = React.useState(null);
-  const unit = new Unit(commitment.unit);
+  const unit = createUnit(commitment?.unit);
   const { ConfirmInput, inputProps, checkInput } = useConfirmInput({
     confirmationText: subText,
   });

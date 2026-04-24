@@ -45,20 +45,18 @@ const resolveSynonym = (str) => {
   return str;
 };
 
-export class Unit {
+// Unit class - handles regular units like "B" "MiB", "GiB", ""
+class Unit {
   constructor(name) {
-    // Special unit case: unit names starting with a digit (e.g., "128 GiB", "128GiB")
-    // are treated as regular values. This is a KVM workaround
-    this.isSpecialUnit = /^\d/.test(name);
-    if (this.isSpecialUnit) {
-      this.name = "";
-      this.unitData = { base: "", steps: 0 };
-    } else {
-      this.name = name || "";
-      this.unitData = units[this.name] || { base: name, steps: 0 };
-    }
+    this.name = name || "";
+    this.isStandardUnit = true;
+    this.unitData = units[this.name] || { base: name, steps: 0 };
     const baseData = bases[this.unitData.base] || { scale: "none" };
     this.scaleData = scales[baseData.scale];
+  }
+
+  formatForInput(value, options) {
+    return this.format(value, options);
   }
 
   //Formats a value in this unit. May use bigger units for big values. For
@@ -72,9 +70,8 @@ export class Unit {
   //useful for input fields since the user is likely to type regular spaces.
   //
   format(value, options = {}) {
-    //convert value into bigger units if available
     let steps = this.unitData.steps;
-
+    let base = this.unitData.base;
     const prefix = value < 0 ? "-" : "";
     value = Math.abs(value);
 
@@ -82,18 +79,16 @@ export class Unit {
       value /= this.scaleData.step;
       steps += 1;
     }
-    const displayUnit = this.scaleData.prefixes[steps] + this.unitData.base;
+
+    const displayUnit = this.scaleData.prefixes[steps] + base;
 
     //round value down like printf("%.2f")
     value = Math.round(value * 100) / 100;
 
-    if (displayUnit == "") {
-      return prefix + value.toString();
-    } else {
-      //if possible, join with narrow no-break space instead of regular space
-      const space = options.ascii ? " " : "\u202F";
-      return prefix + value + space + displayUnit;
-    }
+    if (displayUnit == "") return prefix + value.toString();
+    //if possible, join with narrow no-break space instead of regular space
+    const space = options.ascii ? " " : "\u202F";
+    return prefix + value + space + displayUnit;
   }
 
   //Parses a string representation of a value in this unit. The unit may be
@@ -110,7 +105,7 @@ export class Unit {
   //    Unit('MiB').parse('10 whatever') => { error: 'syntax' }
   //    Unit('MiB').parse('10 KiB')      => { error: 'fractional-value' }
   //    Unit('MiB').parse('1024 KiB')    => 1
-  parse(input, commitment = true) {
+  parse(input, isCommitment = true) {
     //check overall syntax "<value> [<unit>]"
     const baseMatch = /^\s*([0-9.,]+)\s*([a-zA-Z]*)\s*$/.exec(input);
     if (baseMatch === null) {
@@ -122,7 +117,7 @@ export class Unit {
       return { error: "syntax" };
     }
 
-    if (baseMatch[1] == 0 && commitment) {
+    if (baseMatch[1] == 0 && isCommitment) {
       return { error: "cannot create empty commitments." };
     }
 
@@ -172,8 +167,53 @@ export class Unit {
   }
 }
 
-//Renders a value for display on the UI.
-export const valueWithUnit = (value, unit) => {
+// NonStandardUnit wraps Unit and handles units in the form of: "128 GiB"
+class NonStandardUnit {
+  constructor(name, multiplier, baseUnitName) {
+    this.multiplier = multiplier;
+    this.baseUnit = new Unit(baseUnitName);
+    this.name = name;
+    this.isStandardUnit = false;
+    this.isKnownBaseUnit = !!units[baseUnitName];
+  }
+
+  formatForInput(value) {
+    return value.toString();
+  }
+
+  // For known units (like "GiB"), multiply and format with base unit
+  // For unknown units (like "XYZ"), show value + full unit name
+  format(value, options = {}) {
+    if (this.isKnownBaseUnit) {
+      return this.baseUnit.format(value * this.multiplier, options);
+    }
+    const space = options.ascii ? " " : "\u202F";
+    return value + space + this.name;
+  }
+
+  parse(input, isCommitment = true) {
+    const baseMatch = /^\s*([0-9.,]+)\s*$/.exec(input);
+    if (!baseMatch) return { error: "syntax" };
+    if (baseMatch[1] == 0 && isCommitment) return { error: "cannot create empty commitments." };
+
+    const value = parseFloat(baseMatch[1].replace(/,/g, "."));
+    if (isNaN(value) || value != Math.floor(value)) return { error: "fractional-value" };
+    return value;
+  }
+}
+
+// Factory - creates appropriate unit type
+function createUnit(name) {
+  const match = name?.match(/^(?<value>\d+)\s*(?<unit>[a-zA-Z]+)$/);
+  if (match) {
+    const { value, unit } = match?.groups;
+    return new NonStandardUnit(name, parseInt(value, 10), unit);
+  }
+  return new Unit(name);
+}
+
+// Render helper
+const valueWithUnit = (value, unit) => {
   const title = unit.name !== "" ? `${value} ${unit.name}` : undefined;
   return (
     <span className="value-with-unit" title={title}>
@@ -181,3 +221,5 @@ export const valueWithUnit = (value, unit) => {
     </span>
   );
 };
+
+export { Unit, NonStandardUnit, createUnit, valueWithUnit };

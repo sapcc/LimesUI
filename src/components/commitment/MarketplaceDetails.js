@@ -3,7 +3,7 @@
 
 import React from "react";
 import { DataGridRow, DataGridCell } from "@cloudoperators/juno-ui-components/index";
-import { valueWithUnit, Unit } from "../../lib/unit";
+import { createUnit, valueWithUnit } from "../../lib/unit";
 import { formatTimeISO8160, formatTime } from "../../lib/utils";
 import ToolTipWrapper from "../shared/ToolTipWrapper";
 import MarketplaceModal from "./Modals/MarketplaceModal";
@@ -11,7 +11,7 @@ import MarketplaceActions from "./MarketplaceActions";
 
 const MarketplaceDetails = (props) => {
   const { project, commitment, transferCommitment } = props;
-  const unit = new Unit(commitment.unit);
+  const unit = createUnit(commitment?.unit);
   const [showModal, setShowModal] = React.useState(false);
 
   return (

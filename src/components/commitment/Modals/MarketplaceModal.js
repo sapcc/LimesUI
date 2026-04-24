@@ -18,8 +18,7 @@ import useConfirmInput from "./BaseComponents/useConfirmInput";
 import { useGlobalStore, useDomainStore } from "../../StoreProvider";
 import { formatTimeISO8160 } from "../../../lib/utils";
 import { Scope } from "../../../lib/scope";
-import { valueWithUnit } from "../../../lib/unit";
-import { Unit } from "../../../lib/unit";
+import { createUnit, valueWithUnit } from "../../../lib/unit";
 import DebouncedSearchInput from "../../shared/DebouncedSearchInput";
 import { chunkProjects } from "../../../lib/utils";
 
@@ -38,7 +37,7 @@ const selectOptionStyles = `
 const MarketplaceModal = (props) => {
   const { action, title, subText, onModalClose, project, commitment } = props;
   const { amount, availability_zone, duration, expires_at, transfer_token } = commitment;
-  const unit = new Unit(commitment.unit);
+  const unit = createUnit(commitment?.unit);
   const { ConfirmInput, inputProps, checkInput } = useConfirmInput({
     confirmationText: subText,
   });

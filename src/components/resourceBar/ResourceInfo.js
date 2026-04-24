@@ -6,7 +6,7 @@ import { IntroBox } from "@cloudoperators/juno-ui-components/index";
 import { hasAnyBarValues } from "./resourceBarUtils";
 import { locateBaseQuotaAZ } from "../../lib/utils";
 import { CustomZones } from "../../lib/constants";
-import { Unit } from "../../lib/unit";
+import { createUnit } from "../../lib/unit";
 import {
   UnknownAZLabel,
   CommittedUsageLabels,
@@ -26,7 +26,7 @@ const ResourceInfo = (props) => {
     categoryName,
     resource,
     az,
-    unit = new Unit(""),
+    unit = createUnit(""),
     isEmptyBar,
     isGranular,
     isEditableResource,

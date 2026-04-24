@@ -5,14 +5,14 @@ import React from "react";
 import BaseFooter from "./BaseComponents/BaseFooter";
 import useConfirmInput from "./BaseComponents/useConfirmInput";
 import { Modal, DataGrid, DataGridRow, DataGridCell } from "@cloudoperators/juno-ui-components";
-import { Unit, valueWithUnit } from "../../../lib/unit";
+import { createUnit, valueWithUnit } from "../../../lib/unit";
 import { parseCommitmentDuration } from "../../../lib/parseCommitmentDurations";
 
 const label = "font-semibold";
 
 const MergeModal = (props) => {
   const { commitments = [] } = props;
-  const unit = new Unit(commitments[0].unit);
+  const unit = createUnit(commitments[0]?.unit);
   const { action, title, subText, onModalClose } = props;
   const { ConfirmInput, inputProps, checkInput } = useConfirmInput({ confirmationText: subText });
   const [mergeAmount, highestDuration] = React.useMemo(() => {
