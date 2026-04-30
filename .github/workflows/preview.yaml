@@ -27,11 +27,13 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Setup Node.js
+        if: github.event.action != 'closed'
         uses: actions/setup-node@v6
         with:
           node-version: "24.x"
 
       - uses: pnpm/action-setup@v6
+        if: github.event.action != 'closed'
         name: Install pnpm
         with:
           cache: true
