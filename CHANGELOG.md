@@ -1,5 +1,17 @@
 # @sapcc/limes-ui
 
+## 1.16.0
+
+### Minor Changes
+
+- 0670d23: Add endpoint_services quota display support for endpoints and services resources
+
+### Patch Changes
+
+- 13545ae: An empty conversion list now properly disables the conversion input
+- 1f721f1: fix quota info for omitted values
+- 7f4fba7: add quota info into resource explanations
+
 ## 1.15.4
 
 ### Patch Changes
