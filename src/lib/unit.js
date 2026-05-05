@@ -177,7 +177,9 @@ class NonStandardUnit {
     this.isKnownBaseUnit = !!units[baseUnitName];
   }
 
-  formatForInput(value) {
+  // options parameter accepted for interface consistency
+  // eslint-disable-next-line no-unused-vars
+  formatForInput(value, options) {
     return value.toString();
   }
 
@@ -187,6 +189,7 @@ class NonStandardUnit {
     if (this.isKnownBaseUnit) {
       return this.baseUnit.format(value * this.multiplier, options);
     }
+    // Use regular ASCII space for input fields since users type regular spaces.
     const space = options.ascii ? " " : "\u202F";
     return value + space + this.name;
   }
