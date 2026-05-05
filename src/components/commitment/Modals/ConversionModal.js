@@ -55,9 +55,9 @@ const ConversionModal = (props) => {
     if (!currentConversion || insufficientAmount) {
       return;
     }
-    const amount = conversion.amount;
-    const invalidConversion = amount % currentConversion.from != 0;
-    if (amount > commitment.amount || amount <= 0 || invalidConversion) {
+    const amount = parseInt(conversion.amount, 10) || 0;
+    const isInvalidConversion = amount % currentConversion.from != 0;
+    if (amount > commitment.amount || amount <= 0 || isInvalidConversion) {
       setInvalidConversion(true);
       return;
     }
@@ -78,7 +78,7 @@ const ConversionModal = (props) => {
 
   function onConfirm() {
     if (!currentConversion) return;
-    const sourceAmount = conversion.amount;
+    const sourceAmount = parseInt(conversion.amount, 10) || 0;
     // defense in depth.
     if (sourceAmount > commitment.amount || sourceAmount <= 0 || invalidConversion) {
       setInvalidConversion(true);
