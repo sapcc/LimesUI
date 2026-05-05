@@ -10,7 +10,7 @@ describe("InputWithUnit", () => {
   test("should react to value changes with standard unit", () => {
     const inputRef = { current: "" };
     const handleInput = jest.fn(() => {});
-    const unit = new createUnit("GiB");
+    const unit = createUnit("GiB");
     render(<InputWithUnit inputRef={inputRef} onChange={() => handleInput()} unit={unit} />);
     const input = screen.getByTestId("inputWithUnit");
     fireEvent.change(input, { target: { value: "2 GiB" } });
@@ -20,7 +20,7 @@ describe("InputWithUnit", () => {
   test("should react to value changes with non standard unit", () => {
     const inputRef = { current: "" };
     const handleInput = jest.fn(() => {});
-    const unit = new createUnit("128 GiB");
+    const unit = createUnit("128 GiB");
 
     render(<InputWithUnit inputRef={inputRef} onChange={() => handleInput()} unit={unit} />);
     const input = screen.getByTestId("inputWithUnit");

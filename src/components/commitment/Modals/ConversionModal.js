@@ -174,7 +174,7 @@ const ConversionModal = (props) => {
                   successtext={
                     !invalidConversion &&
                     targetAmount &&
-                    `target amount: ${unit.format(targetAmount)} ${!unit.isStandardUnit ? `(${targetAmount} * ${unit.name})` : ""} `
+                    `target amount: ${unit.format(targetAmount)} ${!unit.isStandardUnit ? `(${targetAmount} * ${unit.name})` : ""}`
                   }
                   onChange={(e) => {
                     onConversionInput(e);

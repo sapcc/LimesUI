@@ -31,7 +31,7 @@ const InputWithUnit = (props) => {
     if (parsed?.error) {
       return 0;
     }
-    return unit.format(input);
+    return unit.format(parsed);
   }
 
   return (
