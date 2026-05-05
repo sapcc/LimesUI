@@ -147,7 +147,7 @@ const Resource = (props) => {
                     <br />
                     Commitments for this resource are disabled.
                     <br />
-                    Commitments should be created at the corresponding RAM resource.
+                    Commitments should be created on the corresponding RAM resource only.
                   </span>
                 }
               />
