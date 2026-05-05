@@ -34,7 +34,7 @@ const Overview = (props) => {
   const currentArea = allAreas.includes(selectedArea) ? selectedArea : allAreas[0];
   const currentTabIdx = allAreas.indexOf(currentArea);
 
-  // Filter categories based of search parameters
+  // Filter categories based on search parameters
   const [searchParams] = useSearchParams();
   const searchTerm = searchParams.get(SEARCH_TERM) || "";
   const categoryFilters = new Set(searchParams.get(FILTER_TYPES.category.key)?.split(",").filter(Boolean) || []);
