@@ -37,8 +37,14 @@ const Overview = (props) => {
   // Filter categories based on search parameters
   const [searchParams] = useSearchParams();
   const searchTerm = searchParams.get(SEARCH_TERM) || "";
-  const categoryFilters = new Set(searchParams.get(FILTER_TYPES.category.key)?.split(",").filter(Boolean) || []);
-  const resourceFilters = new Set(searchParams.get(FILTER_TYPES.resource.key)?.split(",").filter(Boolean) || []);
+  const categoryFilters = React.useMemo(
+    () => new Set(searchParams.get(FILTER_TYPES.category.key)?.split(",").filter(Boolean) || []),
+    [searchParams.get(FILTER_TYPES.category.key)]
+  );
+  const resourceFilters = React.useMemo(
+    () => new Set(searchParams.get(FILTER_TYPES.resource.key)?.split(",").filter(Boolean) || []),
+    [searchParams.get(FILTER_TYPES.resource.key)]
+  );
   const filteredCategories = React.useMemo(() => {
     if (categoryFilters.size === 0 && resourceFilters.size === 0 && !searchTerm) return categories;
     const term = searchTerm?.trim()?.toLocaleLowerCase();
