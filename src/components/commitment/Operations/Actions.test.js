@@ -124,6 +124,61 @@ describe("test Action Operation", () => {
       expect(screen.queryByText(/cancel transfer/i)).not.toBe(null);
     });
   });
+  test("should remove cancel transfer action when transfer completes", async () => {
+    const commitment = { ...initialCommitmentObject };
+    commitment.confirmed_at = "123";
+    commitment.transfer_status = "unlisted";
+    commitment.transfer_token = "test_token_123";
+    const scope = new Scope({ projectID: "123", domainID: "456" });
+    const wrapper = ({ children }) => (
+      <PortalProvider>
+        <StoreProvider>
+          <Actions commitment={commitment} />
+          {children}
+        </StoreProvider>
+      </PortalProvider>
+    );
+    const { result, rerender } = renderHook(
+      () => ({
+        commitmentStore: useCreateCommitmentStore(),
+        commitmentStoreActions: createCommitmentStoreActions(),
+        globalStoreActions: globalStoreActions(),
+      }),
+      {
+        wrapper,
+      }
+    );
+    act(() => {
+      result.current.globalStoreActions.setScope(scope);
+    });
+
+    const contextMenu = await waitFor(() => {
+      return screen.getByTitle(/more/i);
+    });
+
+    // Verify cancel transfer is shown when commitment is in transfer
+    userEvent.click(contextMenu);
+    await waitFor(() => {
+      expect(screen.queryByText(/transferring/i)).not.toBe(null);
+      expect(screen.queryByText(/cancel transfer/i)).not.toBe(null);
+    });
+
+    // transfer completion
+    delete commitment.transfer_status;
+    delete commitment.transfer_token;
+    rerender();
+    act(() => {
+      result.current.globalStoreActions.setScope(scope);
+    });
+
+    // Verify cancel transfer is removed
+    userEvent.click(contextMenu);
+    await waitFor(() => {
+      expect(screen.queryByText(/^transfer$/i)).not.toBe(null);
+      expect(screen.queryByText(/cancel transfer/i)).toBe(null);
+    });
+  });
+
   test("should render duration update action", async () => {
     const commitment = { ...initialCommitmentObject };
     commitment.duration = "1 year";

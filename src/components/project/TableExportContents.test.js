@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { createProjectExportWorkbook } from "./TableExportContents";
-import { Unit } from "../../lib/unit";
+import { createUnit } from "../../lib/unit";
 
 // Mock the tableStylings module
 jest.mock("./TableExportStylings", () => ({
@@ -226,7 +226,7 @@ describe("createProjectExportWorkbook", () => {
     const commitmentsMap = new Map();
 
     const projectData = { projectsToReport, projectResourceAZMap, commitmentsMap };
-    const unit = new Unit("MiB");
+    const unit = createUnit("MiB");
     const resourceInfo = {
       currentResource: { name: "resource-1", unit: "MiB" },
       service: "service-1",

@@ -3,7 +3,7 @@
 
 import React from "react";
 import { Badge } from "@cloudoperators/juno-ui-components";
-import { Unit } from "../../lib/unit";
+import { createUnit } from "../../lib/unit";
 import { uncommittedUsage, unusedCommitments, getUnusedCommitmentRatio } from "../../lib/utils";
 
 export const labelTypes = Object.freeze({
@@ -46,7 +46,7 @@ const ProjectBadges = (props) => {
     return;
   }
 
-  const unit = new Unit(unitName);
+  const unit = createUnit(unitName);
   const pending = az.pending_commitments;
   const planned = az.planned_commitments;
 

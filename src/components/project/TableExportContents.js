@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Workbook } from "@cj-tech-master/excelts";
-import { Unit } from "../../lib/unit";
+import { createUnit } from "../../lib/unit";
 import { formatTimeISO8160 } from "../../lib/utils";
 import { CustomZones } from "../../lib/constants";
 import tableStylings from "./TableExportStylings";
@@ -91,7 +91,7 @@ export async function createProjectExportWorkbook({ projectData, resourceInfo, d
     if (commitmentSheet && commitmentsIncluded) {
       const projectCommitments = commitmentsMap.get(metadata.id) || [];
       projectCommitments.forEach((commitment) => {
-        const unit = new Unit(commitment?.unit || "");
+        const unit = createUnit(commitment?.unit || "");
         if (!withAllCommitments) {
           if (commitment.resource_name !== currentResource.name) {
             return;

@@ -27,13 +27,18 @@ const Actions = (props) => {
   }, [commitmentActions]);
 
   function updateActions(key, menuItem, toolTip) {
-    const newAction = { key: key, menuItem: menuItem, toolTip: toolTip };
-
     setCommitmentActions((commitmentActions) => {
-      return commitmentActions
-        .filter((action) => action.key !== key)
-        .concat(newAction)
-        .sort((a, b) => a.key.localeCompare(b.key));
+      // Filter out existing action with the same key
+      const filteredActions = commitmentActions.filter((action) => action.key !== key);
+
+      // Remove action when necessary
+      if (menuItem === null) {
+        return filteredActions;
+      }
+
+      // Add new action
+      const newAction = { key: key, menuItem: menuItem, toolTip: toolTip };
+      return filteredActions.concat(newAction).sort((a, b) => a.key.localeCompare(b.key));
     });
   }
 

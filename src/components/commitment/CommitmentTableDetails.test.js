@@ -11,22 +11,7 @@ import StoreProvider, { useCreateCommitmentStore, createCommitmentStoreActions }
 const durations = ["1 year", "2 years", "3 years"];
 const commitment = { ...initialCommitmentObject };
 
-const selectErrors = console.error.bind(console);
-
 describe("CheckCommitedState", () => {
-  beforeAll(() => {
-    // Junos select requires one string. Because we format the text of our subtexts, a proptype error will be fired.
-    // The contents will still be processed by the library, which is why the prop type error gets disabled here.
-    console.error = (errormessage) => {
-      const suppressedError = errormessage.toString();
-      const match = new RegExp("Warning: Failed .+ type").exec(suppressedError)[0];
-      !match && selectErrors(errormessage);
-    };
-  });
-  afterAll(() => {
-    console.error = selectErrors;
-  });
-
   test("Check Commited display", async () => {
     const confirmedCommitment = { ...commitment };
     confirmedCommitment.amount = 1003;
@@ -52,16 +37,110 @@ describe("CheckCommitedState", () => {
     const commitedField = screen.getByDisplayValue(confirmedCommitment.amount);
     expect(commitedField).toBeInTheDocument();
   });
+
+  test("Check Commited display with non-standard unit", async () => {
+    const confirmedCommitment = { ...commitment };
+    confirmedCommitment.id = "1";
+    confirmedCommitment.amount = 2;
+    confirmedCommitment.requested_at = 1696636800;
+    confirmedCommitment.confirmed_at = 1696636800;
+    confirmedCommitment.unit = "128 GiB";
+    const wrapper = ({ children }) => (
+      <PortalProvider>
+        <StoreProvider>
+          <CommitmentTableDetails commitment={confirmedCommitment} durations={durations} />
+          {children}
+        </StoreProvider>
+      </PortalProvider>
+    );
+    await waitFor(() => {
+      renderHook(
+        () => ({
+          commitmentStore: useCreateCommitmentStore(),
+          commitmentStoreActions: createCommitmentStoreActions(),
+        }),
+        { wrapper }
+      );
+    });
+    // unit "128 GiB" and amount 2, the display should show "256 GiB"
+    const commitedField = screen.getByText("256 GiB");
+    expect(commitedField).toBeInTheDocument();
+  });
+
+  test("Create commitment with unit", async () => {
+    const commitmentWithUnit = { ...commitment, amount: 0, unit: "MiB" };
+    const value = "1024 MiB";
+
+    const wrapper = ({ children }) => (
+      <PortalProvider>
+        <StoreProvider>
+          <CommitmentTableDetails commitment={commitmentWithUnit} durations={durations} />
+          {children}
+        </StoreProvider>
+      </PortalProvider>
+    );
+    let store = await waitFor(() => {
+      return renderHook(
+        () => ({
+          commitmentStore: useCreateCommitmentStore(),
+          commitmentStoreActions: createCommitmentStoreActions(),
+        }),
+        { wrapper }
+      );
+    });
+
+    const input = screen.getByTestId("inputWithUnit");
+    fireEvent.change(input, { target: { value: value } });
+    expect(input.value).toEqual(value);
+    const year1 = screen.getByText(new RegExp(durations[0], "i"));
+    fireEvent.click(year1);
+    await waitFor(() => {
+      expect(year1.textContent).toEqual(durations[0]);
+    });
+    const save = screen.getByText(/save/i);
+    fireEvent.click(save);
+    expect(store.result.current.commitmentStore.commitment.amount).toEqual(1024);
+  });
+
+  test("Create commitment with non standard unit", async () => {
+    const commitmentWithUnit = { ...commitment, amount: 0, unit: "128 GiB" };
+    const value = "2";
+
+    const wrapper = ({ children }) => (
+      <PortalProvider>
+        <StoreProvider>
+          <CommitmentTableDetails commitment={commitmentWithUnit} durations={durations} />
+          {children}
+        </StoreProvider>
+      </PortalProvider>
+    );
+    let store = await waitFor(() => {
+      return renderHook(
+        () => ({
+          commitmentStore: useCreateCommitmentStore(),
+          commitmentStoreActions: createCommitmentStoreActions(),
+        }),
+        { wrapper }
+      );
+    });
+
+    const input = screen.getByTestId("inputWithUnit");
+    fireEvent.change(input, { target: { value: value } });
+    expect(input.value).toEqual(value);
+    const year1 = screen.getByText(new RegExp(durations[0], "i"));
+    fireEvent.click(year1);
+    await waitFor(() => {
+      expect(year1.textContent).toEqual(durations[0]);
+    });
+    const save = screen.getByText(/save/i);
+    fireEvent.click(save);
+    expect(store.result.current.commitmentStore.commitment.amount).toEqual(2);
+  });
 });
 
 describe("EditCommitments", () => {
   let store;
   beforeEach(async () => {
-    console.error = (errormessage) => {
-      const suppressedError = errormessage.toString();
-      const match = new RegExp("Warning: Failed .+ type").exec(suppressedError)[0];
-      !match && selectErrors(errormessage);
-    };
     const wrapper = ({ children }) => (
       <PortalProvider>
         <StoreProvider>
@@ -79,10 +158,6 @@ describe("EditCommitments", () => {
         { wrapper }
       );
     });
-  });
-
-  afterAll(() => {
-    console.error = selectErrors;
   });
 
   test("Check default InputValue", () => {

@@ -6,6 +6,7 @@ import moment from "moment";
 
 const perFlavorRx = /^instances_(.+)$/;
 const hwVersionRx = /^hw_version_(\d+)_(.+)$/;
+export const hwVersionScaleRx = /^hw_version_215(.*)$/;
 
 // Translates API-level strings into user-readable UI strings,
 // e.g. "volumev2" -> "Block Storage".

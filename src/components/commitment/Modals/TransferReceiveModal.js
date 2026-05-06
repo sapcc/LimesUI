@@ -17,7 +17,7 @@ import {
 import BaseFooter from "./BaseComponents/BaseFooter";
 import useConfirmInput from "./BaseComponents/useConfirmInput";
 import useLimesGetRequest from "../../shared/useLimesGetRequest";
-import { Unit, valueWithUnit } from "../../../lib/unit";
+import { createUnit, valueWithUnit } from "../../../lib/unit";
 
 const label = "font-semibold";
 
@@ -46,7 +46,7 @@ const TransferReceiveModal = (props) => {
   });
   const { data, isFetching, isError, error } = commitmentData;
   const commitment = data?.commitment;
-  const unit = new Unit(data?.unit);
+  const unit = createUnit(commitment?.unit);
 
   React.useEffect(() => {
     setGetCommitment(false);

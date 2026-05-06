@@ -5,14 +5,13 @@ import React from "react";
 import { Modal, DataGrid, DataGridRow, DataGridCell } from "@cloudoperators/juno-ui-components";
 import BaseFooter from "./BaseComponents/BaseFooter";
 import useConfirmInput from "./BaseComponents/useConfirmInput";
-import { valueWithUnit } from "../../../lib/unit";
-import { Unit } from "../../../lib/unit";
+import { createUnit, valueWithUnit } from "../../../lib/unit";
 
 const label = "font-semibold";
 
 const DeleteModal = (props) => {
   const { action, currentTab, title, subText, onModalClose, commitment } = props;
-  const unit = new Unit(commitment.unit);
+  const unit = createUnit(commitment?.unit);
   const { ConfirmInput, inputProps, checkInput } = useConfirmInput({
     confirmationText: subText,
   });

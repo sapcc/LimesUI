@@ -3,7 +3,7 @@
 
 import React from "react";
 import { Box, Icon, Stack, Tooltip, TooltipContent, TooltipTrigger } from "@cloudoperators/juno-ui-components";
-import { Unit } from "../../../lib/unit";
+import { createUnit } from "../../../lib/unit";
 import { getUsageForAZLevel } from "../../../lib/resourceBarValues";
 
 const docLink =
@@ -15,7 +15,7 @@ const PhysicalUsage = (props) => {
   const usage = getUsageForAZLevel(resource);
   const physicalUsage = resource?.physical_usage;
   const isWarning = physicalUsage > usage;
-  const unit = new Unit(unitName);
+  const unit = createUnit(unitName);
   const displayText = `Physical Usage: ${unit.format(physicalUsage)}`;
   const isSnapshot = name == "snapshot_capacity";
 

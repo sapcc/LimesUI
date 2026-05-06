@@ -5,7 +5,7 @@ import React from "react";
 import ResourceBar, { getAppliedBarColors } from "./ResourceBar";
 import ResourceInfo from "./ResourceInfo";
 import { Stack } from "@cloudoperators/juno-ui-components/index";
-import { Unit } from "../../lib/unit";
+import { createUnit } from "../../lib/unit";
 import { getBarLabel, getEmptyBarLabel, hasAnyBarValues } from "./resourceBarUtils";
 import useResourceBarValues, { ResourceBarType } from "../../hooks/useResourceBarValues";
 
@@ -19,7 +19,7 @@ const extraFillStyle = `bg-sap-purple-2`;
 const ResourceBarBuilder = (props) => {
   const { scope, categoryName, resource, az, unit: unitName, barType, isEditableResource } = { ...props };
   const { showToolTip = false, displayResourceInfo = false } = { ...props };
-  const unit = new Unit(unitName || "");
+  const unit = createUnit(unitName || "");
   const isGranular = barType === ResourceBarType.granular;
   const currentResource = isGranular ? az : resource;
   const { leftBar, rightBar } = useResourceBarValues(currentResource, barType);

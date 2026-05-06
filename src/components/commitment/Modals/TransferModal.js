@@ -10,14 +10,13 @@ import {
   Checkbox,
   Select,
   Stack,
-  TextInput,
   SelectOption,
 } from "@cloudoperators/juno-ui-components";
 import BaseFooter from "./BaseComponents/BaseFooter";
 import useConfirmInput from "./BaseComponents/useConfirmInput";
-import { valueWithUnit } from "../../../lib/unit";
-import { Unit } from "../../../lib/unit";
+import { createUnit, valueWithUnit } from "../../../lib/unit";
 import { TransferType } from "../../../lib/constants";
+import InputWithUnit from "../../shared/InputWithUnit";
 
 const label = "font-semibold";
 
@@ -31,7 +30,7 @@ const TransferModal = (props) => {
   const { metadata: originMeta } = currentProject || {};
   const { metadata: targetMeta } = transferProject || {};
   const isMoveAction = transferProject ? true : false;
-  const unit = new Unit(commitment.unit);
+  const unit = createUnit(commitment?.unit);
   const { ConfirmInput, inputProps, checkInput } = useConfirmInput({
     confirmationText: subText,
   });
@@ -40,7 +39,7 @@ const TransferModal = (props) => {
   );
   const [splitCommitment, setSplitCommitment] = React.useState(false);
   const [invalidSplitInput, setInvalidSplitInput] = React.useState(false);
-  const splitInputRef = React.useRef(unit.format(commitment.amount, { ascii: true }));
+  const splitInputRef = React.useRef(unit.formatForInput(commitment.amount, { ascii: true }));
 
   function onSplitInput(e) {
     setInvalidSplitInput(false);
@@ -129,16 +128,15 @@ const TransferModal = (props) => {
           <div>
             <Stack>{"Amount to transfer: "}</Stack>
             <Stack>
-              <TextInput
-                data-testid="splitInput"
-                width="auto"
-                autoFocus
-                value={splitInputRef.current}
-                errortext={invalidSplitInput && "Please enter a valid amount."}
+              <InputWithUnit
+                unit={unit}
+                inputRef={splitInputRef}
+                invalid={invalidSplitInput}
+                errorText={"Please enter a valid amount."}
                 onChange={(e) => {
                   onSplitInput(e);
                 }}
-              />{" "}
+              />
             </Stack>
           </div>
         )}

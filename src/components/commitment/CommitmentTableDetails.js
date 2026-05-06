@@ -2,13 +2,14 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import React from "react";
-import { DataGridRow, DataGridCell, Button, Select, TextInput, Stack } from "@cloudoperators/juno-ui-components";
+import { DataGridRow, DataGridCell, Button, Select, Stack } from "@cloudoperators/juno-ui-components";
 import Actions from "./Operations/Actions";
-import { valueWithUnit, Unit } from "../../lib/unit";
+import { createUnit, valueWithUnit } from "../../lib/unit";
 import { formatTime, formatTimeISO8160 } from "../../lib/utils";
 import { createCommitmentStoreActions, useCreateCommitmentStore } from "../StoreProvider";
 import CommitmentDurationInputLabel from "./CommitmentDurationInputLabel";
 import ToolTipWrapper from "../shared/ToolTipWrapper";
+import InputWithUnit from "../shared/InputWithUnit";
 import { initialCommitmentObject } from "../../lib/constants";
 import { COMMITMENTID } from "../../lib/constants";
 import useResetCommitment from "../../hooks/useResetCommitment";
@@ -51,9 +52,9 @@ const CommitmentTableDetails = (props) => {
   const { setToast } = createCommitmentStoreActions();
   const [invalidDuration, setInValidDuration] = React.useState(false);
   const [invalidInput, setInvalidInput] = React.useState(false);
-  const unit = new Unit(unitName);
-  const initialParsedAmount = unit.format(amount, { ascii: true });
-  const inputRef = React.useRef(initialParsedAmount);
+  const unit = createUnit(unitName);
+  const initialParsedAmount = unit.formatForInput(amount, { ascii: true });
+  const commitmentInputRef = React.useRef(initialParsedAmount);
   const durationLabel = React.useRef("");
 
   function stopEditing() {
@@ -64,10 +65,9 @@ const CommitmentTableDetails = (props) => {
     setToast(null);
   }
 
-  function handleInput(e) {
+  function handleInput() {
     setInvalidInput(false);
     setToast(null);
-    inputRef.current = e.target.value;
   }
 
   function handleSelect(value) {
@@ -79,7 +79,7 @@ const CommitmentTableDetails = (props) => {
   }
 
   function handleSave() {
-    const parsedInput = unit.parse(inputRef.current);
+    const parsedInput = unit.parse(commitmentInputRef.current);
     if (parsedInput.error) {
       setInvalidInput(true);
       setToast(parsedInput.error);
@@ -128,20 +128,19 @@ const CommitmentTableDetails = (props) => {
 
   return (
     <DataGridRow>
-      <DataGridCell>
+      <DataGridCell className="justify-start">
         {isAddingCommitment ? (
-          <TextInput
-            data-cy="commitmentInput"
-            value={inputRef.current}
+          <InputWithUnit
+            inputRef={commitmentInputRef}
             invalid={invalidInput}
-            autoFocus={true}
-            onChange={(e) => handleInput(e)}
+            onChange={() => handleInput()}
+            unit={unit}
           />
         ) : (
           valueWithUnit(amount, unit)
         )}
       </DataGridCell>
-      <DataGridCell>
+      <DataGridCell className="justify-start">
         {isAddingCommitment ? (
           <Select
             data-cy="commitmentSelect"
@@ -162,10 +161,10 @@ const CommitmentTableDetails = (props) => {
           duration
         )}
       </DataGridCell>
-      <DataGridCell className="items-start">
+      <DataGridCell className="justify-start">
         <ToolTipWrapper trigger={formatTimeISO8160(startDate)} content={formatTime(startDate, "YYYY-MM-DD HH:mm A")} />
       </DataGridCell>
-      <DataGridCell className="items-start">
+      <DataGridCell className="justify-start">
         <ToolTipWrapper
           trigger={formatTimeISO8160(confirmed_at) || (!isAddingCommitment ? "Unconfirmed" : "")}
           content={
@@ -182,16 +181,16 @@ const CommitmentTableDetails = (props) => {
           }
         />
       </DataGridCell>
-      <DataGridCell className="items-start">
+      <DataGridCell className="justify-start">
         <ToolTipWrapper
           trigger={formatTimeISO8160(expires_at)}
           content={formatTime(expires_at, "YYYY-MM-DD HH:mm A")}
         />
       </DataGridCell>
-      <DataGridCell className="items-start truncate">
+      <DataGridCell className="justify-start truncate">
         <ToolTipWrapper trigger={parseRequesterName(creator_name)} content={creator_name} />
       </DataGridCell>
-      <DataGridCell>
+      <DataGridCell className="justify-start">
         {isAddingCommitment ? (
           <Stack gap="2">
             <Button

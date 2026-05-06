@@ -6,7 +6,7 @@ import { useGlobalStore } from "../StoreProvider";
 import { DataGridCell, DataGridRow, Icon, Stack } from "@cloudoperators/juno-ui-components";
 import ToolTipWrapper from "../shared/ToolTipWrapper";
 import useMaxQuotaSets from "../shared/useMaxQuotaSets";
-import { Unit, valueWithUnit } from "../../lib/unit";
+import { createUnit, valueWithUnit } from "../../lib/unit";
 
 const ProjectQuotaDetails = (props) => {
   const { serviceType, project, resource, setMaxQuota } = props;
@@ -16,7 +16,7 @@ const ProjectQuotaDetails = (props) => {
   const quota = resource.quota;
   const forbidAutogrowth = resource?.forbid_autogrowth ?? false;
   const scope = useGlobalStore((state) => state.scope);
-  const unit = new Unit(resource.unit);
+  const unit = createUnit(resource?.unit);
   const { MaxQuotaInput, maxQuotaInputProps, MaxQuotaEdit, maxQuotaEditProps } = useMaxQuotaSets({
     project: project,
     resource: resource,
@@ -50,7 +50,7 @@ const ProjectQuotaDetails = (props) => {
           <MaxQuotaInput {...maxQuotaInputProps} />
         </Stack>
       </DataGridCell>
-      <DataGridCell>
+      <DataGridCell className="justify-start">
         <MaxQuotaEdit {...maxQuotaEditProps} />
       </DataGridCell>
     </DataGridRow>

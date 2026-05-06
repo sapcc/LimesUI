@@ -5,7 +5,7 @@ import React from "react";
 import { Button } from "@cloudoperators/juno-ui-components/index";
 import TableExportModal from "./TableExportModal";
 import { useMutation, useQueries } from "@tanstack/react-query";
-import { Unit } from "../../lib/unit";
+import { createUnit } from "../../lib/unit";
 import { useDomainStore } from "../StoreProvider";
 import { labelTypes } from "../shared/LimesBadges";
 import { createProjectExportWorkbook } from "./TableExportContents";
@@ -13,7 +13,7 @@ import { createProjectExportWorkbook } from "./TableExportContents";
 const TableExport = (props) => {
   const { scope, labelFilter, service, currentResource, projects, filteredProjects, projectResourceAZMap } = props;
   const { unit: unitName } = currentResource;
-  const unit = React.useMemo(() => new Unit(unitName || ""), [unitName]);
+  const unit = createUnit(unitName || "");
   const domainData = useDomainStore((state) => state.domainData);
   const { metadata: domainMeta } = domainData ?? {};
   const [modalIsOpen, setModalIsOpen] = React.useState(false);

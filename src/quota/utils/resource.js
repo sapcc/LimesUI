@@ -3,7 +3,7 @@
 
 // Generic functions for the label builders.
 
-import { Unit, valueWithUnit } from "../../lib/unit";
+import { createUnit, valueWithUnit } from "../../lib/unit";
 
 function getResource(resources, resourceName) {
   return resources.find((resource) => resource.name == resourceName);
@@ -15,7 +15,7 @@ function getRemainingQuota(resource) {
 }
 
 function getRemainingQuotaWithUnit(resource, resourceUnit) {
-  const unit = new Unit(resourceUnit);
+  const unit = createUnit(resourceUnit);
   const remainingQuota = getRemainingQuota(resource);
   return valueWithUnit(remainingQuota, unit);
 }

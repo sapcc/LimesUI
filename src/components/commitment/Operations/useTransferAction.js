@@ -9,13 +9,13 @@ import { useGlobalStore, createCommitmentStoreActions } from "../../StoreProvide
 const useTransferAction = (props) => {
   const { commitment, updateActions } = props;
   const { transfer_status: transferStatus } = commitment;
-  const commitmentInTrasfer = transferStatus ? true : false;
+  const commitmentInTransfer = transferStatus ? true : false;
   const scope = useGlobalStore((state) => state.scope);
   const { setTransferredCommitment } = createCommitmentStoreActions();
   const { setTransferFromAndToProject } = createCommitmentStoreActions();
 
   function transferCommitment() {
-    setTransferFromAndToProject(commitmentInTrasfer ? TransferStatus.VIEW : TransferStatus.START);
+    setTransferFromAndToProject(commitmentInTransfer ? TransferStatus.VIEW : TransferStatus.START);
     setTransferredCommitment(commitment);
   }
 
@@ -25,19 +25,22 @@ const useTransferAction = (props) => {
   }
 
   React.useEffect(() => {
-    const toolTip = commitmentInTrasfer ? "ready for transfer" : null;
-    let transferText = commitmentInTrasfer ? "Transferring" : "Transfer";
-    if (!scope.isProject() && !commitmentInTrasfer) {
+    const toolTip = commitmentInTransfer ? "ready for transfer" : null;
+    let transferText = commitmentInTransfer ? "Transferring" : "Transfer";
+    if (!scope.isProject() && !commitmentInTransfer) {
       transferText = `${transferText} (Marketplace)`;
     }
     const menuItem = <MenuItemBuilder icon="upload" text={transferText} callBack={transferCommitment} />;
     updateActions("transfer", menuItem, toolTip);
 
-    if (!commitmentInTrasfer) return;
-    const cancelTransferMenuItem = (
-      <MenuItemBuilder icon="close" text={"Cancel transfer"} callBack={cancelTransferCommitment} />
-    );
-    updateActions("cancel_transfer", cancelTransferMenuItem, null);
+    if (commitmentInTransfer) {
+      const cancelTransferMenuItem = (
+        <MenuItemBuilder icon="close" text={"Cancel transfer"} callBack={cancelTransferCommitment} />
+      );
+      updateActions("cancel_transfer", cancelTransferMenuItem, null);
+    } else {
+      updateActions("cancel_transfer", null, null);
+    }
   }, [commitment, scope]);
 };
 
