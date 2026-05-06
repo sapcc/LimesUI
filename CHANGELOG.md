@@ -1,5 +1,11 @@
 # @sapcc/limes-ui
 
+## 1.17.0
+
+### Minor Changes
+
+- d9a0300: Add non standard unit support
+
 ## 1.16.0
 
 ### Minor Changes
