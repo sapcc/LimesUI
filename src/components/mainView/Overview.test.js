@@ -335,6 +335,10 @@ describe("OverviewFilter", () => {
 
     fireEvent.change(searchInput, { target: { value: "" } });
 
+    await waitFor(() => {
+      expect(window.location.hash).not.toContain("searchTerm=");
+    });
+
     // selecting the same resource per filter does not change the result
     await user.click(filterSelect);
     const resourceOpt = screen.getByTestId("select-Resource");
