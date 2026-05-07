@@ -81,6 +81,7 @@ const renderOverview = (initialLocation, canEdit = true, categories = mockCatego
 describe("Overview", () => {
   beforeEach(() => {
     localStorage.clear();
+    window.location.hash = "";
   });
 
   test("renders the default view with the first area selected", () => {
