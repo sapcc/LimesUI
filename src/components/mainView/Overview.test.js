@@ -139,44 +139,45 @@ describe("Overview", () => {
   });
 });
 
-  test("displays specialUnitInfo", () => {
-    localStorage.setItem("advancedView", "true");
+test("displays specialUnitInfo", () => {
+  localStorage.setItem("advancedView", "true");
 
-    const mockOverviewWithHwVersion = {
-      ...mockOverview,
-      areas: {
-        "area-1": ["service-a"],
-      },
-      categories: {
-        "service-a": ["category-x"],
-      },
-    };
+  const mockOverviewWithHwVersion = {
+    ...mockOverview,
+    areas: {
+      "area-1": ["service-a"],
+    },
+    categories: {
+      "service-a": ["category-x"],
+    },
+  };
 
-    const mockResource = (name, editableResource, unit = "") => ({
-      name,
-      editableResource,
-      unit,
-      per_az: [{ name: "az-1", usage: 10, quota: 100 }],
-      quota: 100,
-      usage: 10,
-    });
+  const mockResource = (name, editableResource, unit = "") => ({
+    name,
+    editableResource,
+    unit,
+    per_az: [{ name: "az-1", usage: 10, quota: 100 }],
+    quota: 100,
+    usage: 10,
+  });
 
-    const mockCategoriesWithHwVersion = {
-      "category-x": {
-        area: "area-1",
-        resources: [
-          mockResource("hw_version_2151_cores", false),
-          mockResource("hw_version_2151_ram", true, "128 GiB"),
-          mockResource("hw_version_2152_cores", true),
-          mockResource("hw_version_2152_ram", true, "256 GiB"),
-          mockResource("hw_version_2153_cores", false),
-          mockResource("hw_version_2153_ram", false, "512 GiB"),
-        ],
-      },
-    };
+  const mockCategoriesWithHwVersion = {
+    "category-x": {
+      area: "area-1",
+      resources: [
+        mockResource("hw_version_2151_cores", false),
+        mockResource("hw_version_2151_ram", true, "128 GiB"),
+        mockResource("hw_version_2152_cores", true),
+        mockResource("hw_version_2152_ram", true, "256 GiB"),
+        mockResource("hw_version_2153_cores", false),
+        mockResource("hw_version_2153_ram", false, "512 GiB"),
+      ],
+    },
+  };
 
-    render(
-      <StoreProvider>
+  render(
+    <StoreProvider>
+      <PortalProvider>
         <HashRouter>
           <Routes>
             <Route
@@ -191,23 +192,23 @@ describe("Overview", () => {
             />
           </Routes>
         </HashRouter>
-      </StoreProvider>
-    );
+      </PortalProvider>
+    </StoreProvider>
+  );
 
-    // info should appear for cores resources with editable RAM counterparts
-    expect(screen.getByTestId("specialUnitInfo/hw_version_2151_cores")).toBeInTheDocument();
-    // should not have specialUnitInfo (Cores are commitable)
-    expect(screen.queryByTestId("specialUnitInfo/hw_version_2152_cores")).not.toBeInTheDocument();
-    // should not have specialUnitInfo (RAM counterpart is not editable)
-    expect(screen.queryByTestId("specialUnitInfo/hw_version_2153_cores")).not.toBeInTheDocument();
+  // info should appear for cores resources with editable RAM counterparts
+  expect(screen.getByTestId("specialUnitInfo/hw_version_2151_cores")).toBeInTheDocument();
+  // should not have specialUnitInfo (Cores are commitable)
+  expect(screen.queryByTestId("specialUnitInfo/hw_version_2152_cores")).not.toBeInTheDocument();
+  // should not have specialUnitInfo (RAM counterpart is not editable)
+  expect(screen.queryByTestId("specialUnitInfo/hw_version_2153_cores")).not.toBeInTheDocument();
 
-    // specialUnitPill should appear for resources with special units (e.g.128 GiB)
-    expect(screen.getByTestId("specialUnitPill/hw_version_2151_ram")).toBeInTheDocument();
-    expect(screen.getByTestId("specialUnitPill/hw_version_2152_ram")).toBeInTheDocument();
-    expect(screen.getByTestId("specialUnitPill/hw_version_2153_ram")).toBeInTheDocument();
-  });
+  // specialUnitPill should appear for resources with special units (e.g.128 GiB)
+  expect(screen.getByTestId("specialUnitPill/hw_version_2151_ram")).toBeInTheDocument();
+  expect(screen.getByTestId("specialUnitPill/hw_version_2152_ram")).toBeInTheDocument();
+  expect(screen.getByTestId("specialUnitPill/hw_version_2153_ram")).toBeInTheDocument();
+});
 
-  test("resource search filter", async () => {
 describe("OverviewFilter", () => {
   test("resource search term filter", async () => {
     renderOverview("/area-1", true, mockCategoriesWithResources);
