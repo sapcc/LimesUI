@@ -6,15 +6,14 @@ import Category from "./Category";
 import { useGlobalStore, useCreateCommitmentStore } from "../StoreProvider";
 import useResetCommitment from "../../hooks/useResetCommitment";
 import { useParams, useNavigate, useLocation, Outlet } from "react-router";
-import { useSearchParams } from "react-router";
-import { t, byUIString } from "../../lib/utils";
+import { t } from "../../lib/utils";
 import { ADVANCEDVIEW, CEREBROKEY, COMMITMENTRENEWALKEY } from "../../lib/constants";
 import PAYGOverview from "../paygAvailability/bigVM/PAYGOverview";
 import RenewalManager from "../commitmentRenewal/RenewalManager";
 import { Box, Button, Container, Tab, Tabs, TabList, TabPanel, Message } from "@cloudoperators/juno-ui-components";
 import { getScrapeTime } from "../../lib/getScrapeTime";
-import OverviewFilter, { FILTER_TYPES, matchName } from "./OverviewFilter";
-import { SEARCH_TERM } from "./BaseFilter";
+import OverviewFilter from "./overviewFilter/OverviewFilter";
+import useOverviewFilters from "./overviewFilter/useOverviewFilters";
 
 const Overview = (props) => {
   const { overview, categories, canEdit } = props;
@@ -33,48 +32,11 @@ const Overview = (props) => {
   const { currentArea: selectedArea } = useParams();
   const currentArea = allAreas.includes(selectedArea) ? selectedArea : allAreas[0];
   const currentTabIdx = allAreas.indexOf(currentArea);
-
-  // Filter categories based on search parameters
-  const [searchParams] = useSearchParams();
-  const searchTerm = searchParams.get(SEARCH_TERM) || "";
-  const categoryFilters = React.useMemo(
-    () => new Set(searchParams.get(FILTER_TYPES.category.key)?.split(",").filter(Boolean) || []),
-    [searchParams.get(FILTER_TYPES.category.key)]
-  );
-  const resourceFilters = React.useMemo(
-    () => new Set(searchParams.get(FILTER_TYPES.resource.key)?.split(",").filter(Boolean) || []),
-    [searchParams.get(FILTER_TYPES.resource.key)]
-  );
-  const filteredCategories = React.useMemo(() => {
-    if (categoryFilters.size === 0 && resourceFilters.size === 0 && !searchTerm) return categories;
-    const term = searchTerm?.trim()?.toLocaleLowerCase();
-    const filtered = {};
-    Object.entries(categories).forEach(([categoryName, category]) => {
-      if (categoryFilters.size > 0 && !categoryFilters.has(categoryName)) return;
-      let resources = category.resources;
-
-      if (resourceFilters.size > 0) {
-        resources = resources.filter((res) => resourceFilters.has(res.name));
-      }
-
-      if (term) {
-        const categoryMatches = matchName(term, categoryName);
-        const matchingResources = resources.filter((r) => matchName(term, r.name));
-
-        if (matchingResources.length > 0) {
-          resources = matchingResources;
-        } else if (!categoryMatches) {
-          return;
-        }
-      }
-
-      if (resources.length > 0) {
-        filtered[categoryName] = { ...category, resources };
-      }
-    });
-
-    return filtered;
-  }, [categories, categoryFilters, resourceFilters, searchTerm]);
+  const { categoriesForArea, filteredCategories, categoryFilters, resourceFilters, searchTerm } = useOverviewFilters({
+    overview,
+    categories,
+    currentArea,
+  });
 
   // EditPanel State should reset if the user changes the URL.
   React.useEffect(() => {
@@ -109,12 +71,7 @@ const Overview = (props) => {
     const ageDisplay = getScrapeTime(currentServices, props.overview);
 
     // check if there are any filtered resources for the current area
-    const hasFilteredResources = currentServices.some((serviceType) =>
-      overview.categories[serviceType].some((categoryName) => {
-        const category = filteredCategories[categoryName];
-        return category?.resources?.length > 0;
-      })
-    );
+    const hasFilteredResources = Object.values(filteredCategories).some((category) => category?.resources?.length > 0);
 
     if (!hasFilteredResources) {
       return (
@@ -129,20 +86,16 @@ const Overview = (props) => {
 
     return (
       <>
-        {currentServices
-          .sort(byUIString)
-          .map((serviceType) =>
-            overview.categories[serviceType].map((categoryName) => (
-              <Category
-                key={categoryName}
-                categoryName={categoryName}
-                serviceType={serviceType}
-                category={filteredCategories[categoryName]}
-                canEdit={props.canEdit}
-                advancedView={advancedView}
-              />
-            ))
-          )}
+        {Object.entries(filteredCategories).map(([categoryName, category]) => (
+          <Category
+            key={categoryName}
+            categoryName={categoryName}
+            serviceType={category.serviceType}
+            category={category}
+            canEdit={props.canEdit}
+            advancedView={advancedView}
+          />
+        ))}
         <div>Usage last updated {ageDisplay} ago.</div>
       </>
     );
@@ -213,7 +166,7 @@ const Overview = (props) => {
       </Tabs>
       {currentArea !== CEREBROKEY && currentArea !== COMMITMENTRENEWALKEY && (
         <OverviewFilter
-          categories={categories}
+          categories={categoriesForArea}
           categoryFilters={categoryFilters}
           resourceFilters={resourceFilters}
           searchTerm={searchTerm}

@@ -8,7 +8,7 @@ import { HashRouter, Routes, Route } from "react-router";
 import Overview from "./Overview";
 import StoreProvider from "../StoreProvider";
 import { PortalProvider } from "@cloudoperators/juno-ui-components/index";
-import { SEARCH_TERM } from "./BaseFilter";
+import { SEARCH_TERM } from "./overviewFilter/BaseFilter";
 
 const mockOverview = {
   editableAreas: ["area-1", "area-2"],
@@ -136,6 +136,7 @@ describe("Overview", () => {
       expect(window.location.hash).toEqual("#/area-1");
     });
   });
+});
 
   test("displays specialUnitInfo", () => {
     localStorage.setItem("advancedView", "true");
@@ -206,6 +207,7 @@ describe("Overview", () => {
   });
 
   test("resource search filter", async () => {
+describe("OverviewFilter", () => {
   test("resource search term filter", async () => {
     renderOverview("/area-1", true, mockCategoriesWithResources);
 
@@ -321,7 +323,7 @@ describe("Overview", () => {
 
     // searching a specific resource narrows down the selected filter results
     const searchInput = screen.getByTestId("Search");
-    fireEvent.change(searchInput, { target: { value: "cores$" } });
+    fireEvent.change(searchInput, { target: { value: "^cores$" } });
 
     await waitFor(() => {
       expect(screen.queryAllByText("category-x")).toHaveLength(2);
@@ -389,13 +391,78 @@ describe("Overview", () => {
     });
   });
 
-  test("empty filter parameters do not create pills", async () => {
+  test("invalid filter parameters do not create pills", async () => {
+    // empty filter values
     renderOverview("/area-1?category=&resource=", true, mockCategoriesWithResources);
     expect(screen.getByText("Cores")).toBeInTheDocument();
     expect(screen.getByText("RAM")).toBeInTheDocument();
 
-    // no pills should be rendered for empty filter values
-    expect(screen.queryByTestId("category:")).not.toBeInTheDocument();
-    expect(screen.queryByTestId("resource:")).not.toBeInTheDocument();
+    expect(screen.queryByTestId(/category:/)).not.toBeInTheDocument();
+    expect(screen.queryByTestId(/resource:/)).not.toBeInTheDocument();
+  });
+
+  test("avoid malformed URL with empty filter values", async () => {
+    const user = userEvent.setup();
+    renderOverview("/area-1?category=", true, mockCategoriesWithResources);
+
+    const filterSelect = screen.getByTestId("filter-select");
+    const filterBox = screen.getByTestId("filter-box");
+    await user.click(filterSelect);
+    await user.click(screen.getByTestId("select-Category"));
+
+    // Add a category filter
+    const comboboxToggle = filterBox.getElementsByClassName("juno-combobox-toggle")[0];
+    await user.click(comboboxToggle);
+    await user.click(screen.getByTestId("box-category-x"));
+
+    // Verify URL is not malformed: "category=,category-x"
+    await waitFor(() => {
+      expect(window.location.hash).not.toMatch(/category=,/);
+      expect(window.location.hash).toContain("category=category-x");
+    });
+  });
+
+  test("resource select only shows resources from selected categories", async () => {
+    const user = userEvent.setup();
+    renderOverview("/area-1", true, mockCategoriesWithResources);
+
+    const filterSelect = screen.getByTestId("filter-select");
+    const filterBox = screen.getByTestId("filter-box");
+    await user.click(filterSelect);
+    await user.click(screen.getByTestId("select-Category"));
+
+    const comboboxToggle = filterBox.getElementsByClassName("juno-combobox-toggle")[0];
+
+    // Select category-x
+    await user.click(comboboxToggle);
+    await user.click(screen.getByTestId("box-category-x"));
+
+    await waitFor(() => {
+      expect(screen.getByTestId("category:category-x")).toBeInTheDocument();
+    });
+
+    // Select category-y
+    await user.click(comboboxToggle);
+    await user.click(screen.getByTestId("box-category-y"));
+
+    await waitFor(() => {
+      expect(screen.getByTestId("category:category-x")).toBeInTheDocument();
+      expect(screen.getByTestId("category:category-y")).toBeInTheDocument();
+    });
+
+    // Resource selection
+    await user.click(filterSelect);
+    await user.click(screen.getByTestId("select-Resource"));
+    await user.click(comboboxToggle);
+
+    // Resources from category-x and category-y are present
+    await waitFor(() => {
+      expect(screen.getByTestId("box-cores")).toBeInTheDocument();
+      expect(screen.getByTestId("box-ram")).toBeInTheDocument();
+      expect(screen.getByTestId("box-cores2")).toBeInTheDocument();
+    });
+
+    // Resource from category-z is NOT present
+    expect(screen.queryByTestId("box-other")).not.toBeInTheDocument();
   });
 });

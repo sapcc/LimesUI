@@ -4,24 +4,12 @@
 import React from "react";
 import BaseFilter from "./BaseFilter";
 import { useSearchParams } from "react-router";
-import { t } from "../../lib/utils";
 import { SEARCH_TERM } from "./BaseFilter";
 
 export const FILTER_TYPES = Object.freeze({
   category: { key: "category", label: "Category" },
   resource: { key: "resource", label: "Resource" },
 });
-
-export function matchName(term, name) {
-  const nameLower = name.toLowerCase();
-  const nameTranslated = t(name).toLowerCase();
-
-  if (term.endsWith("$")) {
-    const exactTerm = term.slice(0, -1);
-    return nameLower === exactTerm || nameTranslated === exactTerm;
-  }
-  return nameLower.includes(term) || nameTranslated.includes(term);
-}
 
 const OverviewFilter = (props) => {
   const { categories, categoryFilters, resourceFilters, searchTerm, currentArea, overview, advancedView } = props;
@@ -35,12 +23,10 @@ const OverviewFilter = (props) => {
   }, [categoryFilters, resourceFilters]);
 
   const filterValues = React.useMemo(() => {
-    const currentServices = overview.areas[currentArea];
-    const currentCategories = currentServices.flatMap((serviceType) => overview.categories[serviceType]);
     const filteredCategoryNames = [];
     const filteredResourceNames = [];
 
-    currentCategories.forEach((categoryName) => {
+    Object.keys(categories).forEach((categoryName) => {
       const category = categories[categoryName];
       if (!category) return;
 
@@ -49,10 +35,14 @@ const OverviewFilter = (props) => {
 
       if (visibleResources.length > 0) {
         filteredCategoryNames.push(categoryName);
-        visibleResources.forEach((res) => filteredResourceNames.push(res.name));
+
+        // All resources are available if no categories are selected
+        // Alternatively, the resources of selected categories are available
+        if (categoryFilters.size === 0 || categoryFilters.has(categoryName)) {
+          visibleResources.forEach((res) => filteredResourceNames.push(res.name));
+        }
       }
     });
-
     return {
       [FILTER_TYPES.category.key]: filteredCategoryNames,
       [FILTER_TYPES.resource.key]: filteredResourceNames,
@@ -76,7 +66,7 @@ const OverviewFilter = (props) => {
 
     setSearchParams((prev) => {
       const newParams = new URLSearchParams(prev);
-      const existingValues = newParams.get(name)?.split(",") || [];
+      const existingValues = newParams.get(name)?.split(",").filter(Boolean) || [];
 
       if (!existingValues.includes(value)) {
         existingValues.push(value);
@@ -90,7 +80,7 @@ const OverviewFilter = (props) => {
     const { name, value } = filter;
     setSearchParams((prev) => {
       const newParams = new URLSearchParams(prev);
-      const existingValues = newParams.get(name)?.split(",") || [];
+      const existingValues = newParams.get(name)?.split(",").filter(Boolean) || [];
       const newValues = existingValues.filter((v) => v !== value);
 
       if (newValues.length > 0) {

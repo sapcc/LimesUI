@@ -11,8 +11,8 @@ import {
   SelectOption,
   Stack,
 } from "@cloudoperators/juno-ui-components/index";
-import { t } from "../../lib/utils";
-import DebouncedSearchInput from "../shared/DebouncedSearchInput";
+import { t } from "../../../lib/utils";
+import DebouncedSearchInput from "../../shared/DebouncedSearchInput";
 
 export const SEARCH_TERM = "searchTerm";
 
