@@ -6,11 +6,17 @@ import { SearchInput } from "@cloudoperators/juno-ui-components";
 
 const DebouncedSearchInput = ({ onChange, initialValue = "", delay = 300, styling = "", opts = {} }) => {
   const [inputValue, setInputValue] = React.useState(initialValue);
+  const prevInitialValue = React.useRef(initialValue);
   const isFirstRender = React.useRef(true);
   const { placeholder = "Search..." } = opts;
 
+  // Sync inputValue when the caller decides to change initialValue.
+  // This is necessary to update the component if the input box is already rendered.
   React.useEffect(() => {
-    setInputValue(initialValue);
+    if (initialValue !== prevInitialValue.current) {
+      setInputValue(initialValue);
+      prevInitialValue.current = initialValue;
+    }
   }, [initialValue]);
 
   React.useEffect(() => {

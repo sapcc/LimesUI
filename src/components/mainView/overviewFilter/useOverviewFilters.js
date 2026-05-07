@@ -9,10 +9,15 @@ import { FILTER_TYPES } from "./OverviewFilter";
 import { t } from "../../../lib/utils";
 
 function matchName(term, name) {
-  const regexp = new RegExp(term, "i");
   const nameTranslated = t(name);
 
-  return regexp.exec(name) || regexp.exec(nameTranslated);
+  try {
+    const regexp = new RegExp(term, "i");
+    return regexp.exec(name) || regexp.exec(nameTranslated);
+  } catch {
+    const lowerTerm = term.toLowerCase();
+    return name.toLowerCase().includes(lowerTerm) || nameTranslated.toLowerCase().includes(lowerTerm);
+  }
 }
 // Filter categories based on search parameters
 const useOverviewFilters = (props) => {

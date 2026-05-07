@@ -424,6 +424,34 @@ describe("OverviewFilter", () => {
     });
   });
 
+  test("search with invalid regex characters does not crash", async () => {
+    renderOverview("/area-1", true, mockCategoriesWithResources);
+    expect(screen.getByText("Cores")).toBeInTheDocument();
+    expect(screen.getByText("RAM")).toBeInTheDocument();
+
+    const searchInput = screen.getByTestId("Search");
+
+    // input: "+" to test invalid regex pattern
+    fireEvent.change(searchInput, { target: { value: "+" } });
+    expect(searchInput).toHaveValue("+");
+
+    // The app should not crash and should fall back to literal string matching
+    // Since no resource name contains "+", no resources should match
+    await waitFor(() => {
+      expect(screen.queryByText("Cores")).not.toBeInTheDocument();
+      expect(screen.queryByText("RAM")).not.toBeInTheDocument();
+      expect(screen.getByTestId("no-resources-found")).toBeInTheDocument();
+    });
+
+    // Clear input and verify that the non-regex search still works
+    fireEvent.change(searchInput, { target: { value: "cores" } });
+
+    await waitFor(() => {
+      expect(screen.getByText("Cores")).toBeInTheDocument();
+      expect(screen.queryByText("RAM")).not.toBeInTheDocument();
+    });
+  });
+
   test("resource select only shows resources from selected categories", async () => {
     const user = userEvent.setup();
     renderOverview("/area-1", true, mockCategoriesWithResources);
