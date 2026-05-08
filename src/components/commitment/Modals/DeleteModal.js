@@ -16,8 +16,8 @@ const DeleteModal = (props) => {
     confirmationText: subText,
   });
 
-  function onDelete() {
-    action(commitment);
+  async function onDelete() {
+    return action(commitment);
   }
 
   return (

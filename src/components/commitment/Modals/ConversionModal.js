@@ -76,7 +76,7 @@ const ConversionModal = (props) => {
     setCurrentConversion(conversion);
   }
 
-  function onConfirm() {
+  async function onConfirm() {
     if (!currentConversion) return;
     const sourceAmount = parseInt(conversion.amount, 10) || 0;
     // defense in depth.
@@ -92,7 +92,7 @@ const ConversionModal = (props) => {
         target_amount: targetAmount,
       },
     };
-    onConvert(commitment, payload);
+    return onConvert(commitment, payload);
   }
 
   return (

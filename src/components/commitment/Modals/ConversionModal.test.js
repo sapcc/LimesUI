@@ -132,7 +132,9 @@ describe("test conversion modal", () => {
     });
     fireEvent.change(confirmInput, { target: { value: "convert" } });
     fireEvent.click(confirmButton);
-    expect(onConvert).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(onConvert).toHaveBeenCalled();
+    });
   });
 
   test("conversion with unit", async () => {
@@ -183,7 +185,9 @@ describe("test conversion modal", () => {
     });
     fireEvent.change(confirmInput, { target: { value: "convert" } });
     fireEvent.click(confirmButton);
-    expect(onConvert).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(onConvert).toHaveBeenCalled();
+    });
   });
 
   test("conversion with non standard unit", async () => {
@@ -234,6 +238,8 @@ describe("test conversion modal", () => {
     });
     fireEvent.change(confirmInput, { target: { value: "convert" } });
     fireEvent.click(confirmButton);
-    expect(onConvert).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(onConvert).toHaveBeenCalled();
+    });
   });
 });

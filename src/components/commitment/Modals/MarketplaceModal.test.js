@@ -60,7 +60,7 @@ describe("MarketplaceModal", () => {
     expect(screen.getByText("1970-01-01")).toBeInTheDocument();
   });
 
-  test("should call the action function when the confirm button is clicked", () => {
+  test("should call the action function when the confirm button is clicked", async () => {
     jest.spyOn(store, "useGlobalStore").mockImplementation(mockGlobalStore(false, true));
     jest.spyOn(store, "useDomainStore").mockImplementation(mockDomainStore([]));
 
@@ -73,10 +73,12 @@ describe("MarketplaceModal", () => {
     const confirmInput = screen.getByTestId(/confirmInput/i);
     fireEvent.change(confirmInput, { target: { value: "receive" } });
     fireEvent.click(screen.getByText("Confirm"));
-    expect(mockProps.action).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(mockProps.action).toHaveBeenCalled();
+    });
   });
 
-  test("should call the close function when the cancel button is clicked", async () => {
+  test("should call the close function when the cancel button is clicked", () => {
     jest.spyOn(store, "useGlobalStore").mockImplementation(mockGlobalStore(false, true));
     jest.spyOn(store, "useDomainStore").mockImplementation(mockDomainStore([]));
 
@@ -127,7 +129,9 @@ describe("MarketplaceModal", () => {
     let confirmInput = screen.getByTestId(/confirmInput/i);
     fireEvent.change(confirmInput, { target: { value: "receive" } });
     fireEvent.click(confirmButton);
-    expect(mockProps.action).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(mockProps.action).toHaveBeenCalled();
+    });
   });
 
   test("Domain level: should provide the correct target projects", async () => {
@@ -168,7 +172,9 @@ describe("MarketplaceModal", () => {
     let confirmInput = screen.getByTestId(/confirmInput/i);
     fireEvent.change(confirmInput, { target: { value: "receive" } });
     fireEvent.click(confirmButton);
-    expect(mockProps.action).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(mockProps.action).toHaveBeenCalled();
+    });
   });
 
   test("should filter projects based on search input", async () => {

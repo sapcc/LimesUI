@@ -42,7 +42,9 @@ describe("test transfer modal", () => {
     });
     fireEvent.change(confirmInput, { target: { value: "transfer" } });
     fireEvent.click(confirmButton);
-    expect(onTransfer).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(onTransfer).toHaveBeenCalled();
+    });
   });
 
   test("transfer split commitment with unit", async () => {
@@ -82,10 +84,15 @@ describe("test transfer modal", () => {
     fireEvent.change(splitInput, { target: { value: "1024" } });
     fireEvent.change(confirmInput, { target: { value: "transfer" } });
     fireEvent.click(confirmButton);
-    expect(onTransfer).not.toHaveBeenCalled();
+    // Wait for the async state to settle after the failed validation
+    await waitFor(() => {
+      expect(onTransfer).not.toHaveBeenCalled();
+    });
     fireEvent.change(splitInput, { target: { value: "1 GiB" } });
     fireEvent.click(confirmButton);
-    expect(onTransfer).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(onTransfer).toHaveBeenCalled();
+    });
   });
 
   test("transfer split commitment with non standard unit", async () => {
@@ -125,10 +132,15 @@ describe("test transfer modal", () => {
     fireEvent.change(splitInput, { target: { value: "1024 MiB" } });
     fireEvent.change(confirmInput, { target: { value: "transfer" } });
     fireEvent.click(confirmButton);
-    expect(onTransfer).not.toHaveBeenCalled();
+    // Wait for the async state to settle after the failed validation
+    await waitFor(() => {
+      expect(onTransfer).not.toHaveBeenCalled();
+    });
     fireEvent.change(splitInput, { target: { value: "1" } });
     fireEvent.click(confirmButton);
-    expect(onTransfer).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(onTransfer).toHaveBeenCalled();
+    });
   });
 
   test("Cluster/Domain level: transfer part of a commitment", async () => {
@@ -171,7 +183,9 @@ describe("test transfer modal", () => {
     fireEvent.change(splitInput, { target: { value: 5 } });
     fireEvent.change(confirmInput, { target: { value: "transfer" } });
     fireEvent.click(confirmButton);
-    expect(onTransfer).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(onTransfer).toHaveBeenCalled();
+    });
   });
 
   test("check marketplace options", async () => {
@@ -207,7 +221,9 @@ describe("test transfer modal", () => {
     expect(screen.queryByText(/marketplace/i)).not.toBeInTheDocument();
     fireEvent.change(confirmInput, { target: { value: "transfer" } });
     fireEvent.click(confirmButton);
-    expect(onTransfer).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(onTransfer).toHaveBeenCalled();
+    });
     unmountMoveAction();
 
     // Cluster/Domain level: Transfers to the marketplace, private transfers are performed using the move action.
@@ -237,7 +253,9 @@ describe("test transfer modal", () => {
     expect(screen.queryByText(/marketplace/i)).toBeInTheDocument();
     fireEvent.change(confirmInput, { target: { value: "transfer" } });
     fireEvent.click(confirmButton);
-    expect(onTransfer).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(onTransfer).toHaveBeenCalled();
+    });
     unmountMarketPlaceAction();
 
     // Project level: Contains the selection between private and public transfers.
@@ -270,7 +288,9 @@ describe("test transfer modal", () => {
     confirmInput = screen.getByTestId(/confirmInput/i);
     fireEvent.change(confirmInput, { target: { value: "transfer" } });
     fireEvent.click(confirmButton);
-    expect(onTransfer).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(onTransfer).toHaveBeenCalled();
+    });
 
     onTransfer = jest.fn((transferProject, commitment, publicationType) => {
       expect(publicationType).toEqual(TransferType.PUBLIC);
@@ -300,6 +320,8 @@ describe("test transfer modal", () => {
     fireEvent.click(marketplaceOption);
     fireEvent.change(confirmInput, { target: { value: "transfer" } });
     fireEvent.click(confirmButton);
-    expect(onTransfer).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(onTransfer).toHaveBeenCalled();
+    });
   });
 });

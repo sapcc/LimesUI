@@ -76,9 +76,9 @@ const MarketplaceModal = (props) => {
     return chunks.length > 0 ? chunks : [[]];
   }, [sortedProjects]);
 
-  function onConfirm() {
+  async function onConfirm() {
     if (disabled) return;
-    action(targetProject, commitment, transfer_token);
+    await action(targetProject, commitment, transfer_token);
     onModalClose();
   }
 
