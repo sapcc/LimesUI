@@ -46,7 +46,7 @@ const TransferModal = (props) => {
     splitInputRef.current = e.target.value;
   }
 
-  function onConfirm() {
+  async function onConfirm() {
     if (splitCommitment) {
       const parsedInput = unit.parse(splitInputRef.current);
       if (parsedInput.error || parsedInput > commitment.amount || parsedInput <= 0) {
@@ -55,7 +55,7 @@ const TransferModal = (props) => {
       }
       commitment.amount = parsedInput;
     }
-    onTransfer(transferProject, commitment, publicationType);
+    return onTransfer(transferProject, commitment, publicationType);
   }
 
   return (

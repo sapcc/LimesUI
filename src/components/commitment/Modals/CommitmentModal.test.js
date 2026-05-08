@@ -3,14 +3,14 @@
 
 import React from "react";
 import moment from "moment";
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { PortalProvider } from "@cloudoperators/juno-ui-components";
 import { initialCommitmentObject } from "../../../lib/constants";
 import CommitmentModal from "./CommitmentModal";
 
 // If debugging is necessary, use screen.debug(undefined, Infinity) to get the complete componenent log.
 describe("test commitment creation modal", () => {
-  test("no capacity commitment creation with no minConfirm date should be 60 seconds in the future", () => {
+  test("no capacity commitment creation with no minConfirm date should be 60 seconds in the future", async () => {
     Date.now = jest.fn(() => new Date("2024-01-01T00:00:00.000Z"));
     const onConfirm = jest.fn((confirm_by) => {
       expect(confirm_by).toEqual(moment(new Date("2024-01-01T00:01:00.000Z")).utc().unix());
@@ -46,7 +46,9 @@ describe("test commitment creation modal", () => {
     expect(screen.getByTestId("noCapacityWarning")).toBeInTheDocument();
     fireEvent.change(confirmInput, { target: { value: "commit" } });
     fireEvent.click(confirmButton);
-    expect(onConfirm).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(onConfirm).toHaveBeenCalled();
+    });
 
     // Rerender with marketplace commitments
 
@@ -69,7 +71,7 @@ describe("test commitment creation modal", () => {
     );
     expect(screen.queryByTestId("marketplaceInfo")).not.toBeInTheDocument();
   });
-  test("same day commit", () => {
+  test("same day commit", async () => {
     Date.now = jest.fn(() => new Date("2024-01-01T00:00:00.000Z"));
     const onConfirm = jest.fn((confirm_by) => {
       expect(confirm_by).toEqual(moment(new Date("2024-01-01T00:00:00.000Z")).utc().unix());
@@ -100,9 +102,11 @@ describe("test commitment creation modal", () => {
     expect(screen.getByText(/January 2024/i)).toBeInTheDocument();
     fireEvent.change(confirmInput, { target: { value: "commit" } });
     fireEvent.click(confirmButton);
-    expect(onConfirm).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(onConfirm).toHaveBeenCalled();
+    });
   });
-  test("create commitment in the future", () => {
+  test("create commitment in the future", async () => {
     Date.now = jest.fn(() => new Date("2024-01-01T00:00:00.000Z"));
     const onConfirm = jest.fn((confirm_by) => {
       expect(confirm_by).toEqual(moment(new Date("2024-01-31T00:00:00.000Z")).utc().unix());
@@ -141,7 +145,9 @@ describe("test commitment creation modal", () => {
     expect(onConfirm).not.toHaveBeenCalled();
     fireEvent.change(confirmInput, { target: { value: "commit" } });
     fireEvent.click(confirmButton);
-    expect(onConfirm).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(onConfirm).toHaveBeenCalled();
+    });
   });
 
   test("open and close calendar", () => {

@@ -27,10 +27,10 @@ const MergeModal = (props) => {
     return [mergeAmount, highestDuration];
   }, [commitments]);
 
-  function onMerge() {
+  async function onMerge() {
     if (commitments.length < 2) return;
     const payload = { commitment_ids: commitments.map((c) => c.id) };
-    action(payload);
+    return action(payload);
   }
 
   return (

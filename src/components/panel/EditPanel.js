@@ -144,29 +144,24 @@ const EditPanel = (props) => {
     return commitment?.transfer_status == TransferType.PUBLIC;
   }
 
-  function postCommitment(confirm_by = null, notifyOnConfirm = false) {
+  async function postCommitment(confirm_by = null, notifyOnConfirm = false) {
     const currentProjectID = currentProject?.metadata?.id;
     const currentDomainID = scope.isCluster() ? currentProject.metadata.domainID : null;
     setCommitmentIsLoading(true);
     const payload = confirm_by
       ? { ...newCommitment, id: "", confirm_by: confirm_by, notify_on_confirm: notifyOnConfirm }
       : { ...newCommitment, id: "" };
-    commit.mutate(
-      { payload: { commitment: payload }, queryKey: [currentProjectID, currentDomainID] },
-      {
-        onSuccess: () => {
-          setRefetchClusterAPI(true);
-          setRefetchDomainAPI(true);
-          setRefetchProjectAPI(true);
-          setRefetchCommitmentAPI(true);
-          setCommitmentIsLoading(false);
-        },
-        onError: (error) => {
-          setCommitmentIsLoading(false);
-          setToast(error.toString());
-        },
-      }
-    );
+    try {
+      await commit.mutateAsync({ payload: { commitment: payload }, queryKey: [currentProjectID, currentDomainID] });
+      setRefetchClusterAPI(true);
+      setRefetchDomainAPI(true);
+      setRefetchProjectAPI(true);
+      setRefetchCommitmentAPI(true);
+      setCommitmentIsLoading(false);
+    } catch (error) {
+      setCommitmentIsLoading(false);
+      setToast(error.toString());
+    }
     setCommitment(initialCommitmentObject);
     setIsSubmitting(false);
     setCanConfirm(null);
@@ -176,77 +171,67 @@ const EditPanel = (props) => {
   // Transferring a commitment requires to mark the commitment as transferrable and then transfer it to it's target.
   // Cluster and domain level transfer the commitment immediately after, except for marketplace postings or the cancellation of existing postings.
   // On project level we move between projects. First we initiate the transfer. On the target project we receive with the token input.
-  function startCommitmentTransfer(project, commitment, transferType = TransferType.UNLISTED) {
+  async function startCommitmentTransfer(project, commitment, transferType = TransferType.UNLISTED) {
     const mutation = scope.isCluster() ? startClusterTransfer : startTransfer;
     const sourceProjectID = currentProject?.metadata.id || null;
     const sourceDomainID = currentProject?.metadata.domainID || null;
     const shouldNotTransfer = transferType == TransferType.PUBLIC || transferType == TransferType.NONE;
 
-    mutation.mutate(
-      {
+    try {
+      const data = await mutation.mutateAsync({
         payload: { commitment: { amount: commitment.amount, transfer_status: transferType } },
         domainID: sourceDomainID,
         projectID: sourceProjectID,
         commitmentID: commitment.id,
-      },
-      {
-        onSuccess: (data) => {
-          // On Project level, the transfer start ends here. The transfer is handled with a separate request.
-          // On Cluster/Domain level, the transfer is only executed for private (unlisted) transfers.
-          if (scope.isProject() || shouldNotTransfer) {
-            resetCommitmentTransfer();
-            setRefetchProjectAPI(true);
-            setRefetchCommitmentAPI(true);
-            shouldNotTransfer && publicCommitmentQuery.refetch();
-            return;
-          }
-
-          // Proceed to transfer the commitment.
-          const receivedCommitment = data.commitment;
-          const transferToken = data.commitment.transfer_token;
-          transferCommitment(project, receivedCommitment, transferToken);
-        },
-        onError: (error) => {
-          resetCommitmentTransfer();
-          setToast(error.toString());
-        },
+      });
+      // On Project level, the transfer start ends here. The transfer is handled with a separate request.
+      // On Cluster/Domain level, the transfer is only executed for private (unlisted) transfers.
+      if (scope.isProject() || shouldNotTransfer) {
+        resetCommitmentTransfer();
+        setRefetchProjectAPI(true);
+        setRefetchCommitmentAPI(true);
+        shouldNotTransfer && publicCommitmentQuery.refetch();
+        return;
       }
-    );
+
+      // Proceed to transfer the commitment.
+      const receivedCommitment = data.commitment;
+      const transferToken = data.commitment.transfer_token;
+      await transferCommitment(project, receivedCommitment, transferToken);
+    } catch (error) {
+      resetCommitmentTransfer();
+      setToast(error.toString());
+    }
   }
 
-  function transferCommitment(project, commitment, transferToken) {
+  async function transferCommitment(project, commitment, transferToken) {
     // Cluster View targets the custom field domainID. It is set in the cluster project handling logic.
     const targetDomainID = project?.metadata.domainID || null;
     const targetProjectID = project.metadata.id;
 
-    transfer.mutate(
-      {
+    try {
+      await transfer.mutateAsync({
         domainID: targetDomainID,
         projectID: targetProjectID,
         commitmentID: commitment.id,
         transferToken: transferToken,
-      },
-      {
-        onSuccess: () => {
-          resetCommitmentTransfer();
-          setRefetchClusterAPI(true);
-          setRefetchDomainAPI(true);
-          setRefetchProjectAPI(true);
-          setRefetchCommitmentAPI(true);
-          setTransferProject(null);
-          publicCommitmentQuery.refetch();
-        },
-        onError: (error) => {
-          resetCommitmentTransfer();
-          setTransferProject(null);
-          setToast(error.toString());
-        },
-      }
-    );
+      });
+      resetCommitmentTransfer();
+      setRefetchClusterAPI(true);
+      setRefetchDomainAPI(true);
+      setRefetchProjectAPI(true);
+      setRefetchCommitmentAPI(true);
+      setTransferProject(null);
+      publicCommitmentQuery.refetch();
+    } catch (error) {
+      resetCommitmentTransfer();
+      setTransferProject(null);
+      setToast(error.toString());
+    }
   }
 
   // Delete commitment
-  function deleteCommitmentAPI(commitment) {
+  async function deleteCommitmentAPI(commitment) {
     if (!deleteCommitment) return;
     const mutation = scope.isCluster() ? clusterCommitmentDelete : commitmentDelete;
 
@@ -254,87 +239,77 @@ const EditPanel = (props) => {
     const targetDomainID = currentProject?.metadata.domainID || null;
     const targetProjectID = currentProject?.metadata.id || null;
 
-    mutation.mutate(
-      { domainID: targetDomainID, projectID: targetProjectID, commitmentID: commitment.id },
-      {
-        onSuccess: () => {
-          setRefetchClusterAPI(true);
-          setRefetchDomainAPI(true);
-          setRefetchProjectAPI(true);
-          setRefetchCommitmentAPI(true);
-          setDeleteCommitment(null);
-          isCommitmentPublic(commitment) && publicCommitmentQuery.refetch();
-        },
-        onError: (error) => {
-          setToast(error.toString());
-        },
-      }
-    );
+    try {
+      await mutation.mutateAsync({ domainID: targetDomainID, projectID: targetProjectID, commitmentID: commitment.id });
+      setRefetchClusterAPI(true);
+      setRefetchDomainAPI(true);
+      setRefetchProjectAPI(true);
+      setRefetchCommitmentAPI(true);
+      setDeleteCommitment(null);
+      isCommitmentPublic(commitment) && publicCommitmentQuery.refetch();
+    } catch (error) {
+      setToast(error.toString());
+    }
   }
 
   // Convert commitment
-  function convertCommitment(commitment, payload) {
+  async function convertCommitment(commitment, payload) {
     const targetDomainID = currentProject?.metadata.domainID || null;
     const targetProjectID = currentProject?.metadata.id || null;
 
-    convert.mutate(
-      { payload: payload, domainID: targetDomainID, projectID: targetProjectID, commitmentID: commitment.id },
-      {
-        onSuccess: () => {
-          setRefetchClusterAPI(true);
-          setRefetchDomainAPI(true);
-          setRefetchProjectAPI(true);
-          setRefetchCommitmentAPI(true);
-          setConversionCommitment(null);
-          isCommitmentPublic(commitment) && publicCommitmentQuery.refetch();
-        },
-        onError: (error) => {
-          setToast(error.toString());
-        },
-      }
-    );
+    try {
+      await convert.mutateAsync({
+        payload: payload,
+        domainID: targetDomainID,
+        projectID: targetProjectID,
+        commitmentID: commitment.id,
+      });
+      setRefetchClusterAPI(true);
+      setRefetchDomainAPI(true);
+      setRefetchProjectAPI(true);
+      setRefetchCommitmentAPI(true);
+      setConversionCommitment(null);
+      isCommitmentPublic(commitment) && publicCommitmentQuery.refetch();
+    } catch (error) {
+      setToast(error.toString());
+    }
   }
 
-  function updateCommitmentDuration(commitment, payload) {
+  async function updateCommitmentDuration(commitment, payload) {
     const targetDomainID = currentProject?.metadata.domainID || null;
     const targetProjectID = currentProject?.metadata.id || null;
 
-    updateDuration.mutate(
-      { payload: payload, domainID: targetDomainID, projectID: targetProjectID, commitmentID: commitment.id },
-      {
-        onSuccess: () => {
-          setRefetchClusterAPI(true);
-          setRefetchDomainAPI(true);
-          setRefetchProjectAPI(true);
-          setRefetchCommitmentAPI(true);
-          setUpdateDurationCommitment(null);
-          isCommitmentPublic(commitment) && publicCommitmentQuery.refetch();
-        },
-        onError: (error) => {
-          setToast(error.toString());
-        },
-      }
-    );
+    try {
+      await updateDuration.mutateAsync({
+        payload: payload,
+        domainID: targetDomainID,
+        projectID: targetProjectID,
+        commitmentID: commitment.id,
+      });
+      setRefetchClusterAPI(true);
+      setRefetchDomainAPI(true);
+      setRefetchProjectAPI(true);
+      setRefetchCommitmentAPI(true);
+      setUpdateDurationCommitment(null);
+      isCommitmentPublic(commitment) && publicCommitmentQuery.refetch();
+    } catch (error) {
+      setToast(error.toString());
+    }
   }
 
-  function mergeCommitments(payload) {
+  async function mergeCommitments(payload) {
     const targetDomainID = currentProject?.metadata.domainID || scope.domainID;
     const targetProjectID = currentProject?.metadata.id || scope.projectID;
-    merge.mutate(
-      { payload: payload, domainID: targetDomainID, projectID: targetProjectID },
-      {
-        onSuccess: () => {
-          setRefetchCommitmentAPI(true);
-          commitmentsToMerge.some((commitment) => isCommitmentPublic(commitment)) && publicCommitmentQuery.refetch();
-          setCommitmentsToMerge([]);
-          setConfirmMerge(false);
-          setIsMerging(false);
-        },
-        onError: (error) => {
-          setToast(error.toString());
-        },
-      }
-    );
+    try {
+      await merge.mutateAsync({ payload: payload, domainID: targetDomainID, projectID: targetProjectID });
+      setRefetchCommitmentAPI(true);
+      commitmentsToMerge.some((commitment) => isCommitmentPublic(commitment)) && publicCommitmentQuery.refetch();
+      setCommitmentsToMerge([]);
+      setConfirmMerge(false);
+      setIsMerging(false);
+    } catch (error) {
+      setToast(error.toString());
+    }
   }
 
   function onPostModalClose() {

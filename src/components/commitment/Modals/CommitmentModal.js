@@ -48,7 +48,7 @@ const CommitmentModal = (props) => {
   const formattedDate = formatTimeISO8160(moment(selectedDate).unix());
   const notifyOnConfirm = React.useRef(false);
 
-  function onConfirm() {
+  async function onConfirm() {
     if (!selectedDate) return;
     // don't send a durationLabel for the UI to the API.
     delete commitment?.durationLabel;
@@ -67,9 +67,9 @@ const CommitmentModal = (props) => {
     // The API confirms commitments without confirm_by instantly.
     const sendConfirmBy = showCalendar;
     if (sendConfirmBy) {
-      action(confirm_by, notifyOnConfirm.current);
+      return action(confirm_by, notifyOnConfirm.current);
     } else {
-      action();
+      return action();
     }
   }
 

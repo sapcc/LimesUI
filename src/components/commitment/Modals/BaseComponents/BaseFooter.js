@@ -14,15 +14,31 @@ const BaseFooter = (props) => {
       return;
     },
   } = props;
+  const executionLock = React.useRef(false);
+  const [isExecuting, setIsExecuting] = React.useState(false);
 
-  function onConfirm() {
+  async function onConfirm() {
+    if (executionLock.current) return;
+    executionLock.current = true;
+    setIsExecuting(true);
     for (const guardFn of guardFns) {
-      if (typeof guardFn !== "function") return;
+      if (typeof guardFn !== "function") {
+        executionLock.current = false;
+        setIsExecuting(false);
+        return;
+      }
       if (!guardFn()) {
+        executionLock.current = false;
+        setIsExecuting(false);
         return;
       }
     }
-    actionFn();
+    try {
+      await actionFn();
+    } finally {
+      executionLock.current = false;
+      setIsExecuting(false);
+    }
   }
 
   return (
@@ -31,7 +47,7 @@ const BaseFooter = (props) => {
         <Button
           data-testid="modalConfirm"
           label="Confirm"
-          disabled={disabled}
+          disabled={disabled || isExecuting}
           variant={variant}
           onClick={() => onConfirm()}
         />

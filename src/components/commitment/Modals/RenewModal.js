@@ -17,8 +17,8 @@ const RenewModal = (props) => {
   const { open, action, title, subText, onModalClose } = props;
   const { ConfirmInput, inputProps, checkInput } = useConfirmInput({ confirmationText: subText });
 
-  function onRenew() {
-    action(commitments);
+  async function onRenew() {
+    return action(commitments);
   }
 
   return (

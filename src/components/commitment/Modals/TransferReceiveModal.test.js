@@ -67,7 +67,9 @@ describe("test transfer receive modal", () => {
     const confirmInput = screen.getByTestId(/confirmInput/i);
     fireEvent.change(confirmInput, { target: { value: "receive" } });
     fireEvent.click(confirmButton);
-    expect(onReceive).toHaveBeenCalled();
+    await waitFor(() => {
+      expect(onReceive).toHaveBeenCalled();
+    });
     const clearButton = screen.getByTestId("clearToken");
     fireEvent.click(clearButton);
     expect(screen.queryByText(/commitment found/i)).toBe(null);

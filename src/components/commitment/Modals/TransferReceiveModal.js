@@ -72,10 +72,10 @@ const TransferReceiveModal = (props) => {
     setGetCommitment(true);
   }
 
-  function transferCommitmentByToken() {
+  async function transferCommitmentByToken() {
     // defense in depth - If button should be forcefully enabled.
     if (!commitment || !isCorrectResource) return;
-    transferCommitment(currentProject, commitment, tokenInput);
+    return transferCommitment(currentProject, commitment, tokenInput);
   }
 
   return (
