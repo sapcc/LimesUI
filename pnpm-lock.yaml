@@ -12,11 +12,11 @@ importers:
         specifier: ^9.1.0
         version: 9.4.2
       '@cloudoperators/juno-ui-components':
-        specifier: 6.2.1
-        version: 6.2.1(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+        specifier: 6.3.1
+        version: 6.3.1(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       '@cloudoperators/juno-url-state-provider':
         specifier: '*'
-        version: 3.0.8
+        version: 3.0.9
       '@tailwindcss/postcss':
         specifier: ^4.1.11
         version: 4.2.4
@@ -832,16 +832,16 @@ packages:
     resolution: {integrity: sha512-vRGvS+xOtO9tEwju37AHu+LK6eFpMK10cIIaIdbYfNqJGhgayQ6eLIHvCuDgpENzZApaY2qerVCbGWb5pB4u7w==}
     engines: {node: '>=22.0.0'}
 
-  '@cloudoperators/juno-ui-components@6.2.1':
-    resolution: {integrity: sha512-wL3j/1UmF9JfhN0gV/VaQ1N+CK8sBq5oQbHkq95MMDz7/9Na/28vFee6Fy2sf8eUUCIoN86unb32AMxrcuQnoQ==}
-    engines: {node: '>=20.0.0', pnpm: '>=8.0.0'}
+  '@cloudoperators/juno-ui-components@6.3.1':
+    resolution: {integrity: sha512-E6vEjhV3gfZ9JgM4XKDOcIarg9jEmaHijfy5JkhbbnLFtFa5ZY8W8DkjzkwoTRY8hVRZF3YMxkfT2hIBXmaDpQ==}
+    engines: {node: '>=20.12.0', pnpm: '>=8.0.0'}
     peerDependencies:
       react: ^19.1.0
       react-dom: ^19.1.0
 
-  '@cloudoperators/juno-url-state-provider@3.0.8':
-    resolution: {integrity: sha512-CeC8YcuUT+7ubNQbeA4SguK/F4NZYOLbjkJCKOqExNw9UnY9JShgukR1/KJRGCHvxdTIKI5hZvLsVKlJQ1FA0w==}
-    engines: {node: '>=20.0.0', pnpm: '>=8.0.0'}
+  '@cloudoperators/juno-url-state-provider@3.0.9':
+    resolution: {integrity: sha512-jt4nOnQ+BgF6N1v3vE0cfTuGsHgc+sN+KI4gg2qjpQWT0RBjhm6oGqH6SzlfxZI7jocIMZJMHERynwKc0KoIGQ==}
+    engines: {node: '>=20.12.0', pnpm: '>=8.0.0'}
 
   '@csstools/color-helpers@5.0.2':
     resolution: {integrity: sha512-JqWH1vsgdGcw2RR6VliXXdA0/59LttzlU8UlRT/iUUsEeWfYq8I+K0yhihEUTTHLRm1EXvpsCx3083EU15ecsA==}
@@ -5406,12 +5406,12 @@ snapshots:
 
   '@cj-tech-master/excelts@9.4.2': {}
 
-  '@cloudoperators/juno-ui-components@6.2.1(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
+  '@cloudoperators/juno-ui-components@6.3.1(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
     dependencies:
       react: 19.2.6
       react-dom: 19.2.6(react@19.2.6)
 
-  '@cloudoperators/juno-url-state-provider@3.0.8':
+  '@cloudoperators/juno-url-state-provider@3.0.9':
     dependencies:
       history: 5.3.0
       query-string: 9.3.1
