@@ -1,0 +1,63 @@
+name: Update MSW Mock Service Worker
+
+on:
+  pull_request:
+    branches: ["main"]
+    paths:
+      - "package.json"
+      - "pnpm-lock.yaml"
+
+jobs:
+  update-msw:
+    runs-on: ubuntu-latest
+    if: startsWith(github.head_ref, 'renovate')
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.head_ref }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Check if msw was updated
+        id: check-msw
+        run: |
+          if git diff origin/main...HEAD -- pnpm-lock.yaml | grep -q "msw"; then
+            echo "msw_updated=true" >> $GITHUB_OUTPUT
+          else
+            echo "msw_updated=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Setup Node.js
+        if: steps.check-msw.outputs.msw_updated == 'true'
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24.x"
+
+      - name: Install pnpm
+        if: steps.check-msw.outputs.msw_updated == 'true'
+        uses: pnpm/action-setup@v6
+        with:
+          cache: true
+
+      - name: Install dependencies
+        if: steps.check-msw.outputs.msw_updated == 'true'
+        run: pnpm install
+
+      - name: Regenerate MSW service worker
+        if: steps.check-msw.outputs.msw_updated == 'true'
+        run: npx msw init ./public --save
+
+      - name: Commit and push if changed
+        if: steps.check-msw.outputs.msw_updated == 'true'
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add public/mockServiceWorker.js
+          if git diff --staged --quiet; then
+            echo "No changes to mockServiceWorker.js"
+          else
+            git commit -m "chore: regenerate mockServiceWorker.js for msw update"
+            git push
+          fi

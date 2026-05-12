@@ -73,14 +73,6 @@
       "schedule": [
         "before 8am on Friday"
       ]
-    },
-    {
-      "matchPackageNames": ["msw"],
-      "postUpgradeTasks": {
-        "commands": ["npx msw init ./public --save"],
-        "fileFilters": ["public/mockServiceWorker.js"],
-        "executionMode": "update"
-      }
     }
   ],
   "semanticCommits": "disabled"
