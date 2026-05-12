@@ -1,5 +1,11 @@
 # @sapcc/limes-ui
 
+## 1.17.1
+
+### Patch Changes
+
+- bcf8d0e: fix action modal multiclick bug - implement execution lock
+
 ## 1.17.0
 
 ### Minor Changes
