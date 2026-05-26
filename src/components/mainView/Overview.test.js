@@ -3,9 +3,12 @@
 
 import React from "react";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { HashRouter, Routes, Route } from "react-router";
 import Overview from "./Overview";
 import StoreProvider from "../StoreProvider";
+import { PortalProvider } from "@cloudoperators/juno-ui-components/index";
+import { SEARCH_TERM } from "./overviewFilter/BaseFilter";
 
 const mockOverview = {
   editableAreas: ["area-1", "area-2"],
@@ -15,7 +18,7 @@ const mockOverview = {
     "advanced-area": ["service-c"],
   },
   categories: {
-    "service-a": ["category-x"],
+    "service-a": ["category-x", "category-y", "category-z"],
     "service-b": ["category-y"],
     "service-c": ["category-z"],
   },
@@ -38,22 +41,39 @@ const mockCategories = {
   "category-z": { resources: [] },
 };
 
-const renderOverview = (initialLocation, canEdit = true) => {
+const mockCategoriesWithResources = {
+  "category-x": {
+    resources: [
+      { name: "cores", editableResource: true, quota: 10 },
+      { name: "ram", editableResource: true, quota: 1024 },
+    ],
+  },
+  "category-y": {
+    resources: [{ name: "cores2", editableResource: true, quota: 20 }],
+  },
+  "category-z": {
+    resources: [{ name: "other", editableResource: true, quota: 30 }],
+  },
+};
+
+const renderOverview = (initialLocation, canEdit = true, categories = mockCategories) => {
   window.location.hash = initialLocation;
   return render(
     <StoreProvider>
-      <HashRouter>
-        <Routes>
-          <Route
-            path="/:currentArea?"
-            element={<Overview overview={mockOverview} categories={mockCategories} canEdit={canEdit} />}
-          />
-          <Route
-            path="/:currentArea/*"
-            element={<Overview overview={mockOverview} categories={mockCategories} canEdit={canEdit} />}
-          />
-        </Routes>
-      </HashRouter>
+      <PortalProvider>
+        <HashRouter>
+          <Routes>
+            <Route
+              path="/:currentArea?"
+              element={<Overview overview={mockOverview} categories={categories} canEdit={canEdit} />}
+            />
+            <Route
+              path="/:currentArea/*"
+              element={<Overview overview={mockOverview} categories={categories} canEdit={canEdit} />}
+            />
+          </Routes>
+        </HashRouter>
+      </PortalProvider>
     </StoreProvider>
   );
 };
@@ -61,6 +81,7 @@ const renderOverview = (initialLocation, canEdit = true) => {
 describe("Overview", () => {
   beforeEach(() => {
     localStorage.clear();
+    window.location.hash = "";
   });
 
   test("renders the default view with the first area selected", () => {
@@ -116,45 +137,47 @@ describe("Overview", () => {
       expect(window.location.hash).toEqual("#/area-1");
     });
   });
+});
 
-  test("displays specialUnitInfo", () => {
-    localStorage.setItem("advancedView", "true");
+test("displays specialUnitInfo", () => {
+  localStorage.setItem("advancedView", "true");
 
-    const mockOverviewWithHwVersion = {
-      ...mockOverview,
-      areas: {
-        "area-1": ["service-a"],
-      },
-      categories: {
-        "service-a": ["category-x"],
-      },
-    };
+  const mockOverviewWithHwVersion = {
+    ...mockOverview,
+    areas: {
+      "area-1": ["service-a"],
+    },
+    categories: {
+      "service-a": ["category-x"],
+    },
+  };
 
-    const mockResource = (name, editableResource, unit = "") => ({
-      name,
-      editableResource,
-      unit,
-      per_az: [{ name: "az-1", usage: 10, quota: 100 }],
-      quota: 100,
-      usage: 10,
-    });
+  const mockResource = (name, editableResource, unit = "") => ({
+    name,
+    editableResource,
+    unit,
+    per_az: [{ name: "az-1", usage: 10, quota: 100 }],
+    quota: 100,
+    usage: 10,
+  });
 
-    const mockCategoriesWithHwVersion = {
-      "category-x": {
-        area: "area-1",
-        resources: [
-          mockResource("hw_version_2151_cores", false),
-          mockResource("hw_version_2151_ram", true, "128 GiB"),
-          mockResource("hw_version_2152_cores", true),
-          mockResource("hw_version_2152_ram", true, "256 GiB"),
-          mockResource("hw_version_2153_cores", false),
-          mockResource("hw_version_2153_ram", false, "512 GiB"),
-        ],
-      },
-    };
+  const mockCategoriesWithHwVersion = {
+    "category-x": {
+      area: "area-1",
+      resources: [
+        mockResource("hw_version_2151_cores", false),
+        mockResource("hw_version_2151_ram", true, "128 GiB"),
+        mockResource("hw_version_2152_cores", true),
+        mockResource("hw_version_2152_ram", true, "256 GiB"),
+        mockResource("hw_version_2153_cores", false),
+        mockResource("hw_version_2153_ram", false, "512 GiB"),
+      ],
+    },
+  };
 
-    render(
-      <StoreProvider>
+  render(
+    <StoreProvider>
+      <PortalProvider>
         <HashRouter>
           <Routes>
             <Route
@@ -169,19 +192,311 @@ describe("Overview", () => {
             />
           </Routes>
         </HashRouter>
-      </StoreProvider>
-    );
+      </PortalProvider>
+    </StoreProvider>
+  );
 
-    // info should appear for cores resources with editable RAM counterparts
-    expect(screen.getByTestId("specialUnitInfo/hw_version_2151_cores")).toBeInTheDocument();
-    // should not have specialUnitInfo (Cores are commitable)
-    expect(screen.queryByTestId("specialUnitInfo/hw_version_2152_cores")).not.toBeInTheDocument();
-    // should not have specialUnitInfo (RAM counterpart is not editable)
-    expect(screen.queryByTestId("specialUnitInfo/hw_version_2153_cores")).not.toBeInTheDocument();
+  // info should appear for cores resources with editable RAM counterparts
+  expect(screen.getByTestId("specialUnitInfo/hw_version_2151_cores")).toBeInTheDocument();
+  // should not have specialUnitInfo (Cores are commitable)
+  expect(screen.queryByTestId("specialUnitInfo/hw_version_2152_cores")).not.toBeInTheDocument();
+  // should not have specialUnitInfo (RAM counterpart is not editable)
+  expect(screen.queryByTestId("specialUnitInfo/hw_version_2153_cores")).not.toBeInTheDocument();
 
-    // specialUnitPill should appear for resources with special units (e.g.128 GiB)
-    expect(screen.getByTestId("specialUnitPill/hw_version_2151_ram")).toBeInTheDocument();
-    expect(screen.getByTestId("specialUnitPill/hw_version_2152_ram")).toBeInTheDocument();
-    expect(screen.getByTestId("specialUnitPill/hw_version_2153_ram")).toBeInTheDocument();
+  // specialUnitPill should appear for resources with special units (e.g.128 GiB)
+  expect(screen.getByTestId("specialUnitPill/hw_version_2151_ram")).toBeInTheDocument();
+  expect(screen.getByTestId("specialUnitPill/hw_version_2152_ram")).toBeInTheDocument();
+  expect(screen.getByTestId("specialUnitPill/hw_version_2153_ram")).toBeInTheDocument();
+});
+
+describe("OverviewFilter", () => {
+  test("resource search term filter", async () => {
+    renderOverview("/area-1", true, mockCategoriesWithResources);
+
+    // all resources are initially visible
+    expect(screen.getByText("Cores")).toBeInTheDocument();
+    expect(screen.getByText("RAM")).toBeInTheDocument();
+
+    // fill input field, only matching resources show up
+    const searchInput = screen.getByTestId("Search");
+    fireEvent.change(searchInput, { target: { value: "cores" } });
+    expect(searchInput).toHaveValue("cores");
+
+    await waitFor(() => {
+      expect(screen.getByText("Cores")).toBeInTheDocument();
+      expect(screen.queryByText("RAM")).not.toBeInTheDocument();
+    });
+
+    // clear input field, all resources show again
+    fireEvent.change(searchInput, { target: { value: "" } });
+
+    await waitFor(() => {
+      expect(screen.getByText("Cores")).toBeInTheDocument();
+      expect(screen.getByText("RAM")).toBeInTheDocument();
+    });
+
+    // no resources match the filter
+    fireEvent.change(searchInput, { target: { value: "nonexistent" } });
+    await waitFor(() => {
+      expect(screen.queryByText("Cores")).not.toBeInTheDocument();
+      expect(screen.queryByText("RAM")).not.toBeInTheDocument();
+      expect(screen.getByTestId("no-resources-found")).toBeInTheDocument();
+    });
+
+    // filter <category> should show all resources of the matching category
+    fireEvent.change(searchInput, { target: { value: "category-x" } });
+    await waitFor(() => {
+      expect(screen.getByText("category-x")).toBeInTheDocument();
+      expect(screen.getByText("Cores")).toBeInTheDocument();
+      expect(screen.getByText("RAM")).toBeInTheDocument();
+      expect(screen.queryByText("category-y")).not.toBeInTheDocument();
+      expect(screen.queryByText("category-z")).not.toBeInTheDocument();
+    });
+
+    // tab change resets the input and removes query parameter
+    fireEvent.change(searchInput, { target: { value: "test-filter" } });
+    expect(searchInput).toHaveValue("test-filter");
+    await waitFor(() => {
+      expect(window.location.hash).toContain(`${SEARCH_TERM}=test-filter`);
+    });
+
+    const area2Tab = screen.getByText("area-2");
+    fireEvent.click(area2Tab);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("Search")).toHaveValue("");
+      expect(window.location.hash).not.toContain(SEARCH_TERM);
+    });
+  });
+  test("resource filter options", async () => {
+    const user = userEvent.setup();
+    renderOverview("/area-1", true, mockCategoriesWithResources);
+
+    // all resources are initially visible
+    expect(screen.getByText("Cores")).toBeInTheDocument();
+    expect(screen.getByText("RAM")).toBeInTheDocument();
+
+    const filterSelect = screen.getByTestId("filter-select");
+    const filterBox = screen.getByTestId("filter-box");
+    expect(filterBox).toHaveAttribute("data-disabled");
+
+    // category and resource filter
+    await user.click(filterSelect);
+    const capacityOpt = screen.getByTestId("select-Category");
+
+    await user.click(capacityOpt);
+    await waitFor(() => {
+      expect(filterBox).not.toHaveAttribute("data-disabled");
+    });
+
+    // select category-x
+    const comboboxToggle = filterBox.getElementsByClassName("juno-combobox-toggle")[0];
+    await user.click(comboboxToggle);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("box-category-x")).toBeInTheDocument();
+    });
+
+    await user.click(screen.getByTestId("box-category-x"));
+
+    await waitFor(() => {
+      expect(screen.getByTestId("category:category-x")).toBeInTheDocument();
+    });
+
+    // select category-y
+    await user.click(comboboxToggle);
+
+    await waitFor(() => {
+      expect(screen.getByTestId("box-category-y")).toBeInTheDocument();
+    });
+
+    await user.click(screen.getByTestId("box-category-y"));
+
+    await waitFor(() => {
+      expect(screen.getByTestId("category:category-x")).toBeInTheDocument();
+      expect(screen.getByTestId("category:category-y")).toBeInTheDocument();
+    });
+
+    await waitFor(() => {
+      expect(screen.queryAllByText("category-x")).toHaveLength(2);
+      expect(screen.queryAllByText("category-y")).toHaveLength(2);
+      expect(screen.queryByText("category-z")).not.toBeInTheDocument();
+    });
+
+    // searching a specific resource narrows down the selected filter results
+    const searchInput = screen.getByTestId("Search");
+    fireEvent.change(searchInput, { target: { value: "^cores$" } });
+
+    await waitFor(() => {
+      expect(screen.queryAllByText("category-x")).toHaveLength(2);
+      expect(screen.queryAllByText("category-y")).toHaveLength(1);
+      expect(screen.queryByText("category-z")).not.toBeInTheDocument();
+    });
+
+    fireEvent.change(searchInput, { target: { value: "" } });
+
+    await waitFor(() => {
+      expect(window.location.hash).not.toContain("searchTerm=");
+    });
+
+    // selecting the same resource per filter does not change the result
+    await user.click(filterSelect);
+    const resourceOpt = screen.getByTestId("select-Resource");
+    await user.click(resourceOpt);
+
+    await user.click(comboboxToggle);
+    await user.click(screen.getByTestId("box-cores"));
+    await waitFor(() => {
+      expect(screen.getByTestId("resource:cores")).toBeInTheDocument();
+    });
+
+    await waitFor(() => {
+      expect(screen.queryAllByText("category-x")).toHaveLength(2);
+      expect(screen.queryAllByText("category-y")).toHaveLength(1);
+      expect(screen.queryByText("category-z")).not.toBeInTheDocument();
+    });
+
+    // verify URL contains filter parameters
+    await waitFor(() => {
+      expect(window.location.hash).toContain("category=category-x");
+      expect(window.location.hash).toContain("category-y");
+      expect(window.location.hash).toContain("resource=cores");
+    });
+
+    // clear all button resets filter values and URL parameters
+    const clearAllButton = screen.getByTestId("filter-clear");
+    await user.click(clearAllButton);
+
+    await waitFor(() => {
+      expect(screen.queryByTestId("category:category-x")).not.toBeInTheDocument();
+      expect(screen.queryByTestId("category:category-y")).not.toBeInTheDocument();
+      expect(screen.queryByTestId("resource:cores")).not.toBeInTheDocument();
+      expect(window.location.hash).not.toContain("category=");
+      expect(window.location.hash).not.toContain("resource=");
+    });
+
+    // re-add filters to test tab change reset
+    await user.click(filterSelect);
+    await user.click(screen.getByTestId("select-Category"));
+    await user.click(comboboxToggle);
+    await user.click(screen.getByTestId("box-category-x"));
+
+    await waitFor(() => {
+      expect(screen.getByTestId("category:category-x")).toBeInTheDocument();
+      expect(window.location.hash).toContain("category=category-x");
+    });
+
+    // tab change resets filter values and URL parameters
+    const area2Tab = screen.getByText("area-2");
+    await user.click(area2Tab);
+
+    await waitFor(() => {
+      expect(screen.queryByTestId("category:category-x")).not.toBeInTheDocument();
+      expect(window.location.hash).not.toContain("category=");
+      expect(window.location.hash).not.toContain("resource=");
+    });
+  });
+
+  test("invalid filter parameters do not create pills", async () => {
+    // empty filter values
+    renderOverview("/area-1?category=&resource=", true, mockCategoriesWithResources);
+    expect(screen.getByText("Cores")).toBeInTheDocument();
+    expect(screen.getByText("RAM")).toBeInTheDocument();
+
+    expect(screen.queryByTestId(/category:/)).not.toBeInTheDocument();
+    expect(screen.queryByTestId(/resource:/)).not.toBeInTheDocument();
+  });
+
+  test("avoid malformed URL with empty filter values", async () => {
+    const user = userEvent.setup();
+    renderOverview("/area-1?category=", true, mockCategoriesWithResources);
+
+    const filterSelect = screen.getByTestId("filter-select");
+    const filterBox = screen.getByTestId("filter-box");
+    await user.click(filterSelect);
+    await user.click(screen.getByTestId("select-Category"));
+
+    // Add a category filter
+    const comboboxToggle = filterBox.getElementsByClassName("juno-combobox-toggle")[0];
+    await user.click(comboboxToggle);
+    await user.click(screen.getByTestId("box-category-x"));
+
+    // Verify URL is not malformed: "category=,category-x"
+    await waitFor(() => {
+      expect(window.location.hash).not.toMatch(/category=,/);
+      expect(window.location.hash).toContain("category=category-x");
+    });
+  });
+
+  test("search with invalid regex characters does not crash", async () => {
+    renderOverview("/area-1", true, mockCategoriesWithResources);
+    expect(screen.getByText("Cores")).toBeInTheDocument();
+    expect(screen.getByText("RAM")).toBeInTheDocument();
+
+    const searchInput = screen.getByTestId("Search");
+
+    // input: "+" to test invalid regex pattern
+    fireEvent.change(searchInput, { target: { value: "+" } });
+    expect(searchInput).toHaveValue("+");
+
+    // The app should not crash and should fall back to literal string matching
+    // Since no resource name contains "+", no resources should match
+    await waitFor(() => {
+      expect(screen.queryByText("Cores")).not.toBeInTheDocument();
+      expect(screen.queryByText("RAM")).not.toBeInTheDocument();
+      expect(screen.getByTestId("no-resources-found")).toBeInTheDocument();
+    });
+
+    // Clear input and verify that the non-regex search still works
+    fireEvent.change(searchInput, { target: { value: "cores" } });
+
+    await waitFor(() => {
+      expect(screen.getByText("Cores")).toBeInTheDocument();
+      expect(screen.queryByText("RAM")).not.toBeInTheDocument();
+    });
+  });
+
+  test("resource select only shows resources from selected categories", async () => {
+    const user = userEvent.setup();
+    renderOverview("/area-1", true, mockCategoriesWithResources);
+
+    const filterSelect = screen.getByTestId("filter-select");
+    const filterBox = screen.getByTestId("filter-box");
+    await user.click(filterSelect);
+    await user.click(screen.getByTestId("select-Category"));
+
+    const comboboxToggle = filterBox.getElementsByClassName("juno-combobox-toggle")[0];
+
+    // Select category-x
+    await user.click(comboboxToggle);
+    await user.click(screen.getByTestId("box-category-x"));
+
+    await waitFor(() => {
+      expect(screen.getByTestId("category:category-x")).toBeInTheDocument();
+    });
+
+    // Select category-y
+    await user.click(comboboxToggle);
+    await user.click(screen.getByTestId("box-category-y"));
+
+    await waitFor(() => {
+      expect(screen.getByTestId("category:category-x")).toBeInTheDocument();
+      expect(screen.getByTestId("category:category-y")).toBeInTheDocument();
+    });
+
+    // Resource selection
+    await user.click(filterSelect);
+    await user.click(screen.getByTestId("select-Resource"));
+    await user.click(comboboxToggle);
+
+    // Resources from category-x and category-y are present
+    await waitFor(() => {
+      expect(screen.getByTestId("box-cores")).toBeInTheDocument();
+      expect(screen.getByTestId("box-ram")).toBeInTheDocument();
+      expect(screen.getByTestId("box-cores2")).toBeInTheDocument();
+    });
+
+    // Resource from category-z is NOT present
+    expect(screen.queryByTestId("box-other")).not.toBeInTheDocument();
   });
 });

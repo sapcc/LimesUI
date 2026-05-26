@@ -85,7 +85,7 @@ const App = (props = {}) => {
       <style>{dayPickerStyle}</style>
       <AsyncWorker mockAPI={props.mockAPI} />
       <AppShell
-        pageHeader="Converged Cloud | App limesUI"
+        pageHeader="SAP Cloud Infrastructure | LimesUI"
         embedded={props.embedded === "true" || props.embedded === true}
       >
         {apiReady ? <Resource {...props} /> : <LoadingIndicator className={"m-auto"} />}

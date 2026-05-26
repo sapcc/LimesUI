@@ -6,15 +6,17 @@ import Category from "./Category";
 import { useGlobalStore, useCreateCommitmentStore } from "../StoreProvider";
 import useResetCommitment from "../../hooks/useResetCommitment";
 import { useParams, useNavigate, useLocation, Outlet } from "react-router";
-import { t, byUIString } from "../../lib/utils";
+import { t } from "../../lib/utils";
 import { ADVANCEDVIEW, CEREBROKEY, COMMITMENTRENEWALKEY } from "../../lib/constants";
 import PAYGOverview from "../paygAvailability/bigVM/PAYGOverview";
 import RenewalManager from "../commitmentRenewal/RenewalManager";
-import { Tabs, Tab, TabList, TabPanel, Container, Button, Box } from "@cloudoperators/juno-ui-components";
+import { Box, Button, Container, Tab, Tabs, TabList, TabPanel, Message } from "@cloudoperators/juno-ui-components";
 import { getScrapeTime } from "../../lib/getScrapeTime";
+import OverviewFilter from "./overviewFilter/OverviewFilter";
+import useOverviewFilters from "./overviewFilter/useOverviewFilters";
 
 const Overview = (props) => {
-  const { overview, canEdit } = props;
+  const { overview, categories, canEdit } = props;
   const scope = useGlobalStore((state) => state.scope);
   const isEditing = useCreateCommitmentStore((state) => state.isEditing);
   const navigate = useNavigate();
@@ -30,6 +32,11 @@ const Overview = (props) => {
   const { currentArea: selectedArea } = useParams();
   const currentArea = allAreas.includes(selectedArea) ? selectedArea : allAreas[0];
   const currentTabIdx = allAreas.indexOf(currentArea);
+  const { categoriesForArea, filteredCategories, categoryFilters, resourceFilters, searchTerm } = useOverviewFilters({
+    overview,
+    categories,
+    currentArea,
+  });
 
   // EditPanel State should reset if the user changes the URL.
   React.useEffect(() => {
@@ -49,14 +56,13 @@ const Overview = (props) => {
     navigate(`/${currentArea}`);
   }, [location.pathname, currentArea, canEdit]);
 
-  // navigate to the selected area
+  // navigate to the selected area while also resetting the resource filter
   function onTabChange(selectedArea) {
-    navigate(`/${selectedArea}`);
+    navigate(`/${selectedArea}`, { replace: false });
   }
 
   function renderArea() {
-    const { areas, categories } = props.overview;
-    const currentServices = areas[currentArea];
+    const currentServices = overview.areas[currentArea];
 
     if (!currentServices) {
       return <Box>Invalid Path.</Box>;
@@ -64,22 +70,32 @@ const Overview = (props) => {
 
     const ageDisplay = getScrapeTime(currentServices, props.overview);
 
+    // check if there are any filtered resources for the current area
+    const hasFilteredResources = Object.values(filteredCategories).some((category) => category?.resources?.length > 0);
+
+    if (!hasFilteredResources) {
+      return (
+        <>
+          <Message data-testid="no-resources-found" className="my-4">
+            No resources found.
+          </Message>
+          <div>Usage last updated {ageDisplay} ago.</div>
+        </>
+      );
+    }
+
     return (
       <>
-        {currentServices
-          .sort(byUIString)
-          .map((serviceType) =>
-            categories[serviceType].map((categoryName) => (
-              <Category
-                key={categoryName}
-                categoryName={categoryName}
-                serviceType={serviceType}
-                category={props.categories[categoryName]}
-                canEdit={props.canEdit}
-                advancedView={advancedView}
-              />
-            ))
-          )}
+        {Object.entries(filteredCategories).map(([categoryName, category]) => (
+          <Category
+            key={categoryName}
+            categoryName={categoryName}
+            serviceType={category.serviceType}
+            category={category}
+            canEdit={props.canEdit}
+            advancedView={advancedView}
+          />
+        ))}
         <div>Usage last updated {ageDisplay} ago.</div>
       </>
     );
@@ -142,13 +158,23 @@ const Overview = (props) => {
             </Button>
           </div>
         </TabList>
-
         {allAreas.map((area) =>
           !scope.isProject() && area === COMMITMENTRENEWALKEY ? null : (
             <TabPanel key={area} className={"m-4"}></TabPanel>
           )
         )}
       </Tabs>
+      {currentArea !== CEREBROKEY && currentArea !== COMMITMENTRENEWALKEY && (
+        <OverviewFilter
+          categories={categoriesForArea}
+          categoryFilters={categoryFilters}
+          resourceFilters={resourceFilters}
+          searchTerm={searchTerm}
+          currentArea={currentArea}
+          overview={overview}
+          advancedView={advancedView}
+        />
+      )}
       {currentTab}
       {canEdit && <Outlet />}
     </Container>
