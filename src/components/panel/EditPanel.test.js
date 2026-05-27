@@ -7,6 +7,7 @@ import moment from "moment";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act, fireEvent, renderHook, screen, waitFor } from "@testing-library/react";
 import { PortalProvider } from "@cloudoperators/juno-ui-components";
+import { MemoryRouter } from "react-router";
 import { Scope } from "../../lib/scope";
 import StoreProvider, {
   globalStoreActions,
@@ -108,14 +109,16 @@ describe("EditPanel tests", () => {
     resource.per_az.commitmentSum = 10;
 
     const wrapper = ({ children }) => (
-      <PortalProvider>
-        <StoreProvider>
-          <QueryClientProvider client={queryClient}>
-            <EditPanel serviceType="testService" currentResource={resource} tracksQuota={true} />
-            {children}
-          </QueryClientProvider>
-        </StoreProvider>
-      </PortalProvider>
+      <MemoryRouter>
+        <PortalProvider>
+          <StoreProvider>
+            <QueryClientProvider client={queryClient}>
+              <EditPanel serviceType="testService" currentResource={resource} tracksQuota={true} />
+              {children}
+            </QueryClientProvider>
+          </StoreProvider>
+        </PortalProvider>
+      </MemoryRouter>
     );
     const { result } = renderHook(
       () => ({
@@ -152,14 +155,16 @@ describe("EditPanel tests", () => {
       per_az: [{ name: "az_1", projects_usage: 10, quota: 20 }],
     };
     const wrapper = ({ children }) => (
-      <PortalProvider>
-        <StoreProvider>
-          <QueryClientProvider client={queryClient}>
-            <EditPanel serviceType="testService" currentResource={resource} tracksQuota={true} />
-            {children}
-          </QueryClientProvider>
-        </StoreProvider>
-      </PortalProvider>
+      <MemoryRouter>
+        <PortalProvider>
+          <StoreProvider>
+            <QueryClientProvider client={queryClient}>
+              <EditPanel serviceType="testService" currentResource={resource} tracksQuota={true} />
+              {children}
+            </QueryClientProvider>
+          </StoreProvider>
+        </PortalProvider>
+      </MemoryRouter>
     );
     const { result, rerender } = renderHook(
       () => ({
@@ -282,14 +287,16 @@ describe("EditPanel tests", () => {
     resource.per_az.commitmentSum = 10;
 
     const wrapper = ({ children }) => (
-      <PortalProvider>
-        <StoreProvider>
-          <QueryClientProvider client={queryClient}>
-            <EditPanel serviceType="testService" currentResource={resource} tracksQuota={true} />
-            {children}
-          </QueryClientProvider>
-        </StoreProvider>
-      </PortalProvider>
+      <MemoryRouter>
+        <PortalProvider>
+          <StoreProvider>
+            <QueryClientProvider client={queryClient}>
+              <EditPanel serviceType="testService" currentResource={resource} tracksQuota={true} />
+              {children}
+            </QueryClientProvider>
+          </StoreProvider>
+        </PortalProvider>
+      </MemoryRouter>
     );
     const { result } = renderHook(
       () => ({
@@ -353,14 +360,16 @@ describe("EditPanel tests", () => {
     };
 
     const wrapper = ({ children }) => (
-      <PortalProvider>
-        <StoreProvider>
-          <QueryClientProvider client={queryClient}>
-            <EditPanel serviceType="testService" currentResource={resource} tracksQuota={true} />
-            {children}
-          </QueryClientProvider>
-        </StoreProvider>
-      </PortalProvider>
+      <MemoryRouter>
+        <PortalProvider>
+          <StoreProvider>
+            <QueryClientProvider client={queryClient}>
+              <EditPanel serviceType="testService" currentResource={resource} tracksQuota={true} />
+              {children}
+            </QueryClientProvider>
+          </StoreProvider>
+        </PortalProvider>
+      </MemoryRouter>
     );
 
     const { result, rerender } = renderHook(
@@ -436,14 +445,16 @@ describe("EditPanel tests", () => {
     };
     resource.per_az.commitmentSum = 10;
     const wrapper = ({ children }) => (
-      <PortalProvider>
-        <StoreProvider>
-          <QueryClientProvider client={queryClient}>
-            <EditPanel serviceType="testService" currentResource={resource} tracksQuota={true} />
-            {children}
-          </QueryClientProvider>
-        </StoreProvider>
-      </PortalProvider>
+      <MemoryRouter>
+        <PortalProvider>
+          <StoreProvider>
+            <QueryClientProvider client={queryClient}>
+              <EditPanel serviceType="testService" currentResource={resource} tracksQuota={true} />
+              {children}
+            </QueryClientProvider>
+          </StoreProvider>
+        </PortalProvider>
+      </MemoryRouter>
     );
     const { result, rerender } = renderHook(
       () => ({

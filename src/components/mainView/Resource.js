@@ -6,7 +6,7 @@ import { useGlobalStore, useCreateCommitmentStore } from "../StoreProvider";
 import { t } from "../../lib/utils";
 import { CustomZones, PanelType } from "../../lib/constants";
 import { Button, Icon, Pill, Stack } from "@cloudoperators/juno-ui-components";
-import { Link } from "react-router";
+import { Link, useLocation } from "react-router";
 import { ProjectBadges } from "../shared/LimesBadges";
 import { isAZUnaware, getResourceDurations } from "../../lib/utils";
 import ResourceBarBuilder from "../resourceBar/ResourceBarBuilder";
@@ -91,6 +91,7 @@ const Resource = (props) => {
   const isEditing = useCreateCommitmentStore((state) => state.isEditing);
   const { resetCommitment } = useResetCommitment();
   const [displayResourceInfo, setDisplayResourceInfo] = React.useState(false);
+  const location = useLocation();
 
   const forbidAutogrowthForwardProps = {
     editMode: canEdit,
@@ -157,7 +158,10 @@ const Resource = (props) => {
         {canEdit && !isPanelView && (
           <Stack className="items-center" gap="1">
             {editableResource && (
-              <Link to={`/${props.area}/edit/${categoryName}/${props.resource.name}`} state={props}>
+              <Link
+                to={{ pathname: `/${props.area}/edit/${categoryName}/${props.resource.name}`, search: location.search }}
+                state={props}
+              >
                 <Button
                   data-cy={`edit/${props.resource.name}`}
                   data-testid={`edit/${props.resource.name}`}
@@ -170,7 +174,10 @@ const Resource = (props) => {
             )}
             {!scope.isProject() && tracksQuota && (
               <Link
-                to={`/${props.area}/edit/${categoryName}/${props.resource.name}/${PanelType.quota.name}`}
+                to={{
+                  pathname: `/${props.area}/edit/${categoryName}/${props.resource.name}/${PanelType.quota.name}`,
+                  search: location.search,
+                }}
                 state={props}
               >
                 <Button data-testid={"setMaxQuotaPanel"} size="small" icon="edit">

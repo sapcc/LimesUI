@@ -53,7 +53,7 @@ const Overview = (props) => {
   // Hitting edit view URL without edit permissions should lead to the main route.
   React.useEffect(() => {
     if (canEdit || location.pathname === `/${currentArea}`) return;
-    navigate(`/${currentArea}`);
+    navigate({ pathname: `/${currentArea}`, search: location.search});
   }, [location.pathname, currentArea, canEdit]);
 
   // navigate to the selected area while also resetting the resource filter
