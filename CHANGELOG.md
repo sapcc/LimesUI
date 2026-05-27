@@ -1,5 +1,11 @@
 # @sapcc/limes-ui
 
+## 1.18.0
+
+### Minor Changes
+
+- a1d27d7: add resource filter for the main page
+
 ## 1.17.1
 
 ### Patch Changes
