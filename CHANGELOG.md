@@ -1,5 +1,11 @@
 # @sapcc/limes-ui
 
+## 1.18.1
+
+### Patch Changes
+
+- e4bbf5a: fix: preserve category and resource filter when navigating to the editpanel or any subroutes
+
 ## 1.18.0
 
 ### Minor Changes
