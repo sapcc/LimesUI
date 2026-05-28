@@ -4,7 +4,7 @@
 import React from "react";
 import Resource from "./Resource";
 import { Scope } from "../../lib/scope";
-import { MemoryRouter } from "react-router";
+import { MemoryRouter, useLocation } from "react-router";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import { act, renderHook, screen, waitFor } from "@testing-library/react";
 import { PortalProvider } from "@cloudoperators/juno-ui-components";
@@ -23,6 +23,54 @@ queryClient.setQueryDefaults(["maxQuota"], {
 });
 
 describe("Resource tests", () => {
+  test("edit link preserves search params", async () => {
+    const scope = new Scope({ projectID: "123", domainID: "456" });
+    const res = {
+      name: "testResource",
+      editableResource: true,
+      per_az: [{ name: "az1", projects_usage: 10 }],
+    };
+    const forwardProps = {
+      area: "testArea",
+      canEdit: true,
+      categoryName: "testCategory",
+      serviceType: "testService",
+    };
+
+    const initialEntries = ["/testArea?search=myfilter&category=compute"];
+
+    const wrapper = ({ children }) => (
+      <PortalProvider>
+        <StoreProvider>
+          <QueryClientProvider client={queryClient}>
+            <MemoryRouter initialEntries={initialEntries}>
+              <Resource key={res.name} resource={res} {...forwardProps} tracksQuota={true} />
+              {children}
+            </MemoryRouter>
+          </QueryClientProvider>
+        </StoreProvider>
+      </PortalProvider>
+    );
+
+    const { result } = renderHook(
+      () => ({
+        globalStoreActions: globalStoreActions(),
+        location: useLocation(),
+      }),
+      { wrapper }
+    );
+
+    act(() => {
+      result.current.globalStoreActions.setScope(scope);
+    });
+
+    const editLink = screen.getByTestId("edit/testResource").closest("a");
+    expect(editLink).toHaveAttribute(
+      "href",
+      "/testArea/edit/testCategory/testResource?search=myfilter&category=compute"
+    );
+  });
+
   test("display correct edit option for resource", async () => {
     let scope = new Scope({ projectID: "123", domainID: "456" });
     const res = {

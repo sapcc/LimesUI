@@ -5,7 +5,7 @@ import React from "react";
 import { Panel } from "@cloudoperators/juno-ui-components";
 import EditPanel from "./EditPanel";
 import { tracksQuota } from "../../lib/utils";
-import { useParams, useNavigate } from "react-router";
+import { useParams, useNavigate, useLocation } from "react-router";
 import { t, getCurrentResource } from "../../lib/utils";
 import { initialCommitmentObject, PanelType } from "../../lib/constants";
 import { createCommitmentStoreActions, useCreateCommitmentStore } from "../StoreProvider";
@@ -17,6 +17,7 @@ const validSubRoutes = Object.values(PanelType).map((type) => type.name);
 const PanelManager = (props) => {
   const params = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { currentArea, categoryName, resourceName, subRoute: rawSubRoute } = { ...params };
   // Validate subRoute - only allow valid panel types, treat invalid values as undefined
   const subRoute = rawSubRoute && validSubRoutes.includes(rawSubRoute) ? rawSubRoute : undefined;
@@ -74,7 +75,7 @@ const PanelManager = (props) => {
       opened={isEditing}
       onClose={() => {
         onPanelClose();
-        navigate(`/${currentArea}`);
+        navigate({ pathname: `/${currentArea}`, search: location.search });
       }}
       closeable={true}
       heading={`Manage Committed Resources: ${t(categoryName)} - ${t(resourceName)}`}
