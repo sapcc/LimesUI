@@ -12,11 +12,11 @@ importers:
         specifier: ^9.1.0
         version: 9.5.8
       '@cloudoperators/juno-ui-components':
-        specifier: 6.4.0
-        version: 6.4.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+        specifier: 6.5.0
+        version: 6.5.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       '@cloudoperators/juno-url-state-provider':
         specifier: '*'
-        version: 3.0.9
+        version: 3.0.10
       '@tailwindcss/postcss':
         specifier: ^4.1.11
         version: 4.3.0
@@ -754,8 +754,8 @@ packages:
     peerDependencies:
       '@babel/core': ^7.0.0-0
 
-  '@babel/runtime@7.29.2':
-    resolution: {integrity: sha512-JiDShH45zKHWyGe4ZNVRrCjBz8Nh9TMmZG1kh4QTK8hCBTWBi8Da+i7s1fJw7/lYpM4ccepSNfqzZ/QvABBi5g==}
+  '@babel/runtime@7.29.7':
+    resolution: {integrity: sha512-Nq8OhGWiZIZGV6hLHoyAKLLcJihP/xFeBMGJoUrxTX2psI8dCifzLhZISFb+VWS3wFMRDmCGw5R+dOySCqPLhw==}
     engines: {node: '>=6.9.0'}
 
   '@babel/template@7.29.7':
@@ -832,16 +832,16 @@ packages:
     resolution: {integrity: sha512-D463Di3RCUGEcDQa+3th+TYmIvBivej75IKm0fZfq19kwLucwq6OF3pxQlTOuD8LAaZBWGHgTPNbBr1HtoqIFQ==}
     engines: {node: '>=22.0.0'}
 
-  '@cloudoperators/juno-ui-components@6.4.0':
-    resolution: {integrity: sha512-6/oGukKDwJ+IXeNPs9ktzqK+FsbrJLPIkGDc6xIwbJKQVGTy23p2AdnlkghaA0mAl4o4RpPxQsMsR2xL3aQSgA==}
-    engines: {node: '>=20.12.0', pnpm: '>=8.0.0'}
+  '@cloudoperators/juno-ui-components@6.5.0':
+    resolution: {integrity: sha512-gWpQPioXMD/EWhpsLsH6thTeWDJqmss4jxqj7mmxc0Y6eKVVBdBddBdQy7dTH1MFVPgqEr9LyMnXkMtoKkv6NQ==}
+    engines: {node: '>=20.19.0', pnpm: '>=8.0.0'}
     peerDependencies:
       react: ^19.1.0
       react-dom: ^19.1.0
 
-  '@cloudoperators/juno-url-state-provider@3.0.9':
-    resolution: {integrity: sha512-jt4nOnQ+BgF6N1v3vE0cfTuGsHgc+sN+KI4gg2qjpQWT0RBjhm6oGqH6SzlfxZI7jocIMZJMHERynwKc0KoIGQ==}
-    engines: {node: '>=20.12.0', pnpm: '>=8.0.0'}
+  '@cloudoperators/juno-url-state-provider@3.0.10':
+    resolution: {integrity: sha512-bE6FkexkAl1Qrbf8lBFcnonjzSk3zLUvt5Ls6bapO1y+UT9aoyIo5TYR/DnKK5TBvo47e3hPSoYSBj+0mI59dQ==}
+    engines: {node: '>=20.19.0', pnpm: '>=8.0.0'}
 
   '@csstools/color-helpers@5.1.0':
     resolution: {integrity: sha512-S11EXWJyy0Mz5SYvRmY8nJYTFFd1LCNV+7cXyAgQtOOuzb4EsgfqDufL+9esx72/eLhsRdGZwaldu/h+E4t4BA==}
@@ -5222,7 +5222,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@babel/runtime@7.29.2': {}
+  '@babel/runtime@7.29.7': {}
 
   '@babel/template@7.29.7':
     dependencies:
@@ -5394,12 +5394,12 @@ snapshots:
 
   '@cj-tech-master/excelts@9.5.8': {}
 
-  '@cloudoperators/juno-ui-components@6.4.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
+  '@cloudoperators/juno-ui-components@6.5.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
     dependencies:
       react: 19.2.6
       react-dom: 19.2.6(react@19.2.6)
 
-  '@cloudoperators/juno-url-state-provider@3.0.9':
+  '@cloudoperators/juno-url-state-provider@3.0.10':
     dependencies:
       history: 5.3.0
       query-string: 9.3.1
@@ -5862,14 +5862,14 @@ snapshots:
 
   '@manypkg/find-root@1.1.0':
     dependencies:
-      '@babel/runtime': 7.29.2
+      '@babel/runtime': 7.29.7
       '@types/node': 12.20.55
       find-up: 4.1.0
       fs-extra: 8.1.0
 
   '@manypkg/get-packages@1.1.3':
     dependencies:
-      '@babel/runtime': 7.29.2
+      '@babel/runtime': 7.29.7
       '@changesets/types': 4.1.0
       '@manypkg/find-root': 1.1.0
       fs-extra: 8.1.0
@@ -6140,7 +6140,7 @@ snapshots:
   '@testing-library/dom@10.4.1':
     dependencies:
       '@babel/code-frame': 7.29.7
-      '@babel/runtime': 7.29.2
+      '@babel/runtime': 7.29.7
       '@types/aria-query': 5.0.4
       aria-query: 5.3.0
       dom-accessibility-api: 0.5.16
@@ -6159,7 +6159,7 @@ snapshots:
 
   '@testing-library/react@16.3.2(@testing-library/dom@10.4.1)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
     dependencies:
-      '@babel/runtime': 7.29.2
+      '@babel/runtime': 7.29.7
       '@testing-library/dom': 10.4.1
       react: 19.2.6
       react-dom: 19.2.6(react@19.2.6)
@@ -7504,7 +7504,7 @@ snapshots:
 
   history@5.3.0:
     dependencies:
-      '@babel/runtime': 7.29.2
+      '@babel/runtime': 7.29.7
 
   html-encoding-sniffer@4.0.0:
     dependencies:
