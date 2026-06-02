@@ -1,7 +1,7 @@
 {
   "name": "@sapcc/limes-ui",
   "version": "1.18.1",
-  "packageManager": "pnpm@11.3.0",
+  "packageManager": "pnpm@11.5.0",
   "author": "VoigtS",
   "license": "Apache-2.0",
   "source": "src/index.js",
@@ -46,7 +46,7 @@
     "shadow-dom-testing-library": "^1.7.1",
     "tailwindcss": "^4.1.11",
     "util": "^0.12.4",
-    "zustand": "5.0.13"
+    "zustand": "5.0.14"
   },
   "scripts": {
     "build": "NODE_ENV=production node esbuild.config.js",
