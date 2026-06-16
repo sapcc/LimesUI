@@ -1,1 +1,0 @@
-import{a as c}from"./chunk-453ZAM5D.js";import{a as u}from"./chunk-XSTIYXI6.js";import{d as t}from"./chunk-AEHV6DQX.js";var r=t(c()),e=t(u()),o=(n,m={})=>{import("./Usage-JX4BIA3G.js").then(p=>{o.root=(0,r.createRoot)(n),o.root.render(e.default.createElement(p.default,m?.props))})},a=()=>o.root&&o.root.unmount();export{o as mount,a as unmount};
