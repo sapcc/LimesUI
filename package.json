@@ -1,7 +1,7 @@
 {
   "name": "@sapcc/limes-ui",
   "version": "1.18.1",
-  "packageManager": "pnpm@11.5.2",
+  "packageManager": "pnpm@11.7.0",
   "author": "VoigtS",
   "license": "Apache-2.0",
   "source": "src/index.js",
@@ -62,7 +62,7 @@
     "zustand/middleware": "4.3.7"
   },
   "dependencies": {
-    "@cj-tech-master/excelts": "^9.1.0",
+    "@cj-tech-master/excelts": "^10.0.0",
     "@cloudoperators/juno-ui-components": "6.5.0",
     "@cloudoperators/juno-url-state-provider": "*",
     "@tailwindcss/postcss": "^4.1.11",
