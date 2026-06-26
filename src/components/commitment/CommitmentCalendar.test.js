@@ -66,7 +66,7 @@ describe("test Commitment Calendar", () => {
     const startDate = moment.utc(0).startOf("day");
     const targetDate = startDate.clone().add(2, "days");
     Date.now = jest.fn(() => startDate.valueOf());
-    
+
     let capturedDate = null;
     render(
       <CommitmentCalendar
