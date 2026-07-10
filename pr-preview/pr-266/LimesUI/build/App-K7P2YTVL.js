@@ -1,4 +1,4 @@
-import{a as u,b as g,f as m,g as b,k as f,l as _,o as v,p as n,q as i,r as y,u as w,v as k,w as x}from"./chunk-UXN5W6EZ.js";import{a as X}from"./chunk-O65O3EUZ.js";import"./chunk-YAHYT3AS.js";import"./chunk-YFVSHTA4.js";import"./chunk-4U43L66V.js";import"./chunk-F5Y72SFQ.js";import"./chunk-5EUIDQQI.js";import{d as E}from"./chunk-RRU7Q3KP.js";var r=E(X());var T=`/* Variables declaration */
+import{a as u,b as g,f as m,g as b,k as f,l as _,o as v,p as n,q as i,r as y,u as w,v as k,w as x}from"./chunk-ULIEXG5U.js";import{a as X}from"./chunk-XSTIYXI6.js";import"./chunk-FRS3SWVS.js";import"./chunk-KIKGWDWD.js";import"./chunk-RCMV24FZ.js";import"./chunk-FZBBJ37T.js";import"./chunk-YSPUWPVZ.js";import{d as E}from"./chunk-AEHV6DQX.js";var r=E(X());var T=`/* Variables declaration */
 .rdp-root {
   --rdp-accent-color: blue; /* The accent color used for selected days and UI elements. */
   --rdp-accent-background-color: #f0f0ff; /* The accent background color used for selected days and UI elements. */
