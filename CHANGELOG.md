@@ -1,5 +1,11 @@
 # @sapcc/limes-ui
 
+## 1.18.3
+
+### Patch Changes
+
+- 6f4a34a: Cluster UI: Only fetch change affected /domain/:id/projects queries instead of all
+
 ## 1.18.2
 
 ### Patch Changes
