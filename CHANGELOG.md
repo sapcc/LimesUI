@@ -1,5 +1,11 @@
 # @sapcc/limes-ui
 
+## 1.18.2
+
+### Patch Changes
+
+- f8fa94b: add missing service_type attribute to commitment filter
+
 ## 1.18.1
 
 ### Patch Changes
