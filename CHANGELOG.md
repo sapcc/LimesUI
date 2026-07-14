@@ -1,5 +1,11 @@
 # @sapcc/limes-ui
 
+## 1.18.4
+
+### Patch Changes
+
+- a79bdde: fix: react router 8.0.0 update integration
+
 ## 1.18.3
 
 ### Patch Changes
