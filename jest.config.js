@@ -2,11 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 module.exports = {
-  transform: { "\\.[jt]sx?$": "babel-jest" },
+  transform: { "\\.[jt]sx?$": "babel-jest", "\\.mjs$": "babel-jest" },
   testEnvironment: "jsdom",
   setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],
   transformIgnorePatterns: [
-    "node_modules/(?!(\\.pnpm|@cloudoperators/juno-ui-components|@cloudoperators/juno-communicator|@cloudoperators/juno-messages-provider|@cloudoperators/juno-url-state-provider-v1|@cj-tech-master/excelts)/)",
+    "/node_modules/(?!(\\.pnpm/[^/]+/node_modules/)?(react-router|@remix-run|cookie-es|set-cookie-parser|turbo-stream|@cloudoperators|@cj-tech-master)/)",
   ],
   moduleNameMapper: {
     // Jest currently doesn't support resources with query parameters.
