@@ -28,6 +28,7 @@ const ProjectsPerDomain = (props) => {
       return {
         queryKey: ["projectsInDomain", serviceType, resourceName, domain.id],
         refetchOnMount: false,
+        refetchOnWindowFocus: false,
       };
     }),
   });
@@ -71,12 +72,18 @@ const ProjectsPerDomain = (props) => {
   }, [isFetching, resource]);
 
   React.useEffect(() => {
-    if (!refetchProjectAPI) return;
+    if (!refetchProjectAPI || !Array.isArray(refetchProjectAPI)) return;
     setRefetchProjectAPI(false);
     sortProjects.current = false;
     refetchTriggered.current = true;
-    projectQueries.forEach((query) => {
-      query.refetch();
+
+    // refetchProjectAPI is an array of domain IDs - only refetch those specific domains
+    const domainIdsToRefetch = refetchProjectAPI;
+    projectQueries.forEach((query, index) => {
+      const domainId = domains[index]?.id;
+      if (domainIdsToRefetch.includes(domainId)) {
+        query.refetch();
+      }
     });
   }, [refetchProjectAPI]);
 
