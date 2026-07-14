@@ -76,9 +76,9 @@ const CommitmentTable = (props) => {
 
   //Add or remove edit commitment row.
   const filteredCommitments = React.useMemo(() => {
-    const filteredData = filterCommitments(resourceName, currentTab);
+    const filteredData = filterCommitments(serviceType, resourceName, currentTab);
     return filteredData;
-  }, [commitmentData, currentTab, resourceName]);
+  }, [commitmentData, currentTab, resourceName, serviceType]);
 
   const { items, TableSortHeader } = useSortTableData(filteredCommitments, initialSortConfig);
 

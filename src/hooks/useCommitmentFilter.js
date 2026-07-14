@@ -6,9 +6,13 @@ import { useProjectStore } from "../components/StoreProvider";
 const useCommitmentFilter = () => {
   const commitments = useProjectStore((state) => state.commitments);
 
-  function filterCommitments(resourceName, azName) {
+  function filterCommitments(serviceType, resourceName, azName) {
     return commitments.filter((commitment) => {
-      return commitment.resource_name === resourceName && commitment.availability_zone === azName;
+      return (
+        commitment.service_type === serviceType &&
+        commitment.resource_name === resourceName &&
+        commitment.availability_zone === azName
+      );
     });
   }
 
