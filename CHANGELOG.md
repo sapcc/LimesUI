@@ -1,5 +1,11 @@
 # @sapcc/limes-ui
 
+## 1.18.5
+
+### Patch Changes
+
+- 01308f6: fix: DayPicker now ensures a stable midnight UTC timestamp in UTC- regions
+
 ## 1.18.4
 
 ### Patch Changes
