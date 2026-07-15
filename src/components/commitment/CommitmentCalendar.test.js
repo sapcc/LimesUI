@@ -55,4 +55,34 @@ describe("test Commitment Calendar", () => {
     fireEvent.click(selectedDate);
     expect(screen.queryByText(/Selected date must be today or in the future/i)).not.toBe(null);
   });
+
+  test("selected date should be midnight UTC regardless of timezone", () => {
+    const originalGetTimezoneOffset = Date.prototype.getTimezoneOffset;
+
+    // Simulate UTC-5 timezone
+    Date.prototype.getTimezoneOffset = jest.fn(() => 300);
+
+    // Use Unix epoch as start date (1970-01-01)
+    const startDate = moment.utc(0).startOf("day");
+    const targetDate = startDate.clone().add(2, "days");
+    Date.now = jest.fn(() => startDate.valueOf());
+
+    let capturedDate = null;
+    render(
+      <CommitmentCalendar
+        startDate={startDate.toDate()}
+        selectedDate={null}
+        setSelectedDate={(date) => (capturedDate = date)}
+        currentDayCommit={() => {}}
+      />
+    );
+
+    // Click on the target date (Saturday, January 3rd, 1970)
+    const targetDateLabel = targetDate.format("dddd, MMMM Do, YYYY");
+    fireEvent.click(screen.getByLabelText(new RegExp(targetDateLabel, "i")));
+
+    expect(capturedDate).not.toBeNull();
+    expect(capturedDate.toISOString()).toBe("1970-01-03T00:00:00.000Z");
+    Date.prototype.getTimezoneOffset = originalGetTimezoneOffset;
+  });
 });
