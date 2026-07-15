@@ -136,7 +136,12 @@ const ProjectTableDetails = (props) => {
                   <AddCommitments
                     label="Add"
                     resource={resource}
-                    disabled={!showCommitments || transferCommitment || isLoading}
+                    disabled={transferCommitment}
+                    onClick={() => {
+                      if (!showCommitments) {
+                        updateShowCommitments(index);
+                      }
+                    }}
                     size="small"
                   />
                   <Button
