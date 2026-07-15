@@ -1,6 +1,6 @@
 {
   "name": "@sapcc/limes-ui",
-  "version": "1.18.5",
+  "version": "1.18.6",
   "packageManager": "pnpm@11.13.0",
   "author": "VoigtS",
   "license": "Apache-2.0",
