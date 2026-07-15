@@ -1,5 +1,11 @@
 # @sapcc/limes-ui
 
+## 1.18.6
+
+### Patch Changes
+
+- c4e9611: Enable commitment 'add' button for domain/cluster view before manually expanding the project
+
 ## 1.18.5
 
 ### Patch Changes
