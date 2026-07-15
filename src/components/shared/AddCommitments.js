@@ -8,12 +8,11 @@ import { useGlobalStore, createCommitmentStoreActions, useCreateCommitmentStore 
 import { getResourceDurations } from "../../lib/utils";
 
 const AddCommitments = (props) => {
-  const { label, size, disabled, resource } = props;
+  const { label, size, disabled, resource, onClick } = props;
   const scope = useGlobalStore((state) => state.scope);
   const { setCommitment } = createCommitmentStoreActions();
   const isCommitting = useCreateCommitmentStore((state) => state.isCommitting);
   const { setIsCommitting } = createCommitmentStoreActions();
-  const active = disabled || isCommitting;
   const hasResourceDurations = getResourceDurations(resource).length > 0;
 
   return (
@@ -22,6 +21,8 @@ const AddCommitments = (props) => {
         data-testid="addCommitment"
         data-cy="addCommitment"
         onClick={() => {
+          // Call the passed onClick handler first (e.g., to open the project)
+          onClick?.();
           // On Cluster/Domain View a project can be transferred, therefore we reset it first
           // Otherwise there will be key conflicts with the Commitment Table.
           if (scope.isCluster() || scope.isDomain()) {
@@ -30,7 +31,7 @@ const AddCommitments = (props) => {
           setIsCommitting(true);
         }}
         variant="primary"
-        disabled={active}
+        disabled={disabled || isCommitting}
         icon={scope.isProject() ? "addCircle" : undefined}
         size={size}
       >
