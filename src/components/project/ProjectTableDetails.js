@@ -50,6 +50,7 @@ const ProjectTableDetails = (props) => {
   const { resetCommitmentTransfer } = useResetCommitment();
   // commitment query requires a domain ID that differs on cluster level.
   const scope = useGlobalStore((state) => state.scope);
+  const canEdit = useGlobalStore((state) => state.canEdit);
   const domainID = scope.isCluster() ? metadata.domainID : null;
   // only display the move commitment button on projects with a commitment on them.
   const moveCommitment = React.useMemo(() => {
@@ -148,9 +149,10 @@ const ProjectTableDetails = (props) => {
                     className={"ml-1"}
                     data-cy="moveCommitment"
                     variant="primary"
-                    disabled={!showCommitments || !moveCommitment || transferCommitment || isCommitting || isLoading}
+                    disabled={!showCommitments || !moveCommitment || transferCommitment || isCommitting || isLoading || !canEdit}
                     size="small"
                     onClick={() => {
+                      if (!canEdit) return;
                       setTransferCommitment(true);
                     }}
                   >
@@ -161,7 +163,9 @@ const ProjectTableDetails = (props) => {
                 <Button
                   variant="primary"
                   size="small"
+                  disabled={!canEdit}
                   onClick={() => {
+                    if (!canEdit) return;
                     handleCommitmentTransfer(project);
                   }}
                 >

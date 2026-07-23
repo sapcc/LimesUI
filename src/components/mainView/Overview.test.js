@@ -131,10 +131,13 @@ describe("Overview", () => {
     expect(screen.getByText("area-1")).toHaveAttribute("aria-selected", "true");
   });
 
-  test("calling the panel URL with no edit permissions reroutes to the default route", async () => {
+  test("calling the panel URL with no edit permissions still shows the panel (actions are disabled)", async () => {
+    // The panel is always visible regardless of canEdit
+    // The actions inside the panel are disabled when canEdit is false
     renderOverview("/area-1/edit/some/stuff", false);
     await waitFor(() => {
-      expect(window.location.hash).toEqual("#/area-1");
+      // Manually editing the URL should not cause a route redirect to another URL.
+      expect(window.location.hash).toEqual("#/area-1/edit/some/stuff");
     });
   });
 });
@@ -175,6 +178,7 @@ test("displays specialUnitInfo", () => {
     },
   };
 
+  window.location.hash = "/area-1";
   render(
     <StoreProvider>
       <PortalProvider>
@@ -186,7 +190,6 @@ test("displays specialUnitInfo", () => {
                 <Overview
                   overview={mockOverviewWithHwVersion}
                   categories={mockCategoriesWithHwVersion}
-                  canEdit={true}
                 />
               }
             />

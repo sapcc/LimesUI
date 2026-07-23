@@ -2,10 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import React from "react";
-import { render, screen, waitFor } from "@testing-library/react";
+import { act, render, renderHook, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Scope } from "../../lib/scope";
-import StoreProvider from "../StoreProvider";
+import StoreProvider, { globalStoreActions } from "../StoreProvider";
 import Marketplace from "./Marketplace";
 import { PortalProvider } from "@cloudoperators/juno-ui-components/index";
 
@@ -150,5 +150,61 @@ describe("Marketplace tests", () => {
       expect(screen.queryByText("Transferring")).not.toBe(null);
       expect(screen.queryByText("Convert")).toBe(null);
     });
+  });
+
+  test("marketplace actions should be active depending on the canEdit state", async () => {
+    const commitments = [...base];
+    const publicCommitments = [...commitments];
+    publicCommitments.push({
+      id: "commitment-3",
+      amount: 3,
+      availability_zone: "az_3",
+      duration: "3 years",
+    });
+
+    const publicCommitmentQuery = {
+      data: { commitments: publicCommitments },
+      isLoading: false,
+      isError: false,
+      error: null,
+    };
+
+    const wrapper = ({ children }) => (
+      <StoreProvider>
+        <PortalProvider>
+          <Marketplace
+            scope={new Scope({ projectID: "123", domainID: "456" })}
+            projectCommitments={commitments}
+            publicCommitmentQuery={publicCommitmentQuery}
+            transferCommitment={jest.fn()}
+          />
+          {children}
+        </PortalProvider>
+      </StoreProvider>
+    );
+
+    const { result, rerender } = renderHook(
+      () => ({
+        globalStoreActions: globalStoreActions(),
+      }),
+      { wrapper }
+    );
+
+    // Set canEdit to true - buttons should be enabled (positive test)
+    act(() => {
+      result.current.globalStoreActions.setCanEdit(true);
+    });
+    const cancelButtons = screen.getAllByTestId("mp-cancel");
+    const receiveButtons = screen.getAllByTestId("mp-receive");
+    expect(cancelButtons[0]).toBeEnabled();
+    expect(receiveButtons[0]).toBeEnabled();
+
+    // Marketplace action buttons should be disabled when canEdit is false (viewer role).
+    rerender();
+    act(() => {
+      result.current.globalStoreActions.setCanEdit(false);
+    });
+    expect(cancelButtons[0]).toBeDisabled();
+    expect(receiveButtons[0]).toBeDisabled();
   });
 });

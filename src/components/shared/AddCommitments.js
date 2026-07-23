@@ -10,6 +10,7 @@ import { getResourceDurations } from "../../lib/utils";
 const AddCommitments = (props) => {
   const { label, size, disabled, resource, onClick } = props;
   const scope = useGlobalStore((state) => state.scope);
+  const canEdit = useGlobalStore((state) => state.canEdit);
   const { setCommitment } = createCommitmentStoreActions();
   const isCommitting = useCreateCommitmentStore((state) => state.isCommitting);
   const { setIsCommitting } = createCommitmentStoreActions();
@@ -21,6 +22,7 @@ const AddCommitments = (props) => {
         data-testid="addCommitment"
         data-cy="addCommitment"
         onClick={() => {
+          if (!canEdit) return;
           // Call the passed onClick handler first (e.g., to open the project)
           onClick?.();
           // On Cluster/Domain View a project can be transferred, therefore we reset it first
@@ -31,7 +33,7 @@ const AddCommitments = (props) => {
           setIsCommitting(true);
         }}
         variant="primary"
-        disabled={disabled || isCommitting}
+        disabled={disabled || isCommitting || !canEdit}
         icon={scope.isProject() ? "addCircle" : undefined}
         size={size}
       >

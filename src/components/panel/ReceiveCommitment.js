@@ -3,19 +3,22 @@
 
 import React from "react";
 import { Button, Icon } from "@cloudoperators/juno-ui-components";
-import { createCommitmentStoreActions } from "../StoreProvider";
+import { createCommitmentStoreActions, useGlobalStore } from "../StoreProvider";
 import { TransferStatus } from "../../lib/constants";
 
 const ReceiveCommitment = () => {
   const { setTransferFromAndToProject } = createCommitmentStoreActions();
+  const canEdit = useGlobalStore((state) => state.canEdit);
 
   function onTransfer() {
+    if (!canEdit) return;
     setTransferFromAndToProject(TransferStatus.RECEIVE);
   }
 
   return (
     <Button
       size="small"
+      disabled={!canEdit}
       onClick={() => {
         onTransfer();
       }}
