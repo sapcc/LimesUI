@@ -149,7 +149,9 @@ const ProjectTableDetails = (props) => {
                     className={"ml-1"}
                     data-cy="moveCommitment"
                     variant="primary"
-                    disabled={!showCommitments || !moveCommitment || transferCommitment || isCommitting || isLoading || !canEdit}
+                    disabled={
+                      !showCommitments || !moveCommitment || transferCommitment || isCommitting || isLoading || !canEdit
+                    }
                     size="small"
                     onClick={() => {
                       if (!canEdit) return;

@@ -186,12 +186,7 @@ test("displays specialUnitInfo", () => {
           <Routes>
             <Route
               path="/:currentArea?"
-              element={
-                <Overview
-                  overview={mockOverviewWithHwVersion}
-                  categories={mockCategoriesWithHwVersion}
-                />
-              }
+              element={<Overview overview={mockOverviewWithHwVersion} categories={mockCategoriesWithHwVersion} />}
             />
           </Routes>
         </HashRouter>

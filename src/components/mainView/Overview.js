@@ -50,7 +50,6 @@ const Overview = (props) => {
     }
   }, [selectedArea, currentArea]);
 
-
   // navigate to the selected area while also resetting the resource filter
   function onTabChange(selectedArea) {
     navigate(`/${selectedArea}`, { replace: false });
