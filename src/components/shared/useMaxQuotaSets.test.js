@@ -3,9 +3,9 @@
 
 import React from "react";
 import useMaxQuotaSets from "./useMaxQuotaSets";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, fireEvent, render, renderHook, screen, waitFor } from "@testing-library/react";
 import { PortalProvider } from "@cloudoperators/juno-ui-components";
-import StoreProvider from "../StoreProvider";
+import StoreProvider, { globalStoreActions } from "../StoreProvider";
 
 const ExampleCMP = ({ project, resource, serviceType, postMaxQuota = () => {} }) => {
   const { MaxQuotaInput, maxQuotaInputProps, MaxQuotaEdit, maxQuotaEditProps } = useMaxQuotaSets({
@@ -41,13 +41,28 @@ describe("test useMaxQuotaSets", () => {
       expect(projectID).toEqual(12);
       expect(domainID).toEqual(13);
     });
-    render(
+
+    const wrapper = ({ children }) => (
       <PortalProvider>
         <StoreProvider>
           <ExampleCMP project={project} resource={resource} serviceType={"serviceA"} postMaxQuota={postMaxQuota} />
+          {children}
         </StoreProvider>
       </PortalProvider>
     );
+
+    const { result } = renderHook(
+      () => ({
+        globalStoreActions: globalStoreActions(),
+      }),
+      { wrapper }
+    );
+
+    // Set canEdit to true to enable the Edit button
+    act(() => {
+      result.current.globalStoreActions.setCanEdit(true);
+    });
+
     expect(screen.queryByText(/not set/i)).not.toBe(null);
     const editButton = screen.getByTestId("maxQuotaEdit");
     fireEvent.click(editButton);
@@ -62,13 +77,28 @@ describe("test useMaxQuotaSets", () => {
   test("should display max quota value as default input", () => {
     const project = { metadata: { name: "testProject", id: 12, domainID: 13 } };
     const resource = { usage: 8, quota: 10, max_quota: 9 };
-    render(
+
+    const wrapper = ({ children }) => (
       <PortalProvider>
         <StoreProvider>
           <ExampleCMP project={project} resource={resource} serviceType={"serviceA"} />
+          {children}
         </StoreProvider>
       </PortalProvider>
     );
+
+    const { result } = renderHook(
+      () => ({
+        globalStoreActions: globalStoreActions(),
+      }),
+      { wrapper }
+    );
+
+    // Set canEdit to true to enable the Edit button
+    act(() => {
+      result.current.globalStoreActions.setCanEdit(true);
+    });
+
     const editButton = screen.getByTestId("maxQuotaEdit");
     fireEvent.click(editButton);
     const cancelButton = screen.getByTestId("maxQuotaCancel");
@@ -84,13 +114,28 @@ describe("test useMaxQuotaSets", () => {
     const project = { metadata: { name: "testProject", id: 12, domainID: 13 } };
     const resource = { usage: 512, quota: 1024, max_quota: 1024, unit: "MiB" };
     const postMaxQuota = jest.fn(() => {});
-    render(
+
+    const wrapper = ({ children }) => (
       <PortalProvider>
         <StoreProvider>
           <ExampleCMP project={project} resource={resource} serviceType={"serviceA"} postMaxQuota={postMaxQuota} />
+          {children}
         </StoreProvider>
       </PortalProvider>
     );
+
+    const { result } = renderHook(
+      () => ({
+        globalStoreActions: globalStoreActions(),
+      }),
+      { wrapper }
+    );
+
+    // Set canEdit to true to enable the Edit button
+    act(() => {
+      result.current.globalStoreActions.setCanEdit(true);
+    });
+
     expect(screen.queryByText(/1 gib/i)).not.toBe(null);
     // false input (no unit)
     const editButton = screen.getByTestId("maxQuotaEdit");
@@ -108,13 +153,28 @@ describe("test useMaxQuotaSets", () => {
     const project = { metadata: { name: "testProject", id: 12, domainID: 13 } };
     const resource = { usage: 1, quota: 5, max_quota: 5, unit: "128 GiB" };
     const postMaxQuota = jest.fn(() => {});
-    render(
+
+    const wrapper = ({ children }) => (
       <PortalProvider>
         <StoreProvider>
           <ExampleCMP project={project} resource={resource} serviceType={"serviceA"} postMaxQuota={postMaxQuota} />
+          {children}
         </StoreProvider>
       </PortalProvider>
     );
+
+    const { result } = renderHook(
+      () => ({
+        globalStoreActions: globalStoreActions(),
+      }),
+      { wrapper }
+    );
+
+    // Set canEdit to true to enable the Edit button
+    act(() => {
+      result.current.globalStoreActions.setCanEdit(true);
+    });
+
     expect(screen.queryByText(/640 GiB/i)).not.toBe(null);
     const editButton = screen.getByTestId("maxQuotaEdit");
     fireEvent.click(editButton);
@@ -130,13 +190,28 @@ describe("test useMaxQuotaSets", () => {
     const project = { metadata: { name: "testProject", id: 12, domainID: 13 } };
     const resource = { usage: 8, quota: 10, max_quota: 10 };
     const postMaxQuota = jest.fn(() => {});
-    render(
+
+    const wrapper = ({ children }) => (
       <PortalProvider>
         <StoreProvider>
           <ExampleCMP project={project} resource={resource} serviceType={"serviceA"} postMaxQuota={postMaxQuota} />
+          {children}
         </StoreProvider>
       </PortalProvider>
     );
+
+    const { result } = renderHook(
+      () => ({
+        globalStoreActions: globalStoreActions(),
+      }),
+      { wrapper }
+    );
+
+    // Set canEdit to true to enable the Edit button
+    act(() => {
+      result.current.globalStoreActions.setCanEdit(true);
+    });
+
     const editButton = screen.getByTestId("maxQuotaEdit");
     fireEvent.click(editButton);
     const quotaInput = screen.getByTestId("inputWithUnit");
@@ -146,5 +221,40 @@ describe("test useMaxQuotaSets", () => {
     await waitFor(() => {
       expect(postMaxQuota).not.toHaveBeenCalled();
     });
+  });
+
+  test("Edit button should be visible depending on the canEdit state", async () => {
+    const project = { metadata: { name: "testProject", id: 12, domainID: 13 } };
+    const resource = { usage: 8, quota: 10, max_quota: 10 };
+
+    const wrapper = ({ children }) => (
+      <PortalProvider>
+        <StoreProvider>
+          <ExampleCMP project={project} resource={resource} serviceType={"serviceA"} />
+          {children}
+        </StoreProvider>
+      </PortalProvider>
+    );
+
+    const { result, rerender } = renderHook(
+      () => ({
+        globalStoreActions: globalStoreActions(),
+      }),
+      { wrapper }
+    );
+
+    // Set canEdit to true - button should be enabled (positive test)
+    act(() => {
+      result.current.globalStoreActions.setCanEdit(true);
+    });
+    const editButton = screen.getByTestId("maxQuotaEdit");
+    expect(editButton).toBeEnabled();
+
+    // Edit button should be disabled when canEdit is false (viewer role).
+    rerender();
+    act(() => {
+      result.current.globalStoreActions.setCanEdit(false);
+    });
+    expect(editButton).toBeDisabled();
   });
 });
