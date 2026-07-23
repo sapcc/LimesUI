@@ -155,7 +155,7 @@ const Resource = (props) => {
             )}
           </Stack>
         </Stack>
-        {canEdit && !isPanelView && (
+        {!isPanelView && (
           <Stack className="items-center" gap="1">
             {editableResource && (
               <Link

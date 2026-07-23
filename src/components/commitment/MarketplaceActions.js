@@ -4,7 +4,7 @@
 import React from "react";
 import { TransferStatus } from "../../lib/constants";
 import { Button, Icon, Stack } from "@cloudoperators/juno-ui-components/index";
-import { createCommitmentStoreActions } from "../StoreProvider";
+import { createCommitmentStoreActions, useGlobalStore } from "../StoreProvider";
 import Actions from "./Operations/Actions";
 import ToolTipWrapper from "../shared/ToolTipWrapper";
 import useCommitmentFilter from "../../hooks/useCommitmentFilter";
@@ -17,6 +17,7 @@ const MarketplaceActions = (props) => {
   const { getCommitmentLabel } = useCommitmentFilter();
   const { setTransferredCommitment } = createCommitmentStoreActions();
   const { setTransferFromAndToProject } = createCommitmentStoreActions();
+  const canEdit = useGlobalStore((state) => state.canEdit);
   const projectOwnsCommitment = projectCommitments.some((pc) => pc.id == commitment.id);
 
   if (scope.isCluster()) {
@@ -31,12 +32,17 @@ const MarketplaceActions = (props) => {
         icon="download"
         size="small"
         title="Receive"
-        onClick={() => setShowModal(true)}
+        disabled={!canEdit}
+        onClick={() => {
+          if (!canEdit) return;
+          setShowModal(true);
+        }}
       />
     );
   }
 
   function cancelCommitmentTransfer() {
+    if (!canEdit) return;
     setTransferFromAndToProject(TransferStatus.CANCEL);
     setTransferredCommitment(commitment);
   }
@@ -61,6 +67,7 @@ const MarketplaceActions = (props) => {
           {projectOwnsCommitment ? (
             <Button
               data-testid="mp-cancel"
+              disabled={!canEdit}
               onClick={() => {
                 cancelCommitmentTransfer();
               }}

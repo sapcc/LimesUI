@@ -27,15 +27,22 @@ describe("test Action Operation", () => {
       </PortalProvider>
     );
 
-    renderHook(
+    const { result, rerender } = renderHook(
       () => ({
         commitmentStore: useCreateCommitmentStore(),
         commitmentStoreActions: createCommitmentStoreActions(),
+        globalStoreActions: globalStoreActions(),
       }),
       {
         wrapper,
       }
     );
+
+    // Set canEdit to true to enable the action
+    act(() => {
+      result.current.globalStoreActions.setCanEdit(true);
+    });
+
     expect(screen.queryByText(/committed/i)).not.toBe(null);
     const contextMenu = await waitFor(() => {
       return screen.getByTitle(/more/i);
@@ -43,6 +50,17 @@ describe("test Action Operation", () => {
     userEvent.click(contextMenu);
     await waitFor(() => {
       expect(screen.queryByText("Delete")).not.toBe(null);
+    });
+
+    // Menu items should be disabled when canEdit is false (viewer role).
+    rerender();
+    act(() => {
+      result.current.globalStoreActions.setCanEdit(false);
+    });
+    userEvent.click(contextMenu);
+    await waitFor(() => {
+      const deleteMenuItem = screen.getByText("Delete").closest('[role="menuitem"]');
+      expect(deleteMenuItem).toHaveAttribute("aria-disabled", "true");
     });
   });
 
@@ -57,10 +75,11 @@ describe("test Action Operation", () => {
         </StoreProvider>
       </PortalProvider>
     );
-    const { result } = renderHook(
+    const { result, rerender } = renderHook(
       () => ({
         commitmentStore: useCreateCommitmentStore(),
         commitmentStoreActions: createCommitmentStoreActions(),
+        globalStoreActions: globalStoreActions(),
       }),
       {
         wrapper,
@@ -68,6 +87,7 @@ describe("test Action Operation", () => {
     );
     act(() => {
       result.current.commitmentStoreActions.setShowConversionOption(true);
+      result.current.globalStoreActions.setCanEdit(true);
     });
     const contextMenu = await waitFor(() => {
       return screen.getByTitle(/more/i);
@@ -75,6 +95,17 @@ describe("test Action Operation", () => {
     await waitFor(() => {
       userEvent.click(contextMenu);
       expect(screen.queryByText(/convert/i)).not.toBe(null);
+    });
+
+    // Menu items should be disabled when canEdit is false (viewer role).
+    rerender();
+    act(() => {
+      result.current.globalStoreActions.setCanEdit(false);
+    });
+    userEvent.click(contextMenu);
+    await waitFor(() => {
+      const convertMenuItem = screen.getByText(/convert/i).closest('[role="menuitem"]');
+      expect(convertMenuItem).toHaveAttribute("aria-disabled", "true");
     });
   });
 
@@ -102,6 +133,7 @@ describe("test Action Operation", () => {
     );
     act(() => {
       result.current.globalStoreActions.setScope(scope);
+      result.current.globalStoreActions.setCanEdit(true);
     });
 
     const contextMenu = await waitFor(() => {
@@ -117,11 +149,25 @@ describe("test Action Operation", () => {
     commitment.transfer_status = "public";
     act(() => {
       result.current.globalStoreActions.setScope(scope);
+      result.current.globalStoreActions.setCanEdit(true);
     });
     userEvent.click(contextMenu);
     await waitFor(() => {
       expect(screen.queryByText(/transferring/i)).not.toBe(null);
       expect(screen.queryByText(/cancel transfer/i)).not.toBe(null);
+    });
+
+    // Menu items should be disabled when canEdit is false (viewer role).
+    rerender();
+    delete commitment.transfer_status;
+    act(() => {
+      result.current.globalStoreActions.setScope(scope);
+      result.current.globalStoreActions.setCanEdit(false);
+    });
+    userEvent.click(contextMenu);
+    await waitFor(() => {
+      const transferMenuItem = screen.getByText(/^transfer$/i).closest('[role="menuitem"]');
+      expect(transferMenuItem).toHaveAttribute("aria-disabled", "true");
     });
   });
   test("should remove cancel transfer action when transfer completes", async () => {
@@ -150,6 +196,7 @@ describe("test Action Operation", () => {
     );
     act(() => {
       result.current.globalStoreActions.setScope(scope);
+      result.current.globalStoreActions.setCanEdit(true);
     });
 
     const contextMenu = await waitFor(() => {
@@ -169,6 +216,7 @@ describe("test Action Operation", () => {
     rerender();
     act(() => {
       result.current.globalStoreActions.setScope(scope);
+      result.current.globalStoreActions.setCanEdit(true);
     });
 
     // Verify cancel transfer is removed
@@ -193,21 +241,39 @@ describe("test Action Operation", () => {
         </StoreProvider>
       </PortalProvider>
     );
-    renderHook(
+    const { result, rerender } = renderHook(
       () => ({
         commitmentStore: useCreateCommitmentStore(),
         commitmentStoreActions: createCommitmentStoreActions(),
+        globalStoreActions: globalStoreActions(),
       }),
       {
         wrapper,
       }
     );
+
+    // Set canEdit to true to enable the action
+    act(() => {
+      result.current.globalStoreActions.setCanEdit(true);
+    });
+
     const contextMenu = await waitFor(() => {
       return screen.getByTitle(/more/i);
     });
     userEvent.click(contextMenu);
     await waitFor(() => {
       expect(screen.queryByText(/edit/i)).not.toBe(null);
+    });
+
+    // Menu items should be disabled when canEdit is false (viewer role).
+    rerender();
+    act(() => {
+      result.current.globalStoreActions.setCanEdit(false);
+    });
+    userEvent.click(contextMenu);
+    await waitFor(() => {
+      const editMenuItem = screen.getByText(/edit/i).closest('[role="menuitem"]');
+      expect(editMenuItem).toHaveAttribute("aria-disabled", "true");
     });
   });
 });

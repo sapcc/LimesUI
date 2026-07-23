@@ -3,20 +3,23 @@
 
 import React from "react";
 import { Button, Icon, Stack } from "@cloudoperators/juno-ui-components";
+import { useGlobalStore } from "../StoreProvider";
 
 const MergeCommitment = (props) => {
   const { mergeOps, style } = props;
   const { isMerging, setIsMerging, commitmentsToMerge, setCommitmentsToMerge, setConfirmMerge, mergeIsActive } =
     mergeOps;
+  const canEdit = useGlobalStore((state) => state.canEdit);
 
   return (
     <Stack className={style} gap="1">
       <Button
         data-testid={"mergeToggle"}
-        disabled={!mergeIsActive}
+        disabled={!mergeIsActive || !canEdit}
         title={!isMerging ? "Merge" : "Cancel Merge"}
         size="small"
         onClick={() => {
+          if (!canEdit) return;
           if (isMerging) {
             setCommitmentsToMerge([]);
           }
@@ -32,9 +35,10 @@ const MergeCommitment = (props) => {
         className={!isMerging && "invisible"}
         size="small"
         icon="success"
-        disabled={commitmentsToMerge.length < 2}
+        disabled={commitmentsToMerge.length < 2 || !canEdit}
         variant="primary"
         onClick={() => {
+          if (!canEdit) return;
           setConfirmMerge(true);
         }}
       />

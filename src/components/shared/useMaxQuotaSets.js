@@ -3,7 +3,7 @@
 
 import React from "react";
 import { useMutation } from "@tanstack/react-query";
-import { projectStoreActions } from "../StoreProvider";
+import { projectStoreActions, useGlobalStore } from "../StoreProvider";
 import { Button, Stack } from "@cloudoperators/juno-ui-components";
 import { createCommitmentStoreActions } from "../StoreProvider";
 import { createUnit, valueWithUnit } from "../../lib/unit";
@@ -150,6 +150,7 @@ const MaxQuotaEdit = (props) => {
     subduedView = false,
   } = props;
   const { styles = "" } = props;
+  const canEdit = useGlobalStore((state) => state.canEdit);
 
   const { isEditing = false, isLoading = false } = maxQuotaState;
 
@@ -160,7 +161,9 @@ const MaxQuotaEdit = (props) => {
       icon="edit"
       size="small"
       variant={subduedView ? "subdued" : "primary"}
+      disabled={!canEdit}
       onClick={() => {
+        if (!canEdit) return;
         handleEdit();
       }}
     >

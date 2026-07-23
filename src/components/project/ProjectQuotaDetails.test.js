@@ -42,6 +42,7 @@ describe("test project quota details", () => {
     );
     act(() => {
       result.current.globalStoreActions.setScope(scope);
+      result.current.globalStoreActions.setCanEdit(true);
     });
     expect(screen.queryByText(/not set/i)).not.toBe(null);
     expect(screen.getByTestId("forbidAutogrowthInfo")).toBeInTheDocument();

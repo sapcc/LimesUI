@@ -16,7 +16,7 @@ import OverviewFilter from "./overviewFilter/OverviewFilter";
 import useOverviewFilters from "./overviewFilter/useOverviewFilters";
 
 const Overview = (props) => {
-  const { overview, categories, canEdit } = props;
+  const { overview, categories } = props;
   const scope = useGlobalStore((state) => state.scope);
   const isEditing = useCreateCommitmentStore((state) => state.isEditing);
   const navigate = useNavigate();
@@ -49,12 +49,6 @@ const Overview = (props) => {
       navigate(`/${currentArea}`);
     }
   }, [selectedArea, currentArea]);
-
-  // Hitting edit view URL without edit permissions should lead to the main route.
-  React.useEffect(() => {
-    if (canEdit || location.pathname === `/${currentArea}`) return;
-    navigate({ pathname: `/${currentArea}`, search: location.search });
-  }, [location.pathname, currentArea, canEdit]);
 
   // navigate to the selected area while also resetting the resource filter
   function onTabChange(selectedArea) {
@@ -117,8 +111,8 @@ const Overview = (props) => {
     );
   }
 
-  function renderRenewal(canEdit) {
-    return <RenewalManager canEdit={canEdit} />;
+  function renderRenewal() {
+    return <RenewalManager />;
   }
 
   let currentTab;
@@ -127,7 +121,7 @@ const Overview = (props) => {
       currentTab = renderPAYG();
       break;
     case COMMITMENTRENEWALKEY:
-      currentTab = renderRenewal(canEdit);
+      currentTab = renderRenewal();
       break;
     default:
       currentTab = renderArea();
@@ -176,7 +170,7 @@ const Overview = (props) => {
         />
       )}
       {currentTab}
-      {canEdit && <Outlet />}
+      <Outlet />
     </Container>
   );
 };

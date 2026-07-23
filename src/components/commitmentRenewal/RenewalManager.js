@@ -5,14 +5,14 @@ import React from "react";
 import CommitmentRenewal from "./CommitmentRenewal";
 import moment from "moment";
 import { parseCommitmentDuration } from "../../lib/parseCommitmentDurations";
-import { useProjectStore } from "../StoreProvider";
+import { useProjectStore, useGlobalStore } from "../StoreProvider";
 import useCommitmentFilter from "../../hooks/useCommitmentFilter";
 import { ErrorBoundary } from "../../lib/ErrorBoundary";
 
 // RenewalManager fetches renwable commitments for the current scope.
 // Currently only available at project level.
-const RenewalManager = (props) => {
-  const { canEdit = false } = props;
+const RenewalManager = () => {
+  const canEdit = useGlobalStore((state) => state.canEdit);
   const commitments = useProjectStore((state) => state.commitments);
   const { isActive, getCommitmentLabel } = useCommitmentFilter();
   const now = moment().utc();

@@ -193,6 +193,7 @@ describe("EditPanel tests", () => {
     ];
     act(() => {
       result.current.globalStoreActions.setScope(scope);
+      result.current.globalStoreActions.setCanEdit(true);
       result.current.projectStoreActions.setCommitments(commitments);
     });
     const addCommitment1 = screen.getByTestId("addCommitment");
@@ -212,6 +213,7 @@ describe("EditPanel tests", () => {
     rerender();
     act(() => {
       result.current.globalStoreActions.setScope(scope);
+      result.current.globalStoreActions.setCanEdit(true);
       result.current.projectStoreActions.setCommitments([]);
     });
 
@@ -233,9 +235,20 @@ describe("EditPanel tests", () => {
     rerender();
     act(() => {
       result.current.globalStoreActions.setScope(scope);
+      result.current.globalStoreActions.setCanEdit(true);
       result.current.projectStoreActions.setCommitments(commitments);
     });
     expect(screen.queryByTestId("addCommitment")).not.toBeInTheDocument();
+
+    // Add commitment button should be disabled when canEdit is false (viewer role).
+    resource.commitment_config = { durations: ["1 year", "3 years"] };
+    rerender();
+    act(() => {
+      result.current.globalStoreActions.setScope(scope);
+      result.current.globalStoreActions.setCanEdit(false);
+      result.current.projectStoreActions.setCommitments(commitments);
+    });
+    expect(screen.getByTestId("addCommitment")).toBeDisabled();
   });
 
   test("Commitment merging", async () => {
@@ -298,7 +311,7 @@ describe("EditPanel tests", () => {
         </PortalProvider>
       </MemoryRouter>
     );
-    const { result } = renderHook(
+    const { result, rerender } = renderHook(
       () => ({
         globalStoreActions: globalStoreActions(),
         projectStoreActions: projectStoreActions(),
@@ -311,6 +324,7 @@ describe("EditPanel tests", () => {
     );
     act(() => {
       result.current.globalStoreActions.setScope(scope);
+      result.current.globalStoreActions.setCanEdit(true);
       result.current.projectStoreActions.setCommitments(commitments);
     });
 
@@ -345,6 +359,16 @@ describe("EditPanel tests", () => {
     fireEvent.click(mergeAction);
     expect(screen.getByTestId("mergeModal")).toBeInTheDocument();
     expect(screen.getByText("3 MiB")).toBeInTheDocument();
+
+    // Merge buttons should be disabled when canEdit is false (viewer role).
+    rerender();
+    act(() => {
+      result.current.globalStoreActions.setScope(scope);
+      result.current.globalStoreActions.setCanEdit(false);
+      result.current.projectStoreActions.setCommitments(commitments);
+    });
+    expect(screen.getByTestId("mergeToggle")).toBeDisabled();
+    expect(screen.getByTestId("mergeAction")).toBeDisabled();
   });
 
   test("panelNavDisabled: tabs enabled at project level, disabled at domain level until projects load", async () => {
