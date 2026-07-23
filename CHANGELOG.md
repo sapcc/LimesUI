@@ -1,5 +1,11 @@
 # @sapcc/limes-ui
 
+## 1.19.0
+
+### Minor Changes
+
+- 8f28e6f: Enable EditPanel for UI viewers, non-view actions are disabled in this case
+
 ## 1.18.6
 
 ### Patch Changes
