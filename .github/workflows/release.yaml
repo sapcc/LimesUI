@@ -36,7 +36,7 @@ jobs:
         uses: changesets/action@v2.1.1
         with:
           # version defaults to: changeset version
-          title: "publish: automate Package Versioning with Changesets"
-          commit: "chore: update versions with Changesets"
+          pr-title: "publish: automate Package Versioning with Changesets"
+          commit-message: "chore: update versions with Changesets"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
