@@ -1,7 +1,7 @@
 {
   "name": "@sapcc/limes-ui",
   "version": "1.19.0",
-  "packageManager": "pnpm@11.18.0",
+  "packageManager": "pnpm@11.22.0",
   "author": "VoigtS",
   "license": "Apache-2.0",
   "source": "src/index.js",
@@ -16,7 +16,7 @@
     "@babel/core": "^8.0.0",
     "@babel/preset-env": "^8.0.0",
     "@babel/preset-react": "^8.0.0",
-    "@changesets/cli": "^2.27.11",
+    "@changesets/cli": "^3.0.0",
     "@eslint/compat": "^2.0.0",
     "@svgr/core": "^8.0.0",
     "@svgr/plugin-jsx": "^8.0.0",
@@ -46,7 +46,7 @@
     "shadow-dom-testing-library": "^1.7.1",
     "tailwindcss": "^4.1.11",
     "util": "^0.12.4",
-    "zustand": "5.0.14"
+    "zustand": "5.0.15"
   },
   "scripts": {
     "build": "NODE_ENV=production node esbuild.config.js",
