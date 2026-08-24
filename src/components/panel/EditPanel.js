@@ -100,7 +100,7 @@ const EditPanel = (props) => {
 
   const publicCommitmentQuery = useQuery({
     queryKey: ["publicCommitments", { service: serviceType, resource: currentResource.name }],
-    enabled: !subRoute
+    enabled: !subRoute,
   });
 
   // Query can-confirm API. Determine if capacity is sufficient on limes.
