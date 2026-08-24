@@ -24,6 +24,7 @@ const useMaxQuotaSets = (props) => {
 
   React.useEffect(() => {
     if (!maxQuotaState.isLoading) return;
+    inputRef.current = maxQuotaDefaultInput;
     setMaxQuotaState({ ...maxQuotaState, isEditing: false, isLoading: false });
   }, [resource]);
 
@@ -211,7 +212,7 @@ function getMaxQuotaQuery() {
       { payload: project, targetDomain: domainID, targetProject: projectID },
       {
         onSuccess: () => {
-          setRefetchProjectAPI(true);
+          setRefetchProjectAPI(domainID ? [domainID] : []);
         },
         onError: (error) => {
           setToast(error.toString());
