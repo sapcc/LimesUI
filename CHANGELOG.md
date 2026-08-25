@@ -1,5 +1,15 @@
 # @sapcc/limes-ui
 
+## 1.20.0
+
+### Minor Changes
+
+- dcbec02: Add new translation strings for clavis, portunus, cinder-premium, etc.
+
+### Patch Changes
+
+- 963dd05: fix quota panel; don't fetch public commitments; Adjust setRefetchProject API parameter on domain / cluster level
+
 ## 1.19.0
 
 ### Minor Changes
