@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
+
+    <title>limesUI Dev</title>
+    <style>
+      html {
+        display: flex;
+        flex-direction: column;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        flex-grow: 1;
+        height: 100vh;
+        margin: 0;
+        padding: 0;
+      }
+      #root {
+        display: block;
+        width: 1140px;
+        margin: auto;
+      }
+      #quotaPlugin {
+        display: block;
+        width: 1140px;
+        margin: auto;
+      }
+    </style>
+    <script>
+      const locParam = new URLSearchParams(window.location.search).get('location');
+      const projectCountParamRaw = new URLSearchParams(window.location.search).get('projectCount');
+      if (!locParam) {
+        // automatically reload on build changes
+        new EventSource("/esbuild").addEventListener("change", () => location.reload());
+      }
+    </script>
+  </head>
+  <body>
+    <script type="module">
+      let ghProps = null;
+      if (locParam === 'project' || locParam === 'domain' || locParam === 'cluster') {
+        const allowedPaths = {
+          project: 'config/project-appProps.json',
+          domain: 'config/domain-appProps.json',
+          cluster: 'config/cluster-appProps.json'
+        };
+        ghProps = allowedPaths[locParam];
+      }
+      const defaultProps = "./build/appProps.json";
+      let appProps = ghProps || defaultProps;
+
+      function parseProjectCount() {
+        if (projectCountParamRaw === null || projectCountParamRaw === undefined || projectCountParamRaw.trim() === '') {
+          return 0;
+        }
+        const parsed = parseInt(projectCountParamRaw, 10);
+        if (isNaN(parsed)) {
+          return 0;
+        }
+        // Clamp the value between 0 and 10000
+        return Math.max(0, Math.min(10000, parsed));
+      }
+    
+      fetch(appProps)
+        .then((res) => res.json())
+        .catch((error) => {
+          console.warn("Failed to get appProps.json", error.message);
+          return fetch(defaultProps).then((res) => res.json());
+        })
+        .then((props) => {
+          props.getTokenFuncName = "_getCurrentToken";
+          window._getCurrentToken = async () => {
+            return { authToken: props.token };
+          };
+          import("./build/index.js").then((app) => {
+            props.projectCount = parseProjectCount();
+            app.mount(document.getElementById("root"), { props: props });
+          });
+          import("./build/quotaPlugin.js").then((app) => {
+            app.mount(document.getElementById("quotaPlugin"), { props: props });
+          });
+        });
+    </script>
+    <div id="quotaPlugin" data-juno-app="limesUI"></div>
+    <div id="root" data-juno-app="limesUI"></div>
+  </body>
+</html>
