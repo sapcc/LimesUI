@@ -5,6 +5,7 @@ import React from "react";
 import PhysicalUsage from "./PhysicalUsage";
 import { render, screen } from "@testing-library/react";
 import { PortalProvider } from "@cloudoperators/juno-ui-components/index";
+import StoreProvider from "../../StoreProvider";
 
 describe("renders for snapshot_capacity resource", () => {
   test("should display physical usage when physical_usage is present", () => {
@@ -18,9 +19,11 @@ describe("renders for snapshot_capacity resource", () => {
     };
 
     render(
-      <PortalProvider>
-        <PhysicalUsage {...props} />
-      </PortalProvider>
+      <StoreProvider>
+        <PortalProvider>
+          <PhysicalUsage {...props} />
+        </PortalProvider>
+      </StoreProvider>
     );
 
     const physicalUsageText = screen.getByText("Physical Usage: 150 GiB");
@@ -39,9 +42,11 @@ describe("renders for snapshot_capacity resource", () => {
     };
 
     render(
-      <PortalProvider>
-        <PhysicalUsage {...props} />
-      </PortalProvider>
+      <StoreProvider>
+        <PortalProvider>
+          <PhysicalUsage {...props} />
+        </PortalProvider>
+      </StoreProvider>
     );
 
     expect(screen.queryByText(/Physical Usage:/)).not.toBeInTheDocument();

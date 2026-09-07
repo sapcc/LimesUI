@@ -166,8 +166,11 @@
               "quota_distribution_model": "autogrow",
               "per_az": {
                 "az-1a": {
-                  "usage": 0,
-                  "quota": 0,
+                  "committed": {
+                    "1 year": 5
+                  },
+                  "usage": 2,
+                  "quota": 10,
                   "historical_usage": {
                     "duration": "48 hours"
                   }
@@ -188,9 +191,9 @@
                   "3 years"
                 ]
               },
-              "quota": 0,
-              "usable_quota": 0,
-              "usage": 0
+              "quota": 10,
+              "usable_quota": 10,
+              "usage": 2
             },
             {
               "name": "instances_hana_c60",

@@ -18,61 +18,104 @@ import BaseFooter from "./BaseComponents/BaseFooter";
 import useConfirmInput from "./BaseComponents/useConfirmInput";
 import { t } from "../../../lib/utils";
 import { createUnit } from "../../../lib/unit";
+import { hwVersionScaleRx, getCurrentResource } from "../../../lib/utils";
+import { useGlobalStore } from "../../StoreProvider";
 
 const label = "font-semibold";
 
+/**
+ * ConversionModal supports the following conversion modes:
+ * - Regular conversion: Source amount is rounded to a multiple of the conversion ratio,
+ *   ensuring the target amount is exact.
+ * - Complex conversion (hw_version_215x resources): Any source amount is allowed,
+ *   and the target amount is rounded down (accepting conversion loss).
+ */
 const ConversionModal = (props) => {
-  const { title, subText, onModalClose, commitment, conversionResults, onConvert } = props;
+  const { title, subText, onModalClose, categories, commitment, conversionResults, onConvert } = props;
   const { ConfirmInput, inputProps, checkInput } = useConfirmInput({
     confirmationText: subText,
   });
+  const documentationLinks = useGlobalStore((state) => state.documentationLinks);
+  const docLink = documentationLinks.convert_commitments;
   const { resource_name } = commitment;
   const { data, isLoading, isError, error } = conversionResults;
   const { conversions } = data || { conversions: [] };
-  const [invalidConversion, setInvalidConversion] = React.useState(false);
   const [currentConversion, setCurrentConversion] = React.useState(null);
   const unit = createUnit(commitment?.unit);
   // Needs to be an object. The same suggested conversion value on select of a different conversion type would not trigger a rerender.
   const [conversion, setConversion] = React.useState({ amount: 0 });
-  const [targetAmount, setTargetAmount] = React.useState();
-  const [insufficientAmount, setInsufficientAmount] = React.useState(false);
+
+  const [allowComplexConversion, complexTargetUnit] = React.useMemo(() => {
+    if (!currentConversion || !categories) return [false, null];
+    const allowed = hwVersionScaleRx.test(currentConversion.target_resource);
+    if (!allowed) return [false, null];
+
+    // Find the target resource in categories
+    const targetCategory = Object.values(categories).find((cat) =>
+      cat.resources.some((res) => res.name === currentConversion.target_resource)
+    );
+    const targetResource = targetCategory
+      ? getCurrentResource(targetCategory.resources, currentConversion.target_resource)
+      : null;
+    if (!targetResource) return [false, null];
+    const targetUnit = createUnit(targetResource.unit);
+    return [true, targetUnit];
+  }, [currentConversion, categories]);
 
   // initialize conversion.
+  // Determine the maximum initial amount that can be converted for a selected conversion.
   React.useEffect(() => {
     if (!currentConversion) return;
-    const amount = Math.floor(commitment.amount / currentConversion.from) * currentConversion.from;
-    if (amount == 0) {
-      setConversion({ amount: amount });
-      setTargetAmount(null);
-      setInsufficientAmount(true);
-      return;
+
+    let sourceAmount = commitment.amount;
+    if (!allowComplexConversion) {
+      sourceAmount = Math.floor(sourceAmount / currentConversion.from) * currentConversion.from;
     }
-    setConversion({ amount: amount });
-  }, [currentConversion]);
+
+    setConversion({ amount: sourceAmount });
+  }, [currentConversion, allowComplexConversion]);
 
   // set target amount based on desired conversion.
-  React.useEffect(() => {
-    if (!currentConversion || insufficientAmount) {
-      return;
+  const { targetAmount, invalidConversion, insufficientAmount } = React.useMemo(() => {
+    if (!currentConversion) {
+      return { targetAmount: null, invalidConversion: false, insufficientAmount: false };
     }
+
     const amount = parseInt(conversion.amount, 10) || 0;
-    const isInvalidConversion = amount % currentConversion.from != 0;
-    if (amount > commitment.amount || amount <= 0 || isInvalidConversion) {
-      setInvalidConversion(true);
-      return;
+
+    let initialSourceAmount = commitment.amount;
+    if (!allowComplexConversion) {
+      initialSourceAmount = Math.floor(initialSourceAmount / currentConversion.from) * currentConversion.from;
     }
-    const targetAmount = (amount / currentConversion.from) * currentConversion.to;
-    setTargetAmount(targetAmount);
-  }, [conversion]);
+    if (initialSourceAmount === 0) {
+      return { targetAmount: null, invalidConversion: false, insufficientAmount: true };
+    }
+
+    const rawTargetAmount = (amount / currentConversion.from) * currentConversion.to;
+
+    let finalTargetAmount;
+    if (allowComplexConversion) {
+      finalTargetAmount = Math.floor(rawTargetAmount);
+      if (finalTargetAmount === 0) {
+        return { targetAmount: null, invalidConversion: true, insufficientAmount: false };
+      }
+    } else {
+      finalTargetAmount = rawTargetAmount;
+    }
+
+    const isInvalidConversion = !allowComplexConversion && amount % currentConversion.from !== 0;
+    if (amount > commitment.amount || amount <= 0 || isInvalidConversion) {
+      return { targetAmount: null, invalidConversion: true, insufficientAmount: false };
+    }
+
+    return { targetAmount: finalTargetAmount, invalidConversion: false, insufficientAmount: false };
+  }, [conversion, currentConversion, allowComplexConversion, commitment.amount]);
 
   function onConversionInput(e) {
-    setInvalidConversion(false);
     setConversion({ amount: e.target.value });
   }
 
   function onSelectChange(conversion) {
-    setInvalidConversion(false);
-    setInsufficientAmount(false);
     setCurrentConversion(conversion);
   }
 
@@ -81,7 +124,6 @@ const ConversionModal = (props) => {
     const sourceAmount = parseInt(conversion.amount, 10) || 0;
     // defense in depth.
     if (sourceAmount > commitment.amount || sourceAmount <= 0 || invalidConversion) {
-      setInvalidConversion(true);
       return;
     }
     const payload = {
@@ -118,6 +160,25 @@ const ConversionModal = (props) => {
         <LoadingIndicator className="m-auto" />
       ) : (
         <>
+          {docLink && (
+            <Message className="mb-1" variant="info">
+              Learn more about&nbsp;
+              <a href={docLink} target="_blank" rel="noopener noreferrer" className="underline">
+                resource conversion
+              </a>
+            </Message>
+          )}
+          {allowComplexConversion && (
+            <Message className="mb-4" variant="warning">
+              <div>
+                <strong>Important:</strong> Conversion is only possible once in this direction.
+              </div>
+              <div>
+                Due to mismatching hardware, 1:1 conversion may not be possible. <br />
+                The target amount will be rounded down to the next matching amount.
+              </div>
+            </Message>
+          )}
           <DataGrid columns={2} columnMaxSize="1fr">
             <DataGridRow>
               <DataGridCell className={label}>Source:</DataGridCell>
@@ -174,7 +235,10 @@ const ConversionModal = (props) => {
                   successtext={
                     !invalidConversion &&
                     targetAmount &&
-                    `target amount: ${unit.format(targetAmount)} ${!unit.isStandardUnit ? `(${targetAmount} * ${unit.name})` : ""}`
+                    (() => {
+                      const displayUnit = allowComplexConversion ? complexTargetUnit : unit;
+                      return `target amount: ${displayUnit.format(targetAmount)} ${!displayUnit.isStandardUnit ? `(${targetAmount} * ${displayUnit.name})` : ""}`;
+                    })()
                   }
                   onChange={(e) => {
                     onConversionInput(e);

@@ -138,6 +138,7 @@ const limesStore = (set, get) => ({
   global: {
     scope: new Scope(),
     canEdit: false,
+    documentationLinks: {},
 
     actions: {
       setCanEdit: (canEdit) => {
@@ -148,6 +149,11 @@ const limesStore = (set, get) => ({
       setScope: (scope) => {
         set((state) => ({
           global: { ...state.global, scope: scope },
+        }));
+      },
+      setDocumentationLinks: (documentationLinks) => {
+        set((state) => ({
+          global: { ...state.global, documentationLinks: documentationLinks },
         }));
       },
       ////////////////////////////////////////////////////////////////////////////////

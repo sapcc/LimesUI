@@ -38,6 +38,17 @@ If you would like to use the additional quota plugin application, add the follow
 }
 ```
 
+If you would like to display documentation links, add the following contents:
+
+```s
+{
+  "documentationLinks": {
+    "convert_commitments": "",
+    "share_replication": ""
+  }
+}
+```
+
 | Field     | Type               | Description                                                                                                                                                                                                      |
 | :-------- | :----------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | endpoint  | string             | Base URL of the Limes API as stored in the Keystone catalog                                                                                                                                                      |

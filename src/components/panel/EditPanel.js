@@ -487,6 +487,7 @@ const EditPanel = (props) => {
         <ConversionModal
           title="Convert Commitment"
           subText="Convert"
+          categories={props.categories}
           commitment={conversionCommitment}
           conversionResults={conversionResults}
           onModalClose={onConversionClose}
