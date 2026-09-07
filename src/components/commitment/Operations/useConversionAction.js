@@ -7,7 +7,6 @@ import { createCommitmentStoreActions, useCreateCommitmentStore } from "../../St
 
 const useConversionAction = (props) => {
   const { commitment, marketplaceModalFn, updateActions } = props;
-  const { resource_name } = commitment;
   const showConversionOption = useCreateCommitmentStore((state) => state.showConversionOption);
   const { setConversionCommitment } = createCommitmentStoreActions();
 
@@ -16,12 +15,14 @@ const useConversionAction = (props) => {
   }
 
   React.useEffect(() => {
-    if (!showConversionOption || marketplaceModalFn) return;
-    const validFlavors = new RegExp("^instances_hana.").exec(resource_name)?.[0];
-    if (!validFlavors) return;
-    const menuItem = <MenuItemBuilder icon="edit" text="Convert" callBack={convertCommitment} />;
-    updateActions("convert", menuItem, null);
-  }, [resource_name, showConversionOption]);
+    if (marketplaceModalFn) return;
+    if (showConversionOption) {
+      const menuItem = <MenuItemBuilder icon="edit" text="Convert" callBack={convertCommitment} />;
+      updateActions("convert", menuItem, null);
+    } else {
+      updateActions("convert", null, null);
+    }
+  }, [showConversionOption]);
 };
 
 export default useConversionAction;

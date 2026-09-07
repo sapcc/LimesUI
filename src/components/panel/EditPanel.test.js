@@ -35,7 +35,7 @@ queryClient.setQueryDefaults(["commitmentData"], {
 
 queryClient.setQueryDefaults(["getConversions"], {
   queryFn: () => {
-    return;
+    return { conversions: [] };
   },
 });
 queryClient.setQueryDefaults(["projectsInDomain"], {

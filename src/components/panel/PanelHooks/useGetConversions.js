@@ -11,8 +11,7 @@ const useGetConversions = ({ serviceType, resourceName }) => {
   const conversionResult = useLimesGetRequest({
     queryKey: "getConversions",
     queryArgs: { serviceType: serviceType, resourceName: resourceName },
-    queryOpts: { refetchOnMount: false, enabled: false },
-    shouldRefetch: new RegExp("^instances_hana.").exec(resourceName)?.[0],
+    queryOpts: { refetchOnMount: false },
   });
 
   const { data, isLoading, isError, error } = conversionResult;
@@ -22,9 +21,8 @@ const useGetConversions = ({ serviceType, resourceName }) => {
     if (isError) {
       setToast(error.toString());
     }
-    if (data) {
-      setShowConversionOption(true);
-    }
+    const hasConversions = data?.conversions?.length > 0;
+    setShowConversionOption(hasConversions);
   }, [data, isError]);
 
   return conversionResult;

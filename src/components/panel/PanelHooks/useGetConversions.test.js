@@ -19,8 +19,10 @@ const queryClient = new QueryClient({
 queryClient.setQueryDefaults(["getConversions"], {
   queryFn: ({ queryKey }) => {
     const { resourceName } = queryKey[1];
-    if (resourceName === "instances_hana_resourceA") {
-      return ["conversionA", "conversionB"];
+    if (resourceName === "resourceA") {
+      return { conversions: ["conversionA", "conversionB"] };
+    } else if (resourceName === "resourceB") {
+      return { conversions: [] };
     } else {
       throw new Error("failed to fetch content");
     }
@@ -37,62 +39,62 @@ describe("test useGetConversions", () => {
   beforeEach(() => {
     queryClient.clear();
   });
-  test("should return values on hana resources", async () => {
-    const { result } = await waitFor(() => {
-      return renderHook(
-        () => ({
-          commitmentStore: useCreateCommitmentStore(),
-          commitmentStoreActions: createCommitmentStoreActions(),
-          conversions: useGetConversions({
-            serviceType: "serviceA",
-            resourceName: "instances_hana_resourceA",
-          }),
+  test("should return conversions and set showConversionOption to true", async () => {
+    const { result } = renderHook(
+      () => ({
+        commitmentStore: useCreateCommitmentStore(),
+        commitmentStoreActions: createCommitmentStoreActions(),
+        conversions: useGetConversions({
+          serviceType: "serviceA",
+          resourceName: "resourceA",
         }),
-        {
-          wrapper,
-        }
-      );
+      }),
+      {
+        wrapper,
+      }
+    );
+    await waitFor(() => {
+      expect(result.current.conversions.data).toEqual({ conversions: ["conversionA", "conversionB"] });
     });
-    expect(result.current.conversions.data).toEqual(["conversionA", "conversionB"]);
     expect(result.current.commitmentStore.showConversionOption).toBe(true);
   });
-  test("should not return values on non hana resources", async () => {
-    const { result } = await waitFor(() => {
-      return renderHook(
-        () => ({
-          commitmentStore: useCreateCommitmentStore(),
-          commitmentStoreActions: createCommitmentStoreActions(),
-          conversions: useGetConversions({
-            serviceType: "serviceA",
-            resourceName: "resourceA",
-          }),
+  test("should set showConversionOption to false when no conversions available", async () => {
+    const { result } = renderHook(
+      () => ({
+        commitmentStore: useCreateCommitmentStore(),
+        commitmentStoreActions: createCommitmentStoreActions(),
+        conversions: useGetConversions({
+          serviceType: "serviceA",
+          resourceName: "resourceB",
         }),
-        {
-          wrapper,
-        }
-      );
+      }),
+      {
+        wrapper,
+      }
+    );
+    await waitFor(() => {
+      expect(result.current.conversions.data).toEqual({ conversions: [] });
     });
-    expect(result.current.conversions.data).toBe(undefined);
     expect(result.current.commitmentStore.showConversionOption).toBe(false);
   });
 
   test("should set a toast on failed request", async () => {
-    const { result } = await waitFor(() => {
-      return renderHook(
-        () => ({
-          commitmentStore: useCreateCommitmentStore(),
-          commitmentStoreActions: createCommitmentStoreActions(),
-          conversions: useGetConversions({
-            serviceType: "serviceA",
-            resourceName: "instances_hana_resourceB",
-          }),
+    const { result } = renderHook(
+      () => ({
+        commitmentStore: useCreateCommitmentStore(),
+        commitmentStoreActions: createCommitmentStoreActions(),
+        conversions: useGetConversions({
+          serviceType: "serviceA",
+          resourceName: "resourceC",
         }),
-        {
-          wrapper,
-        }
-      );
+      }),
+      {
+        wrapper,
+      }
+    );
+    await waitFor(() => {
+      expect(result.current.commitmentStore.toast.message).toEqual("Error: failed to fetch content");
     });
     expect(result.current.commitmentStore.showConversionOption).toBe(false);
-    expect(result.current.commitmentStore.toast.message).toEqual("Error: failed to fetch content");
   });
 });
