@@ -47,10 +47,9 @@ const ConversionModal = (props) => {
   // Display value for the input field.
   const [displayAmount, setDisplayAmount] = React.useState("");
 
-  const [allowComplexConversion, complexTargetUnit] = React.useMemo(() => {
+  const [allowComplexConversion, targetUnit] = React.useMemo(() => {
     if (!currentConversion || !categories) return [false, null];
     const allowed = hwVersionScaleRx.test(currentConversion.target_resource);
-    if (!allowed) return [false, null];
 
     // Find the target resource in categories
     const targetCategory = Object.values(categories).find((cat) =>
@@ -61,7 +60,7 @@ const ConversionModal = (props) => {
       : null;
     if (!targetResource) return [false, null];
     const targetUnit = createUnit(targetResource.unit);
-    return [true, targetUnit];
+    return [allowed, targetUnit];
   }, [currentConversion, categories]);
 
   // initialize conversion.
@@ -227,7 +226,7 @@ const ConversionModal = (props) => {
                 <DataGridCell className={label}>Conversion Ratio:</DataGridCell>
                 {currentConversion && (
                   <DataGridCell>
-                    {`${unit.format(currentConversion.from)} : ${unit.format(currentConversion.to)}`}
+                    {`${unit.formatForInput(currentConversion.from)} : ${targetUnit ? targetUnit.formatForInput(currentConversion.to) : currentConversion.to}`}
                   </DataGridCell>
                 )}
               </DataGridRow>
@@ -247,10 +246,7 @@ const ConversionModal = (props) => {
                   successtext={
                     !invalidConversion &&
                     targetAmount &&
-                    (() => {
-                      const displayUnit = allowComplexConversion ? complexTargetUnit : unit;
-                      return `target amount: ${displayUnit.format(targetAmount)} ${!displayUnit.isStandardUnit ? `(${targetAmount} * ${displayUnit.name})` : ""}`;
-                    })()
+                    `target amount: ${targetUnit ? targetUnit.format(targetAmount) : targetAmount} ${targetUnit && !targetUnit.isStandardUnit ? `(${targetAmount} * ${targetUnit.name})` : ""}`
                   }
                   onChange={(e) => {
                     onConversionInput(e);

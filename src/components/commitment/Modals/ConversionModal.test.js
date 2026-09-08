@@ -40,6 +40,34 @@ const conversionResultWithUnit = {
   },
 };
 
+// Categories for tests without units (unitless resources)
+const categoriesUnitless = {
+  targetServiceA: {
+    serviceType: "targetServiceA",
+    resources: [{ name: "targetResourceA", unit: "" }],
+  },
+  targetServiceB: {
+    serviceType: "targetServiceB",
+    resources: [{ name: "targetResourceB", unit: "" }],
+  },
+};
+
+// Categories for tests with standard units
+const categoriesWithUnit = {
+  targetServiceA: {
+    serviceType: "targetServiceA",
+    resources: [{ name: "targetResourceA", unit: "GiB" }],
+  },
+};
+
+// Categories for tests with non-standard units
+const categoriesWithNonStandardUnit = {
+  targetServiceA: {
+    serviceType: "targetServiceA",
+    resources: [{ name: "targetResourceA", unit: "128 GiB" }],
+  },
+};
+
 describe("test conversion modal", () => {
   test("successful conversion of maximum amount", async () => {
     const onConvert = jest.fn((commitment, payload) => {
@@ -59,6 +87,7 @@ describe("test conversion modal", () => {
             title="Convert Commitment"
             subText="Convert"
             commitment={commitment}
+            categories={categoriesUnitless}
             conversionResults={conversionResults}
             onModalClose={() => {}}
             onConvert={onConvert}
@@ -99,6 +128,7 @@ describe("test conversion modal", () => {
             title="Convert Commitment"
             subText="Convert"
             commitment={commitment}
+            categories={categoriesUnitless}
             conversionResults={emptyConversionResult}
             onModalClose={() => {}}
             onConvert={onConvert}
@@ -108,6 +138,40 @@ describe("test conversion modal", () => {
     );
     expect(screen.getByTestId("conversionSelect")).toBeDisabled();
   });
+
+  test("fallback to bare number when target unit can not be determined", async () => {
+    const onConvert = jest.fn();
+    const commitment = { ...initialCommitmentObject };
+    commitment.amount = 10;
+    commitment.duration = "1 year";
+    commitment.resource_name = "resourceA";
+    // no categories or resources are provided.
+    render(
+      <StoreProvider>
+        <PortalProvider>
+          <ConversionModal
+            title="Convert Commitment"
+            subText="Convert"
+            commitment={commitment}
+            conversionResults={conversionResults}
+            onModalClose={() => {}}
+            onConvert={onConvert}
+          />
+        </PortalProvider>
+      </StoreProvider>
+    );
+    const targetInput = screen.getByTestId("conversionSelect");
+    fireEvent.click(targetInput);
+    const conversion1 = screen.getByTestId("targetResourceA");
+    fireEvent.click(conversion1);
+    // Without categories, targetUnit is null, bare numbers from the API are displayed
+    await waitFor(() => {
+      expect(screen.getByText(/target amount: 6/i)).toBeInTheDocument();
+    });
+    // Conversion ratio should also show bare numbers
+    expect(screen.getByText(/3 : 2/i)).toBeInTheDocument();
+  });
+
   test("successful conversion of custom amount", async () => {
     const onConvert = jest.fn((commitment, payload) => {
       expect(commitment.amount).toEqual(10);
@@ -125,6 +189,7 @@ describe("test conversion modal", () => {
             title="Convert Commitment"
             subText="Convert"
             commitment={commitment}
+            categories={categoriesUnitless}
             conversionResults={conversionResults}
             onModalClose={() => {}}
             onConvert={onConvert}
@@ -177,6 +242,7 @@ describe("test conversion modal", () => {
             title="Convert Commitment"
             subText="Convert"
             commitment={commitment}
+            categories={categoriesWithUnit}
             conversionResults={conversionResultWithUnit}
             onModalClose={() => {}}
             onConvert={onConvert}
@@ -194,10 +260,10 @@ describe("test conversion modal", () => {
     const conversion1 = screen.getByTestId("targetResourceA");
     fireEvent.click(conversion1);
     await waitFor(() => {
-      expect(screen.getByText(/target amount: 4 MiB/i)).toBeInTheDocument(); // 4096 * (1 / 1024)
+      expect(screen.getByText(/target amount: 4 GiB/i)).toBeInTheDocument(); // 4096 * (1 / 1024)
     });
     expect(conversionInput).toHaveValue("4 GiB");
-    expect(screen.getByText("1 GiB : 1 MiB")).toBeInTheDocument();
+    expect(screen.getByText("1 GiB : 1 GiB")).toBeInTheDocument();
 
     // invalid conversion amount (4095 is not divisible by 1024)
     fireEvent.change(conversionInput, { target: { value: "4095 MiB" } });
@@ -206,7 +272,7 @@ describe("test conversion modal", () => {
     });
     fireEvent.change(conversionInput, { target: { value: "4096 MiB" } });
     await waitFor(() => {
-      expect(screen.getByText(/target amount: 4 MiB/i)).toBeInTheDocument();
+      expect(screen.getByText(/target amount: 4 GiB/i)).toBeInTheDocument();
     });
     fireEvent.change(confirmInput, { target: { value: "convert" } });
     fireEvent.click(confirmButton);
@@ -235,6 +301,7 @@ describe("test conversion modal", () => {
             title="Convert Commitment"
             subText="Convert"
             commitment={commitment}
+            categories={categoriesWithNonStandardUnit}
             conversionResults={conversionResults}
             onModalClose={() => {}}
             onConvert={onConvert}
@@ -254,6 +321,8 @@ describe("test conversion modal", () => {
       expect(screen.getByText(/target amount: 256 GiB \(2 \* 128 GiB\)/i)).toBeInTheDocument(); // 2 * 128 GiB will be converted
     });
     expect(conversionInput).toHaveValue("3");
+    // Conversion ratio uses formatForInput - for non-standard unit "128 GiB", it shows bare number "2" instead of "256 GiB"
+    expect(screen.getByText(/3 : 2/i)).toBeInTheDocument();
     // invalid conversion amount
     fireEvent.change(conversionInput, { target: { value: 6 } });
     await waitFor(() => {
@@ -272,7 +341,6 @@ describe("test conversion modal", () => {
 
   test("complex conversion", async () => {
     // target allows any source amount with rounding down the target amount.
-    // Note: hwVersionScaleRx requires a digit after "215" (e.g., hw_version_2150_ram)
     const complexConversionResults = {
       data: {
         conversions: [
