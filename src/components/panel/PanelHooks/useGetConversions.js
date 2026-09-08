@@ -5,13 +5,13 @@ import React from "react";
 import useLimesGetRequest from "../../shared/useLimesGetRequest";
 import { createCommitmentStoreActions } from "../../StoreProvider";
 
-const useGetConversions = ({ serviceType, resourceName }) => {
+const useGetConversions = ({ serviceType, resourceName, subRoute }) => {
   const { setShowConversionOption } = createCommitmentStoreActions();
   const { setToast } = createCommitmentStoreActions();
   const conversionResult = useLimesGetRequest({
     queryKey: "getConversions",
     queryArgs: { serviceType: serviceType, resourceName: resourceName },
-    queryOpts: { refetchOnMount: false },
+    queryOpts: { refetchOnMount: false, enabled: !subRoute },
   });
 
   const { data, isLoading, isError, error } = conversionResult;

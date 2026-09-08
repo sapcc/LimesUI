@@ -55,6 +55,8 @@ class Unit {
     this.scaleData = scales[baseData.scale];
   }
 
+  // For standard units, this just calls format(). The method exists so callers can use
+  // unit.formatForInput() uniformly - NonStandardUnit has its own implementation.
   formatForInput(value, options) {
     return this.format(value, options);
   }

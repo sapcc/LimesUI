@@ -27,6 +27,19 @@ const conversionResults = {
   },
 };
 
+const conversionResultWithUnit = {
+  data: {
+    conversions: [
+      {
+        from: 1024,
+        to: 1,
+        target_service: "targetServiceA",
+        target_resource: "targetResourceA",
+      },
+    ],
+  },
+};
+
 describe("test conversion modal", () => {
   test("successful conversion of maximum amount", async () => {
     const onConvert = jest.fn((commitment, payload) => {
@@ -149,8 +162,8 @@ describe("test conversion modal", () => {
       expect(commitment.amount).toEqual(4096);
       expect(payload.commitment.target_service).toEqual("targetServiceA");
       expect(payload.commitment.target_resource).toEqual("targetResourceA");
-      expect(payload.commitment.source_amount).toEqual(4095);
-      expect(payload.commitment.target_amount).toEqual(2730);
+      expect(payload.commitment.source_amount).toEqual(4096);
+      expect(payload.commitment.target_amount).toEqual(4);
     });
     const commitment = { ...initialCommitmentObject };
     commitment.amount = 4096;
@@ -164,7 +177,7 @@ describe("test conversion modal", () => {
             title="Convert Commitment"
             subText="Convert"
             commitment={commitment}
-            conversionResults={conversionResults}
+            conversionResults={conversionResultWithUnit}
             onModalClose={() => {}}
             onConvert={onConvert}
           />
@@ -172,6 +185,7 @@ describe("test conversion modal", () => {
       </StoreProvider>
     );
     expect(screen.getByText("4 GiB")).toBeInTheDocument();
+
     const targetInput = screen.getByTestId("conversionSelect");
     const conversionInput = screen.getByTestId("conversionInput");
     const confirmInput = screen.getByTestId("confirmInput");
@@ -180,17 +194,19 @@ describe("test conversion modal", () => {
     const conversion1 = screen.getByTestId("targetResourceA");
     fireEvent.click(conversion1);
     await waitFor(() => {
-      expect(screen.getByText(/target amount: 2.67 GiB/i)).toBeInTheDocument(); // 4095 * (2 / 3)
+      expect(screen.getByText(/target amount: 4 MiB/i)).toBeInTheDocument(); // 4096 * (1 / 1024)
     });
-    expect(conversionInput).toHaveValue("4095");
-    // invalid conversion amount
-    fireEvent.change(conversionInput, { target: { value: 4096 } });
+    expect(conversionInput).toHaveValue("4 GiB");
+    expect(screen.getByText("1 GiB : 1 MiB")).toBeInTheDocument();
+
+    // invalid conversion amount (4095 is not divisible by 1024)
+    fireEvent.change(conversionInput, { target: { value: "4095 MiB" } });
     await waitFor(() => {
       expect(screen.getByText(/please enter a valid amount./i)).toBeInTheDocument();
     });
-    fireEvent.change(conversionInput, { target: { value: 4095 } });
+    fireEvent.change(conversionInput, { target: { value: "4096 MiB" } });
     await waitFor(() => {
-      expect(screen.getByText(/target amount: 2.67 GiB/i)).toBeInTheDocument();
+      expect(screen.getByText(/target amount: 4 MiB/i)).toBeInTheDocument();
     });
     fireEvent.change(confirmInput, { target: { value: "convert" } });
     fireEvent.click(confirmButton);

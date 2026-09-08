@@ -44,6 +44,8 @@ const ConversionModal = (props) => {
   const unit = createUnit(commitment?.unit);
   // Needs to be an object. The same suggested conversion value on select of a different conversion type would not trigger a rerender.
   const [conversion, setConversion] = React.useState({ amount: 0 });
+  // Display value for the input field.
+  const [displayAmount, setDisplayAmount] = React.useState("");
 
   const [allowComplexConversion, complexTargetUnit] = React.useMemo(() => {
     if (!currentConversion || !categories) return [false, null];
@@ -73,6 +75,7 @@ const ConversionModal = (props) => {
     }
 
     setConversion({ amount: sourceAmount });
+    setDisplayAmount(unit.formatForInput(sourceAmount, { ascii: true }));
   }, [currentConversion, allowComplexConversion]);
 
   // set target amount based on desired conversion.
@@ -112,7 +115,16 @@ const ConversionModal = (props) => {
   }, [conversion, currentConversion, allowComplexConversion, commitment.amount]);
 
   function onConversionInput(e) {
-    setConversion({ amount: e.target.value });
+    const inputValue = e.target.value;
+    setDisplayAmount(inputValue);
+
+    // Parse the input value using the source unit
+    const parsedInput = unit.parse(inputValue, false);
+    if (parsedInput.error) {
+      setConversion({ amount: 0 });
+      return;
+    }
+    setConversion({ amount: parsedInput });
   }
 
   function onSelectChange(conversion) {
@@ -215,7 +227,7 @@ const ConversionModal = (props) => {
                 <DataGridCell className={label}>Conversion Ratio:</DataGridCell>
                 {currentConversion && (
                   <DataGridCell>
-                    {currentConversion.from} : {currentConversion.to}
+                    {`${unit.format(currentConversion.from)} : ${unit.format(currentConversion.to)}`}
                   </DataGridCell>
                 )}
               </DataGridRow>
@@ -230,7 +242,7 @@ const ConversionModal = (props) => {
                   width="auto"
                   disabled={insufficientAmount || !currentConversion}
                   autoFocus
-                  value={conversion.amount}
+                  value={displayAmount}
                   errortext={invalidConversion && "Please enter a valid amount."}
                   successtext={
                     !invalidConversion &&
