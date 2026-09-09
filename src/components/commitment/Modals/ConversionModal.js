@@ -42,8 +42,7 @@ const ConversionModal = (props) => {
   const { conversions } = data || { conversions: [] };
   const [currentConversion, setCurrentConversion] = React.useState(null);
   const sourceUnit = createUnit(commitment?.unit);
-  // conversionInput needs to be an object. The same suggested conversion value on select of a different conversion type would not trigger a rerender.
-  const [conversionInput, setConversionInput] = React.useState({ amount: 0 });
+  const [conversionInput, setConversionInput] = React.useState(0);
   const [inputParseError, setInputParseError] = React.useState("");
   // Disables the input field if the commitment amount does not fit into the conversion ratio.
   const [insufficientAmount, setInsufficientAmount] = React.useState(false);
@@ -77,7 +76,7 @@ const ConversionModal = (props) => {
     }
 
     setInsufficientAmount(sourceAmount === 0);
-    setConversionInput({ amount: sourceAmount });
+    setConversionInput(sourceAmount);
     setSourceDisplayAmount(sourceUnit.formatForInput(sourceAmount, { ascii: true }));
   }, [currentConversion, conversionWithRounding]);
 
@@ -87,20 +86,19 @@ const ConversionModal = (props) => {
       return { targetAmount: null, invalidConversion: false };
     }
 
-    const sourceAmount = conversionInput.amount;
-    if (sourceAmount <= 0 || sourceAmount > commitment.amount) {
+    if (conversionInput <= 0 || conversionInput > commitment.amount) {
       return { targetAmount: null, invalidConversion: true };
     }
 
     // For standard conversions, the selected amount to convert must fit into the conversion ratio.
-    if (!conversionWithRounding && sourceAmount % currentConversion.from !== 0) {
+    if (!conversionWithRounding && conversionInput % currentConversion.from !== 0) {
       return { targetAmount: null, invalidConversion: true };
     }
 
     // Calculate target amount
     const targetAmount = conversionWithRounding
-      ? Math.floor((sourceAmount / currentConversion.from) * currentConversion.to)
-      : (sourceAmount / currentConversion.from) * currentConversion.to;
+      ? Math.floor((conversionInput / currentConversion.from) * currentConversion.to)
+      : (conversionInput / currentConversion.from) * currentConversion.to;
 
     if (targetAmount === 0) {
       return { targetAmount: null, invalidConversion: true };
@@ -120,7 +118,7 @@ const ConversionModal = (props) => {
       return;
     }
     setInputParseError("");
-    setConversionInput({ amount: parsedInput });
+    setConversionInput(parsedInput);
   }
 
   function onSelectChange(conversion) {
@@ -129,7 +127,7 @@ const ConversionModal = (props) => {
 
   async function onConfirm() {
     if (!currentConversion) return;
-    const sourceAmount = conversionInput.amount;
+    const sourceAmount = conversionInput;
     // defense in depth.
     if (sourceAmount > commitment.amount || sourceAmount <= 0 || invalidConversion || inputParseError) {
       return;
@@ -240,11 +238,9 @@ const ConversionModal = (props) => {
                   autoFocus
                   value={sourceDisplayAmount}
                   errortext={
-                    insufficientAmount
-                      ? "Insufficient amount for conversion."
-                      : invalidConversion
-                        ? "Please enter a valid amount."
-                        : inputParseError
+                    (insufficientAmount && "Insufficient amount for conversion.") ||
+                    (invalidConversion && "Please enter a valid amount.") ||
+                    inputParseError
                   }
                   successtext={
                     !invalidConversion &&

@@ -257,8 +257,15 @@ describe("test conversion modal", () => {
       expect(screen.getByText(/please enter a valid amount./i)).toBeInTheDocument();
     });
 
-    // Value: 0 should not disable the input field - only a insufficient commitment amount should.
+    // Value: 0 and emptystring should not disable the input field - only a insufficient commitment amount should.
     fireEvent.change(conversionInput, { target: { value: 0 } });
+    await waitFor(() => {
+      expect(screen.getByText(/please enter a valid amount./i)).toBeInTheDocument();
+    });
+    expect(conversionInput).not.toBeDisabled();
+    expect(confirmInput).toBeDisabled();
+
+    fireEvent.change(conversionInput, { target: { value: " " } });
     await waitFor(() => {
       expect(screen.getByText(/please enter a valid amount./i)).toBeInTheDocument();
     });
@@ -269,6 +276,88 @@ describe("test conversion modal", () => {
     fireEvent.change(conversionInput, { target: { value: 3 } });
     await waitFor(() => {
       expect(screen.getByText(/target amount: 2/i)).toBeInTheDocument();
+    });
+    fireEvent.change(confirmInput, { target: { value: "convert" } });
+    fireEvent.click(confirmButton);
+    await waitFor(() => {
+      expect(onConvert).toHaveBeenCalled();
+    });
+  });
+
+  test("switching between conversions updates target correctly", async () => {
+    // Both conversions have the same suggested source amount (10) but different ratios.
+    // Verifies that the UI updates correctly even when the source amount doesn't change.
+    const sameAmountConversions = {
+      data: {
+        conversions: [
+          {
+            from: 1,
+            to: 2,
+            target_service: "serviceA",
+            target_resource: "resourceA",
+          },
+          {
+            from: 1,
+            to: 5,
+            target_service: "serviceB",
+            target_resource: "resourceB",
+          },
+        ],
+      },
+    };
+
+    const onConvert = jest.fn((commitment, payload) => {
+      expect(commitment.amount).toEqual(10);
+      expect(payload.commitment.target_service).toEqual("serviceA");
+      expect(payload.commitment.target_resource).toEqual("resourceA");
+      expect(payload.commitment.source_amount).toEqual(10);
+      expect(payload.commitment.target_amount).toEqual(20);
+    });
+    const commitment = { ...initialCommitmentObject };
+    commitment.amount = 10;
+    commitment.duration = "1 year";
+    commitment.resource_name = "testResource";
+
+    render(
+      <StoreProvider>
+        <PortalProvider>
+          <ConversionModal
+            title="Convert Commitment"
+            subText="Convert"
+            commitment={commitment}
+            categories={categoriesUnitless}
+            conversionResults={sameAmountConversions}
+            onModalClose={() => {}}
+            onConvert={onConvert}
+          />
+        </PortalProvider>
+      </StoreProvider>
+    );
+
+    const targetSelect = screen.getByTestId("conversionSelect");
+    const confirmInput = screen.getByTestId("confirmInput");
+    const confirmButton = screen.getByTestId("modalConfirm");
+
+    // First conversion (1:2 ratio) - source: 10, target: 20
+    fireEvent.click(targetSelect);
+    fireEvent.click(screen.getByTestId("resourceA"));
+    await waitFor(() => {
+      expect(screen.getByText(/target amount: 20/i)).toBeInTheDocument();
+    });
+
+    // Switch to the second conversion (1:5 ratio) - source: 10, target 50
+    // Both have the same suggested source amount (10), but different target amounts
+    fireEvent.click(targetSelect);
+    fireEvent.click(screen.getByTestId("resourceB"));
+    await waitFor(() => {
+      expect(screen.getByText(/target amount: 50/i)).toBeInTheDocument();
+    });
+
+    // Switch back to first conversion to verify it updates correctly
+    fireEvent.click(targetSelect);
+    fireEvent.click(screen.getByTestId("resourceA"));
+    await waitFor(() => {
+      expect(screen.getByText(/target amount: 20/i)).toBeInTheDocument();
     });
     fireEvent.change(confirmInput, { target: { value: "convert" } });
     fireEvent.click(confirmButton);
@@ -601,7 +690,6 @@ describe("test conversion modal", () => {
     await waitFor(() => {
       expect(screen.getByText(/target amount: 2 GiB/i)).toBeInTheDocument();
     });
-
     fireEvent.change(confirmInput, { target: { value: "convert" } });
     fireEvent.click(confirmButton);
     await waitFor(() => {
