@@ -1,5 +1,16 @@
 # @sapcc/limes-ui
 
+## 1.21.0
+
+### Minor Changes
+
+- 9ade61f: Add modal error display support
+- 41cf8c1: Add complex commitment conversion (any source amount can be converted - the target amount is rounded down); Add documentationLink configuration option; Fix resource badge display on overview page
+
+### Patch Changes
+
+- 41bbbf7: Fix: remove conversion action restriction for hana instance resources. The conversion is now enabled if any conversions exist.
+
 ## 1.20.0
 
 ### Minor Changes
