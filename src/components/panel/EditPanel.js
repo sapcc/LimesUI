@@ -76,7 +76,7 @@ const EditPanel = (props) => {
   const { setRefetchDomainAPI } = domainStoreActions();
   const { setRefetchCommitmentAPI } = createCommitmentStoreActions();
   const { setCommitmentIsLoading } = createCommitmentStoreActions();
-  const conversionResults = useGetConversions({ serviceType, resourceName });
+  const conversionResults = useGetConversions({ serviceType, resourceName, subRoute });
   const [currentTab, setCurrentTab] = React.useState(currentResource.per_az[0].name);
   const isMarketplaceTab = currentTab === CustomZones.MARKETPLACE;
   const [projectsAreSortable, setProjectsAreSortable] = React.useState(false);
@@ -487,6 +487,7 @@ const EditPanel = (props) => {
         <ConversionModal
           title="Convert Commitment"
           subText="Convert"
+          categories={props.categories}
           commitment={conversionCommitment}
           conversionResults={conversionResults}
           onModalClose={onConversionClose}

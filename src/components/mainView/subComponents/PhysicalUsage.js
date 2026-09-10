@@ -5,12 +5,12 @@ import React from "react";
 import { Box, Icon, Stack, Tooltip, TooltipContent, TooltipTrigger } from "@cloudoperators/juno-ui-components";
 import { createUnit } from "../../../lib/unit";
 import { getUsageForAZLevel } from "../../../lib/resourceBarValues";
-
-const docLink =
-  "https://documentation.global.cloud.sap/docs/customer/storage/file-storage/fs-howto/filestore-create-a-share-replica/";
+import { useGlobalStore } from "../../StoreProvider";
 
 const PhysicalUsage = (props) => {
   const { resource, resourceName = null, unit: unitName } = props;
+  const documentationLinks = useGlobalStore((state) => state.documentationLinks);
+  const docLink = documentationLinks.share_replication;
   const name = resourceName ?? resource.name;
   const usage = getUsageForAZLevel(resource);
   const physicalUsage = resource?.physical_usage;
@@ -39,10 +39,14 @@ const PhysicalUsage = (props) => {
             <TooltipContent>
               <div className="text-sm">
                 A difference might occur due to{" "}
-                <a target="_blank" rel="noopener noreferrer" href={docLink}>
-                  Snapmirror
-                </a>{" "}
-                usage.
+                {docLink ? (
+                  <a target="_blank" rel="noopener noreferrer" href={docLink}>
+                    Snapmirror
+                  </a>
+                ) : (
+                  "Snapmirror"
+                )}
+                &nbsp; usage.
               </div>
             </TooltipContent>
           </Tooltip>

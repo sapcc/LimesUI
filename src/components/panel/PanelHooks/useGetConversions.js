@@ -5,14 +5,13 @@ import React from "react";
 import useLimesGetRequest from "../../shared/useLimesGetRequest";
 import { createCommitmentStoreActions } from "../../StoreProvider";
 
-const useGetConversions = ({ serviceType, resourceName }) => {
+const useGetConversions = ({ serviceType, resourceName, subRoute }) => {
   const { setShowConversionOption } = createCommitmentStoreActions();
   const { setToast } = createCommitmentStoreActions();
   const conversionResult = useLimesGetRequest({
     queryKey: "getConversions",
     queryArgs: { serviceType: serviceType, resourceName: resourceName },
-    queryOpts: { refetchOnMount: false, enabled: false },
-    shouldRefetch: new RegExp("^instances_hana.").exec(resourceName)?.[0],
+    queryOpts: { refetchOnMount: false, enabled: !subRoute },
   });
 
   const { data, isLoading, isError, error } = conversionResult;
@@ -22,9 +21,8 @@ const useGetConversions = ({ serviceType, resourceName }) => {
     if (isError) {
       setToast(error.toString());
     }
-    if (data) {
-      setShowConversionOption(true);
-    }
+    const hasConversions = data?.conversions?.length > 0;
+    setShowConversionOption(hasConversions);
   }, [data, isError]);
 
   return conversionResult;

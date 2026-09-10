@@ -18,7 +18,7 @@ const App = (props = {}) => {
   const { setGlobalAPI } = apiStoreActions();
   const { setToken } = apiStoreActions();
   const token = useApiStore((state) => state.globalAPI.token);
-  const { setScope, setCanEdit } = globalStoreActions();
+  const { setScope, setCanEdit, setDocumentationLinks } = globalStoreActions();
   const projectID = useApiStore((state) => state.globalAPI.projectID);
   const apiReady = useApiStore((state) => state.globalAPI.apiReady);
   const [tokenError, setTokenError] = React.useState(false);
@@ -34,6 +34,7 @@ const App = (props = {}) => {
     });
     setScope(scope);
     setCanEdit(props.canEdit);
+    setDocumentationLinks(props.documentationLinks || {});
   }, []);
 
   // Reload page after token timeout.

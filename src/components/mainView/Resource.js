@@ -189,7 +189,7 @@ const Resource = (props) => {
         )}
       </Stack>
       {!isPanelView && (
-        <Stack distribution="end" gap="1">
+        <Stack direction="vertical" gap="1">
           {isAZUnaware(props.resource.per_az) && (
             <ProjectBadges az={props.resource.per_az[0]} unit={unitName} displayValues={true} />
           )}

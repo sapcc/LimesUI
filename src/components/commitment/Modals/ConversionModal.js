@@ -18,70 +18,118 @@ import BaseFooter from "./BaseComponents/BaseFooter";
 import useConfirmInput from "./BaseComponents/useConfirmInput";
 import { t } from "../../../lib/utils";
 import { createUnit } from "../../../lib/unit";
+import { hwVersionRx, getCurrentResource } from "../../../lib/utils";
+import { useGlobalStore } from "../../StoreProvider";
 
 const label = "font-semibold";
 
+/**
+ * ConversionModal supports the following conversion modes:
+ * - Regular conversion: Source amount is rounded to a multiple of the conversion ratio,
+ *   ensuring the target amount is exact.
+ * - Conversion with rounding (hw_version resources): Any source amount is allowed,
+ *   and the target amount is rounded down (accepting conversion loss).
+ */
 const ConversionModal = (props) => {
-  const { title, subText, onModalClose, commitment, conversionResults, onConvert } = props;
+  const { title, subText, onModalClose, categories, commitment, conversionResults, onConvert } = props;
   const { ConfirmInput, inputProps, checkInput } = useConfirmInput({
     confirmationText: subText,
   });
+  const documentationLinks = useGlobalStore((state) => state.documentationLinks);
+  const docLink = documentationLinks.convert_commitments;
   const { resource_name } = commitment;
   const { data, isLoading, isError, error } = conversionResults;
   const { conversions } = data || { conversions: [] };
-  const [invalidConversion, setInvalidConversion] = React.useState(false);
   const [currentConversion, setCurrentConversion] = React.useState(null);
-  const unit = createUnit(commitment?.unit);
-  // Needs to be an object. The same suggested conversion value on select of a different conversion type would not trigger a rerender.
-  const [conversion, setConversion] = React.useState({ amount: 0 });
-  const [targetAmount, setTargetAmount] = React.useState();
+  const sourceUnit = createUnit(commitment?.unit);
+  const [conversionInput, setConversionInput] = React.useState(0);
+  const [inputParseError, setInputParseError] = React.useState("");
+  // Disables the input field if the commitment amount does not fit into the conversion ratio.
   const [insufficientAmount, setInsufficientAmount] = React.useState(false);
+  // Unit formatted value for the input field.
+  const [sourceDisplayAmount, setSourceDisplayAmount] = React.useState("");
+
+  const [conversionWithRounding, targetUnit] = React.useMemo(() => {
+    if (!currentConversion || !categories) return [false, null];
+    const allowed = hwVersionRx.test(currentConversion.target_resource);
+
+    // Find the target resource in categories
+    const targetCategory = Object.values(categories).find((cat) =>
+      cat.resources.some((res) => res.name === currentConversion.target_resource)
+    );
+    const targetResource = targetCategory
+      ? getCurrentResource(targetCategory.resources, currentConversion.target_resource)
+      : null;
+    if (!targetResource) return [false, null];
+    const targetUnit = createUnit(targetResource.unit);
+    return [allowed, targetUnit];
+  }, [currentConversion, categories]);
 
   // initialize conversion.
+  // Determine the maximum initial amount that can be converted for a selected conversion.
   React.useEffect(() => {
     if (!currentConversion) return;
-    const amount = Math.floor(commitment.amount / currentConversion.from) * currentConversion.from;
-    if (amount == 0) {
-      setConversion({ amount: amount });
-      setTargetAmount(null);
-      setInsufficientAmount(true);
-      return;
-    }
-    setConversion({ amount: amount });
-  }, [currentConversion]);
 
-  // set target amount based on desired conversion.
-  React.useEffect(() => {
-    if (!currentConversion || insufficientAmount) {
-      return;
+    let sourceAmount = Math.floor(commitment.amount / currentConversion.from) * currentConversion.from;
+    if (conversionWithRounding) {
+      sourceAmount = commitment.amount;
     }
-    const amount = parseInt(conversion.amount, 10) || 0;
-    const isInvalidConversion = amount % currentConversion.from != 0;
-    if (amount > commitment.amount || amount <= 0 || isInvalidConversion) {
-      setInvalidConversion(true);
-      return;
+
+    setInsufficientAmount(sourceAmount === 0);
+    setConversionInput(sourceAmount);
+    setSourceDisplayAmount(sourceUnit.formatForInput(sourceAmount, { ascii: true }));
+  }, [currentConversion, conversionWithRounding]);
+
+  // Determine target amount based on desired conversion.
+  const { targetAmount, invalidConversion } = React.useMemo(() => {
+    if (!currentConversion) {
+      return { targetAmount: null, invalidConversion: false };
     }
-    const targetAmount = (amount / currentConversion.from) * currentConversion.to;
-    setTargetAmount(targetAmount);
-  }, [conversion]);
+
+    if (conversionInput <= 0 || conversionInput > commitment.amount) {
+      return { targetAmount: null, invalidConversion: true };
+    }
+
+    // For standard conversions, the selected amount to convert must fit into the conversion ratio.
+    if (!conversionWithRounding && conversionInput % currentConversion.from !== 0) {
+      return { targetAmount: null, invalidConversion: true };
+    }
+
+    // Calculate target amount
+    const targetAmount = conversionWithRounding
+      ? Math.floor((conversionInput / currentConversion.from) * currentConversion.to)
+      : (conversionInput / currentConversion.from) * currentConversion.to;
+
+    if (targetAmount === 0) {
+      return { targetAmount: null, invalidConversion: true };
+    }
+
+    return { targetAmount, invalidConversion: false };
+  }, [conversionInput, currentConversion, conversionWithRounding, commitment.amount]);
 
   function onConversionInput(e) {
-    setInvalidConversion(false);
-    setConversion({ amount: e.target.value });
+    const inputValue = e.target.value;
+    setSourceDisplayAmount(inputValue);
+
+    // Parse the input value using the source unit
+    const parsedInput = sourceUnit.parse(inputValue, false);
+    if (parsedInput.error) {
+      setInputParseError(parsedInput.error);
+      return;
+    }
+    setInputParseError("");
+    setConversionInput(parsedInput);
   }
 
   function onSelectChange(conversion) {
-    setInvalidConversion(false);
-    setInsufficientAmount(false);
     setCurrentConversion(conversion);
   }
 
   async function onConfirm() {
     if (!currentConversion) return;
-    const sourceAmount = parseInt(conversion.amount, 10) || 0;
+    const sourceAmount = conversionInput;
     // defense in depth.
-    if (sourceAmount > commitment.amount || sourceAmount <= 0 || invalidConversion) {
-      setInvalidConversion(true);
+    if (sourceAmount > commitment.amount || sourceAmount <= 0 || invalidConversion || inputParseError) {
       return;
     }
     const payload = {
@@ -102,7 +150,7 @@ const ConversionModal = (props) => {
       open={true}
       modalFooter={
         <BaseFooter
-          disabled={!currentConversion || insufficientAmount}
+          disabled={!currentConversion || invalidConversion || inputParseError || insufficientAmount}
           onModalClose={onModalClose}
           guardFns={[checkInput]}
           actionFn={onConfirm}
@@ -118,6 +166,25 @@ const ConversionModal = (props) => {
         <LoadingIndicator className="m-auto" />
       ) : (
         <>
+          {docLink && (
+            <Message className="mb-1" variant="info">
+              Learn more about&nbsp;
+              <a href={docLink} target="_blank" rel="noopener noreferrer" className="underline">
+                resource conversion
+              </a>
+            </Message>
+          )}
+          {conversionWithRounding && (
+            <Message className="mb-4" variant="warning">
+              <div>
+                <strong>Important:</strong> Conversion is only possible once in this direction.
+              </div>
+              <div>
+                Due to mismatching hardware, 1:1 conversion may not be possible. <br />
+                The target amount might be rounded down to the next matching amount.
+              </div>
+            </Message>
+          )}
           <DataGrid columns={2} columnMaxSize="1fr">
             <DataGridRow>
               <DataGridCell className={label}>Source:</DataGridCell>
@@ -125,7 +192,7 @@ const ConversionModal = (props) => {
             </DataGridRow>
             <DataGridRow>
               <DataGridCell className={label}>Amount:</DataGridCell>
-              <DataGridCell>{unit.format(commitment.amount)}</DataGridCell>
+              <DataGridCell>{sourceUnit.format(commitment.amount)}</DataGridCell>
             </DataGridRow>
             <DataGridRow>
               <DataGridCell className={label}>Target:</DataGridCell>
@@ -154,7 +221,7 @@ const ConversionModal = (props) => {
                 <DataGridCell className={label}>Conversion Ratio:</DataGridCell>
                 {currentConversion && (
                   <DataGridCell>
-                    {currentConversion.from} : {currentConversion.to}
+                    {`${sourceUnit.formatForInput(currentConversion.from)} : ${targetUnit ? targetUnit.formatForInput(currentConversion.to) : currentConversion.to}`}
                   </DataGridCell>
                 )}
               </DataGridRow>
@@ -167,14 +234,19 @@ const ConversionModal = (props) => {
                 <TextInput
                   data-testid="conversionInput"
                   width="auto"
-                  disabled={insufficientAmount || !currentConversion}
+                  disabled={!currentConversion || insufficientAmount}
                   autoFocus
-                  value={conversion.amount}
-                  errortext={invalidConversion && "Please enter a valid amount."}
+                  value={sourceDisplayAmount}
+                  errortext={
+                    (insufficientAmount && "Insufficient amount for conversion.") ||
+                    (invalidConversion && "Please enter a valid amount.") ||
+                    inputParseError
+                  }
                   successtext={
                     !invalidConversion &&
+                    !inputParseError &&
                     targetAmount &&
-                    `target amount: ${unit.format(targetAmount)} ${!unit.isStandardUnit ? `(${targetAmount} * ${unit.name})` : ""}`
+                    `target amount: ${targetUnit ? targetUnit.format(targetAmount) : targetAmount} ${targetUnit && !targetUnit.isStandardUnit ? `(${targetAmount} * ${targetUnit.name})` : ""}`
                   }
                   onChange={(e) => {
                     onConversionInput(e);
@@ -182,7 +254,11 @@ const ConversionModal = (props) => {
                 />
               </Stack>
             </div>
-            <ConfirmInput disabled={insufficientAmount || !currentConversion} subText={subText} {...inputProps} />
+            <ConfirmInput
+              disabled={!currentConversion || invalidConversion || inputParseError || insufficientAmount}
+              subText={subText}
+              {...inputProps}
+            />
           </Stack>
         </>
       )}

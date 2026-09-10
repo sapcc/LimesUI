@@ -79,6 +79,36 @@ const canConfirmCommitment = ({ endpoint }) => {
   });
 };
 
+const getConversions = ({ endpoint }) => {
+  return http.get(`${endpoint}/v1/commitment-conversion/:serviceType/:resourceName`, ({ params }) => {
+    const { resourceName } = params;
+
+    if (!resourceName.startsWith("instances_hana_c120")) {
+      return HttpResponse.json({ conversions: [] });
+    }
+
+    // instances_hana_c120 -> hw_version_2150_ram conversion
+    // Conversion rate: hana_c120 (120 GiB weight) -> RAM (128 GiB weight)
+    // gcd(120, 128) = 8; From: 16 To: 15 (but we lose 8 GiB per conversion)
+    const conversions = [
+      {
+        target_service: "compute",
+        target_resource: "hw_version_2150_ram",
+        from: 16,
+        to: 15,
+      },
+      {
+        target_service: "compute",
+        target_resource: "instances_hana_60",
+        from: 1,
+        to: 2,
+      },
+    ];
+
+    return HttpResponse.json({ conversions });
+  });
+};
+
 const getPublicCommitments = ({ endpoint }) => {
   return http.get(`${endpoint}/v1/public-commitments`, (opts) => {
     const { request } = opts;
@@ -122,6 +152,7 @@ export default (options) => [
   getDomainsForCluster(options),
   getProjectsForCluster(options),
   getCommitments(options),
+  getConversions(options),
   canConfirmCommitment(options),
   getPublicCommitments(options),
   getCerebro(options),

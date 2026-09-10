@@ -66,7 +66,7 @@ describe("test Action Operation", () => {
 
   test("should render conversion action", async () => {
     const commitment = { ...initialCommitmentObject };
-    commitment.resource_name = "instances_hana_resourceA";
+    commitment.resource_name = "resourceA";
     const wrapper = ({ children }) => (
       <PortalProvider>
         <StoreProvider>
@@ -75,7 +75,7 @@ describe("test Action Operation", () => {
         </StoreProvider>
       </PortalProvider>
     );
-    const { result, rerender } = renderHook(
+    const { result } = renderHook(
       () => ({
         commitmentStore: useCreateCommitmentStore(),
         commitmentStoreActions: createCommitmentStoreActions(),
@@ -85,24 +85,49 @@ describe("test Action Operation", () => {
         wrapper,
       }
     );
-    act(() => {
+    await act(async () => {
       result.current.commitmentStoreActions.setShowConversionOption(true);
       result.current.globalStoreActions.setCanEdit(true);
     });
     const contextMenu = await waitFor(() => {
       return screen.getByTitle(/more/i);
     });
+    userEvent.click(contextMenu);
     await waitFor(() => {
-      userEvent.click(contextMenu);
-      expect(screen.queryByText(/convert/i)).not.toBe(null);
+      expect(screen.getByText(/convert/i)).toBeInTheDocument();
     });
+  });
 
-    // Menu items should be disabled when canEdit is false (viewer role).
-    rerender();
-    act(() => {
+  test("should disable conversion action when canEdit is false", async () => {
+    const commitment = { ...initialCommitmentObject };
+    commitment.resource_name = "resourceA";
+    const wrapper = ({ children }) => (
+      <PortalProvider>
+        <StoreProvider>
+          <Actions commitment={commitment} />
+          {children}
+        </StoreProvider>
+      </PortalProvider>
+    );
+    const { result } = renderHook(
+      () => ({
+        commitmentStore: useCreateCommitmentStore(),
+        commitmentStoreActions: createCommitmentStoreActions(),
+        globalStoreActions: globalStoreActions(),
+      }),
+      {
+        wrapper,
+      }
+    );
+    // Set showConversionOption to true but canEdit to false (viewer role)
+    await act(async () => {
+      result.current.commitmentStoreActions.setShowConversionOption(true);
       result.current.globalStoreActions.setCanEdit(false);
     });
-    userEvent.click(contextMenu);
+    const contextMenu = await waitFor(() => {
+      return screen.getByTitle(/more/i);
+    });
+    await userEvent.click(contextMenu);
     await waitFor(() => {
       const convertMenuItem = screen.getByText(/convert/i).closest('[role="menuitem"]');
       expect(convertMenuItem).toHaveAttribute("aria-disabled", "true");
