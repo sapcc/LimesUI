@@ -159,7 +159,6 @@ const EditPanel = (props) => {
       const domainToRefetch = currentDomainID || scope.domainID;
       setRefetchProjectAPI(domainToRefetch ? [domainToRefetch] : []);
       setRefetchCommitmentAPI(true);
-      setCommitmentIsLoading(false);
       setCommitment(initialCommitmentObject);
       setIsSubmitting(false);
       setCanConfirm(null);
