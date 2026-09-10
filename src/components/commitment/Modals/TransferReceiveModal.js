@@ -3,7 +3,6 @@
 
 import React from "react";
 import {
-  Modal,
   TextInput,
   Button,
   Stack,
@@ -14,6 +13,7 @@ import {
   DataGridCell,
   ButtonRow,
 } from "@cloudoperators/juno-ui-components";
+import BaseModal from "./BaseComponents/BaseModal";
 import BaseFooter from "./BaseComponents/BaseFooter";
 import useConfirmInput from "./BaseComponents/useConfirmInput";
 import useLimesGetRequest from "../../shared/useLimesGetRequest";
@@ -79,7 +79,7 @@ const TransferReceiveModal = (props) => {
   }
 
   return (
-    <Modal
+    <BaseModal
       title={title}
       open={true}
       modalFooter={
@@ -162,7 +162,7 @@ const TransferReceiveModal = (props) => {
           </Stack>
         )
       )}
-    </Modal>
+    </BaseModal>
   );
 };
 

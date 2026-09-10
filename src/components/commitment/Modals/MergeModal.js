@@ -2,9 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import React from "react";
+import BaseModal from "./BaseComponents/BaseModal";
 import BaseFooter from "./BaseComponents/BaseFooter";
 import useConfirmInput from "./BaseComponents/useConfirmInput";
-import { Modal, DataGrid, DataGridRow, DataGridCell } from "@cloudoperators/juno-ui-components";
+import { DataGrid, DataGridRow, DataGridCell } from "@cloudoperators/juno-ui-components";
 import { createUnit, valueWithUnit } from "../../../lib/unit";
 import { parseCommitmentDuration } from "../../../lib/parseCommitmentDurations";
 
@@ -34,7 +35,7 @@ const MergeModal = (props) => {
   }
 
   return (
-    <Modal
+    <BaseModal
       data-testid={"mergeModal"}
       className="max-h-full"
       title={title}
@@ -61,7 +62,7 @@ const MergeModal = (props) => {
         </DataGridRow>
       </DataGrid>
       <ConfirmInput subText={subText} {...inputProps} />
-    </Modal>
+    </BaseModal>
   );
 };
 

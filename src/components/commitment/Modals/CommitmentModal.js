@@ -2,15 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import React from "react";
-import {
-  Message,
-  Modal,
-  DataGrid,
-  DataGridRow,
-  DataGridCell,
-  Stack,
-  Checkbox,
-} from "@cloudoperators/juno-ui-components";
+import { Message, DataGrid, DataGridRow, DataGridCell, Stack, Checkbox } from "@cloudoperators/juno-ui-components";
+import BaseModal from "./BaseComponents/BaseModal";
 import BaseFooter from "./BaseComponents/BaseFooter";
 import CommitmentCalendar from "../CommitmentCalendar";
 import moment from "moment";
@@ -79,7 +72,7 @@ const CommitmentModal = (props) => {
   }
 
   return (
-    <Modal
+    <BaseModal
       className="max-h-full"
       title={title}
       open={true}
@@ -164,7 +157,7 @@ const CommitmentModal = (props) => {
         </Stack>
       )}
       <ConfirmInput subText={subText} {...inputProps} />
-    </Modal>
+    </BaseModal>
   );
 };
 

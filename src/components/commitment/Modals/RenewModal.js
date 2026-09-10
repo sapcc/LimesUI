@@ -2,9 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import React from "react";
+import BaseModal from "./BaseComponents/BaseModal";
 import BaseFooter from "./BaseComponents/BaseFooter";
 import useConfirmInput from "./BaseComponents/useConfirmInput";
-import { Modal, DataGrid, DataGridRow, DataGridCell } from "@cloudoperators/juno-ui-components";
+import { DataGrid, DataGridRow, DataGridCell } from "@cloudoperators/juno-ui-components";
 import { createUnit, valueWithUnit } from "../../../lib/unit";
 import { formatTimeISO8160 } from "../../../lib/utils";
 
@@ -22,7 +23,7 @@ const RenewModal = (props) => {
   }
 
   return (
-    <Modal
+    <BaseModal
       className="max-h-full"
       title={title}
       open={open}
@@ -53,7 +54,7 @@ const RenewModal = (props) => {
         </DataGrid>
       )}
       <ConfirmInput subText={subText} {...inputProps} />
-    </Modal>
+    </BaseModal>
   );
 };
 
