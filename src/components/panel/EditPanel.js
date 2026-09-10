@@ -164,9 +164,8 @@ const EditPanel = (props) => {
       setIsSubmitting(false);
       setCanConfirm(null);
       setIsCommitting(false);
-    } catch (error) {
+    } finally {
       setCommitmentIsLoading(false);
-      throw error;
     }
   }
 
