@@ -3,6 +3,7 @@
 
 import React from "react";
 import { Button, ButtonRow, ModalFooter } from "@cloudoperators/juno-ui-components";
+import { useModalError } from "./BaseModal";
 
 const BaseFooter = (props) => {
   const {
@@ -16,6 +17,7 @@ const BaseFooter = (props) => {
   } = props;
   const executionLock = React.useRef(false);
   const [isExecuting, setIsExecuting] = React.useState(false);
+  const { setError } = useModalError();
 
   async function onConfirm() {
     if (executionLock.current) return;
@@ -35,6 +37,8 @@ const BaseFooter = (props) => {
     }
     try {
       await actionFn();
+    } catch (error) {
+      setError(error?.message || error?.toString() || "An error occurred");
     } finally {
       executionLock.current = false;
       setIsExecuting(false);

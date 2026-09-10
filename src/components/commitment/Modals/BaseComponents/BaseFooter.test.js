@@ -3,19 +3,19 @@
 
 import React from "react";
 import BaseFooter from "./BaseFooter";
+import BaseModal from "./BaseModal";
 import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
-import { Modal } from "@cloudoperators/juno-ui-components";
 import { PortalProvider } from "@cloudoperators/juno-ui-components";
 
 const UseExampleCmp = ({ guardFns, actionFn, disabled = false }) => {
   return (
     <PortalProvider>
-      <Modal
+      <BaseModal
         className="max-h-full"
         title="testCmp"
         open={true}
         modalFooter={<BaseFooter disabled={disabled} guardFns={guardFns} actionFn={actionFn} />}
-      ></Modal>
+      ></BaseModal>
     </PortalProvider>
   );
 };
@@ -136,6 +136,25 @@ describe("test Footer", () => {
     expect(actionFn).toHaveBeenCalledTimes(1);
     await act(async () => {
       resolveAction();
+    });
+  });
+
+  test.each([
+    [new Error("Error object"), "Error object"],
+    ["String error", "String error"],
+  ])("error is displayed in modal when actionFn throws", async (thrownValue, expectedMessage) => {
+    const actionFn = jest.fn(() => {
+      throw thrownValue;
+    });
+    const guardFns = [() => true];
+    render(<UseExampleCmp guardFns={guardFns} actionFn={actionFn} />);
+    const button = screen.getByTestId(/modalConfirm/i);
+    await act(async () => {
+      fireEvent.click(button);
+    });
+    await waitFor(() => {
+      expect(screen.getByTestId("modalError")).toBeInTheDocument();
+      expect(screen.getByText(expectedMessage)).toBeInTheDocument();
     });
   });
 });

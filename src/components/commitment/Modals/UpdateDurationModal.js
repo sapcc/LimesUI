@@ -2,7 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import React from "react";
-import { DataGrid, DataGridRow, DataGridCell, Modal, Select, SelectOption } from "@cloudoperators/juno-ui-components";
+import { DataGrid, DataGridRow, DataGridCell, Select, SelectOption } from "@cloudoperators/juno-ui-components";
+import BaseModal from "./BaseComponents/BaseModal";
 import BaseFooter from "./BaseComponents/BaseFooter";
 import { useCreateCommitmentStore } from "../../StoreProvider";
 import { createUnit, valueWithUnit } from "../../../lib/unit";
@@ -29,7 +30,7 @@ const UpdateDurationModal = (props) => {
 
   return (
     validDurations.length !== 0 && (
-      <Modal
+      <BaseModal
         className="max-h-full"
         title={title}
         open={true}
@@ -62,7 +63,7 @@ const UpdateDurationModal = (props) => {
           </DataGridRow>
         </DataGrid>
         <ConfirmInput subText={subText} {...inputProps} />
-      </Modal>
+      </BaseModal>
     )
   );
 };

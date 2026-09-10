@@ -4,7 +4,6 @@
 import React from "react";
 import {
   Message,
-  Modal,
   DataGrid,
   DataGridRow,
   DataGridCell,
@@ -13,6 +12,7 @@ import {
   SelectOption,
   Stack,
 } from "@cloudoperators/juno-ui-components";
+import BaseModal from "./BaseComponents/BaseModal";
 import BaseFooter from "./BaseComponents/BaseFooter";
 import useConfirmInput from "./BaseComponents/useConfirmInput";
 import { useGlobalStore, useDomainStore } from "../../StoreProvider";
@@ -85,7 +85,7 @@ const MarketplaceModal = (props) => {
   return (
     <>
       <style>{selectOptionStyles}</style>
-      <Modal
+      <BaseModal
         className="max-h-full"
         title={title}
         open={true}
@@ -184,7 +184,7 @@ const MarketplaceModal = (props) => {
           </DataGridRow>
         </DataGrid>
         <ConfirmInput disabled={disabled} subText={subText} {...inputProps} />
-      </Modal>
+      </BaseModal>
     </>
   );
 };

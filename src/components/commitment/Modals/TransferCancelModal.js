@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import React from "react";
-import { Modal } from "@cloudoperators/juno-ui-components";
+import BaseModal from "./BaseComponents/BaseModal";
 import BaseFooter from "./BaseComponents/BaseFooter";
 import { TransferType } from "../../../lib/constants";
 
@@ -14,7 +14,7 @@ const TransferCancelModal = (props) => {
   }
 
   return (
-    <Modal
+    <BaseModal
       title={title}
       open={true}
       modalFooter={<BaseFooter onModalClose={onModalClose} guardFns={[]} actionFn={onConfirm} />}
@@ -25,7 +25,7 @@ const TransferCancelModal = (props) => {
       <div className={"mb-4 font-medium"}>
         <div>Do you want to reset the commitment transfer state?</div>
       </div>
-    </Modal>
+    </BaseModal>
   );
 };
 

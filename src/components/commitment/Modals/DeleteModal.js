@@ -2,7 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import React from "react";
-import { Modal, DataGrid, DataGridRow, DataGridCell } from "@cloudoperators/juno-ui-components";
+import { DataGrid, DataGridRow, DataGridCell } from "@cloudoperators/juno-ui-components";
+import BaseModal from "./BaseComponents/BaseModal";
 import BaseFooter from "./BaseComponents/BaseFooter";
 import useConfirmInput from "./BaseComponents/useConfirmInput";
 import { createUnit, valueWithUnit } from "../../../lib/unit";
@@ -21,7 +22,7 @@ const DeleteModal = (props) => {
   }
 
   return (
-    <Modal
+    <BaseModal
       className="max-h-full"
       title={title}
       open={true}
@@ -52,7 +53,7 @@ const DeleteModal = (props) => {
         </DataGridRow>
       </DataGrid>
       <ConfirmInput subText={subText} {...inputProps} />
-    </Modal>
+    </BaseModal>
   );
 };
 

@@ -8,12 +8,12 @@ import {
   DataGridCell,
   LoadingIndicator,
   Message,
-  Modal,
   Select,
   SelectOption,
   Stack,
   TextInput,
 } from "@cloudoperators/juno-ui-components";
+import BaseModal from "./BaseComponents/BaseModal";
 import BaseFooter from "./BaseComponents/BaseFooter";
 import useConfirmInput from "./BaseComponents/useConfirmInput";
 import { t } from "../../../lib/utils";
@@ -144,7 +144,7 @@ const ConversionModal = (props) => {
   }
 
   return (
-    <Modal
+    <BaseModal
       className="max-h-full"
       title={title}
       open={true}
@@ -262,7 +262,7 @@ const ConversionModal = (props) => {
           </Stack>
         </>
       )}
-    </Modal>
+    </BaseModal>
   );
 };
 

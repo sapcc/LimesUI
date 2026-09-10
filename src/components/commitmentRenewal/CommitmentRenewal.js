@@ -34,7 +34,6 @@ const CommitmentRenewal = (props) => {
   const hasRenewable = renewable.length > 0;
   const hasInconsistencies = inconsistent.length > 0;
   const [showModal, setShowModal] = React.useState(false);
-  const [toast, setToast] = React.useState(null);
   const allCategoriesLabel = "All Categories";
   const [selectedCategory, setSelectedCategory] = React.useState(allCategoriesLabel);
   const commitmentsForModal = React.useRef();
@@ -138,7 +137,7 @@ const CommitmentRenewal = (props) => {
       }
     }
     if (errors.length > 0) {
-      setToast(errors.join("\n"));
+      throw new Error(errors.join("\n"));
     }
     setRefetchCommitmentAPI(true);
     setShowModal(false);
@@ -146,11 +145,6 @@ const CommitmentRenewal = (props) => {
 
   return (
     <>
-      {toast && (
-        <Message variant="error" dismissible={true} onDismiss={() => setToast(null)}>
-          <span className="whitespace-pre-line">{toast}</span>
-        </Message>
-      )}
       {!canEdit && <Message className={"mb-1"} variant="warning" text={missingRole} />}
       {hasRenewable ? (
         <div>
