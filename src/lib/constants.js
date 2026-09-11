@@ -6,6 +6,7 @@ export const ADVANCEDVIEW = "advancedView";
 export const CEREBROKEY = "PAYG Availability";
 export const COMMITMENTRENEWALKEY = "Renewal";
 export const PAYG_AZUNAWARE_KEY = "Whole Region";
+export const HANA_FLAVOR_CASCADE_LAKE = "per_flavor_hana_cascade_lake";
 
 //used to reset the last commitment to default values.
 export const initialCommitmentObject = {
@@ -109,7 +110,7 @@ export const STRINGS = {
   objectstore_region_3_hdd_capacity: "Object Storage Capacity",
   per_flavor: "Restricted Flavors",
   per_flavor_baremetal: "Baremetal Flavors",
-  per_flavor_hana_cascade_lake: "HANA Flavors (Cascade Lake)",
+  [HANA_FLAVOR_CASCADE_LAKE]: "HANA Flavors (Cascade Lake)",
   per_flavor_hana_sapphire_rapids: "HANA Flavors (Sapphire Rapids)",
   pools: "Pools",
   pools_single: "Pool",

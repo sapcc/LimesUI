@@ -7,6 +7,7 @@ import { PortalProvider } from "@cloudoperators/juno-ui-components";
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { initialCommitmentObject } from "../../../lib/constants";
 import StoreProvider from "../../StoreProvider";
+import { HANA_FLAVOR_CASCADE_LAKE } from "../../../lib/constants";
 
 const conversionResults = {
   data: {
@@ -535,7 +536,7 @@ describe("test conversion modal", () => {
         serviceType: "serviceA",
         resources: [
           { name: "hw_version_2150_ram", unit: "128 GiB" },
-          { name: "flavor_1234", unit: "" },
+          { name: HANA_FLAVOR_CASCADE_LAKE, unit: "" },
         ],
       },
     };
@@ -550,7 +551,7 @@ describe("test conversion modal", () => {
     commitment.amount = 10;
     commitment.unit = ""; // unitless flavor resource
     commitment.duration = "1 year";
-    commitment.resource_name = "flavor_1234";
+    commitment.resource_name = HANA_FLAVOR_CASCADE_LAKE;
     render(
       <StoreProvider>
         <PortalProvider>
@@ -558,6 +559,7 @@ describe("test conversion modal", () => {
             title="Convert Commitment"
             subText="Convert"
             commitment={commitment}
+            currentCategory={HANA_FLAVOR_CASCADE_LAKE}
             categories={categories}
             conversionResults={conversionResults}
             onModalClose={() => {}}
@@ -618,7 +620,7 @@ describe("test conversion modal", () => {
             from: 1024,
             to: 1,
             target_service: "serviceA",
-            target_resource: "ram_category_x",
+            target_resource: "hw_version_2100_ram",
           },
         ],
       },
@@ -626,13 +628,13 @@ describe("test conversion modal", () => {
     const categories = {
       serviceA: {
         serviceType: "serviceA",
-        resources: [{ name: "ram_category_x", unit: "GiB" }],
+        resources: [{ name: "hw_version_2100_ram", unit: "GiB" }],
       },
     };
     const onConvert = jest.fn((commitment, payload) => {
       expect(commitment.amount).toEqual(4096); // 4096 MiB
       expect(payload.commitment.target_service).toEqual("serviceA");
-      expect(payload.commitment.target_resource).toEqual("ram_category_x");
+      expect(payload.commitment.target_resource).toEqual("hw_version_2100_ram");
       expect(payload.commitment.source_amount).toEqual(2048); // 2048 MiB
       expect(payload.commitment.target_amount).toEqual(2); // 2 GiB
     });
@@ -662,7 +664,7 @@ describe("test conversion modal", () => {
     const confirmButton = screen.getByTestId("modalConfirm");
 
     fireEvent.click(targetInput);
-    const conversionOption = screen.getByTestId("ram_category_x");
+    const conversionOption = screen.getByTestId("RAM (2100)");
     fireEvent.click(conversionOption);
 
     // Initial value should be the maximum convertible amount: floor(4096/1024) * 1024 = 4096 MiB
