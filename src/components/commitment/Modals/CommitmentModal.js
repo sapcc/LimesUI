@@ -43,8 +43,6 @@ const CommitmentModal = (props) => {
 
   async function onConfirm() {
     if (!selectedDate) return;
-    // don't send a durationLabel for the UI to the API.
-    delete commitment?.durationLabel;
 
     // Handle current day commitments
     // They should be active after now + 60 seconds (proper margin for the API)
