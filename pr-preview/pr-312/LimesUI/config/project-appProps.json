@@ -1,8 +1,0 @@
-{
-  "theme": "theme-light",
-  "token": "token",
-  "canEdit": true,
-  "mockAPI": true,
-  "domainID": "456",
-  "projectID": "123"
-}
