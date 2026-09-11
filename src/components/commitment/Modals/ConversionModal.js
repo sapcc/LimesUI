@@ -16,6 +16,7 @@ import {
 import BaseModal from "./BaseComponents/BaseModal";
 import BaseFooter from "./BaseComponents/BaseFooter";
 import useConfirmInput from "./BaseComponents/useConfirmInput";
+import { HANA_FLAVOR_CASCADE_LAKE } from "../../../lib/constants";
 import { t } from "../../../lib/utils";
 import { createUnit } from "../../../lib/unit";
 import { hwVersionRx, getCurrentResource } from "../../../lib/utils";
@@ -31,7 +32,7 @@ const label = "font-semibold";
  *   and the target amount is rounded down (accepting conversion loss).
  */
 const ConversionModal = (props) => {
-  const { title, subText, onModalClose, categories, commitment, conversionResults, onConvert } = props;
+  const { title, subText, onModalClose, currentCategory, categories, commitment, conversionResults, onConvert } = props;
   const { ConfirmInput, inputProps, checkInput } = useConfirmInput({
     confirmationText: subText,
   });
@@ -49,9 +50,10 @@ const ConversionModal = (props) => {
   // Unit formatted value for the input field.
   const [sourceDisplayAmount, setSourceDisplayAmount] = React.useState("");
 
-  const [conversionWithRounding, targetUnit] = React.useMemo(() => {
+  const [isOneDirectionalConversion, conversionWithRounding, targetUnit] = React.useMemo(() => {
     if (!currentConversion || !categories) return [false, null];
-    const allowed = hwVersionRx.test(currentConversion.target_resource);
+    const isOneDirectionalConversion = hwVersionRx.test(currentConversion.target_resource);
+    const conversionWithRounding = isOneDirectionalConversion && currentCategory === HANA_FLAVOR_CASCADE_LAKE;
 
     // Find the target resource in categories
     const targetCategory = Object.values(categories).find((cat) =>
@@ -62,7 +64,7 @@ const ConversionModal = (props) => {
       : null;
     if (!targetResource) return [false, null];
     const targetUnit = createUnit(targetResource.unit);
-    return [allowed, targetUnit];
+    return [isOneDirectionalConversion, conversionWithRounding, targetUnit];
   }, [currentConversion, categories]);
 
   // initialize conversion.
@@ -174,15 +176,17 @@ const ConversionModal = (props) => {
               </a>
             </Message>
           )}
-          {conversionWithRounding && (
+          {isOneDirectionalConversion && (
             <Message className="mb-4" variant="warning">
               <div>
                 <strong>Important:</strong> Conversion is only possible once in this direction.
               </div>
-              <div>
-                Due to mismatching hardware, 1:1 conversion may not be possible. <br />
-                The target amount might be rounded down to the next matching amount.
-              </div>
+              {conversionWithRounding && (
+                <div>
+                  Due to mismatching hardware, 1:1 conversion may not be possible. <br />
+                  The target amount might be rounded down to the next matching amount.
+                </div>
+              )}
             </Message>
           )}
           <DataGrid columns={2} columnMaxSize="1fr">

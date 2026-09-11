@@ -149,9 +149,11 @@ const EditPanel = (props) => {
     const currentProjectID = currentProject?.metadata?.id;
     const currentDomainID = scope.isCluster() ? currentProject.metadata.domainID : null;
     setCommitmentIsLoading(true);
+    // Exclude durationLabel from the payload as it's only used for UI display
+    const { durationLabel: _durationLabel, ...commitmentData } = newCommitment;
     const payload = confirm_by
-      ? { ...newCommitment, id: "", confirm_by: confirm_by, notify_on_confirm: notifyOnConfirm }
-      : { ...newCommitment, id: "" };
+      ? { ...commitmentData, id: "", confirm_by: confirm_by, notify_on_confirm: notifyOnConfirm }
+      : { ...commitmentData, id: "" };
     try {
       await commit.mutateAsync({ payload: { commitment: payload }, queryKey: [currentProjectID, currentDomainID] });
       setRefetchClusterAPI(true);
@@ -458,6 +460,7 @@ const EditPanel = (props) => {
         <ConversionModal
           title="Convert Commitment"
           subText="Convert"
+          currentCategory={currentCategory}
           categories={props.categories}
           commitment={conversionCommitment}
           conversionResults={conversionResults}
