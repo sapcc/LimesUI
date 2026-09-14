@@ -1,5 +1,11 @@
 # @sapcc/limes-ui
 
+## 1.21.2
+
+### Patch Changes
+
+- 2beb596: commitment transfer: Add transfer_status and transfer_started_at information to the display content.
+
 ## 1.21.1
 
 ### Patch Changes
