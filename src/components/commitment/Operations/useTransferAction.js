@@ -28,7 +28,7 @@ const useTransferAction = (props) => {
   React.useEffect(() => {
     const toolTip = commitmentInTransfer ? (
       <span>
-        ready for transfer <br /> transfer start:{" "}
+        ready for transfer ({TransferTypeTranslation[transferStatus]}) <br /> transfer start:{" "}
         {formatTime(commitment.transfer_started_at, "YYYY-MM-DD HH:mm A") || "N/A"}
       </span>
     ) : null;
@@ -40,7 +40,7 @@ const useTransferAction = (props) => {
     updateActions("transfer", menuItem, toolTip);
 
     if (commitmentInTransfer) {
-      const transferStatusLabel = TransferTypeTranslation[commitment.transfer_status];
+      const transferStatusLabel = TransferTypeTranslation[transferStatus];
       const cancelTransferMenuItem = (
         <MenuItemBuilder
           icon="close"
