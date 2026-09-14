@@ -43,6 +43,11 @@ export const TransferType = Object.freeze({
   NONE: "",
 });
 
+export const TransferTypeTranslation = Object.freeze({
+  [TransferType.UNLISTED]: "Private",
+  [TransferType.PUBLIC]: "Marketplace",
+});
+
 // Distinguish EditPanels with different purposes. F.e.: Max-Quota Editing or Commitment creation.
 export const PanelType = Object.freeze({
   quota: { name: "quota" },

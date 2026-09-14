@@ -144,7 +144,7 @@ describe("Marketplace tests", () => {
     userEvent.click(actions);
 
     await waitFor(() => {
-      expect(screen.queryByText("Cancel transfer")).not.toBe(null);
+      expect(screen.queryByText("Cancel transfer (Marketplace)")).not.toBe(null);
       expect(screen.queryByText("Delete")).not.toBe(null);
       expect(screen.queryByText("Receive")).not.toBe(null);
       expect(screen.queryByText("Transferring")).not.toBe(null);
