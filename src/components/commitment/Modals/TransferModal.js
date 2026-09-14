@@ -15,7 +15,7 @@ import BaseModal from "./BaseComponents/BaseModal";
 import BaseFooter from "./BaseComponents/BaseFooter";
 import useConfirmInput from "./BaseComponents/useConfirmInput";
 import { createUnit, valueWithUnit } from "../../../lib/unit";
-import { TransferType } from "../../../lib/constants";
+import { TransferType, TransferTypeTranslation } from "../../../lib/constants";
 import InputWithUnit from "../../shared/InputWithUnit";
 
 const label = "font-semibold";
@@ -112,8 +112,11 @@ const TransferModal = (props) => {
                       setPublicationType(value);
                     }}
                   >
-                    <SelectOption value={TransferType.UNLISTED} label="Private" />
-                    <SelectOption value={TransferType.PUBLIC} label="Marketplace" />
+                    <SelectOption
+                      value={TransferType.UNLISTED}
+                      label={TransferTypeTranslation[TransferType.UNLISTED]}
+                    />
+                    <SelectOption value={TransferType.PUBLIC} label={TransferTypeTranslation[TransferType.PUBLIC]} />
                   </Select>
                 ) : (
                   "Marketplace"

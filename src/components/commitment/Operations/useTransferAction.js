@@ -3,7 +3,8 @@
 
 import React from "react";
 import MenuItemBuilder from "./MenuItemBuilder";
-import { TransferStatus } from "../../../lib/constants";
+import { TransferStatus, TransferType, TransferTypeTranslation } from "../../../lib/constants";
+import { formatTime } from "../../../lib/utils";
 import { useGlobalStore, createCommitmentStoreActions } from "../../StoreProvider";
 
 const useTransferAction = (props) => {
@@ -25,17 +26,27 @@ const useTransferAction = (props) => {
   }
 
   React.useEffect(() => {
-    const toolTip = commitmentInTransfer ? "ready for transfer" : null;
+    const toolTip = commitmentInTransfer ? (
+      <span>
+        ready for transfer ({TransferTypeTranslation[transferStatus]}) <br /> transfer start:{" "}
+        {formatTime(commitment.transfer_started_at, "YYYY-MM-DD HH:mm A") || "N/A"}
+      </span>
+    ) : null;
     let transferText = commitmentInTransfer ? "Transferring" : "Transfer";
     if (!scope.isProject() && !commitmentInTransfer) {
-      transferText = `${transferText} (Marketplace)`;
+      transferText = `${transferText} (${TransferTypeTranslation[TransferType.PUBLIC]})`;
     }
     const menuItem = <MenuItemBuilder icon="upload" text={transferText} callBack={transferCommitment} />;
     updateActions("transfer", menuItem, toolTip);
 
     if (commitmentInTransfer) {
+      const transferStatusLabel = TransferTypeTranslation[transferStatus];
       const cancelTransferMenuItem = (
-        <MenuItemBuilder icon="close" text={"Cancel transfer"} callBack={cancelTransferCommitment} />
+        <MenuItemBuilder
+          icon="close"
+          text={`Cancel transfer (${transferStatusLabel})`}
+          callBack={cancelTransferCommitment}
+        />
       );
       updateActions("cancel_transfer", cancelTransferMenuItem, null);
     } else {
