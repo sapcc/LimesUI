@@ -214,7 +214,7 @@ importers:
         version: 3.0.3
       '@eslint/compat':
         specifier: ^2.0.0
-        version: 2.1.1(eslint@10.10.0(jiti@2.7.0)(supports-color@8.1.1))
+        version: 2.1.1(eslint@10.11.0(jiti@2.7.0)(supports-color@8.1.1))
       '@svgr/core':
         specifier: ^8.0.0
         version: 8.1.0(supports-color@8.1.1)(typescript@5.8.2)
@@ -250,13 +250,13 @@ importers:
         version: 3.0.0(@babel/core@8.0.6)
       eslint:
         specifier: ^10.0.0
-        version: 10.10.0(jiti@2.7.0)(supports-color@8.1.1)
+        version: 10.11.0(jiti@2.7.0)(supports-color@8.1.1)
       eslint-plugin-jest:
         specifier: ^29.0.0
-        version: 29.16.6(eslint@10.10.0(jiti@2.7.0)(supports-color@8.1.1))(jest@30.5.2(@types/node@26.1.1)(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.8.2)
+        version: 29.16.6(eslint@10.11.0(jiti@2.7.0)(supports-color@8.1.1))(jest@30.5.2(@types/node@26.1.1)(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.8.2)
       eslint-plugin-react:
         specifier: ^7.36.1
-        version: 7.37.5(eslint@10.10.0(jiti@2.7.0)(supports-color@8.1.1))
+        version: 7.37.5(eslint@10.11.0(jiti@2.7.0)(supports-color@8.1.1))
       jest:
         specifier: ^30.0.0
         version: 30.5.2(@types/node@26.1.1)(supports-color@8.1.1)
@@ -1063,6 +1063,7 @@ packages:
   '@cj-tech-master/excelts@10.2.0':
     resolution: {integrity: sha512-pjvxf+o2CoNU/38fAOUuqFeIhEnUwy4IKsUulmXLv3sLiU3agAvpIV5dzWb2yj3f06u23Ai0XGvLvYjs9JpqRA==}
     engines: {node: '>=22.0.0'}
+    deprecated: 'excelts is no longer actively developed; existing versions keep working. New features and fixes go to its successor, documonster (same author). Migration guide: https://github.com/documonster/documonster/blob/main/MIGRATION_EXCELTS_TO_DOCUMONSTER.md'
 
   '@clack/core@1.4.3':
     resolution: {integrity: sha512-/kr3UWNtdJfxZtPgDqUOmG2pvwlmcLGheex5yiZKdwbzZJxhV+HMNR9QNmyY5cGwTNV6LrR7Jtp+KjhUAP1qBQ==}
@@ -2712,8 +2713,8 @@ packages:
     resolution: {integrity: sha512-tD40eHxA35h0PEIZNeIjkHoDR4YjjJp34biM0mDvplBe//mB+IHCqHDGV7pxF+7MklTvighcCPPZC7ynWyjdTA==}
     engines: {node: ^20.19.0 || ^22.13.0 || >=24}
 
-  eslint@10.10.0:
-    resolution: {integrity: sha512-NPXn6r5zl4uET1DAVPaOwzX3rut4c0wcmw3dWJAfOsTM5+TogXo0DDjz8pwm/hL8cyVNpHqeK4JpN0NjnyFFNw==}
+  eslint@10.11.0:
+    resolution: {integrity: sha512-P7a6UEEqb9G95MYAtqkmsTbVXIYyzIfl6NGOIJk162PaahFxFyeGcrlXYFSiagECg4sEm8IseJdZBKR3rx6MsQ==}
     engines: {node: ^20.19.0 || ^22.13.0 || >=24}
     hasBin: true
     peerDependencies:
@@ -5767,18 +5768,18 @@ snapshots:
   '@esbuild/win32-x64@0.28.2':
     optional: true
 
-  '@eslint-community/eslint-utils@4.10.1(eslint@10.10.0(jiti@2.7.0)(supports-color@8.1.1))':
+  '@eslint-community/eslint-utils@4.10.1(eslint@10.11.0(jiti@2.7.0)(supports-color@8.1.1))':
     dependencies:
-      eslint: 10.10.0(jiti@2.7.0)(supports-color@8.1.1)
+      eslint: 10.11.0(jiti@2.7.0)(supports-color@8.1.1)
       eslint-visitor-keys: 3.4.3
 
   '@eslint-community/regexpp@4.12.2': {}
 
-  '@eslint/compat@2.1.1(eslint@10.10.0(jiti@2.7.0)(supports-color@8.1.1))':
+  '@eslint/compat@2.1.1(eslint@10.11.0(jiti@2.7.0)(supports-color@8.1.1))':
     dependencies:
       '@eslint/core': 1.2.1
     optionalDependencies:
-      eslint: 10.10.0(jiti@2.7.0)(supports-color@8.1.1)
+      eslint: 10.11.0(jiti@2.7.0)(supports-color@8.1.1)
 
   '@eslint/config-array@0.23.5(supports-color@8.1.1)':
     dependencies:
@@ -6497,13 +6498,13 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@typescript-eslint/utils@8.68.0(eslint@10.10.0(jiti@2.7.0)(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.8.2)':
+  '@typescript-eslint/utils@8.68.0(eslint@10.11.0(jiti@2.7.0)(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.8.2)':
     dependencies:
-      '@eslint-community/eslint-utils': 4.10.1(eslint@10.10.0(jiti@2.7.0)(supports-color@8.1.1))
+      '@eslint-community/eslint-utils': 4.10.1(eslint@10.11.0(jiti@2.7.0)(supports-color@8.1.1))
       '@typescript-eslint/scope-manager': 8.68.0
       '@typescript-eslint/types': 8.68.0
       '@typescript-eslint/typescript-estree': 8.68.0(supports-color@8.1.1)(typescript@5.8.2)
-      eslint: 10.10.0(jiti@2.7.0)(supports-color@8.1.1)
+      eslint: 10.11.0(jiti@2.7.0)(supports-color@8.1.1)
       typescript: 5.8.2
     transitivePeerDependencies:
       - supports-color
@@ -7337,17 +7338,17 @@ snapshots:
 
   escape-string-regexp@4.0.0: {}
 
-  eslint-plugin-jest@29.16.6(eslint@10.10.0(jiti@2.7.0)(supports-color@8.1.1))(jest@30.5.2(@types/node@26.1.1)(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.8.2):
+  eslint-plugin-jest@29.16.6(eslint@10.11.0(jiti@2.7.0)(supports-color@8.1.1))(jest@30.5.2(@types/node@26.1.1)(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.8.2):
     dependencies:
-      '@typescript-eslint/utils': 8.68.0(eslint@10.10.0(jiti@2.7.0)(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.8.2)
-      eslint: 10.10.0(jiti@2.7.0)(supports-color@8.1.1)
+      '@typescript-eslint/utils': 8.68.0(eslint@10.11.0(jiti@2.7.0)(supports-color@8.1.1))(supports-color@8.1.1)(typescript@5.8.2)
+      eslint: 10.11.0(jiti@2.7.0)(supports-color@8.1.1)
     optionalDependencies:
       jest: 30.5.2(@types/node@26.1.1)(supports-color@8.1.1)
       typescript: 5.8.2
     transitivePeerDependencies:
       - supports-color
 
-  eslint-plugin-react@7.37.5(eslint@10.10.0(jiti@2.7.0)(supports-color@8.1.1)):
+  eslint-plugin-react@7.37.5(eslint@10.11.0(jiti@2.7.0)(supports-color@8.1.1)):
     dependencies:
       array-includes: 3.1.8
       array.prototype.findlast: 1.2.5
@@ -7355,7 +7356,7 @@ snapshots:
       array.prototype.tosorted: 1.1.4
       doctrine: 2.1.0
       es-iterator-helpers: 1.2.1
-      eslint: 10.10.0(jiti@2.7.0)(supports-color@8.1.1)
+      eslint: 10.11.0(jiti@2.7.0)(supports-color@8.1.1)
       estraverse: 5.3.0
       hasown: 2.0.4
       jsx-ast-utils: 3.3.5
@@ -7380,9 +7381,9 @@ snapshots:
 
   eslint-visitor-keys@5.0.1: {}
 
-  eslint@10.10.0(jiti@2.7.0)(supports-color@8.1.1):
+  eslint@10.11.0(jiti@2.7.0)(supports-color@8.1.1):
     dependencies:
-      '@eslint-community/eslint-utils': 4.10.1(eslint@10.10.0(jiti@2.7.0)(supports-color@8.1.1))
+      '@eslint-community/eslint-utils': 4.10.1(eslint@10.11.0(jiti@2.7.0)(supports-color@8.1.1))
       '@eslint-community/regexpp': 4.12.2
       '@eslint/config-array': 0.23.5(supports-color@8.1.1)
       '@eslint/config-helpers': 0.7.0
