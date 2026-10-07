@@ -32,7 +32,7 @@ const label = "font-semibold";
  *   and the target amount is rounded down (accepting conversion loss).
  */
 const ConversionModal = (props) => {
-  const { title, subText, onModalClose, currentCategory, categories, commitment, conversionResults, onConvert } = props;
+  const { title, subText, onModalClose, currentCategory, categories = {}, commitment, conversionResults, onConvert } = props;
   const { ConfirmInput, inputProps, checkInput } = useConfirmInput({
     confirmationText: subText,
   });
@@ -66,6 +66,8 @@ const ConversionModal = (props) => {
     const targetUnit = createUnit(targetResource.unit);
     return [isOneDirectionalConversion, conversionWithRounding, targetUnit];
   }, [currentConversion, categories]);
+
+  console.log(conversions);
 
   // initialize conversion.
   // Determine the maximum initial amount that can be converted for a selected conversion.
@@ -209,7 +211,14 @@ const ConversionModal = (props) => {
                   }}
                 >
                   {conversions.map((conversion) => {
-                    const targetResource = `${t(currentCategory)} / ${t(conversion.target_resource)}`;
+                    const targetCategoryEntry = Object.entries(categories).find(
+                      ([, cat]) =>
+                        cat.serviceType === conversion.target_service &&
+                        cat.resources.some((res) => res.name === conversion.target_resource)
+                    );
+                    const targetResource = targetCategoryEntry
+                      ? `${t(targetCategoryEntry[0])} / ${t(conversion.target_resource)}`
+                      : t(conversion.target_resource);
                     return (
                       <SelectOption
                         data-testid={targetResource}
