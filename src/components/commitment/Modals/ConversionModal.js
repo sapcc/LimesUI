@@ -209,10 +209,11 @@ const ConversionModal = (props) => {
                   }}
                 >
                   {conversions.map((conversion) => {
-                    const targetResource = t(conversion.target_resource);
+                    const targetResource = `${t(currentCategory)} / ${t(conversion.target_resource)}`;
                     return (
                       <SelectOption
                         data-testid={targetResource}
+                        className="whitespace-nowrap"
                         key={targetResource}
                         value={conversion.target_resource}
                         label={targetResource}
