@@ -1,5 +1,12 @@
 # @sapcc/limes-ui
 
+## 1.21.3
+
+### Patch Changes
+
+- eeff06c: Conversions: include one directional warning for storage resource that match to KVM targets
+- cf8d9d5: commitment conversion: include the category name to the conversion options to identify the targets properly
+
 ## 1.21.2
 
 ### Patch Changes
