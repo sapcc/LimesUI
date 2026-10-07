@@ -7,6 +7,7 @@ export const CEREBROKEY = "PAYG Availability";
 export const COMMITMENTRENEWALKEY = "Renewal";
 export const PAYG_AZUNAWARE_KEY = "Whole Region";
 export const HANA_FLAVOR_CASCADE_LAKE = "per_flavor_hana_cascade_lake";
+export const KVM_VOLUMEV2 = "volumev2_premium";
 
 //used to reset the last commitment to default values.
 export const initialCommitmentObject = {
@@ -179,7 +180,7 @@ export const STRINGS = {
   volumes_premium_single: "Volume",
   volumes_standard_hdd: "Volumes",
   volumes_standard_hdd_single: "Volume",
-  volumev2_premium: "Block Storage (Premium KVM)",
+  [KVM_VOLUMEV2]: "Block Storage (Premium KVM)",
   volumev2: "Block Storage (Premium SSD)",
   volumev2_standard_hdd: "Block Storage (Standard HDD)",
   zones: "Zones",

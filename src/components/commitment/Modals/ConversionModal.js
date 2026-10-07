@@ -16,7 +16,7 @@ import {
 import BaseModal from "./BaseComponents/BaseModal";
 import BaseFooter from "./BaseComponents/BaseFooter";
 import useConfirmInput from "./BaseComponents/useConfirmInput";
-import { HANA_FLAVOR_CASCADE_LAKE } from "../../../lib/constants";
+import { HANA_FLAVOR_CASCADE_LAKE, KVM_VOLUMEV2 } from "../../../lib/constants";
 import { t } from "../../../lib/utils";
 import { createUnit } from "../../../lib/unit";
 import { hwVersionRx, getCurrentResource } from "../../../lib/utils";
@@ -61,13 +61,18 @@ const ConversionModal = (props) => {
 
   const [isOneDirectionalConversion, conversionWithRounding, targetUnit] = React.useMemo(() => {
     if (!currentConversion || !categories) return [false, null];
-    const isOneDirectionalConversion = hwVersionRx.test(currentConversion.target_resource);
-    const conversionWithRounding = isOneDirectionalConversion && currentCategory === HANA_FLAVOR_CASCADE_LAKE;
 
     // Find the target resource in categories
-    const targetCategory = Object.values(categories).find((cat) =>
-      cat.resources.some((res) => res.name === currentConversion.target_resource)
-    );
+    const [targetCategoryName, targetCategory] = Object.entries(categories).find(
+      ([_key, cat]) =>
+        cat.serviceType === currentConversion.target_service &&
+        cat.resources.some((res) => res.name === currentConversion.target_resource)
+    ) ?? [null, null];
+
+    const isOneDirectionalConversion =
+      hwVersionRx.test(currentConversion.target_resource) || targetCategoryName === KVM_VOLUMEV2;
+    const conversionWithRounding = isOneDirectionalConversion && currentCategory === HANA_FLAVOR_CASCADE_LAKE;
+
     const targetResource = targetCategory
       ? getCurrentResource(targetCategory.resources, currentConversion.target_resource)
       : null;
