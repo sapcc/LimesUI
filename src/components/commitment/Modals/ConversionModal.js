@@ -32,7 +32,16 @@ const label = "font-semibold";
  *   and the target amount is rounded down (accepting conversion loss).
  */
 const ConversionModal = (props) => {
-  const { title, subText, onModalClose, currentCategory, categories, commitment, conversionResults, onConvert } = props;
+  const {
+    title,
+    subText,
+    onModalClose,
+    currentCategory,
+    categories = {},
+    commitment,
+    conversionResults,
+    onConvert,
+  } = props;
   const { ConfirmInput, inputProps, checkInput } = useConfirmInput({
     confirmationText: subText,
   });
@@ -209,13 +218,22 @@ const ConversionModal = (props) => {
                   }}
                 >
                   {conversions.map((conversion) => {
-                    const targetResource = t(conversion.target_resource);
+                    const targetCategoryName = Object.keys(categories).find(
+                      (key) =>
+                        categories[key].serviceType === conversion.target_service &&
+                        categories[key].resources.some((res) => res.name === conversion.target_resource)
+                    );
+
+                    const optionName = targetCategoryName
+                      ? `${t(targetCategoryName)} / ${t(conversion.target_resource)}`
+                      : t(conversion.target_resource);
                     return (
                       <SelectOption
-                        data-testid={targetResource}
-                        key={targetResource}
+                        data-testid={optionName}
+                        className="whitespace-nowrap"
+                        key={optionName}
                         value={conversion.target_resource}
-                        label={targetResource}
+                        label={optionName}
                       />
                     );
                   })}

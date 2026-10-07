@@ -49,11 +49,11 @@ const conversionResultWithUnit = {
 
 // Categories for tests without units (unitless resources)
 const categoriesUnitless = {
-  targetServiceA: {
+  targetCategoryA: {
     serviceType: "targetServiceA",
     resources: [{ name: "targetResourceA", unit: "" }],
   },
-  targetServiceB: {
+  targetCategoryB: {
     serviceType: "targetServiceB",
     resources: [{ name: "targetResourceB", unit: "" }],
   },
@@ -94,13 +94,13 @@ describe("test conversion modal", () => {
       expect(confirmButton).toBeDisabled();
     });
     fireEvent.click(targetInput);
-    const conversion2 = screen.getByTestId("targetResourceB");
+    const conversion2 = screen.getByTestId("targetCategoryB / targetResourceB");
     fireEvent.click(conversion2);
     await waitFor(() => {
       expect(screen.getByText(/target amount: 30/i)).toBeInTheDocument();
     });
     fireEvent.click(targetInput);
-    const conversion1 = screen.getByTestId("targetResourceA");
+    const conversion1 = screen.getByTestId("targetCategoryA / targetResourceA");
     fireEvent.click(conversion1);
     await waitFor(() => {
       expect(screen.getByText(/target amount: 6/i)).toBeInTheDocument();
@@ -159,7 +159,7 @@ describe("test conversion modal", () => {
 
     // Select a conversion with ratio (3:2). Commitment does not fit.
     fireEvent.click(targetInput);
-    const nonFittingOption = screen.getByTestId("targetResourceA");
+    const nonFittingOption = screen.getByTestId("targetCategoryA / targetResourceA");
     fireEvent.click(nonFittingOption);
 
     await waitFor(() => {
@@ -173,7 +173,7 @@ describe("test conversion modal", () => {
 
     // Select a conversion ratio (1:3). Commitment fits.
     fireEvent.click(targetInput);
-    const fittingOption = screen.getByTestId("targetResourceB");
+    const fittingOption = screen.getByTestId("targetCategoryB / targetResourceB");
     fireEvent.click(fittingOption);
     await waitFor(() => {
       expect(screen.getByText(/target amount: 6/i)).toBeInTheDocument();
@@ -246,7 +246,7 @@ describe("test conversion modal", () => {
     const confirmInput = screen.getByTestId("confirmInput");
     const confirmButton = screen.getByTestId("modalConfirm");
     fireEvent.click(targetInput);
-    const conversion1 = screen.getByTestId("targetResourceA");
+    const conversion1 = screen.getByTestId("targetCategoryA / targetResourceA");
     fireEvent.click(conversion1);
     await waitFor(() => {
       expect(screen.getByText(/target amount: 6/i)).toBeInTheDocument();
@@ -369,7 +369,7 @@ describe("test conversion modal", () => {
 
   test("conversion with unit", async () => {
     const categoriesWithUnit = {
-      targetServiceA: {
+      targetCategoryA: {
         serviceType: "targetServiceA",
         resources: [{ name: "targetResourceA", unit: "GiB" }],
       },
@@ -409,7 +409,7 @@ describe("test conversion modal", () => {
     const confirmInput = screen.getByTestId("confirmInput");
     const confirmButton = screen.getByTestId("modalConfirm");
     fireEvent.click(targetInput);
-    const conversion1 = screen.getByTestId("targetResourceA");
+    const conversion1 = screen.getByTestId("targetCategoryA / targetResourceA");
     fireEvent.click(conversion1);
     await waitFor(() => {
       expect(screen.getByText(/target amount: 4 GiB/i)).toBeInTheDocument(); // 4096 * (1 / 1024)
@@ -446,7 +446,7 @@ describe("test conversion modal", () => {
   test("conversion with non standard unit", async () => {
     // Converting a commitment with unit: 64 GiB to another resource with unit: 128 GiB and a conversion ratio of (2:1)
     const categoriesWithNonStandardUnit = {
-      targetServiceA: {
+      targetCategoryA: {
         serviceType: "targetServiceA",
         resources: [{ name: "targetResourceC", unit: "128 GiB" }],
       },
@@ -487,7 +487,7 @@ describe("test conversion modal", () => {
     const confirmInput = screen.getByTestId("confirmInput");
     const confirmButton = screen.getByTestId("modalConfirm");
     fireEvent.click(targetInput);
-    const conversion1 = screen.getByTestId("targetResourceC");
+    const conversion1 = screen.getByTestId("targetCategoryA / targetResourceC");
     fireEvent.click(conversion1);
     await waitFor(() => {
       expect(screen.getByText(/target amount: 256 GiB \(2 \* 128 GiB\)/i)).toBeInTheDocument(); // 4 * 64 GiB will be converted
@@ -574,7 +574,7 @@ describe("test conversion modal", () => {
     const confirmButton = screen.getByTestId("modalConfirm");
 
     fireEvent.click(targetInput);
-    const conversionOption = screen.getByTestId("RAM (2150)");
+    const conversionOption = screen.getByTestId("serviceA / RAM (2150)");
     fireEvent.click(conversionOption);
 
     // Conversion with rounding allows any amount to convert. The initial value should be the full commitment amount (10)
@@ -664,7 +664,7 @@ describe("test conversion modal", () => {
     const confirmButton = screen.getByTestId("modalConfirm");
 
     fireEvent.click(targetInput);
-    const conversionOption = screen.getByTestId("RAM (2100)");
+    const conversionOption = screen.getByTestId("serviceA / RAM (2100)");
     fireEvent.click(conversionOption);
 
     // Initial value should be the maximum convertible amount: floor(4096/1024) * 1024 = 4096 MiB
