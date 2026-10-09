@@ -170,11 +170,11 @@ importers:
         specifier: ^10.0.0
         version: 10.2.0
       '@cloudoperators/juno-ui-components':
-        specifier: 9.4.2
-        version: 9.4.2(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(sonner@2.0.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0))
+        specifier: 9.5.1
+        version: 9.5.1(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(sonner@2.0.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0))
       '@cloudoperators/juno-url-state-provider':
         specifier: '*'
-        version: 3.0.10
+        version: 3.0.12
       '@tailwindcss/postcss':
         specifier: ^4.1.11
         version: 4.3.3
@@ -1073,17 +1073,17 @@ packages:
     resolution: {integrity: sha512-y7/yvZ2TPAnR9+jnc00klvNNLkJiXFFrQA/hlLCcxA9a2A4zQIOimyFQ9XfwYKiGD1fb5GY8vbKIIgO8d5Tb2A==}
     engines: {node: '>= 20.12.0'}
 
-  '@cloudoperators/juno-ui-components@9.4.2':
-    resolution: {integrity: sha512-EUk/wCH8ZloFES8PTbArl2KIfuRoHNcxd7fo+NZBvwK8G+Zb+Z5BJDShkRmRrjUGa3x0aT2BqpCXwQD6IUtXRg==}
+  '@cloudoperators/juno-ui-components@9.5.1':
+    resolution: {integrity: sha512-nq1GwDHvcF9SppNF/0hH0cucDFGI8fFkXuJm6iSz2U9p5Yww1UWHpd7OWqzVJRkzCeNSNX2MLJjzlfcRye9LiA==}
     engines: {node: '>=20.19.0', pnpm: '>=11.25.0'}
     peerDependencies:
       react: ^19.1.0
       react-dom: ^19.1.0
       sonner: ^2.0.7
 
-  '@cloudoperators/juno-url-state-provider@3.0.10':
-    resolution: {integrity: sha512-bE6FkexkAl1Qrbf8lBFcnonjzSk3zLUvt5Ls6bapO1y+UT9aoyIo5TYR/DnKK5TBvo47e3hPSoYSBj+0mI59dQ==}
-    engines: {node: '>=20.19.0', pnpm: '>=8.0.0'}
+  '@cloudoperators/juno-url-state-provider@3.0.12':
+    resolution: {integrity: sha512-8Rp4u7ZCIqdABtBIq4ocjhj069MFt9R1jDYD1wasP5wyxLTOUi+j0ijT1iyHaYVGv6/8stzHAsRlANx0SC848g==}
+    engines: {node: '>=20.19.0', pnpm: '>=11.25.0'}
 
   '@csstools/color-helpers@5.1.0':
     resolution: {integrity: sha512-S11EXWJyy0Mz5SYvRmY8nJYTFFd1LCNV+7cXyAgQtOOuzb4EsgfqDufL+9esx72/eLhsRdGZwaldu/h+E4t4BA==}
@@ -2520,8 +2520,8 @@ packages:
   decimal.js@10.6.0:
     resolution: {integrity: sha512-YpgQiITW3JXGntzdUmyUR1V812Hn8T1YVXhCu+wO3OpS4eU9l4YdD3qjyiKdV6mvV29zapkMeD390UVEf2lkUg==}
 
-  decode-uri-component@0.4.1:
-    resolution: {integrity: sha512-+8VxcR21HhTy8nOt6jf20w0c9CADrw1O8d+VZ/YzzCt4bJ3uBjw+D1q2osAB8RnpwwaeYBxy0HyKQxD5JBMuuQ==}
+  decode-uri-component@0.5.0:
+    resolution: {integrity: sha512-1BiQVoK8C9gUbQU6NzAtO/tkz2qOFpEObMWpcFvhx4fYnj4Oc5yzaJN/LD36ihkVUdXyh5ZekzX+yM+ty/SrPg==}
     engines: {node: '>=14.16'}
 
   dedent@1.7.2:
@@ -3922,8 +3922,8 @@ packages:
     resolution: {integrity: sha512-O9gl3zCl5h5blw1KGUzQKhA5oUXSl8rwUIM5o0S3nCXMliSvy5Dzx7/DJcI+SwgICv+IneSZwhBh1oSyEHA71A==}
     engines: {node: '>=0.6'}
 
-  query-string@9.3.1:
-    resolution: {integrity: sha512-5fBfMOcDi5SA9qj5jZhWAcTtDfKF5WFdd2uD9nVNlbxVv1baq65aALy6qofpNEGELHvisjjasxQp7BlM9gvMzw==}
+  query-string@9.5.1:
+    resolution: {integrity: sha512-/zO3RwuRCMTIcEgq6YMv4OrtEE1XzBG7w5N6zc6ydYnkWYOWsnLI/5894hYEzfESfMOT4cHCsRTIdxsSl1KjGg==}
     engines: {node: '>=18'}
 
   react-day-picker@10.0.2:
@@ -5612,16 +5612,16 @@ snapshots:
       fast-wrap-ansi: 0.2.2
       sisteransi: 1.0.5
 
-  '@cloudoperators/juno-ui-components@9.4.2(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(sonner@2.0.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0))':
+  '@cloudoperators/juno-ui-components@9.5.1(react-dom@19.3.0(react@19.3.0))(react@19.3.0)(sonner@2.0.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0))':
     dependencies:
       react: 19.3.0
       react-dom: 19.3.0(react@19.3.0)
       sonner: 2.0.7(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
 
-  '@cloudoperators/juno-url-state-provider@3.0.10':
+  '@cloudoperators/juno-url-state-provider@3.0.12':
     dependencies:
       history: 5.3.0
-      query-string: 9.3.1
+      query-string: 9.5.1
 
   '@csstools/color-helpers@5.1.0': {}
 
@@ -7121,7 +7121,7 @@ snapshots:
 
   decimal.js@10.6.0: {}
 
-  decode-uri-component@0.4.1: {}
+  decode-uri-component@0.5.0: {}
 
   dedent@1.7.2: {}
 
@@ -8794,9 +8794,9 @@ snapshots:
       es-define-property: 1.0.1
       side-channel: 1.1.1
 
-  query-string@9.3.1:
+  query-string@9.5.1:
     dependencies:
-      decode-uri-component: 0.4.1
+      decode-uri-component: 0.5.0
       filter-obj: 5.1.0
       split-on-first: 3.0.0
 
