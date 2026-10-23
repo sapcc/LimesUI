@@ -1,7 +1,7 @@
 {
   "name": "@sapcc/limes-ui",
   "version": "1.21.3",
-  "packageManager": "pnpm@12.14.0",
+  "packageManager": "pnpm@12.15.0",
   "author": "VoigtS",
   "license": "Apache-2.0",
   "source": "src/index.js",
@@ -20,7 +20,7 @@
     "@eslint/compat": "^2.0.0",
     "@svgr/core": "^8.0.0",
     "@svgr/plugin-jsx": "^8.0.0",
-    "@tanstack/react-query": "5.104.4",
+    "@tanstack/react-query": "5.104.5",
     "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^7.0.0",
     "@testing-library/react": "^16.3.0",
@@ -46,7 +46,7 @@
     "shadow-dom-testing-library": "^1.7.1",
     "tailwindcss": "^4.1.11",
     "util": "^0.12.4",
-    "zustand": "5.0.15"
+    "zustand": "5.0.16"
   },
   "scripts": {
     "build": "NODE_ENV=production node esbuild.config.js",
