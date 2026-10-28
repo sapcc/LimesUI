@@ -26,18 +26,23 @@ const ResourceBarBuilder = (props) => {
   const hasLeftBar = hasAnyBarValues(leftBar);
   const hasRightBar = hasAnyBarValues(rightBar);
   const isEmptyBar = !hasLeftBar && !hasRightBar;
-
   const paygStyle = { base: hasLeftBar && extraBaseStyle, filled: isEditableResource && extraFillStyle };
+
   function getResourceBarLabel(bar) {
     if (isEmptyBar) {
       return getEmptyBarLabel(resource, isGranular);
     }
 
+    const utilized = unit.formatWithParts(bar.utilized);
+    const available = unit.formatWithParts(bar.available);
+    const hideUtilizedUnit = bar.utilized === 0 || utilized.unit === available.unit;
+    const utilizedStr = hideUtilizedUnit ? utilized.value : utilized.toString();
     const hideLabelInfo = bar === rightBar && hasLeftBar;
     const barLabel = !hideLabelInfo && getBarLabel(currentResource);
+
     return (
       <span className={`progress-bar-label font-bold ${isGranular && "text-xs"}`}>
-        {unit.format(bar.utilized) + "/" + unit.format(bar.available)} {<span className="font-normal">{barLabel}</span>}
+        {utilizedStr + "/" + available} {<span className="font-normal">{barLabel}</span>}
       </span>
     );
   }

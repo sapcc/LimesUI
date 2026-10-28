@@ -593,4 +593,86 @@ describe("Resource bar test", () => {
     expect(screen.getByTestId("detailedResourceInfo")).toBeInTheDocument();
     expect(screen.getByText("No usage (has base quota)")).toBeInTheDocument();
   });
+
+  test("resource bar label hides duplicate units", async () => {
+    const scope = new Scope({ projectID: "123", domainID: "456" });
+
+    function getProjectData() {
+      return {
+        project: {
+          id: "123",
+          services: [
+            {
+              type: "testType",
+              resources: [
+                {
+                  name: "testResource",
+                  unit: "MiB",
+                  per_az: {
+                    "zone-a": { usage: 1024, quota: 2048 },
+                    "zone-b": { usage: 0, quota: 1024 },
+                    "zone-c": { usage: 128, quota: 1024 },
+                  },
+                },
+                {
+                  name: "testResourceNonStandardUnit",
+                  unit: "128 GiB",
+                  per_az: {
+                    "zone-a": { usage: 8, quota: 16 },
+                    "zone-b": { usage: 1, quota: 8 },
+                  },
+                },
+              ],
+            },
+          ],
+        },
+      };
+    }
+
+    const forwardProps = {
+      area: "testArea",
+      canEdit: false,
+      categoryName: "testCategory",
+      serviceType: "testService",
+    };
+
+    const resources = actions.restructureReport(getProjectData().project).categories.testType.resources;
+
+    const wrapper = ({ children }) => (
+      <PortalProvider>
+        <StoreProvider>
+          <QueryClientProvider client={queryClient}>
+            <MemoryRouter>
+              {resources.map((res) => (
+                <Resource key={res.name} resource={res} {...forwardProps} tracksQuota={tracksQuota(res)} />
+              ))}
+              {children}
+            </MemoryRouter>
+          </QueryClientProvider>
+        </StoreProvider>
+      </PortalProvider>
+    );
+
+    const { result } = renderHook(
+      () => ({
+        globalStoreActions: globalStoreActions(),
+      }),
+      { wrapper }
+    );
+
+    act(() => {
+      result.current.globalStoreActions.setScope(scope);
+    });
+
+    // zone-a: shows "1/2 GiB", not "1 GiB/2 GiB"
+    expect(screen.getByText("1/2 GiB", { exact: false })).toBeInTheDocument();
+    // zone-b: shows "0/1 GiB", not "0 GiB/1 GiB"
+    expect(screen.getByText("0/1 GiB", { exact: false })).toBeInTheDocument();
+    // zone-c: different units will still be displayed in their full form
+    expect(screen.getByText("128 MiB/1 GiB", { exact: false })).toBeInTheDocument();
+    // Non-standard unit: shows "1/2 TiB", not "1 TiB/2 TiB"
+    expect(screen.getByText("1/2 TiB", { exact: false })).toBeInTheDocument();
+    // Non-standard unit: different units will still be displayed in their full form
+    expect(screen.getByText("128 GiB/1 TiB", { exact: false })).toBeInTheDocument();
+  });
 });

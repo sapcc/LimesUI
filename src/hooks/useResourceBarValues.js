@@ -10,7 +10,7 @@ import {
   getAvailableCapacity,
   getRemainingCapacity,
 } from "../lib/resourceBarValues";
-import resourceBar from "../components/resourceBar/ResourceBar";
+import { defaultResourceBar } from "../components/resourceBar/ResourceBar";
 
 export const ResourceBarType = {
   total: "total",
@@ -21,8 +21,9 @@ Object.freeze(ResourceBarType);
 const useResourceBarValues = (resource, type) => {
   const { leftBar, rightBar } = React.useMemo(() => {
     if (!resource) return;
-    let leftBar = { ...resourceBar };
-    let rightBar = { ...resourceBar };
+    let leftBar = { ...defaultResourceBar };
+    let rightBar = { ...defaultResourceBar };
+
     switch (type) {
       case ResourceBarType.total:
         leftBar.utilized = getTotalCommittedUsage(resource);
