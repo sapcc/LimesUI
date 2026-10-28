@@ -204,4 +204,23 @@ describe("Unit", () => {
       expect(u3.parse(5)).toEqual(5);
     });
   });
+
+  describe("formatWithParts", () => {
+    it("returns value and unit separately for comparison", () => {
+      const u = createUnit("MiB");
+
+      const small = u.formatWithParts(1024);
+      const medium = u.formatWithParts(2048);
+      const large = u.formatWithParts(2048 * 1024);
+
+      expect(small.unit).toEqual("GiB");
+      expect(medium.unit).toEqual("GiB")
+      expect(small.unit).toEqual(medium.unit)
+      expect(large.unit).toEqual("TiB");
+
+      expect(small.value).toEqual("1");
+      expect(medium.value).toEqual("2")
+      expect(large.value).toEqual("2");
+    });
+  });
 });

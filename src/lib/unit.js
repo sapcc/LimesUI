@@ -45,6 +45,16 @@ const resolveSynonym = (str) => {
   return str;
 };
 
+function createUnitFormatResult({ value: value, unit: unit, space: space }) {
+  return {
+    value,
+    unit,
+    toString() {
+      return unit === "" ? value : value + space + unit;
+    },
+  };
+}
+
 // Unit class - handles regular units like "B" "MiB", "GiB", ""
 class Unit {
   constructor(name) {
@@ -72,6 +82,12 @@ class Unit {
   //useful for input fields since the user is likely to type regular spaces.
   //
   format(value, options = {}) {
+    return this.formatWithParts(value, options).toString();
+  }
+
+  // Returns formatting details for custom logic.
+  // Use toString() to get the combined formatted string.
+  formatWithParts(value, options = {}) {
     let steps = this.unitData.steps;
     let base = this.unitData.base;
     const prefix = value < 0 ? "-" : "";
@@ -87,10 +103,10 @@ class Unit {
     //round value down like printf("%.2f")
     value = Math.round(value * 100) / 100;
 
-    if (displayUnit == "") return prefix + value.toString();
     //if possible, join with narrow no-break space instead of regular space
     const space = options.ascii ? " " : "\u202F";
-    return prefix + value + space + displayUnit;
+
+    return createUnitFormatResult({ value: prefix + value, unit: displayUnit, space: space });
   }
 
   //Parses a string representation of a value in this unit. The unit may be
@@ -188,12 +204,18 @@ class NonStandardUnit {
   // For known units (like "GiB"), multiply and format with base unit
   // For unknown units (like "XYZ"), show value + full unit name
   format(value, options = {}) {
+    return this.formatWithParts(value, options).toString();
+  }
+
+  // Returns formatting details for custom logic.
+  // Use toString() to get the combined formatted string.
+  formatWithParts(value, options = {}) {
     if (this.isKnownBaseUnit) {
-      return this.baseUnit.format(value * this.multiplier, options);
+      return this.baseUnit.formatWithParts(value * this.multiplier, options);
     }
     // Use regular ASCII space for input fields since users type regular spaces.
     const space = options.ascii ? " " : "\u202F";
-    return value + space + this.name;
+    return createUnitFormatResult({ value: value, unit: this.name, space: space });
   }
 
   parse(input, isCommitment = true) {

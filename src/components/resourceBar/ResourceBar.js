@@ -35,7 +35,7 @@ font-bold
 const filledBarBackground = `bg-sap-blue-3`;
 const utilizedExceedsAvailable = `utilized-exceeds-available`;
 
-export const resourceBar = {
+export const defaultResourceBar = {
   utilized: 0,
   available: 0,
 };

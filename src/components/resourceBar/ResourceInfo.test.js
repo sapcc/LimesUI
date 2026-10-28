@@ -5,7 +5,7 @@ import React from "react";
 import ResourceInfo from "./ResourceInfo";
 import { screen } from "shadow-dom-testing-library";
 import { render } from "@testing-library/react";
-import { resourceBar } from "./ResourceBar";
+import { defaultResourceBar } from "./ResourceBar";
 import { createUnit } from "../../lib/unit";
 import { CustomZones } from "../../lib/constants";
 import { Scope } from "../../lib/scope";
@@ -68,7 +68,7 @@ describe("Resource info tests", () => {
       az: { name: "AZ1" },
       unit: createUnit("MiB"),
       leftBar: { utilized: 1024, available: 1024 },
-      rightBar: resourceBar,
+      rightBar: defaultResourceBar,
     };
 
     const { rerender } = render(<ResourceInfo {...props} />);
@@ -84,7 +84,7 @@ describe("Resource info tests", () => {
     expect(screen.getByTestId(/CommittedUsage.INVALID/i)).toBeInTheDocument();
 
     // resources without committed usage should not display info
-    props.leftBar = resourceBar;
+    props.leftBar = defaultResourceBar;
     rerender(<ResourceInfo {...props} />);
     expect(screen.queryByTestId(/CommittedUsage.FULLY_UTILIZED/i)).not.toBeInTheDocument();
     expect(screen.queryByTestId(/CommittedUsage.UNUSED/i)).not.toBeInTheDocument();
@@ -97,7 +97,7 @@ describe("Resource info tests", () => {
       isEditableResource: true,
       az: { name: "AZ1" },
       unit: createUnit("MiB"),
-      leftBar: resourceBar,
+      leftBar: defaultResourceBar,
       rightBar: { utilized: 1024, available: 1024 },
     };
 
@@ -120,7 +120,7 @@ describe("Resource info tests", () => {
     props.isEditableResource = true;
 
     // resources without pay as you go usage should not display info.
-    props.rightBar = resourceBar;
+    props.rightBar = defaultResourceBar;
     rerender(<ResourceInfo {...props} />);
     expect(screen.queryByTestId("PAYG.AVAILABLE")).not.toBeInTheDocument();
     props.isEditableResource = false;
