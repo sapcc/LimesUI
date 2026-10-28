@@ -214,12 +214,12 @@ describe("Unit", () => {
       const large = u.formatWithParts(2048 * 1024);
 
       expect(small.unit).toEqual("GiB");
-      expect(medium.unit).toEqual("GiB")
-      expect(small.unit).toEqual(medium.unit)
+      expect(medium.unit).toEqual("GiB");
+      expect(small.unit).toEqual(medium.unit);
       expect(large.unit).toEqual("TiB");
 
       expect(small.value).toEqual("1");
-      expect(medium.value).toEqual("2")
+      expect(medium.value).toEqual("2");
       expect(large.value).toEqual("2");
     });
   });
