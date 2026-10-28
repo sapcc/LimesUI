@@ -1,5 +1,11 @@
 # @sapcc/limes-ui
 
+## 1.21.4
+
+### Patch Changes
+
+- efb0ee9: Remove the display of duplicate unit data for resource bar values
+
 ## 1.21.3
 
 ### Patch Changes
