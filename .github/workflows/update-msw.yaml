@@ -33,7 +33,7 @@ jobs:
         if: steps.check-msw.outputs.msw_updated == 'true'
         uses: actions/setup-node@v7
         with:
-          node-version: "24.x"
+          node-version: "26.x"
 
       - name: Install pnpm
         if: steps.check-msw.outputs.msw_updated == 'true'
