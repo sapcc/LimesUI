@@ -170,8 +170,8 @@ importers:
         specifier: ^10.0.0
         version: 10.2.0
       '@cloudoperators/juno-ui-components':
-        specifier: 9.7.2
-        version: 9.7.2(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(sonner@2.0.7(react-dom@19.3.1(react@19.3.1))(react@19.3.1))
+        specifier: 9.9.1
+        version: 9.9.1(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(sonner@2.0.7(react-dom@19.3.1(react@19.3.1))(react@19.3.1))
       '@cloudoperators/juno-url-state-provider':
         specifier: '*'
         version: 3.0.12
@@ -986,10 +986,6 @@ packages:
     resolution: {integrity: sha512-4zBIxpPzowiZpusoFkyGVwakdRJUyuH5PxQ/PrqghfdFWWasvnCdPfQXHrenDai+gyLARulZjZowCOj6fjT4pA==}
     engines: {node: '>=6.9.0'}
 
-  '@babel/types@8.0.6':
-    resolution: {integrity: sha512-c+xgSWboV2pdwXP67BUWDVRHi2BO5Q3KwxyFVs7taVTY+fsK47/L51ZXQoV9rozHJDNHvJ4v4WEsI/IlxV2l2A==}
-    engines: {node: ^22.18.0 || >=24.11.0}
-
   '@babel/types@8.0.8':
     resolution: {integrity: sha512-iXSSZAKQWmaeAwGtFw10v9fg5hUiUs0L+w+Z2K11kym3pDNK+SF0VcAQPsEFvWcTSZ7LMgClMXDBvTbH0IlICg==}
     engines: {node: ^22.18.0 || >=24.11.0}
@@ -1077,8 +1073,8 @@ packages:
     resolution: {integrity: sha512-y7/yvZ2TPAnR9+jnc00klvNNLkJiXFFrQA/hlLCcxA9a2A4zQIOimyFQ9XfwYKiGD1fb5GY8vbKIIgO8d5Tb2A==}
     engines: {node: '>= 20.12.0'}
 
-  '@cloudoperators/juno-ui-components@9.7.2':
-    resolution: {integrity: sha512-QHMH7zNaRDiNqt+tlEqDSl6qTcYahtY8XuDrmBJFF8i7Gh9jT75S4OcKU0RNwL4+xwQmhkuDZ804+aGVp4s60w==}
+  '@cloudoperators/juno-ui-components@9.9.1':
+    resolution: {integrity: sha512-ww3Ydfj+9e99G/KQSPaYdQjsxtWEqiist9br+XrBf+rti+l+BUJgH66h0P1fxoFt5nDWzmjYba0SU+AVJWuqvA==}
     engines: {node: '>=20.19.0', pnpm: '>=11.25.0'}
     peerDependencies:
       react: ^19.1.0
@@ -4706,7 +4702,7 @@ snapshots:
 
   '@babel/helper-annotate-as-pure@8.0.0':
     dependencies:
-      '@babel/types': 8.0.6
+      '@babel/types': 8.0.8
 
   '@babel/helper-compilation-targets@7.29.7':
     dependencies:
@@ -4756,7 +4752,7 @@ snapshots:
   '@babel/helper-member-expression-to-functions@8.0.5':
     dependencies:
       '@babel/traverse': 8.0.7
-      '@babel/types': 8.0.6
+      '@babel/types': 8.0.8
 
   '@babel/helper-module-imports@7.29.7(supports-color@8.1.1)':
     dependencies:
@@ -4768,7 +4764,7 @@ snapshots:
   '@babel/helper-module-imports@8.0.0':
     dependencies:
       '@babel/traverse': 8.0.7
-      '@babel/types': 8.0.6
+      '@babel/types': 8.0.8
 
   '@babel/helper-module-transforms@7.29.7(@babel/core@7.29.7(supports-color@8.1.1))(supports-color@8.1.1)':
     dependencies:
@@ -4788,7 +4784,7 @@ snapshots:
 
   '@babel/helper-optimise-call-expression@8.0.0':
     dependencies:
-      '@babel/types': 8.0.6
+      '@babel/types': 8.0.8
 
   '@babel/helper-plugin-utils@7.29.7': {}
 
@@ -4813,7 +4809,7 @@ snapshots:
   '@babel/helper-skip-transparent-expression-wrappers@8.0.0':
     dependencies:
       '@babel/traverse': 8.0.7
-      '@babel/types': 8.0.6
+      '@babel/types': 8.0.8
 
   '@babel/helper-string-parser@7.29.7': {}
 
@@ -4831,7 +4827,7 @@ snapshots:
     dependencies:
       '@babel/template': 8.0.0
       '@babel/traverse': 8.0.7
-      '@babel/types': 8.0.6
+      '@babel/types': 8.0.8
 
   '@babel/helpers@7.29.7':
     dependencies:
@@ -5291,7 +5287,7 @@ snapshots:
       '@babel/helper-module-imports': 8.0.0
       '@babel/helper-plugin-utils': 8.0.1(@babel/core@8.0.9)
       '@babel/plugin-syntax-jsx': 8.0.1(@babel/core@8.0.9)
-      '@babel/types': 8.0.6
+      '@babel/types': 8.0.8
 
   '@babel/plugin-transform-react-pure-annotations@8.0.1(@babel/core@8.0.9)':
     dependencies:
@@ -5439,7 +5435,7 @@ snapshots:
       '@babel/helper-plugin-utils': 8.0.1(@babel/core@8.0.9)
       '@babel/plugin-transform-dotall-regex': 8.0.1(@babel/core@8.0.9)
       '@babel/plugin-transform-unicode-property-regex': 8.0.1(@babel/core@8.0.9)
-      '@babel/types': 8.0.6
+      '@babel/types': 8.0.8
       esutils: 2.0.3
 
   '@babel/preset-react@8.0.1(@babel/core@8.0.9)':
@@ -5492,11 +5488,6 @@ snapshots:
     dependencies:
       '@babel/helper-string-parser': 7.29.7
       '@babel/helper-validator-identifier': 7.29.7
-
-  '@babel/types@8.0.6':
-    dependencies:
-      '@babel/helper-string-parser': 8.0.8
-      '@babel/helper-validator-identifier': 8.0.6
 
   '@babel/types@8.0.8':
     dependencies:
@@ -5635,7 +5626,7 @@ snapshots:
       fast-wrap-ansi: 0.2.2
       sisteransi: 1.0.5
 
-  '@cloudoperators/juno-ui-components@9.7.2(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(sonner@2.0.7(react-dom@19.3.1(react@19.3.1))(react@19.3.1))':
+  '@cloudoperators/juno-ui-components@9.9.1(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(sonner@2.0.7(react-dom@19.3.1(react@19.3.1))(react@19.3.1))':
     dependencies:
       react: 19.3.1
       react-dom: 19.3.1(react@19.3.1)
