@@ -9,6 +9,7 @@ import CommitmentCalendar from "../CommitmentCalendar";
 import moment from "moment";
 import useConfirmInput from "./BaseComponents/useConfirmInput";
 import { createUnit, valueWithUnit } from "../../../lib/unit";
+import { checkForReasonableSizedCommitment, REASON } from "../../../lib/commitmentSize";
 import { formatTimeISO8160 } from "../../../lib/utils";
 
 const label = "font-semibold";
@@ -20,6 +21,7 @@ const CommitmentModal = (props) => {
     canConfirm,
     commitment,
     publicCommitmentQuery,
+    resource,
     minConfirmDate,
     onModalClose,
     subText,
@@ -29,7 +31,7 @@ const CommitmentModal = (props) => {
   const { data: publicCommitmentData } = publicCommitmentQuery;
   const publicCommitments = publicCommitmentData?.commitments || [];
   const hasApplicablePublicCommitments = publicCommitments.some((c) => c?.availability_zone === currentTab);
-  const { ConfirmInput, inputProps, checkInput } = useConfirmInput({ confirmationText: subText });
+  const { ConfirmInput, inputProps, checkInput, isInputValid } = useConfirmInput({ confirmationText: subText });
   const hasMinConfirmDate = minConfirmDate ? true : false;
   // Show Calendar if: 1.) min_confirm_by field is set 2.) Not enough capacity is available on limes.
   const [showCalendar, setShowCalendar] = React.useState(hasMinConfirmDate || !canConfirm);
@@ -40,6 +42,23 @@ const CommitmentModal = (props) => {
   const [selectedDate, setSelectedDate] = React.useState(startDate);
   const formattedDate = formatTimeISO8160(moment(selectedDate).unix());
   const notifyOnConfirm = React.useRef(false);
+  const [warningAcknowledged, setWarningAcknowledged] = React.useState(false);
+
+  const {
+    reason: warningReason,
+    source: warningSource,
+    base: warningBaseValue,
+  } = React.useMemo(
+    () => checkForReasonableSizedCommitment(commitment.amount, resource, currentTab),
+    [resource, currentTab, commitment]
+  );
+
+  const formattedWarningBase = warningReason ? unit.format(warningBaseValue) : "";
+  const warningText = {
+    [REASON.LARGE]: `The commitment amount significantly exceeds ${warningSource} (${formattedWarningBase}).`,
+    [REASON.SMALL]: `The commitment amount is very small compared with ${warningSource} (${formattedWarningBase}).`,
+    [REASON.COVERED]: `Existing commitments (${formattedWarningBase}) already cover current usage in this availability zone.`,
+  }[warningReason];
 
   async function onConfirm() {
     if (!selectedDate) return;
@@ -75,7 +94,13 @@ const CommitmentModal = (props) => {
       title={title}
       open={true}
       modalFooter={
-        <BaseFooter onModalClose={onModalClose} guardFns={[checkInput]} actionFn={onConfirm} variant={"primary"} />
+        <BaseFooter
+          onModalClose={onModalClose}
+          disabled={!isInputValid || (!!warningReason && !warningAcknowledged)}
+          guardFns={[checkInput, () => !warningReason || warningAcknowledged]}
+          actionFn={onConfirm}
+          variant={"primary"}
+        />
       }
       onCancel={() => onModalClose()}
     >
@@ -94,6 +119,19 @@ const CommitmentModal = (props) => {
             variant="warning"
             text="No capacity available. Confirmation delay possible."
           />
+        )}
+        {warningReason && (
+          <Message className="w-full overflow-x-auto" data-testid="commitmentWarning" variant="warning">
+            <Stack direction="vertical" gap="1">
+              <span className="whitespace-nowrap">{warningText}</span>
+              <Checkbox
+                data-testid="commitmentWarningAcknowledgeCheckbox"
+                checked={warningAcknowledged}
+                onChange={() => setWarningAcknowledged((acknowledged) => !acknowledged)}
+                label="I understand and want to proceed"
+              />
+            </Stack>
+          </Message>
         )}
       </Stack>
       <DataGrid columns={2} className={!showCalendar ? "mb-6" : "mb-0"} columnMaxSize="1fr">

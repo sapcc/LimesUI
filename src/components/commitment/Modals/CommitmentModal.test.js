@@ -7,8 +7,18 @@ import { act, fireEvent, render, screen, waitFor } from "@testing-library/react"
 import { PortalProvider } from "@cloudoperators/juno-ui-components";
 import { initialCommitmentObject } from "../../../lib/constants";
 import CommitmentModal from "./CommitmentModal";
+import { FACTOR } from "../../../lib/commitmentSize";
 
 // If debugging is necessary, use screen.debug(undefined, Infinity) to get the complete componenent log.
+// Mock resource with usage/quota data for oversized commitment warning tests
+const mockResource = {
+  name: "test-resource",
+  per_az: [
+    { name: "az1", usage: 100, quota: 500 },
+    { name: "az2", usage: 50, quota: 200 },
+  ],
+};
+
 describe("test commitment creation modal", () => {
   test("no capacity commitment creation with no minConfirm date should be 60 seconds in the future", async () => {
     Date.now = jest.fn(() => new Date("2024-01-01T00:00:00.000Z"));
@@ -29,6 +39,7 @@ describe("test commitment creation modal", () => {
           canConfirm={false}
           minConfirmDate={null}
           commitment={newCommitment}
+          resource={mockResource}
           action={onConfirm}
           onModalClose={onClose}
           publicCommitmentQuery={publicCommitmentQuery}
@@ -89,6 +100,7 @@ describe("test commitment creation modal", () => {
           canConfirm={true}
           minConfirmDate={moment(new Date("2024-01-01T00:00:00.000Z")).utc().unix()}
           commitment={newCommitment}
+          resource={mockResource}
           action={onConfirm}
           onModalClose={onClose}
           publicCommitmentQuery={{ data: null }}
@@ -124,6 +136,7 @@ describe("test commitment creation modal", () => {
           canConfirm={true}
           minConfirmDate={moment(new Date("2024-01-02T00:00:00.000Z")).utc().unix()}
           commitment={newCommitment}
+          resource={mockResource}
           action={onConfirm}
           onModalClose={onClose}
           publicCommitmentQuery={{ data: null }}
@@ -167,6 +180,7 @@ describe("test commitment creation modal", () => {
           currentTab={"az1"}
           canConfirm={true}
           commitment={newCommitment}
+          resource={mockResource}
           action={onConfirm}
           onModalClose={onClose}
           publicCommitmentQuery={{ data: null }}
@@ -179,5 +193,150 @@ describe("test commitment creation modal", () => {
     });
     expect(screen.getByText("Notificaton")).toBeInTheDocument();
     expect(screen.getByText(/January 2024/i)).toBeInTheDocument();
+  });
+
+  const baseValue = 100;
+  test.each([
+    {
+      name: "usage already covered by commitments",
+      amount: baseValue,
+      az: { usage: baseValue, commitmentSum: baseValue },
+      warningText: `Existing commitments (${baseValue} GiB) already cover current usage in this availability zone.`,
+    },
+    {
+      name: "large amount relative to usage",
+      amount: baseValue * FACTOR.LARGE,
+      az: { usage: baseValue },
+      warningText: `The commitment amount significantly exceeds current usage (${baseValue} GiB).`,
+    },
+    {
+      name: "small amount relative to usage",
+      amount: baseValue * FACTOR.SMALL,
+      az: { usage: baseValue },
+      warningText: `The commitment amount is very small compared with current usage (${baseValue} GiB).`,
+    },
+    {
+      name: "large amount relative to existing commitments",
+      amount: baseValue * FACTOR.LARGE,
+      az: { commitmentSum: baseValue },
+      warningText: `The commitment amount significantly exceeds existing commitments (${baseValue} GiB).`,
+    },
+    {
+      name: "large amount relative to quota",
+      amount: baseValue * FACTOR.LARGE,
+      az: { quota: baseValue },
+      warningText: `The commitment amount significantly exceeds available quota (${baseValue} GiB).`,
+    },
+  ])("$name displays a formatted warning and requires acknowledgement", async ({ amount, az, warningText }) => {
+    const onConfirm = jest.fn();
+    const onClose = jest.fn();
+    const newCommitment = {
+      ...initialCommitmentObject,
+      amount,
+      unit: "GiB",
+      duration: "1 year",
+    };
+    const resource = {
+      name: "test-resource",
+      per_az: [{ name: "az1", ...az }],
+    };
+
+    render(
+      <PortalProvider>
+        <CommitmentModal
+          title="Confirm commitment creation"
+          subText="Commit"
+          currentTab="az1"
+          canConfirm={true}
+          commitment={newCommitment}
+          resource={resource}
+          action={onConfirm}
+          onModalClose={onClose}
+          publicCommitmentQuery={{ data: null }}
+        />
+      </PortalProvider>
+    );
+
+    expect(screen.getByTestId("commitmentWarning")).toHaveTextContent(warningText.replace(/\u202F/g, " "));
+
+    const confirmInput = screen.getByTestId(/confirmInput/i);
+    const confirmButton = screen.getByTestId(/modalConfirm/i);
+    const acknowledgeCheckbox = screen.getByTestId("commitmentWarningAcknowledgeCheckbox");
+
+    expect(acknowledgeCheckbox).not.toBeChecked();
+    expect(confirmButton).toBeDisabled();
+
+    // Correct text alone does not enable confirmation.
+    fireEvent.change(confirmInput, { target: { value: "commit" } });
+    expect(confirmButton).toBeDisabled();
+
+    fireEvent.click(acknowledgeCheckbox);
+    expect(acknowledgeCheckbox).toBeChecked();
+    expect(confirmButton).toBeEnabled();
+
+    // Incorrect text disables confirmation even after acknowledgement.
+    fireEvent.change(confirmInput, { target: { value: "wrongInput" } });
+    expect(confirmButton).toBeDisabled();
+    expect(onConfirm).not.toHaveBeenCalled();
+
+    // Restore correct text and confirm.
+    fireEvent.change(confirmInput, { target: { value: "commit" } });
+    expect(confirmButton).toBeEnabled();
+    fireEvent.click(confirmButton);
+
+    await waitFor(() => {
+      expect(onConfirm).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  test.each([
+    {
+      name: "amount within usage thresholds",
+      resource: mockResource,
+    },
+    {
+      name: "no usable baseline",
+      resource: {
+        name: "test-resource",
+        per_az: [{ name: "az1", usage: 0, commitmentSum: 0, quota: 0 }],
+      },
+    },
+  ])("$name permits confirmation without acknowledgement", async ({ resource }) => {
+    const onConfirm = jest.fn();
+    const onClose = jest.fn();
+    const newCommitment = {
+      ...initialCommitmentObject,
+      amount: 100,
+      unit: "GiB",
+      duration: "1 year",
+    };
+
+    render(
+      <PortalProvider>
+        <CommitmentModal
+          title="Confirm commitment creation"
+          subText="Commit"
+          currentTab="az1"
+          canConfirm={true}
+          commitment={newCommitment}
+          resource={resource}
+          action={onConfirm}
+          onModalClose={onClose}
+          publicCommitmentQuery={{ data: null }}
+        />
+      </PortalProvider>
+    );
+
+    expect(screen.queryByTestId("commitmentWarning")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("commitmentWarningAcknowledgeCheckbox")).not.toBeInTheDocument();
+
+    fireEvent.change(screen.getByTestId(/confirmInput/i), {
+      target: { value: "commit" },
+    });
+    fireEvent.click(screen.getByTestId(/modalConfirm/i));
+
+    await waitFor(() => {
+      expect(onConfirm).toHaveBeenCalledTimes(1);
+    });
   });
 });

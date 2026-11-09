@@ -92,13 +92,19 @@ export const tracksQuota = (res) => {
   return res.quota !== undefined || res.domains_quota !== undefined || res.projects_quota !== undefined;
 };
 
-// get specific resource from provided resource list.
+// get a specific resource from a provided resource list.
 export function getCurrentResource(resources, resourceName) {
   return resources.find((res) => {
     if (res.name === resourceName) {
       return res;
     }
   });
+}
+
+// domain/cluster level: get a specific resource from a project that's currently operated on.
+export function getCurrentProjectResource(project, category, resourceName) {
+  const resources = project?.categories?.[category]?.resources ?? [];
+  return getCurrentResource(resources, resourceName);
 }
 
 export function getResourceDurations(resource) {
