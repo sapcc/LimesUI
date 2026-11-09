@@ -19,7 +19,7 @@ const baseValue = 100;
 
 describe("commitment size", () => {
   test.each([
-    ["usage", "current usage"],
+    ["usage", "uncommitted usage"],
     ["quota", "available quota"],
     ["commitmentSum", "existing commitments"],
   ])("%s uses expected thresholds", (field, source) => {
@@ -44,6 +44,19 @@ describe("commitment size", () => {
       expect(check(baseValue * FACTOR.LARGE, resource)).toEqual(
         createWarning(REASON.LARGE, "existing commitments", baseValue)
       );
+    });
+
+    test("sizes additional commitments against uncommitted usage", () => {
+      const remainingUsage = baseValue / 10;
+      const resource = buildResource({
+        usage: baseValue,
+        commitmentSum: baseValue - remainingUsage,
+      });
+
+      expect(check(remainingUsage * FACTOR.LARGE, resource)).toEqual(
+        createWarning(REASON.LARGE, "uncommitted usage", remainingUsage)
+      );
+      expect(check(remainingUsage, resource)).toEqual({});
     });
   });
 

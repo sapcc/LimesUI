@@ -207,13 +207,13 @@ describe("test commitment creation modal", () => {
       name: "large amount relative to usage",
       amount: baseValue * FACTOR.LARGE,
       az: { usage: baseValue },
-      warningText: `The commitment amount significantly exceeds current usage (${baseValue} GiB).`,
+      warningText: `The commitment amount significantly exceeds uncommitted usage (${baseValue} GiB).`,
     },
     {
       name: "small amount relative to usage",
       amount: baseValue * FACTOR.SMALL,
       az: { usage: baseValue },
-      warningText: `The commitment amount is very small compared with current usage (${baseValue} GiB).`,
+      warningText: `The commitment amount is very small compared with uncommitted usage (${baseValue} GiB).`,
     },
     {
       name: "large amount relative to existing commitments",

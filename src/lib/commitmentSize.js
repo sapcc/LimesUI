@@ -15,7 +15,7 @@ export const FACTOR = {
 };
 
 // Returns a size or coverage warning, or an empty object.
-// Prefer actual usage, then existing reservations, then quota headroom.
+// Prefer uncommitted usage, then existing reservations, then quota.
 export function checkForReasonableSizedCommitment(amount, resource, azName) {
   const availabilityZones = resource?.per_az ?? [];
   const currentAZ = availabilityZones.find((az) => az.name === azName);
@@ -27,8 +27,9 @@ export function checkForReasonableSizedCommitment(amount, resource, azName) {
   }
 
   // Usage based check
-  if (currentUsage > 0) {
-    return checkSizeBoundaries(amount, currentUsage, FACTOR.LARGE, FACTOR.SMALL, "current usage");
+  const uncommittedUsage = currentUsage - (currentAZ?.commitmentSum ?? 0);
+  if (uncommittedUsage > 0) {
+    return checkSizeBoundaries(amount, uncommittedUsage, FACTOR.LARGE, FACTOR.SMALL, "uncommitted usage");
   }
 
   // Commitment based check
