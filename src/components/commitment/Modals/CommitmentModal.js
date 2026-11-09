@@ -121,9 +121,9 @@ const CommitmentModal = (props) => {
           />
         )}
         {warningReason && (
-          <Message className="w-full overflow-x-auto" data-testid="commitmentWarning" variant="warning">
+          <Message data-testid="commitmentWarning" variant="warning">
             <Stack direction="vertical" gap="1">
-              <span className="whitespace-nowrap">{warningText}</span>
+              <span>{warningText}</span>
               <Checkbox
                 data-testid="commitmentWarningAcknowledgeCheckbox"
                 checked={warningAcknowledged}

@@ -23,7 +23,10 @@ describe("commitment size", () => {
     ["quota", "available quota"],
     ["commitmentSum", "existing commitments"],
   ])("%s uses expected thresholds", (field, source) => {
-    const resource = buildResource({ [field]: baseValue });
+    const resource =
+      field === "commitmentSum"
+        ? buildResource({}, { commitmentSum: baseValue })
+        : buildResource({ [field]: baseValue });
     expect(check(baseValue * FACTOR.SMALL, resource)).toEqual(createWarning(REASON.SMALL, source, baseValue));
     expect(check(baseValue * FACTOR.LARGE, resource)).toEqual(createWarning(REASON.LARGE, source, baseValue));
     expect(check(baseValue * FACTOR.SMALL + 1, resource)).toEqual({});

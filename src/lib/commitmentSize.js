@@ -22,7 +22,7 @@ export function checkForReasonableSizedCommitment(amount, resource, azName) {
 
   // Coverage based check
   const currentUsage = currentAZ?.usage;
-  if (currentUsage > 0 && currentAZ?.commitmentSum >= currentUsage) {
+  if (currentAZ?.commitmentSum > 0 && currentAZ?.commitmentSum >= currentUsage) {
     return createWarning(REASON.COVERED, "commitments cover usage", currentAZ.commitmentSum);
   }
 
