@@ -218,7 +218,8 @@ describe("test commitment creation modal", () => {
     {
       name: "large amount relative to existing commitments",
       amount: baseValue * FACTOR.LARGE,
-      az: { commitmentSum: baseValue },
+      az: { usage: 0, commitmentSum: 0 },
+      commitmentSum: baseValue,
       warningText: `The commitment amount significantly exceeds existing commitments (${baseValue} GiB).`,
     },
     {
@@ -227,67 +228,71 @@ describe("test commitment creation modal", () => {
       az: { quota: baseValue },
       warningText: `The commitment amount significantly exceeds available quota (${baseValue} GiB).`,
     },
-  ])("$name displays a formatted warning and requires acknowledgement", async ({ amount, az, warningText }) => {
-    const onConfirm = jest.fn();
-    const onClose = jest.fn();
-    const newCommitment = {
-      ...initialCommitmentObject,
-      amount,
-      unit: "GiB",
-      duration: "1 year",
-    };
-    const resource = {
-      name: "test-resource",
-      per_az: [{ name: "az1", ...az }],
-    };
+  ])(
+    "$name displays a formatted warning and requires acknowledgement",
+    async ({ amount, az, commitmentSum = 0, warningText }) => {
+      const onConfirm = jest.fn();
+      const onClose = jest.fn();
+      const newCommitment = {
+        ...initialCommitmentObject,
+        amount,
+        unit: "GiB",
+        duration: "1 year",
+      };
+      const resource = {
+        name: "test-resource",
+        commitmentSum,
+        per_az: [{ name: "az1", ...az }],
+      };
 
-    render(
-      <PortalProvider>
-        <CommitmentModal
-          title="Confirm commitment creation"
-          subText="Commit"
-          currentTab="az1"
-          canConfirm={true}
-          commitment={newCommitment}
-          resource={resource}
-          action={onConfirm}
-          onModalClose={onClose}
-          publicCommitmentQuery={{ data: null }}
-        />
-      </PortalProvider>
-    );
+      render(
+        <PortalProvider>
+          <CommitmentModal
+            title="Confirm commitment creation"
+            subText="Commit"
+            currentTab="az1"
+            canConfirm={true}
+            commitment={newCommitment}
+            resource={resource}
+            action={onConfirm}
+            onModalClose={onClose}
+            publicCommitmentQuery={{ data: null }}
+          />
+        </PortalProvider>
+      );
 
-    expect(screen.getByTestId("commitmentWarning")).toHaveTextContent(warningText.replace(/\u202F/g, " "));
+      expect(screen.getByTestId("commitmentWarning")).toHaveTextContent(warningText.replace(/\u202F/g, " "));
 
-    const confirmInput = screen.getByTestId(/confirmInput/i);
-    const confirmButton = screen.getByTestId(/modalConfirm/i);
-    const acknowledgeCheckbox = screen.getByTestId("commitmentWarningAcknowledgeCheckbox");
+      const confirmInput = screen.getByTestId(/confirmInput/i);
+      const confirmButton = screen.getByTestId(/modalConfirm/i);
+      const acknowledgeCheckbox = screen.getByTestId("commitmentWarningAcknowledgeCheckbox");
 
-    expect(acknowledgeCheckbox).not.toBeChecked();
-    expect(confirmButton).toBeDisabled();
+      expect(acknowledgeCheckbox).not.toBeChecked();
+      expect(confirmButton).toBeDisabled();
 
-    // Correct text alone does not enable confirmation.
-    fireEvent.change(confirmInput, { target: { value: "commit" } });
-    expect(confirmButton).toBeDisabled();
+      // Correct text alone does not enable confirmation.
+      fireEvent.change(confirmInput, { target: { value: "commit" } });
+      expect(confirmButton).toBeDisabled();
 
-    fireEvent.click(acknowledgeCheckbox);
-    expect(acknowledgeCheckbox).toBeChecked();
-    expect(confirmButton).toBeEnabled();
+      fireEvent.click(acknowledgeCheckbox);
+      expect(acknowledgeCheckbox).toBeChecked();
+      expect(confirmButton).toBeEnabled();
 
-    // Incorrect text disables confirmation even after acknowledgement.
-    fireEvent.change(confirmInput, { target: { value: "wrongInput" } });
-    expect(confirmButton).toBeDisabled();
-    expect(onConfirm).not.toHaveBeenCalled();
+      // Incorrect text disables confirmation even after acknowledgement.
+      fireEvent.change(confirmInput, { target: { value: "wrongInput" } });
+      expect(confirmButton).toBeDisabled();
+      expect(onConfirm).not.toHaveBeenCalled();
 
-    // Restore correct text and confirm.
-    fireEvent.change(confirmInput, { target: { value: "commit" } });
-    expect(confirmButton).toBeEnabled();
-    fireEvent.click(confirmButton);
+      // Restore correct text and confirm.
+      fireEvent.change(confirmInput, { target: { value: "commit" } });
+      expect(confirmButton).toBeEnabled();
+      fireEvent.click(confirmButton);
 
-    await waitFor(() => {
-      expect(onConfirm).toHaveBeenCalledTimes(1);
-    });
-  });
+      await waitFor(() => {
+        expect(onConfirm).toHaveBeenCalledTimes(1);
+      });
+    }
+  );
 
   test.each([
     {

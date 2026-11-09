@@ -32,8 +32,8 @@ export function checkForReasonableSizedCommitment(amount, resource, azName) {
     return checkSizeBoundaries(amount, uncommittedUsage, FACTOR.LARGE, FACTOR.SMALL, "uncommitted usage");
   }
 
-  // Commitment based check
-  const baseCommitmentSum = currentAZ?.commitmentSum || resource?.commitmentSum;
+  // Resource-wide commitment fallback. AZ commitments are accounted for above.
+  const baseCommitmentSum = resource?.commitmentSum ?? 0;
   if (baseCommitmentSum > 0) {
     return checkSizeBoundaries(amount, baseCommitmentSum, FACTOR.LARGE, FACTOR.SMALL, "existing commitments");
   }
