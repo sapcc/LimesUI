@@ -3,46 +3,63 @@
 
 import { locateBaseQuotaAZ } from "./utils";
 
+export const FACTOR = {
+  LARGE: 1.5,
+  SMALL: 0.05,
+  MAX_USAGE_RATIO: 1.5,
+};
+
 export const REASON = {
   LARGE: "tooLarge",
   SMALL: "tooSmall",
   COVERED: "usageAlreadyCovered",
 };
 
-export const FACTOR = {
-  LARGE: 1.5,
-  SMALL: 0.05,
+export const SOURCE = {
+  USAGE: "current usage",
+  COMMITMENTS: "existing commitments",
+  COVERED: "commitments already cover current usage",
+  QUOTA: "available quota",
 };
 
 // Returns a size or coverage warning, or an empty object.
-// Prefer uncommitted usage, then existing reservations, then quota.
+// Check resulting commitments and request size against current usage.
 export function checkForReasonableSizedCommitment(amount, resource, azName) {
-  const availabilityZones = resource?.per_az ?? [];
-  const currentAZ = availabilityZones.find((az) => az.name === azName);
-
-  // Coverage based check
+  const currentAZ = resource?.per_az?.find((az) => az.name === azName);
   const currentUsage = currentAZ?.usage;
-  if (currentAZ?.commitmentSum > 0 && currentAZ?.commitmentSum >= currentUsage) {
-    return createWarning(REASON.COVERED, "commitments cover usage", currentAZ.commitmentSum);
+  const currentCommitmentSum = currentAZ?.commitmentSum ?? 0;
+  const resultingCommitmentSum = currentCommitmentSum + amount;
+  const withinUsageTolerance = resultingCommitmentSum <= currentUsage * FACTOR.MAX_USAGE_RATIO;
+
+  // Check the request against covered usage.
+  if (currentCommitmentSum > 0 && currentCommitmentSum >= currentUsage) {
+    if (!withinUsageTolerance) {
+      return createWarning(REASON.COVERED, SOURCE.COVERED, currentCommitmentSum);
+    }
+    return {};
   }
 
-  // Usage based check
-  const uncommittedUsage = currentUsage - (currentAZ?.commitmentSum ?? 0);
-  if (uncommittedUsage > 0) {
-    return checkSizeBoundaries(amount, uncommittedUsage, FACTOR.LARGE, FACTOR.SMALL, "uncommitted usage");
+  // Check the request against uncovered usage.
+  if (currentUsage > currentCommitmentSum) {
+    if (!withinUsageTolerance) {
+      return createWarning(REASON.LARGE, SOURCE.USAGE, currentUsage);
+    }
+    if (amount <= currentUsage * FACTOR.SMALL) {
+      return createWarning(REASON.SMALL, SOURCE.USAGE, currentUsage);
+    }
+    return {};
   }
 
   // Resource-wide commitment fallback. AZ commitments are accounted for above.
-  const baseCommitmentSum = resource?.commitmentSum ?? 0;
-  if (baseCommitmentSum > 0) {
-    return checkSizeBoundaries(amount, baseCommitmentSum, FACTOR.LARGE, FACTOR.SMALL, "existing commitments");
+  if (resource?.commitmentSum > 0) {
+    return checkSizeBoundaries(amount, resource?.commitmentSum, FACTOR.LARGE, FACTOR.SMALL, SOURCE.COMMITMENTS);
   }
 
   // Quota based check
   const baseQuotaAZ = locateBaseQuotaAZ(resource);
   const baseQuotaValue = [currentAZ?.quota, baseQuotaAZ?.quota, resource?.quota].find((quota) => quota > 0);
   if (baseQuotaValue > 0) {
-    return checkSizeBoundaries(amount, baseQuotaValue, FACTOR.LARGE, FACTOR.SMALL, "available quota");
+    return checkSizeBoundaries(amount, baseQuotaValue, FACTOR.LARGE, FACTOR.SMALL, SOURCE.QUOTA);
   }
   return {};
 }

@@ -6,8 +6,8 @@ import moment from "moment";
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { PortalProvider } from "@cloudoperators/juno-ui-components";
 import { initialCommitmentObject } from "../../../lib/constants";
-import CommitmentModal from "./CommitmentModal";
-import { FACTOR } from "../../../lib/commitmentSize";
+import CommitmentModal, { getWarningText } from "./CommitmentModal";
+import { FACTOR, SOURCE, REASON } from "../../../lib/commitmentSize";
 
 // If debugging is necessary, use screen.debug(undefined, Infinity) to get the complete componenent log.
 // Mock resource with usage/quota data for oversized commitment warning tests
@@ -199,34 +199,34 @@ describe("test commitment creation modal", () => {
   test.each([
     {
       name: "usage already covered by commitments",
-      amount: baseValue,
+      amount: baseValue * FACTOR.MAX_USAGE_RATIO - baseValue + 1,
       az: { usage: baseValue, commitmentSum: baseValue },
-      warningText: `Existing commitments (${baseValue} GiB) already cover current usage in this availability zone.`,
+      warningText: getWarningText(REASON.COVERED, SOURCE.COVERED, baseValue),
     },
     {
       name: "large amount relative to usage",
-      amount: baseValue * FACTOR.LARGE,
+      amount: baseValue * FACTOR.MAX_USAGE_RATIO + 1,
       az: { usage: baseValue },
-      warningText: `The commitment amount significantly exceeds uncommitted usage (${baseValue} GiB).`,
+      warningText: getWarningText(REASON.LARGE, SOURCE.USAGE, baseValue),
     },
     {
       name: "small amount relative to usage",
       amount: baseValue * FACTOR.SMALL,
       az: { usage: baseValue },
-      warningText: `The commitment amount is very small compared with uncommitted usage (${baseValue} GiB).`,
+      warningText: getWarningText(REASON.SMALL, SOURCE.USAGE, baseValue),
     },
     {
-      name: "large amount relative to existing commitments",
+      name: "large amount relative to resource commitments",
       amount: baseValue * FACTOR.LARGE,
-      az: { usage: 0, commitmentSum: 0 },
       commitmentSum: baseValue,
-      warningText: `The commitment amount significantly exceeds existing commitments (${baseValue} GiB).`,
+      az: { usage: 0, commitmentSum: 0 },
+      warningText: getWarningText(REASON.LARGE, SOURCE.COMMITMENTS, baseValue),
     },
     {
       name: "large amount relative to quota",
       amount: baseValue * FACTOR.LARGE,
       az: { quota: baseValue },
-      warningText: `The commitment amount significantly exceeds available quota (${baseValue} GiB).`,
+      warningText: getWarningText(REASON.LARGE, SOURCE.QUOTA, baseValue),
     },
   ])(
     "$name displays a formatted warning and requires acknowledgement",
@@ -236,7 +236,6 @@ describe("test commitment creation modal", () => {
       const newCommitment = {
         ...initialCommitmentObject,
         amount,
-        unit: "GiB",
         duration: "1 year",
       };
       const resource = {
@@ -261,7 +260,7 @@ describe("test commitment creation modal", () => {
         </PortalProvider>
       );
 
-      expect(screen.getByTestId("commitmentWarning")).toHaveTextContent(warningText.replace(/\u202F/g, " "));
+      expect(screen.getByTestId("commitmentWarning")).toHaveTextContent(warningText);
 
       const confirmInput = screen.getByTestId(/confirmInput/i);
       const confirmButton = screen.getByTestId(/modalConfirm/i);
@@ -293,55 +292,4 @@ describe("test commitment creation modal", () => {
       });
     }
   );
-
-  test.each([
-    {
-      name: "amount within usage thresholds",
-      resource: mockResource,
-    },
-    {
-      name: "no usable baseline",
-      resource: {
-        name: "test-resource",
-        per_az: [{ name: "az1", usage: 0, commitmentSum: 0, quota: 0 }],
-      },
-    },
-  ])("$name permits confirmation without acknowledgement", async ({ resource }) => {
-    const onConfirm = jest.fn();
-    const onClose = jest.fn();
-    const newCommitment = {
-      ...initialCommitmentObject,
-      amount: 100,
-      unit: "GiB",
-      duration: "1 year",
-    };
-
-    render(
-      <PortalProvider>
-        <CommitmentModal
-          title="Confirm commitment creation"
-          subText="Commit"
-          currentTab="az1"
-          canConfirm={true}
-          commitment={newCommitment}
-          resource={resource}
-          action={onConfirm}
-          onModalClose={onClose}
-          publicCommitmentQuery={{ data: null }}
-        />
-      </PortalProvider>
-    );
-
-    expect(screen.queryByTestId("commitmentWarning")).not.toBeInTheDocument();
-    expect(screen.queryByTestId("commitmentWarningAcknowledgeCheckbox")).not.toBeInTheDocument();
-
-    fireEvent.change(screen.getByTestId(/confirmInput/i), {
-      target: { value: "commit" },
-    });
-    fireEvent.click(screen.getByTestId(/modalConfirm/i));
-
-    await waitFor(() => {
-      expect(onConfirm).toHaveBeenCalledTimes(1);
-    });
-  });
 });

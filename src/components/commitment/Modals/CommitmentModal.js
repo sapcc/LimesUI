@@ -14,6 +14,15 @@ import { formatTimeISO8160 } from "../../../lib/utils";
 
 const label = "font-semibold";
 
+export function getWarningText(warningReason, warningSource, warningValue) {
+  const warningText = {
+    [REASON.LARGE]: `The commitment amount significantly exceeds ${warningSource} (${warningValue}).`,
+    [REASON.SMALL]: `The commitment amount is very small compared with ${warningSource} (${warningValue}).`,
+    [REASON.COVERED]: `Existing ${warningSource} (${warningValue} already committed) in this availability zone.`,
+  };
+  return warningText[warningReason];
+}
+
 const CommitmentModal = (props) => {
   const {
     action,
@@ -52,13 +61,8 @@ const CommitmentModal = (props) => {
     () => checkForReasonableSizedCommitment(commitment.amount, resource, currentTab),
     [resource, currentTab, commitment]
   );
-
-  const formattedWarningBase = warningReason ? unit.format(warningBaseValue) : "";
-  const warningText = {
-    [REASON.LARGE]: `The commitment amount significantly exceeds ${warningSource} (${formattedWarningBase}).`,
-    [REASON.SMALL]: `The commitment amount is very small compared with ${warningSource} (${formattedWarningBase}).`,
-    [REASON.COVERED]: `Existing commitments (${formattedWarningBase}) already cover current usage in this availability zone.`,
-  }[warningReason];
+  const formattedWarningValue = warningReason ? unit.format(warningBaseValue) : "";
+  const warningText = getWarningText(warningReason, warningSource, formattedWarningValue);
 
   async function onConfirm() {
     if (!selectedDate) return;

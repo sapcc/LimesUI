@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 SAP SE or an SAP affiliate company
 // SPDX-License-Identifier: Apache-2.0
 
-import { checkForReasonableSizedCommitment, createWarning, REASON, FACTOR } from "./commitmentSize";
+import { checkForReasonableSizedCommitment, createWarning, FACTOR, REASON, SOURCE } from "./commitmentSize";
 
 function buildResource(az = {}, extra = {}) {
   return {
@@ -17,46 +17,51 @@ function check(amount, data) {
 
 const baseValue = 100;
 
-describe("commitment size", () => {
-  test.each([
-    ["usage", "uncommitted usage"],
-    ["quota", "available quota"],
-    ["commitmentSum", "existing commitments"],
-  ])("%s uses expected thresholds", (field, source) => {
-    const resource =
-      field === "commitmentSum"
-        ? buildResource({}, { commitmentSum: baseValue })
-        : buildResource({ [field]: baseValue });
-    expect(check(baseValue * FACTOR.SMALL, resource)).toEqual(createWarning(REASON.SMALL, source, baseValue));
-    expect(check(baseValue * FACTOR.LARGE, resource)).toEqual(createWarning(REASON.LARGE, source, baseValue));
+describe("Commitment size", () => {
+  test("usage thresholds", () => {
+    const resource = buildResource({ usage: baseValue });
+    expect(check(baseValue * FACTOR.SMALL, resource)).toEqual(createWarning(REASON.SMALL, SOURCE.USAGE, baseValue));
     expect(check(baseValue * FACTOR.SMALL + 1, resource)).toEqual({});
-    expect(check(baseValue * FACTOR.LARGE - 1, resource)).toEqual({});
+    expect(check(baseValue * FACTOR.MAX_USAGE_RATIO, resource)).toEqual({});
+    expect(check(baseValue * FACTOR.MAX_USAGE_RATIO + 1, resource)).toEqual(
+      createWarning(REASON.LARGE, SOURCE.USAGE, baseValue)
+    );
   });
 
-  describe("Commitment coverage and fallback", () => {
-    test("AZ commitment sum covering positive usage returns a coverage warning", () => {
+  describe("commitment coverage and fallback", () => {
+    test("AZ commitment sum covering usage returns a warning", () => {
+      const usage = baseValue;
+      const commitmentSum = baseValue;
+      const resource = buildResource({ usage: usage, commitmentSum: commitmentSum });
+      const noUsageResource = buildResource({ usage: 0, commitmentSum: commitmentSum });
+      const allowedAmount = usage * FACTOR.MAX_USAGE_RATIO - commitmentSum;
+      expect(check(allowedAmount + 1, resource)).toEqual(createWarning(REASON.COVERED, SOURCE.COVERED, baseValue));
+      expect(check(allowedAmount, noUsageResource)).toEqual(createWarning(REASON.COVERED, SOURCE.COVERED, baseValue));
+    });
+
+    test("Check covered usage against the resulting commitment sum", () => {
+      const usage = baseValue;
+      const commitmentSum = baseValue;
+      const allowedAmount = usage * FACTOR.MAX_USAGE_RATIO - commitmentSum;
       const resource = buildResource({ usage: baseValue, commitmentSum: baseValue });
-      expect(check(baseValue, resource)).toEqual(createWarning(REASON.COVERED, "commitments cover usage", baseValue));
+      expect(check(allowedAmount, resource)).toEqual({});
+      expect(check(allowedAmount + 1, resource)).toEqual(createWarning(REASON.COVERED, SOURCE.COVERED, baseValue));
+    });
+
+    test("Check uncovered usage against the resulting commitment sum", () => {
+      const usage = baseValue + baseValue / 2;
+      const commitmentSum = baseValue;
+      const allowedAmount = usage * FACTOR.MAX_USAGE_RATIO - commitmentSum;
+      const resource = buildResource({ usage, commitmentSum });
+      expect(check(allowedAmount, resource)).toEqual({});
+      expect(check(allowedAmount + 1, resource)).toEqual(createWarning(REASON.LARGE, SOURCE.USAGE, usage));
     });
 
     test.each([undefined, null, 0])("AZ commitment sum %s falls back to the resource-wide sum", (commitmentSum) => {
       const resource = buildResource({ commitmentSum }, { commitmentSum: baseValue });
       expect(check(baseValue * FACTOR.LARGE, resource)).toEqual(
-        createWarning(REASON.LARGE, "existing commitments", baseValue)
+        createWarning(REASON.LARGE, SOURCE.COMMITMENTS, baseValue)
       );
-    });
-
-    test("sizes additional commitments against uncommitted usage", () => {
-      const remainingUsage = baseValue / 10;
-      const resource = buildResource({
-        usage: baseValue,
-        commitmentSum: baseValue - remainingUsage,
-      });
-
-      expect(check(remainingUsage * FACTOR.LARGE, resource)).toEqual(
-        createWarning(REASON.LARGE, "uncommitted usage", remainingUsage)
-      );
-      expect(check(remainingUsage, resource)).toEqual({});
     });
   });
 
@@ -68,14 +73,12 @@ describe("commitment size", () => {
 
     test.each([undefined, null, 0])("AZ quota %s falls back to any (base) quota before top-level quota", (quota) => {
       const resource = buildResource({ quota }, { quota: 10000, per_az: [{ name: "any", quota: baseValue }] });
-      expect(check(baseValue * FACTOR.LARGE, resource)).toEqual(
-        createWarning(REASON.LARGE, "available quota", baseValue)
-      );
+      expect(check(baseValue * FACTOR.LARGE, resource)).toEqual(createWarning(REASON.LARGE, SOURCE.QUOTA, baseValue));
     });
 
     test("uses top-level quota when AZ and any have no positive quota", () => {
       expect(check(baseValue * FACTOR.LARGE, buildResource({}, { quota: baseValue }))).toEqual(
-        createWarning(REASON.LARGE, "available quota", baseValue)
+        createWarning(REASON.LARGE, SOURCE.QUOTA, baseValue)
       );
     });
   });
