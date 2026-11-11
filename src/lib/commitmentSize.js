@@ -36,6 +36,9 @@ export function checkForReasonableSizedCommitment(amount, resource, azName) {
     if (!withinUsageTolerance) {
       return createWarning(REASON.COVERED, SOURCE.COVERED, currentCommitmentSum);
     }
+    return checkSizeBoundaries(amount, currentUsage, SOURCE.USAGE, {
+      checkLarge: false,
+    });
     return {};
   }
 
@@ -44,37 +47,37 @@ export function checkForReasonableSizedCommitment(amount, resource, azName) {
     if (!withinUsageTolerance) {
       return createWarning(REASON.LARGE, SOURCE.USAGE, currentUsage);
     }
-    if (amount <= currentUsage * FACTOR.SMALL) {
-      return createWarning(REASON.SMALL, SOURCE.USAGE, currentUsage);
-    }
+    return checkSizeBoundaries(amount, currentUsage, SOURCE.USAGE, {
+      checkLarge: false,
+    });
     return {};
   }
 
   // Resource-wide commitment fallback. AZ commitments are accounted for above.
   if (resource?.commitmentSum > 0) {
-    return checkSizeBoundaries(amount, resource?.commitmentSum, FACTOR.LARGE, FACTOR.SMALL, SOURCE.COMMITMENTS);
+    return checkSizeBoundaries(amount, resource?.commitmentSum, SOURCE.COMMITMENTS);
   }
 
   // Quota based check
   const baseQuotaAZ = locateBaseQuotaAZ(resource);
   const baseQuotaValue = [currentAZ?.quota, baseQuotaAZ?.quota, resource?.quota].find((quota) => quota > 0);
   if (baseQuotaValue > 0) {
-    return checkSizeBoundaries(amount, baseQuotaValue, FACTOR.LARGE, FACTOR.SMALL, SOURCE.QUOTA);
+    return checkSizeBoundaries(amount, baseQuotaValue, SOURCE.QUOTA);
   }
   return {};
 }
 
-function checkSizeBoundaries(amount, baseValue, largeThreshold, smallThreshold, source) {
-  if (amount >= baseValue * largeThreshold) {
+function checkSizeBoundaries(amount, baseValue, source, { checkLarge = true } = {}) {
+  if (checkLarge && amount >= baseValue * FACTOR.LARGE) {
     return createWarning(REASON.LARGE, source, baseValue);
   }
 
-  if (amount <= baseValue * smallThreshold) {
+  if (amount <= baseValue * FACTOR.SMALL) {
     return createWarning(REASON.SMALL, source, baseValue);
   }
+
   return {};
 }
-
 export function createWarning(reason, source, base) {
   return { reason: reason, source: source, base: base };
 }

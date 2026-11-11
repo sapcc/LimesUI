@@ -37,6 +37,7 @@ describe("Commitment size", () => {
       const allowedAmount = usage * FACTOR.MAX_USAGE_RATIO - commitmentSum;
       expect(check(allowedAmount + 1, resource)).toEqual(createWarning(REASON.COVERED, SOURCE.COVERED, baseValue));
       expect(check(allowedAmount, noUsageResource)).toEqual(createWarning(REASON.COVERED, SOURCE.COVERED, baseValue));
+      expect(check(usage * FACTOR.SMALL, resource)).toEqual(createWarning(REASON.SMALL, SOURCE.USAGE, baseValue));
     });
 
     test("Check covered usage against the resulting commitment sum", () => {
