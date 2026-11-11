@@ -16,8 +16,8 @@ const label = "font-semibold";
 
 export function getWarningText(warningReason, warningSource, warningValue) {
   const warningText = {
-    [REASON.LARGE]: `The commitment amount significantly exceeds ${warningSource} (${warningValue}).`,
-    [REASON.SMALL]: `The commitment amount is very small compared with ${warningSource} (${warningValue}).`,
+    [REASON.LARGE]: `The commitment amount (${warningValue}) significantly exceeds ${warningSource}.`,
+    [REASON.SMALL]: `The commitment amount (${warningValue}) is very small compared to ${warningSource}.`,
     [REASON.COVERED]: `Existing ${warningSource} (${warningValue} already committed) in this availability zone.`,
   };
   return warningText[warningReason];
