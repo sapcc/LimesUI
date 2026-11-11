@@ -267,24 +267,25 @@ describe("test commitment creation modal", () => {
       const acknowledgeCheckbox = screen.getByTestId("commitmentWarningAcknowledgeCheckbox");
 
       expect(acknowledgeCheckbox).not.toBeChecked();
-      expect(confirmButton).toBeDisabled();
+      expect(confirmButton).toBeEnabled();
 
-      // Correct text alone does not enable confirmation.
+      // Correct text still requires acknowledgement.
       fireEvent.change(confirmInput, { target: { value: "commit" } });
-      expect(confirmButton).toBeDisabled();
+      fireEvent.click(confirmButton);
+      expect(onConfirm).not.toHaveBeenCalled();
+      expect(screen.getByTestId("acknowledgementError")).toBeInTheDocument();
 
       fireEvent.click(acknowledgeCheckbox);
       expect(acknowledgeCheckbox).toBeChecked();
-      expect(confirmButton).toBeEnabled();
+      expect(screen.queryByTestId("acknowledgementError")).not.toBeInTheDocument();
 
-      // Incorrect text disables confirmation even after acknowledgement.
+      // Incorrect text is rejected on confirmation.
       fireEvent.change(confirmInput, { target: { value: "wrongInput" } });
-      expect(confirmButton).toBeDisabled();
+      fireEvent.click(confirmButton);
       expect(onConfirm).not.toHaveBeenCalled();
 
       // Restore correct text and confirm.
       fireEvent.change(confirmInput, { target: { value: "commit" } });
-      expect(confirmButton).toBeEnabled();
       fireEvent.click(confirmButton);
 
       await waitFor(() => {

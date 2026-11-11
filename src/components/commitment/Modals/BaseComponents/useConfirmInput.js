@@ -7,17 +7,16 @@ import { Stack, TextInput } from "@cloudoperators/juno-ui-components";
 // This implementation style does not create a new instance of the component on every render. It rather passes back the component definition.
 // More details: https://dev.to/droopytersen/new-react-hooks-pattern-return-a-component-31bh
 const useConfirmInput = ({ confirmationText }) => {
-  const [inputValue, setInputValue] = React.useState("");
+  const inputRef = React.useRef("");
   const [invalidInput, setInvalidInput] = React.useState(false);
-  const isInputValid = inputValue.toLowerCase() === confirmationText.toLowerCase();
 
   function onInput(e) {
     setInvalidInput(false);
-    setInputValue(e.target.value);
+    inputRef.current = e.target.value;
   }
 
   function checkInput() {
-    if (!isInputValid) {
+    if (inputRef.current.toLowerCase() !== confirmationText.toLowerCase()) {
       setInvalidInput(true);
       return false;
     }
@@ -34,7 +33,6 @@ const useConfirmInput = ({ confirmationText }) => {
     ConfirmInput,
     inputProps,
     invalidInput,
-    isInputValid,
     checkInput,
   };
 };

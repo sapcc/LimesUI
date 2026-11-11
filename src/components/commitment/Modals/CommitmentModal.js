@@ -40,7 +40,7 @@ const CommitmentModal = (props) => {
   const { data: publicCommitmentData } = publicCommitmentQuery;
   const publicCommitments = publicCommitmentData?.commitments || [];
   const hasApplicablePublicCommitments = publicCommitments.some((c) => c?.availability_zone === currentTab);
-  const { ConfirmInput, inputProps, checkInput, isInputValid } = useConfirmInput({ confirmationText: subText });
+  const { ConfirmInput, inputProps, checkInput } = useConfirmInput({ confirmationText: subText });
   const hasMinConfirmDate = minConfirmDate ? true : false;
   // Show Calendar if: 1.) min_confirm_by field is set 2.) Not enough capacity is available on limes.
   const [showCalendar, setShowCalendar] = React.useState(hasMinConfirmDate || !canConfirm);
@@ -52,6 +52,7 @@ const CommitmentModal = (props) => {
   const formattedDate = formatTimeISO8160(moment(selectedDate).unix());
   const notifyOnConfirm = React.useRef(false);
   const [warningAcknowledged, setWarningAcknowledged] = React.useState(false);
+  const [acknowledgementError, setAcknowledgementError] = React.useState(false);
 
   const {
     reason: warningReason,
@@ -87,6 +88,12 @@ const CommitmentModal = (props) => {
     }
   }
 
+  function checkWarningAcknowledgement() {
+    const acknowledged = !warningReason || warningAcknowledged;
+    setAcknowledgementError(!acknowledged);
+    return acknowledged;
+  }
+
   function handleCalendarClick() {
     setShowCalendar(!showCalendar);
     setSelectedDate(startDate);
@@ -100,8 +107,7 @@ const CommitmentModal = (props) => {
       modalFooter={
         <BaseFooter
           onModalClose={onModalClose}
-          disabled={!isInputValid || (!!warningReason && !warningAcknowledged)}
-          guardFns={[checkInput, () => !warningReason || warningAcknowledged]}
+          guardFns={[checkInput, checkWarningAcknowledgement]}
           actionFn={onConfirm}
           variant={"primary"}
         />
@@ -131,7 +137,10 @@ const CommitmentModal = (props) => {
               <Checkbox
                 data-testid="commitmentWarningAcknowledgeCheckbox"
                 checked={warningAcknowledged}
-                onChange={() => setWarningAcknowledged((acknowledged) => !acknowledged)}
+                onChange={() => {
+                  setWarningAcknowledged((acknowledged) => !acknowledged);
+                  setAcknowledgementError(false);
+                }}
                 label="I understand and want to proceed"
               />
             </Stack>
@@ -197,6 +206,11 @@ const CommitmentModal = (props) => {
         </Stack>
       )}
       <ConfirmInput subText={subText} {...inputProps} />
+      {acknowledgementError && (
+        <div className="text-sm text-theme-error text-center mt-1" data-testid="acknowledgementError">
+          Please acknowledge the warning above to proceed.
+        </div>
+      )}
     </BaseModal>
   );
 };
