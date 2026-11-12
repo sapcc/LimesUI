@@ -6,56 +6,37 @@ import { locateBaseQuotaAZ } from "./utils";
 export const FACTOR = {
   LARGE: 1.5,
   SMALL: 0.05,
-  MAX_USAGE_RATIO: 1.5,
 };
 
 export const REASON = {
   LARGE: "tooLarge",
   SMALL: "tooSmall",
-  COVERED: "usageAlreadyCovered",
 };
 
 export const SOURCE = {
   USAGE: "current usage",
   COMMITMENTS: "existing commitments",
-  COVERED: "commitments already cover current usage",
   QUOTA: "available quota",
 };
 
 // Returns a size or coverage warning, or an empty object.
 // Check resulting commitments and request size against current usage.
-export function checkForReasonableSizedCommitment(amount, resource, azName) {
+export function checkForReasonablySizedCommitment(amount, resource, azName) {
   const currentAZ = resource?.per_az?.find((az) => az.name === azName);
-  const currentUsage = currentAZ?.usage;
+  const currentUsage = currentAZ?.usage ?? 0;
   const currentCommitmentSum = currentAZ?.commitmentSum ?? 0;
   const resultingCommitmentSum = currentCommitmentSum + amount;
-  const withinUsageTolerance = resultingCommitmentSum <= currentUsage * FACTOR.MAX_USAGE_RATIO;
 
-  // Check the request against covered usage.
-  if (currentCommitmentSum > 0 && currentCommitmentSum >= currentUsage) {
-    if (!withinUsageTolerance) {
-      return createWarning(REASON.COVERED, SOURCE.COVERED, currentCommitmentSum);
-    }
-    return checkSizeBoundaries(amount, currentUsage, SOURCE.USAGE, {
-      checkLarge: false,
-    });
-    return {};
+  // Check the resulting commitment sum for being too large relative to the current usage.
+  // Check the requested amount for being too small relative to the current usage.
+  if (currentUsage > 0 || currentCommitmentSum > 0) {
+    return checkSizeBoundaries(amount, currentUsage, SOURCE.USAGE, { largeComparisonAmount: resultingCommitmentSum });
   }
 
-  // Check the request against uncovered usage.
-  if (currentUsage > currentCommitmentSum) {
-    if (!withinUsageTolerance) {
-      return createWarning(REASON.LARGE, SOURCE.USAGE, currentUsage);
-    }
-    return checkSizeBoundaries(amount, currentUsage, SOURCE.USAGE, {
-      checkLarge: false,
-    });
-    return {};
-  }
-
-  // Resource-wide commitment fallback. AZ commitments are accounted for above.
-  if (resource?.commitmentSum > 0) {
-    return checkSizeBoundaries(amount, resource?.commitmentSum, SOURCE.COMMITMENTS);
+  // Compare against resource-wide commitments when the selected AZ has no usage and no commitments.
+  const topLevelCommitmentSum = resource?.commitmentSum;
+  if (topLevelCommitmentSum > 0) {
+    return checkSizeBoundaries(amount, topLevelCommitmentSum, SOURCE.COMMITMENTS);
   }
 
   // Quota based check
@@ -67,17 +48,19 @@ export function checkForReasonableSizedCommitment(amount, resource, azName) {
   return {};
 }
 
-function checkSizeBoundaries(amount, baseValue, source, { checkLarge = true } = {}) {
-  if (checkLarge && amount >= baseValue * FACTOR.LARGE) {
-    return createWarning(REASON.LARGE, source, baseValue);
+function checkSizeBoundaries(comparisonAmount, baseValue, source, options = {}) {
+  const { largeComparisonAmount = comparisonAmount } = options;
+
+  if (largeComparisonAmount >= baseValue * FACTOR.LARGE) {
+    return createWarning(REASON.LARGE, source, largeComparisonAmount, baseValue);
   }
 
-  if (amount <= baseValue * FACTOR.SMALL) {
-    return createWarning(REASON.SMALL, source, baseValue);
+  if (comparisonAmount <= baseValue * FACTOR.SMALL) {
+    return createWarning(REASON.SMALL, source, comparisonAmount, baseValue);
   }
-
   return {};
 }
-export function createWarning(reason, source, base) {
-  return { reason: reason, source: source, base: base };
+
+export function createWarning(reason, source, comparisonValue, baseValue) {
+  return { reason, source, comparisonValue, baseValue };
 }

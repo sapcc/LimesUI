@@ -9,16 +9,15 @@ import CommitmentCalendar from "../CommitmentCalendar";
 import moment from "moment";
 import useConfirmInput from "./BaseComponents/useConfirmInput";
 import { createUnit, valueWithUnit } from "../../../lib/unit";
-import { checkForReasonableSizedCommitment, REASON } from "../../../lib/commitmentSize";
+import { checkForReasonablySizedCommitment, REASON } from "../../../lib/commitmentSize";
 import { formatTimeISO8160 } from "../../../lib/utils";
 
 const label = "font-semibold";
 
-export function getWarningText(warningReason, warningSource, warningValue) {
+export function getWarningText(warningReason, warningSource, warningComparisonValue, warningBase) {
   const warningText = {
-    [REASON.LARGE]: `The commitment amount (${warningValue}) significantly exceeds ${warningSource}.`,
-    [REASON.SMALL]: `The commitment amount (${warningValue}) is very small compared to ${warningSource}.`,
-    [REASON.COVERED]: `Existing ${warningSource} (${warningValue} already committed) in this availability zone.`,
+    [REASON.LARGE]: `The resulting commitment sum after this request is very large compared to ${warningSource} (${warningBase}).`,
+    [REASON.SMALL]: `The commitment amount (${warningComparisonValue}) is very small compared to ${warningSource} (${warningBase}).`,
   };
   return warningText[warningReason];
 }
@@ -57,13 +56,20 @@ const CommitmentModal = (props) => {
   const {
     reason: warningReason,
     source: warningSource,
-    base: warningBaseValue,
+    comparisonValue: warningComparisonValue,
+    baseValue: warningBaseValue,
   } = React.useMemo(
-    () => checkForReasonableSizedCommitment(commitment.amount, resource, currentTab),
+    () => checkForReasonablySizedCommitment(commitment.amount, resource, currentTab),
     [resource, currentTab, commitment]
   );
-  const formattedWarningValue = warningReason ? unit.format(warningBaseValue) : "";
-  const warningText = getWarningText(warningReason, warningSource, formattedWarningValue);
+  const formattedWarningBaseValue = warningReason ? unit.format(warningBaseValue) : "";
+  const fomattedWarningComparisonValue = warningReason ? unit.format(warningComparisonValue) : "";
+  const warningText = getWarningText(
+    warningReason,
+    warningSource,
+    fomattedWarningComparisonValue,
+    formattedWarningBaseValue
+  );
 
   async function onConfirm() {
     if (!selectedDate) return;

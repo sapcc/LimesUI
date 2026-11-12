@@ -8,6 +8,7 @@ import { PortalProvider } from "@cloudoperators/juno-ui-components";
 import { initialCommitmentObject } from "../../../lib/constants";
 import CommitmentModal, { getWarningText } from "./CommitmentModal";
 import { FACTOR, SOURCE, REASON } from "../../../lib/commitmentSize";
+import { Unit } from "../../../lib/unit";
 
 // If debugging is necessary, use screen.debug(undefined, Infinity) to get the complete componenent log.
 // Mock resource with usage/quota data for oversized commitment warning tests
@@ -195,38 +196,44 @@ describe("test commitment creation modal", () => {
     expect(screen.getByText(/January 2024/i)).toBeInTheDocument();
   });
 
+  const unit = new Unit("GiB");
   const baseValue = 100;
   test.each([
     {
       name: "usage already covered by commitments",
-      amount: baseValue * FACTOR.MAX_USAGE_RATIO - baseValue + 1,
+      amount: baseValue * FACTOR.LARGE - baseValue,
       az: { usage: baseValue, commitmentSum: baseValue },
-      warningText: getWarningText(REASON.COVERED, SOURCE.COVERED, baseValue),
+      warningText: getWarningText(REASON.LARGE, SOURCE.USAGE, "", unit.format(baseValue)),
     },
     {
       name: "large amount relative to usage",
-      amount: baseValue * FACTOR.MAX_USAGE_RATIO + 1,
+      amount: baseValue * FACTOR.LARGE,
       az: { usage: baseValue },
-      warningText: getWarningText(REASON.LARGE, SOURCE.USAGE, baseValue),
+      warningText: getWarningText(REASON.LARGE, SOURCE.USAGE, "", unit.format(baseValue)),
     },
     {
       name: "small amount relative to usage",
       amount: baseValue * FACTOR.SMALL,
       az: { usage: baseValue },
-      warningText: getWarningText(REASON.SMALL, SOURCE.USAGE, baseValue),
+      warningText: getWarningText(
+        REASON.SMALL,
+        SOURCE.USAGE,
+        unit.format(baseValue * FACTOR.SMALL),
+        unit.format(baseValue)
+      ),
     },
     {
       name: "large amount relative to resource commitments",
       amount: baseValue * FACTOR.LARGE,
       commitmentSum: baseValue,
       az: { usage: 0, commitmentSum: 0 },
-      warningText: getWarningText(REASON.LARGE, SOURCE.COMMITMENTS, baseValue),
+      warningText: getWarningText(REASON.LARGE, SOURCE.COMMITMENTS, "", unit.format(baseValue)),
     },
     {
       name: "large amount relative to quota",
       amount: baseValue * FACTOR.LARGE,
       az: { quota: baseValue },
-      warningText: getWarningText(REASON.LARGE, SOURCE.QUOTA, baseValue),
+      warningText: getWarningText(REASON.LARGE, SOURCE.QUOTA, "", unit.format(baseValue)),
     },
   ])(
     "$name displays a formatted warning and requires acknowledgement",
@@ -236,6 +243,7 @@ describe("test commitment creation modal", () => {
       const newCommitment = {
         ...initialCommitmentObject,
         amount,
+        unit: "GiB",
         duration: "1 year",
       };
       const resource = {
@@ -260,7 +268,7 @@ describe("test commitment creation modal", () => {
         </PortalProvider>
       );
 
-      expect(screen.getByTestId("commitmentWarning")).toHaveTextContent(warningText);
+      expect(screen.getByTestId("commitmentWarning")).toHaveTextContent(warningText, { normalizeWhitespace: false });
 
       const confirmInput = screen.getByTestId(/confirmInput/i);
       const confirmButton = screen.getByTestId(/modalConfirm/i);
