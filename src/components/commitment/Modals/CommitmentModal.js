@@ -9,9 +9,18 @@ import CommitmentCalendar from "../CommitmentCalendar";
 import moment from "moment";
 import useConfirmInput from "./BaseComponents/useConfirmInput";
 import { createUnit, valueWithUnit } from "../../../lib/unit";
+import { checkForReasonablySizedCommitment, REASON } from "../../../lib/commitmentSize";
 import { formatTimeISO8160 } from "../../../lib/utils";
 
 const label = "font-semibold";
+
+export function getWarningText(warningReason, warningSource, warningComparisonValue, warningBase) {
+  const warningText = {
+    [REASON.LARGE]: `The resulting commitment sum after this request is very large compared to ${warningSource} (${warningBase}).`,
+    [REASON.SMALL]: `The commitment amount (${warningComparisonValue}) is very small compared to ${warningSource} (${warningBase}).`,
+  };
+  return warningText[warningReason];
+}
 
 const CommitmentModal = (props) => {
   const {
@@ -20,6 +29,7 @@ const CommitmentModal = (props) => {
     canConfirm,
     commitment,
     publicCommitmentQuery,
+    resource,
     minConfirmDate,
     onModalClose,
     subText,
@@ -40,6 +50,26 @@ const CommitmentModal = (props) => {
   const [selectedDate, setSelectedDate] = React.useState(startDate);
   const formattedDate = formatTimeISO8160(moment(selectedDate).unix());
   const notifyOnConfirm = React.useRef(false);
+  const [warningAcknowledged, setWarningAcknowledged] = React.useState(false);
+  const [acknowledgementError, setAcknowledgementError] = React.useState(false);
+
+  const {
+    reason: warningReason,
+    source: warningSource,
+    comparisonValue: warningComparisonValue,
+    baseValue: warningBaseValue,
+  } = React.useMemo(
+    () => checkForReasonablySizedCommitment(commitment.amount, resource, currentTab),
+    [resource, currentTab, commitment]
+  );
+  const formattedWarningBaseValue = warningReason ? unit.format(warningBaseValue) : "";
+  const fomattedWarningComparisonValue = warningReason ? unit.format(warningComparisonValue) : "";
+  const warningText = getWarningText(
+    warningReason,
+    warningSource,
+    fomattedWarningComparisonValue,
+    formattedWarningBaseValue
+  );
 
   async function onConfirm() {
     if (!selectedDate) return;
@@ -64,6 +94,12 @@ const CommitmentModal = (props) => {
     }
   }
 
+  function checkWarningAcknowledgement() {
+    const acknowledged = !warningReason || warningAcknowledged;
+    setAcknowledgementError(!acknowledged);
+    return acknowledged;
+  }
+
   function handleCalendarClick() {
     setShowCalendar(!showCalendar);
     setSelectedDate(startDate);
@@ -75,7 +111,12 @@ const CommitmentModal = (props) => {
       title={title}
       open={true}
       modalFooter={
-        <BaseFooter onModalClose={onModalClose} guardFns={[checkInput]} actionFn={onConfirm} variant={"primary"} />
+        <BaseFooter
+          onModalClose={onModalClose}
+          guardFns={[checkInput, checkWarningAcknowledgement]}
+          actionFn={onConfirm}
+          variant={"primary"}
+        />
       }
       onCancel={() => onModalClose()}
     >
@@ -94,6 +135,22 @@ const CommitmentModal = (props) => {
             variant="warning"
             text="No capacity available. Confirmation delay possible."
           />
+        )}
+        {warningReason && (
+          <Message data-testid="commitmentWarning" variant="warning">
+            <Stack direction="vertical" gap="1">
+              <span>{warningText}</span>
+              <Checkbox
+                data-testid="commitmentWarningAcknowledgeCheckbox"
+                checked={warningAcknowledged}
+                onChange={() => {
+                  setWarningAcknowledged((acknowledged) => !acknowledged);
+                  setAcknowledgementError(false);
+                }}
+                label="I understand and want to proceed"
+              />
+            </Stack>
+          </Message>
         )}
       </Stack>
       <DataGrid columns={2} className={!showCalendar ? "mb-6" : "mb-0"} columnMaxSize="1fr">
@@ -155,6 +212,11 @@ const CommitmentModal = (props) => {
         </Stack>
       )}
       <ConfirmInput subText={subText} {...inputProps} />
+      {acknowledgementError && (
+        <div className="text-sm text-theme-error text-center mt-1" data-testid="acknowledgementError">
+          Please acknowledge the warning above to proceed.
+        </div>
+      )}
     </BaseModal>
   );
 };

@@ -6,9 +6,20 @@ import moment from "moment";
 import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { PortalProvider } from "@cloudoperators/juno-ui-components";
 import { initialCommitmentObject } from "../../../lib/constants";
-import CommitmentModal from "./CommitmentModal";
+import CommitmentModal, { getWarningText } from "./CommitmentModal";
+import { FACTOR, SOURCE, REASON } from "../../../lib/commitmentSize";
+import { Unit } from "../../../lib/unit";
 
 // If debugging is necessary, use screen.debug(undefined, Infinity) to get the complete componenent log.
+// Mock resource with usage/quota data for oversized commitment warning tests
+const mockResource = {
+  name: "test-resource",
+  per_az: [
+    { name: "az1", usage: 100, quota: 500 },
+    { name: "az2", usage: 50, quota: 200 },
+  ],
+};
+
 describe("test commitment creation modal", () => {
   test("no capacity commitment creation with no minConfirm date should be 60 seconds in the future", async () => {
     Date.now = jest.fn(() => new Date("2024-01-01T00:00:00.000Z"));
@@ -29,6 +40,7 @@ describe("test commitment creation modal", () => {
           canConfirm={false}
           minConfirmDate={null}
           commitment={newCommitment}
+          resource={mockResource}
           action={onConfirm}
           onModalClose={onClose}
           publicCommitmentQuery={publicCommitmentQuery}
@@ -89,6 +101,7 @@ describe("test commitment creation modal", () => {
           canConfirm={true}
           minConfirmDate={moment(new Date("2024-01-01T00:00:00.000Z")).utc().unix()}
           commitment={newCommitment}
+          resource={mockResource}
           action={onConfirm}
           onModalClose={onClose}
           publicCommitmentQuery={{ data: null }}
@@ -124,6 +137,7 @@ describe("test commitment creation modal", () => {
           canConfirm={true}
           minConfirmDate={moment(new Date("2024-01-02T00:00:00.000Z")).utc().unix()}
           commitment={newCommitment}
+          resource={mockResource}
           action={onConfirm}
           onModalClose={onClose}
           publicCommitmentQuery={{ data: null }}
@@ -167,6 +181,7 @@ describe("test commitment creation modal", () => {
           currentTab={"az1"}
           canConfirm={true}
           commitment={newCommitment}
+          resource={mockResource}
           action={onConfirm}
           onModalClose={onClose}
           publicCommitmentQuery={{ data: null }}
@@ -180,4 +195,110 @@ describe("test commitment creation modal", () => {
     expect(screen.getByText("Notificaton")).toBeInTheDocument();
     expect(screen.getByText(/January 2024/i)).toBeInTheDocument();
   });
+
+  const unit = new Unit("GiB");
+  const baseValue = 100;
+  test.each([
+    {
+      name: "usage already covered by commitments",
+      amount: baseValue * FACTOR.LARGE - baseValue,
+      az: { usage: baseValue, commitmentSum: baseValue },
+      warningText: getWarningText(REASON.LARGE, SOURCE.USAGE, "", unit.format(baseValue)),
+    },
+    {
+      name: "large amount relative to usage",
+      amount: baseValue * FACTOR.LARGE,
+      az: { usage: baseValue },
+      warningText: getWarningText(REASON.LARGE, SOURCE.USAGE, "", unit.format(baseValue)),
+    },
+    {
+      name: "small amount relative to usage",
+      amount: baseValue * FACTOR.SMALL,
+      az: { usage: baseValue },
+      warningText: getWarningText(
+        REASON.SMALL,
+        SOURCE.USAGE,
+        unit.format(baseValue * FACTOR.SMALL),
+        unit.format(baseValue)
+      ),
+    },
+    {
+      name: "large amount relative to resource commitments",
+      amount: baseValue * FACTOR.LARGE,
+      commitmentSum: baseValue,
+      az: { usage: 0, commitmentSum: 0 },
+      warningText: getWarningText(REASON.LARGE, SOURCE.COMMITMENTS, "", unit.format(baseValue)),
+    },
+    {
+      name: "large amount relative to quota",
+      amount: baseValue * FACTOR.LARGE,
+      az: { quota: baseValue },
+      warningText: getWarningText(REASON.LARGE, SOURCE.QUOTA, "", unit.format(baseValue)),
+    },
+  ])(
+    "$name displays a formatted warning and requires acknowledgement",
+    async ({ amount, az, commitmentSum = 0, warningText }) => {
+      const onConfirm = jest.fn();
+      const onClose = jest.fn();
+      const newCommitment = {
+        ...initialCommitmentObject,
+        amount,
+        unit: "GiB",
+        duration: "1 year",
+      };
+      const resource = {
+        name: "test-resource",
+        commitmentSum,
+        per_az: [{ name: "az1", ...az }],
+      };
+
+      render(
+        <PortalProvider>
+          <CommitmentModal
+            title="Confirm commitment creation"
+            subText="Commit"
+            currentTab="az1"
+            canConfirm={true}
+            commitment={newCommitment}
+            resource={resource}
+            action={onConfirm}
+            onModalClose={onClose}
+            publicCommitmentQuery={{ data: null }}
+          />
+        </PortalProvider>
+      );
+
+      expect(screen.getByTestId("commitmentWarning")).toHaveTextContent(warningText, { normalizeWhitespace: false });
+
+      const confirmInput = screen.getByTestId(/confirmInput/i);
+      const confirmButton = screen.getByTestId(/modalConfirm/i);
+      const acknowledgeCheckbox = screen.getByTestId("commitmentWarningAcknowledgeCheckbox");
+
+      expect(acknowledgeCheckbox).not.toBeChecked();
+      expect(confirmButton).toBeEnabled();
+
+      // Correct text still requires acknowledgement.
+      fireEvent.change(confirmInput, { target: { value: "commit" } });
+      fireEvent.click(confirmButton);
+      expect(onConfirm).not.toHaveBeenCalled();
+      expect(screen.getByTestId("acknowledgementError")).toBeInTheDocument();
+
+      fireEvent.click(acknowledgeCheckbox);
+      expect(acknowledgeCheckbox).toBeChecked();
+      expect(screen.queryByTestId("acknowledgementError")).not.toBeInTheDocument();
+
+      // Incorrect text is rejected on confirmation.
+      fireEvent.change(confirmInput, { target: { value: "wrongInput" } });
+      fireEvent.click(confirmButton);
+      expect(onConfirm).not.toHaveBeenCalled();
+
+      // Restore correct text and confirm.
+      fireEvent.change(confirmInput, { target: { value: "commit" } });
+      fireEvent.click(confirmButton);
+
+      await waitFor(() => {
+        expect(onConfirm).toHaveBeenCalledTimes(1);
+      });
+    }
+  );
 });
