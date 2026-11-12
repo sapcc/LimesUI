@@ -156,4 +156,9 @@ export default (options) => [
   canConfirmCommitment(options),
   getPublicCommitments(options),
   getCerebro(options),
+  http.post(`${options.endpoint}/v1/*`, () => {
+    return HttpResponse.text("This operation is not supported in mock mode.", {
+      status: 405,
+    });
+  }),
 ];

@@ -228,6 +228,41 @@
               "usage": 0
             },
             {
+              "name": "instances_hana_c30",
+              "category": "per_flavor",
+              "quota_distribution_model": "autogrow",
+              "per_az": {
+                "az-1a": {
+                  "usage": 0,
+                  "quota": 20,
+                  "committed": {
+                    "1 year": 10
+                  }
+                },
+                "az-1b": {
+                  "usage": 0,
+                  "quota": 10,
+                  "committed": {
+                    "1 year": 5
+                  }
+                },
+                "az-1d": {
+                  "usage": 0,
+                  "quota": 0
+                }
+              },
+              "commitment_config": {
+                "durations": [
+                  "1 year",
+                  "2 years",
+                  "3 years"
+                ]
+              },
+              "quota": 30,
+              "usable_quota": 0,
+              "usage": 0
+            },
+            {
               "name": "instances_regular",
               "quota_distribution_model": "autogrow",
               "per_az": {
