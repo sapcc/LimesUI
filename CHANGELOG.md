@@ -1,5 +1,11 @@
 # @sapcc/limes-ui
 
+## 1.21.5
+
+### Patch Changes
+
+- 122bacd: Include a reasonable size check for commitment creation
+
 ## 1.21.4
 
 ### Patch Changes
