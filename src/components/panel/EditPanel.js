@@ -30,6 +30,7 @@ import DomainManager from "../domain/DomainManager";
 import useGetConversions from "./PanelHooks/useGetConversions";
 import useResetCommitment from "../../hooks/useResetCommitment";
 import { CustomZones, initialCommitmentObject, TransferStatus, TransferType } from "../../lib/constants";
+import { getCurrentProjectResource } from "../../lib/utils";
 import Marketplace from "../commitment/Marketplace";
 import TransferCancelModal from "../commitment/Modals/TransferCancelModal";
 
@@ -412,6 +413,11 @@ const EditPanel = (props) => {
           canConfirm={canConfirm}
           commitment={newCommitment}
           publicCommitmentQuery={publicCommitmentQuery}
+          resource={
+            scope.isProject()
+              ? currentResource
+              : getCurrentProjectResource(currentProject, currentCategory, resourceName)
+          }
           minConfirmDate={minConfirmDate}
           onModalClose={onPostModalClose}
           subText="Commit"
